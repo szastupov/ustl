@@ -85,23 +85,31 @@ inline T1 DivRU (T1 n1, T2 n2)
     return (n1 / n2 + (n1 % n2 > 0));
 }
 
-/// Rounds \p n up to be divisible by \p grain
+/// \brief Rounds \p n up to be divisible by \p grain
+/// This is optimized for constant grains to avoid division.
+///
 template <typename T>
 inline T Align (T n, T grain = c_DefaultAlignment)
 {
-    const T remainder = n % grain;
-    return (remainder ? n + (grain - remainder) : n);
+    if (grain == 4)
+	return (n % 4 ? (n & ~3) + 4 : n);
+    else if (grain == 2)
+	return (n % 2 ? ++n : n);
+    else if (grain == 8)
+	return (n % 8 ? (n & ~7) + 8 : n);
+    else if (grain == 16)
+	return (n % 16 ? (n & ~15) + 16 : n);
+    else {
+	const T remainder = n % grain;
+	return (remainder ? n + (grain - remainder) : n);
+    }
 }
 
 /// Returns the recommended alignment for the type of \p v.
 template <typename T>
 inline size_t DefaultGrain (T v)
 {
-#ifdef __GNUC__
     return (__alignof__(v));
-#else
-    return (min (sizeof(v), c_DefaultAlignment));
-#endif
 }
 
 /// Offsets an iterator

@@ -64,10 +64,10 @@ public:
     typedef const_iterator	iterator;
 public:
 			cmemlink (void);
-			cmemlink (const void* p, size_t n);
+			cmemlink (const void* p, size_type n);
 			cmemlink (const cmemlink& l);
     inline virtual     ~cmemlink (void) {}
-    void		link (const void* p, size_t n);
+    void		link (const void* p, size_type n);
     inline void		link (const cmemlink& l);
     virtual void	unlink (void);
     const cmemlink&	operator= (const cmemlink& l);
@@ -76,20 +76,20 @@ public:
    inline const_pointer	cdata (void) const;
     inline iterator	begin (void) const;
     inline iterator	end (void) const;
-    inline size_t	size (void) const;
-    inline size_t	max_size (void) const;
-  inline virtual size_t	readable_size (void) const;
+    inline size_type	size (void) const;
+    inline size_type	max_size (void) const;
+    virtual size_type	readable_size (void) const;
     inline bool		empty (void) const;
-    inline void		resize (size_t n);
+    inline void		resize (size_type n);
     inline void		read (istream&);
     void		write (ostream& os) const;
-    size_t		stream_size (void) const;
+    size_type		stream_size (void) const;
     void		write_file (const char* filename, int mode = 0644) const;
 protected:
-    virtual size_t	elementSize (void) const;
+    virtual size_type	elementSize (void) const;
 private:
     const_pointer	m_CData;	///< Pointer to the data block (const)
-    size_t		m_Size;		///< size of the data block
+    size_type		m_Size;		///< size of the data block
 };
 
 /// Returns the pointer to the internal data
@@ -99,21 +99,15 @@ inline cmemlink::const_pointer cmemlink::cdata (void) const
 }
 
 /// Returns the size of the block
-inline size_t cmemlink::size (void) const
+inline cmemlink::size_type cmemlink::size (void) const
 {
     return (m_Size);
 }
 
 /// Returns the maximum size of the block (non-resizable, so always == size())
-inline size_t cmemlink::max_size (void) const
+inline cmemlink::size_type cmemlink::max_size (void) const
 {
     return (m_Size);
-}
-
-/// Returns the size of the readable area
-inline size_t cmemlink::readable_size (void) const
-{
-    return (size());
 }
 
 /// true if size() == 0
@@ -123,7 +117,7 @@ inline bool cmemlink::empty (void) const
 }
 
 /// Resizes the block as seen by users of the class (no memory allocation)
-inline void cmemlink::resize (size_t n)
+inline void cmemlink::resize (size_type n)
 {
     m_Size = n;
 }

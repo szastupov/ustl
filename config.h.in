@@ -36,9 +36,11 @@
     #ifndef __builtin_prefetch
 	#define __builtin_prefetch(p,rw,loc)
     #endif
+    /* __alignof__ returns the recommended alignment for the type */
+    #ifndef __alignof__
+	#define __alignof__(v)	min (sizeof(v), c_DefaultAlignment);
+    #endif
 #endif
-
-//----------------------------------------------------------------------
 
 /* Define to 1 if you have the `atexit' function. */
 #undef HAVE_ATEXIT

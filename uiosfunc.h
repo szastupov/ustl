@@ -36,7 +36,7 @@ namespace ios {
 	inline ostream&		apply (ostream& os) const { os.align (m_Grain); return (os); }
 	inline size_t		stream_size (void) const  { return (m_Grain - 1); }
     private:
-	size_t			m_Grain;
+	const size_t		m_Grain;
     };
 
     /// \class talign uiosfunc.h ustl.h
@@ -58,7 +58,7 @@ namespace ios {
 	inline ostream&		apply (ostream& os) const { os.skip (m_nBytes); return (os); }
 	inline size_t		stream_size (void) const  { return (m_nBytes); }
     private:
-	size_t			m_nBytes;
+	const size_t		m_nBytes;
     };
 
     /// \class width uiosfunc.h ustl.h
@@ -69,7 +69,7 @@ namespace ios {
 	inline explicit		width (size_t nBytes) : m_nBytes(nBytes) {}
 	inline ostringstream&	apply (ostringstream& os) const { os.set_width (m_nBytes); return (os); }
     private:
-	size_t			m_nBytes;
+	const size_t		m_nBytes;
     };
 
     /// \class base uiosfunc.h ustl.h
@@ -80,7 +80,7 @@ namespace ios {
 	inline explicit		base (size_t n) : m_Base(n) {}
 	inline ostringstream&	apply (ostringstream& os) const { os.set_base (m_Base); return (os); }
     private:
-	size_t			m_Base;
+	const size_t		m_Base;
     };
 
 } // namespace ios

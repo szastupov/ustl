@@ -176,6 +176,13 @@ memblock::iterator memblock::erase (iterator start, size_t n)
     return (begin() + ep);
 }
 
+/// Removes the last element (elementSize() bytes)
+void memblock::pop_back (void)
+{
+    assert (writable_size() >= elementSize() && "pop_back called on an empty vector");
+    erase (end() - elementSize(), elementSize());
+}
+
 /// Unlinks object.
 void memblock::unlink (void)
 {

@@ -50,16 +50,16 @@ public:
     typedef ::ustl::reverse_iterator<const_iterator>	const_reverse_iterator;
 public:
     inline			vector (void);
-    inline explicit		vector (size_t n);
-				vector (size_t n, const T& v);
+    inline explicit		vector (size_type n);
+				vector (size_type n, const T& v);
 				vector (const vector<T>& v);
 				vector (const_iterator i1, const_iterator i2);
     inline virtual	       ~vector (void);
     inline const vector<T>&	operator= (const vector<T>& v);
-    inline void			reserve (size_t n);
-    inline void			resize (size_t n);
-    inline size_t		capacity (void) const;
-    inline size_t		size (void) const;
+    inline void			reserve (size_type n);
+    inline void			resize (size_type n);
+    inline size_type		capacity (void) const		{ return (memblock::capacity() / sizeof(T)); }
+    inline size_type		size (void) const		{ return (memblock::size() / sizeof(T)); }
     inline iterator		begin (void);
     inline const_iterator	begin (void) const;
     inline iterator		end (void);
@@ -68,28 +68,27 @@ public:
     inline const_reverse_iterator	rbegin (void) const;
     inline reverse_iterator		rend (void);
     inline const_reverse_iterator	rend (void) const;
-    inline reference		at (size_t i);
-    inline const_reference	at (size_t i) const;
-    inline reference		operator[] (size_t i);
-    inline const_reference	operator[] (size_t i) const;
+    inline reference		at (size_type i);
+    inline const_reference	at (size_type i) const;
+    inline reference		operator[] (size_type i);
+    inline const_reference	operator[] (size_type i) const;
     inline reference		front (void);
     inline const_reference	front (void) const;
     inline reference		back (void);
     inline const_reference	back (void) const;
     inline void			push_back (const T& v = T());
-    inline void			pop_back (void);
     inline void			assign (const_iterator i1, const_iterator i2);
-    inline void			assign (size_t n, const T& v);
+    inline void			assign (size_type n, const T& v);
     inline iterator		insert (iterator ip, const T& v = T());
-    inline iterator		insert (iterator ip, size_t n, const T& v);
+    inline iterator		insert (iterator ip, size_type n, const T& v);
     inline iterator		insert (iterator ip, const_iterator i1, const_iterator i2);
-    inline iterator		erase (iterator ep, size_t n = 1);
+    inline iterator		erase (iterator ep, size_type n = 1);
     inline iterator		erase (iterator ep1, iterator ep2);
 protected:
-    virtual void		constructBlock (void* p, size_t s) const;
-    virtual void		destructBlock (void* p, size_t s) const;
-    inline virtual size_t	elementSize (void) const;
-    inline size_t		elementBytes (size_t n) const { return (n * sizeof(T)); }
+    virtual void		constructBlock (void* p, size_type s) const;
+    virtual void		destructBlock (void* p, size_type s) const;
+    inline virtual size_type	elementSize (void) const		{ return (sizeof(T)); }
+    inline size_type		elementBytes (size_type n) const	{ return (n * sizeof(T)); }
 };
 
 /// Initializes empty vector.
@@ -101,7 +100,7 @@ inline vector<T>::vector (void)
 
 /// Initializes a vector of size \p n.
 template <typename T>
-inline vector<T>::vector (size_t n)
+inline vector<T>::vector (size_type n)
 : memblock()
 {
     vector<T>::resize (n);
@@ -109,7 +108,7 @@ inline vector<T>::vector (size_t n)
 
 /// Copies \p n elements from \p v.
 template <typename T>
-vector<T>::vector (size_t n, const T& v)
+vector<T>::vector (size_type n, const T& v)
 : memblock()
 {
     vector<T>::resize (n);
@@ -155,30 +154,16 @@ inline const vector<T>& vector<T>::operator= (const vector<T>& v)
 
 /// Allocates space for at least \p n elements.
 template <typename T>
-inline void vector<T>::reserve (size_t n)
+inline void vector<T>::reserve (size_type n)
 {
     memblock::reserve (elementBytes(n));
 }
 
 /// Resizes the vector to contain \p n elements.
 template <typename T>
-inline void vector<T>::resize (size_t n)
+inline void vector<T>::resize (size_type n)
 {
     memblock::resize (elementBytes(n));
-}
-
-/// Returns the number of elements for which space has been allocated.
-template <typename T>
-inline size_t vector<T>::capacity (void) const
-{
-    return (memblock::capacity() / sizeof(T));
-}
-
-/// Returns number of elements in the vector.
-template <typename T>
-inline size_t vector<T>::size (void) const
-{
-    return (memblock::size() / sizeof(T));
 }
 
 /// Returns the pointer to the first element.
@@ -310,7 +295,7 @@ inline void vector<T>::assign (const_iterator i1, const_iterator i2)
 
 /// Copies \p n elements with value \p v.
 template <typename T>
-inline void vector<T>::assign (size_t n, const T& v)
+inline void vector<T>::assign (size_type n, const T& v)
 {
     vector<T>::resize (n);
     ::ustl::fill (begin(), end(), v);
@@ -318,7 +303,7 @@ inline void vector<T>::assign (size_t n, const T& v)
 
 /// Inserts \p n elements with value \p v at offsets \p ip.
 template <typename T>
-inline typename vector<T>::iterator vector<T>::insert (iterator ip, size_t n, const T& v)
+inline typename vector<T>::iterator vector<T>::insert (iterator ip, size_type n, const T& v)
 {
     ip = iterator (memblock::insert (memblock::iterator(ip), elementBytes(n)));
     ::ustl::fill (ip, ip + n, v);
@@ -346,7 +331,7 @@ inline typename vector<T>::iterator vector<T>::insert (iterator ip, const_iterat
 
 /// Removes \p count elements at offset \p ep.
 template <typename T>
-inline typename vector<T>::iterator vector<T>::erase (iterator ep, size_t n)
+inline typename vector<T>::iterator vector<T>::erase (iterator ep, size_type n)
 {
     return (iterator (memblock::erase (memblock::iterator(ep), elementBytes(n))));
 }
@@ -366,19 +351,12 @@ inline void vector<T>::push_back (const T& v)
     insert (end(), v);
 }
 
-/// Removes one element from the back of the vector.
-template <typename T>
-inline void vector<T>::pop_back (void)
-{
-    erase (end() - 1);
-}
-
 /// \brief Calls T() for every element.
 /// Because storage is allocated by malloc() in memblock::Reserve(),
 /// the constructors must be explicitly called here.
 ///
 template <typename T>
-void vector<T>::constructBlock (void* p, size_t s) const
+void vector<T>::constructBlock (void* p, size_type s) const
 {
     memblock::constructBlock (p, s);
     assert (s % sizeof(T) == 0);
@@ -393,19 +371,12 @@ void vector<T>::constructBlock (void* p, size_t s) const
 /// and cannot be called from ~memblock().
 ///
 template <typename T>
-void vector<T>::destructBlock (void* p, size_t s) const
+void vector<T>::destructBlock (void* p, size_type s) const
 {
     assert (s % sizeof(T) == 0);
     T* pt = reinterpret_cast<T*>(p);
     destroy (pt, pt + s / sizeof(T));
     memblock::destructBlock (p, s);
-}
-
-/// Returns the size of each element in the container.
-template <typename T>
-inline size_t vector<T>::elementSize (void) const
-{
-    return (sizeof(T));
 }
 
 } // namespace ustl

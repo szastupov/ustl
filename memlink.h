@@ -61,20 +61,20 @@ public:
     typedef pointer			iterator;
 public:
 			memlink (void);
-			memlink (void* p, size_t n);
-			memlink (const void* p, size_t n);
+			memlink (void* p, size_type n);
+			memlink (const void* p, size_type n);
 			memlink (const memlink& l);
     explicit		memlink (const cmemlink& l);
-    inline void		link (const void* p, size_t n);
+    inline void		link (const void* p, size_type n);
     inline void		link (const cmemlink& l);
-    inline void		link (void* p, size_t n);
+    inline void		link (void* p, size_type n);
     inline void		link (memlink& l);
     virtual void	unlink (void);
     inline void		copy (const cmemlink& l);
-    inline void		copy (const void* p, size_t n);
-    void		copy (iterator offset, const void* p, size_t n);
+    inline void		copy (const void* p, size_type n);
+    void		copy (iterator offset, const void* p, size_type n);
     inline pointer	data (void);
-    virtual size_t	writable_size (void) const;
+    virtual size_type	writable_size (void) const;
     const memlink&	operator= (const cmemlink& l);
     const memlink&	operator= (const memlink& l);
     inline void		swap (memlink& l);
@@ -82,13 +82,13 @@ public:
     inline iterator	end (void);
     inline const_iterator	begin (void) const;
     inline const_iterator	end (void) const;
-    void		fill (iterator start, const void* p, size_t elsize, size_t elCount = 1);
-    void		insert (iterator start, size_t size);
-    void		erase (iterator start, size_t size);
+    void		fill (iterator start, const void* p, size_type elsize, size_type elCount = 1);
+    void		insert (iterator start, size_type size);
+    void		erase (iterator start, size_type size);
     void		read (istream& is);
 protected:
-    virtual void	constructBlock (void*, size_t) const;
-    virtual void	destructBlock (void*, size_t) const;
+    virtual void	constructBlock (void*, size_type) const;
+    virtual void	destructBlock (void*, size_type) const;
 private:
     pointer		m_Data;	///< Pointer to the begin block (non-const)
 };
@@ -101,7 +101,7 @@ inline void memlink::swap (memlink& l)
 }
 
 /// Initializes both links to point to \p p, \p n
-inline void memlink::link (void* p, size_t n)
+inline void memlink::link (void* p, size_type n)
 {
     cmemlink::link (p, n);
     m_Data = reinterpret_cast<pointer>(p);
@@ -145,14 +145,14 @@ inline void memlink::copy (const cmemlink& l)
 }
 
 /// Copies begin from \p p, \p n to the linked block.
-inline void memlink::copy (const void* p, size_t n)
+inline void memlink::copy (const void* p, size_type n)
 {
     assert ((begin() || !n) && "Can't copy into a constant link.");
     copy (begin(), p, n);
 }
 
 /// Links to \p p of size \p n
-inline void memlink::link (const void* p, size_t n)
+inline void memlink::link (const void* p, size_type n)
 {
     cmemlink::link (p, n);
 }

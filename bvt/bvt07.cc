@@ -65,6 +65,11 @@ int main (void)
     cout << "erase(5,5)" << endl;
     s1.erase (s1.begin() + 5, 5);
     cout << s1 << endl;
+    cout << "push_back('x')" << endl;
+    s1.push_back ('x');
+    cout << s1 << endl;
+    cout << "pop_back()" << endl;
+    s1.pop_back();
     cout << "insert(10,#)" << endl;
     s1.insert (s1.begin() + 10, '#');
     cout << s1 << endl;

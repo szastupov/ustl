@@ -74,7 +74,6 @@ private:
 class fdistringstream : public istringstream {
 public:
     explicit			fdistringstream (int fd);
-    virtual		       ~fdistringstream (void);
 protected:
     virtual size_t		underflow (size_t n = 1);
 private:

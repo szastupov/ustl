@@ -38,37 +38,38 @@ namespace ustl {
 ///
 class memblock : public memlink {
 public:
-    static const size_t c_PageSize = 64;		///< The default minimum allocation unit.
+    static const size_type	c_PageSize = 64;	///< The default minimum allocation unit.
 public:
-			memblock (void);
-			memblock (const void* p, size_t n);
-    explicit		memblock (size_t n);
-    explicit		memblock (const cmemlink& b);
-    explicit		memblock (const memlink& b);
-			memblock (const memblock& b);
-    virtual	       ~memblock (void);
- inline const memblock&	operator= (const cmemlink& b);
- inline const memblock&	operator= (const memlink& b);
- inline const memblock&	operator= (const memblock& b);
-    void		assign (const void* p, size_t n);
-    inline void		assign (const cmemlink& l);
-    inline void		swap (memblock& l);
-    void		reserve (size_t newSize, bool bExact = true);
-    virtual void	resize (size_t newSize);
-    iterator		insert (iterator start, size_t size);
-    iterator		erase (iterator start, size_t size);
-    inline void		clear (void);
-    void		deallocate (void);
-    void		manage (void* p, size_t n);
-    inline void		manage (memlink& l);
-    inline size_t	capacity (void) const;
-    virtual void	unlink (void);
-    inline size_t	max_size (void) const;
-    void		read (istream& is);
-    void		read_file (const char* filename);
-    inline bool		is_linked (void) const;
+				memblock (void);
+				memblock (const void* p, size_type n);
+    explicit			memblock (size_type n);
+    explicit			memblock (const cmemlink& b);
+    explicit			memblock (const memlink& b);
+				memblock (const memblock& b);
+    virtual		       ~memblock (void);
+    inline const memblock&	operator= (const cmemlink& b);
+    inline const memblock&	operator= (const memlink& b);
+    inline const memblock&	operator= (const memblock& b);
+    void			assign (const void* p, size_type n);
+    inline void			assign (const cmemlink& l);
+    inline void			swap (memblock& l);
+    void			reserve (size_type newSize, bool bExact = true);
+    virtual void		resize (size_type newSize);
+    iterator			insert (iterator start, size_type size);
+    iterator			erase (iterator start, size_type size);
+    void			pop_back (void);
+    inline void			clear (void);
+    void			deallocate (void);
+    void			manage (void* p, size_type n);
+    inline void			manage (memlink& l);
+    inline size_type		capacity (void) const;
+    virtual void		unlink (void);
+    inline size_type		max_size (void) const;
+    void			read (istream& is);
+    void			read_file (const char* filename);
+    inline bool			is_linked (void) const;
 private:
-    size_t		m_AllocatedSize;	///< Number of bytes allocated by Resize.
+    size_type			m_AllocatedSize;	///< Number of bytes allocated by Resize.
 };
 
 /// Copies data from \p l.
@@ -99,7 +100,7 @@ inline const memblock& memblock::operator= (const memblock& l)
 }
 
 /// Returns the number of bytes allocated.
-inline size_t memblock::capacity (void) const
+inline memblock::size_type memblock::capacity (void) const
 {
     return (m_AllocatedSize);
 }
@@ -111,7 +112,7 @@ inline void memblock::manage (memlink& l)
 }
 
 /// Returns the maximum possible size of the block
-inline size_t memblock::max_size (void) const
+inline memblock::size_type memblock::max_size (void) const
 {
     return (SIZE_MAX / elementSize());
 }

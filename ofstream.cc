@@ -50,7 +50,7 @@ fdostringstream::fdostringstream (int fd)
 /// Default destructor.
 fdostringstream::~fdostringstream (void)
 {
-    flush();
+    try { flush(); } catch (...) {}
 }
 
 /// Flushes the buffer to the file.
@@ -108,11 +108,6 @@ fdistringstream::fdistringstream (int fd)
   m_Fd (fd)
 {
     link (m_Buffer.data(), 0);
-}
-
-/// Default destructor.
-fdistringstream::~fdistringstream (void)
-{
 }
 
 size_t fdistringstream::underflow (size_t n)
