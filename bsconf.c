@@ -72,11 +72,12 @@ static void GetConfigVarValues (int argc, char** argv);
 static void FillInDefaultConfigVarValues (void);
 static void FindPrograms (void);
 static void SubstitutePaths (void);
-static void SubstituteEnvironment (void);
+static void SubstituteEnvironment (int bForce);
 static void SubstitutePrograms (void);
 static void SubstituteHostOptions (void);
 static void SubstituteHeaders (void);
 static void SubstituteFunctions (void);
+static void SubstituteCustomVars (void);
 
 static void DetermineHost (void);
 static void DefaultConfigVarValue (EVV v, EVV root, char* suffix);
@@ -143,13 +144,14 @@ int main (int argc, char** argv)
 	copy (g_Files[f], srcFile);
 	copy_n (".in", srcFile + StrLen(g_Files[f]), 4);
 	ReadFile (srcFile);
-	SubstitutePaths();
-	SubstituteEnvironment();
-	SubstitutePrograms();
 	SubstituteHostOptions();
+	SubstitutePaths();
+	SubstituteEnvironment (0);
+	SubstitutePrograms();
 	SubstituteHeaders();
 	SubstituteFunctions();
 	SubstituteCustomVars();
+	SubstituteEnvironment (1);
 	WriteFile (g_Files[f]);
     }
     return (0);
@@ -217,11 +219,11 @@ static void PrintHelp (void)
 
 static void PrintVersion (void)
 {
-    printf (PACKAGE_NAME " configure " PACKAGE_VERSION "\n");
-    printf ("\nUsing bsconf package version 0.1\n");
-    printf ("Copyright 2003, Mike Sharov <msharov@talentg.com>\n");
-    printf ("This configure script and the bsconf package are free software.\n");
-    printf ("Unlimited permission to copy, distribute, and modify is granted.\n");
+    printf (PACKAGE_NAME " configure " PACKAGE_VERSION "\n"
+	    "\nUsing bsconf package version 0.1\n"
+	    "Copyright 2003, Mike Sharov <msharov@talentg.com>\n"
+	    "This configure script and the bsconf package are free software.\n"
+	    "Unlimited permission to copy, distribute, and modify is granted.\n");
 }
 
 /*--------------------------------------------------------------------*/
@@ -298,13 +300,17 @@ static void FillInDefaultConfigVarValues (void)
 
 static void DetermineHost (void)
 {
-    if (uname (&g_Uname))
-	FatalError ("uname");
+    fill_n ((char*) &g_Uname, sizeof(struct utsname), 0);
+    uname (&g_Uname);
     Lowercase (g_Uname.machine);
     Lowercase (g_Uname.sysname);
     copy (g_Uname.machine, g_ConfigVV [vv_host]);
     append ("-", g_ConfigVV [vv_host]);
+#ifdef __GNUC__
+    append ("gnu", g_ConfigVV [vv_host]);
+#else
     append ("unknown", g_ConfigVV [vv_host]);
+#endif
     append ("-", g_ConfigVV [vv_host]);
     append (g_Uname.sysname, g_ConfigVV [vv_host]);
 }
@@ -371,7 +377,7 @@ static void SubstitutePaths (void)
     }
 }
 
-static void SubstituteEnvironment (void)
+static void SubstituteEnvironment (int bForce)
 {
     string_t match;
     unsigned int i;
@@ -379,8 +385,11 @@ static void SubstituteEnvironment (void)
 
     for (i = 0; i < VectorSize(g_EnvVars); ++ i) {
 	envval = getenv (g_EnvVars[i]);
-	if (!envval)
+	if (!envval) {
+	    if (!bForce)
+		continue;
 	    envval = "";
+	}
 	MakeSubstString (g_EnvVars[i], match);
 	Substitute (match, envval);
     }
@@ -398,13 +407,19 @@ static void SubstitutePrograms (void)
 
 static void SubstituteHostOptions (void)
 {
-    if (!compare (g_Uname.sysname, "osx"))
+    if (!compare (g_Uname.sysname, "osx") ||
+	!compare (g_Uname.sysname, "darwin"))
 	Substitute ("@SYSWARNS@", "-Wno-long-double");
     else if (!compare (g_Uname.sysname, "sun") ||
 	     !compare (g_Uname.sysname, "solaris"))
-	Substitute ("@SYSWARNS@", "-Wno-redunant-decls");
+	Substitute ("@SYSWARNS@", "-Wno-redundant-decls");
     else
 	Substitute ("@SYSWARNS@", "");
+
+    if (!compare (g_Uname.sysname, "linux"))
+	Substitute ("@BUILD_SHARED_LIBRARIES@", "MAJOR\t\t= @LIB_MAJOR@\nMINOR\t\t= @LIB_MINOR@\nBUILD\t\t= @LIB_BUILD@");
+    else
+	Substitute ("@BUILD_SHARED_LIBRARIES@\n", "");
 
     Substitute ("#undef RETSIGTYPE", "#define RETSIGTYPE void");
     Substitute ("#undef const", "/* #define const */");

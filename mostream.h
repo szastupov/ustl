@@ -97,8 +97,8 @@ public:
 public:
     inline explicit		ostream_iterator (ostream& os)
 				    : m_Os (os) {}
-    inline			ostream_iterator (const ostream_iterator& i)
-				    : m_Os (i.m_Os) {} 
+    inline			ostream_iterator (const ostream_iterator& iter)
+				    : m_Os (iter.m_Os) {} 
     /// Writes \p v into the stream.
     inline ostream_iterator&	operator= (const T& v)
 				    { m_Os << v; return (*this); }

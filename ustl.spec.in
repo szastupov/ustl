@@ -1,4 +1,5 @@
 %define name	@PACKAGE_NAME@
+%define major	@LIB_MAJOR@
 %define version @PACKAGE_VERSION@
 %define release @LIB_BUILD@
 
@@ -36,7 +37,9 @@ make install
 
 %files
 %defattr(-,root,root)
-%{_prefix}/lib/libustl.a
+%{_prefix}/lib/libustl.so
+%{_prefix}/lib/libustl.so.%{major}
+%{_prefix}/lib/libustl.so.%{version}.%{release}
 %{_prefix}/include/ustl.h
 %dir %{_prefix}/include/ustl/
 %{_prefix}/include/ustl/cmemlink.h
@@ -66,10 +69,14 @@ make install
 %{_prefix}/include/ustl/uset.h
 %{_prefix}/include/ustl/uspecial.h
 %{_prefix}/include/ustl/ustack.h
+%{_prefix}/include/ustl/ulist.h
 %{_prefix}/include/ustl/ustring.h
 %{_prefix}/include/ustl/utf8.h
 %{_prefix}/include/ustl/utypes.h
 %{_prefix}/include/ustl/uutility.h
+%{_prefix}/include/ustl/ubitset.h
+%{_prefix}/include/ustl/unumeric.h
+%{_prefix}/include/ustl/utuple.h
 %{_prefix}/include/ustl/uvector.h
 %{_prefix}/include/ustl/config.h
 %{_prefix}/include/ustl/ustl.h

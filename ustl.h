@@ -93,6 +93,7 @@
     #include "ustl/sostream.h"
 #endif
 #include "ustl/unumeric.h"
+#include "ustl/ulist.h"
 
 #endif
 

@@ -43,16 +43,7 @@ classes for unstructured storage management (cmemlink - link to constant
 memory, memlink - link to mutable memory, and memblock - owner of mutable
 memory) are, of course, also available for use as data buffers wherever
 those are needed, and streams that efficiently read and write binary data
-into them are also available. The present implementation contains all the
-containers I intend to implement: vector<T>, string, stack<T>,
-set<T>, multiset<T>, map<T>, and multimap<T> are available and working.
-The others, list, hash, and tree, will probably not be implemented at
-all, since I do not think anyone should be using them. Vectors work
-just fine instead of linked lists in almost all cases. The only
-exception is a really long list of data that is frequently modified
-in random places, which indicates a bad design, rather than anything
-else. I can say the same thing about hash maps and trees: if you are
-using them, you are doing something wrong.
+into them are also available.
 
 ------------
 COMPILATION:
@@ -72,11 +63,12 @@ Clean builds have been thus obtained on (SourceForge compile farm):
 	* StrongArm 10000 host.
 
 make install
-	This copies the static library libustl.a to your lib directory,
+	This copies the shared library libustl.so to your lib directory,
 	(usually /usr/local/lib) and the headers to your include directory
-	(usually /usr/local/include).
+	(usually /usr/local/include). SunOS and Darwin don't build shared
+	libraries like Linux does, so a static library will be built instead.
 
-You may also chdir to the bvt subdirectory and 'make  run' to verify that
+You may also chdir to the bvt subdirectory and 'make run' to verify that
 	the library works correctly on your system. This works only after
 	you installed the library, because ld.so will not load anything
 	from .. for security reasons.

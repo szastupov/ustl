@@ -9,7 +9,8 @@ INCS	= cmemlink.h memblock.h memlink.h mistream.h mostream.h \
 	ualgobase.h uctralgo.h ufunction.h upair.h uiterator.h ustack.h \
 	uexception.h strmsize.h sistream.h sostream.h ulimits.h uset.h \
 	umultiset.h uspecial.h uios.h fdostream.h unew.h umap.h umultimap.h \
-	umemory.h uiosfunc.h utf8.h config.h ubitset.h unumeric.h utuple.h
+	umemory.h uiosfunc.h utf8.h config.h ubitset.h unumeric.h utuple.h \
+	ulist.h upredalgo.h
 DOCT	= ustldoc.in
 TOCLEAN	= config.status config.log
 
@@ -90,9 +91,24 @@ depend: ${SRCS}
 dox:
 	@${DOXYGEN} ${DOCT}
 
-maintainer-clean: clean autoconf-clean
-	rm -f Common.mk bsconf.o bsconf
-	rm -rf docs
+TMPDIR	= /tmp
+RHATDIR	= ${HOME}/rpm
+DISTDIR	= ustl-${MAJOR}.${MINOR}
+DISTTAR	= ${DISTDIR}-${BUILD}.tar.bz2
+
+dist:
+	mkdir ${TMPDIR}/${DISTDIR}
+	cp -r . ${TMPDIR}/${DISTDIR}
+	+make -C ${TMPDIR}/${DISTDIR} dox dist-clean
+	(cd ${TMPDIR}/${DISTDIR}; rm -rf CVS; cd bvt; rm -rf CVS; cd ../docs; rm -rf CVS)
+	(cd ${TMPDIR}; tar jcf ${RHATDIR}/SOURCES/${DISTTAR} ${DISTDIR}; rm -rf ${DISTDIR})
+	cp ustl.spec ${RHATDIR}/SPECS
+
+dist-clean:	clean
+	@rm -f Common.mk config.h ustl.spec bsconf.o bsconf .depend bvt/.depend
+
+maintainer-clean: dist-clean
+	@rm -rf docs ustl.spec
 
 -include .depend
  

@@ -67,8 +67,8 @@ public:
 public:
     				reverse_iterator (void) : m_i() {}
     explicit			reverse_iterator (Iterator iter) : m_i (iter) {}
-    inline bool			operator== (const reverse_iterator& i) const { return (m_i == i.m_i); }
-    inline bool			operator< (const reverse_iterator& i) const { return (i.m_i < m_i); }
+    inline bool			operator== (const reverse_iterator& iter) const { return (m_i == iter.m_i); }
+    inline bool			operator< (const reverse_iterator& iter) const { return (iter.m_i < m_i); }
     inline Iterator		base (void) const { return (m_i); }
     inline reference		operator* (void) const { Iterator prev (m_i); --prev; return (*prev); }
     inline pointer		operator-> (void) const { return (&(operator*())); }

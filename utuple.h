@@ -56,6 +56,8 @@ public:
     inline size_t		size (void) const		{ return (N); }
     inline size_t		max_size (void) const		{ return (N); }
     inline bool			empty (void) const		{ return (N == 0); }
+    inline const_reference	at (size_t i) const		{ return (m_v[i]); }
+    inline reference		at (size_t i)			{ return (m_v[i]); }
     inline const_reference	operator[] (size_t i) const	{ return (m_v[i]); }
     inline reference		operator[] (size_t i)		{ return (m_v[i]); }
     template <typename T2>
