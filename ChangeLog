@@ -1,3 +1,6 @@
+Release 0.6-1
+	* Increased the version number after relase.
+
 2005-01-17 Release 0.6
 	* The library is relicensed under the MIT License (was LGPL)
 	* Dropped support for locale due to its great complexity and ugliness.
