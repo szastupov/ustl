@@ -72,6 +72,11 @@ protected:
     virtual size_t		overflow (size_t n = 1);
     void			write_buffer (const char* buf, size_t bufSize);
 private:
+    template <typename T>
+    inline void			iwrite_integer (T v);
+    template <typename T>
+    inline void			iwrite_uinteger (T v);
+private:
     string*			m_pResizable;		///< Pointer to the buffer, if resizable.
     uint32_t			m_Flags;		///< See ios::fmtflags.
     uint16_t			m_Base;			///< Numeric base for writing numbers.

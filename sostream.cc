@@ -101,78 +101,51 @@ void ostringstream::iwrite (u_char v)
 	ostream::iwrite (v);
 }
 
-/// Writes long value \p sv into the stream.
-void ostringstream::iwrite (long sv)
+template <typename T>
+inline char* digitize_with_base (char* end, T v, size_t base)
 {
-    assert (m_Base < VectorSize(c_Digits));
-    const bool negative = (sv < 0);
-    u_long v (negative ? -sv : sv);
-    const size_t c_BufSize = BitsInType(v) + 1;
-    char buffer [c_BufSize];
-    uoff_t i = c_BufSize - 1;
-    buffer [i--] = 0;
-    do {
-	buffer[i--] = c_Digits[v % m_Base];
-	v /= m_Base;
-    } while (v);
-    if (negative)
-	buffer[i--] = '-';
-    ++ i;
-    write_buffer (buffer + i, c_BufSize - i - 1);
+    char* p (end);
+    *--p = 0;
+    switch (base) {
+	default: do { *--p = c_Digits[v % 10]; } while (v /= 10); break;
+	case 16: do { *--p = c_Digits[v % 16]; } while (v /= 16); break;
+	case  8: do { *--p = c_Digits[v % 8]; } while (v /= 8); break;
+    };
+    return (p);
 }
 
-/// Writes number \p v into the stream as text.
-void ostringstream::iwrite (u_long v)
+/// Generalization of iwrite for integer types
+template <typename T>
+inline void ostringstream::iwrite_uinteger (T v)
 {
-    assert (m_Base < VectorSize(c_Digits));
-    const size_t c_BufSize = BitsInType(v) + 1;
-    char buffer [c_BufSize];
-    uoff_t i = c_BufSize - 1;
-    buffer [i--] = 0;
-    do {
-	buffer[i--] = c_Digits[v % m_Base];
-	v /= m_Base;
-    } while (v);
-    ++ i;
-    write_buffer (buffer + i, c_BufSize - i - 1);
+    const size_t c_BufSize = BitsInType(v) / 2;
+    char buf [c_BufSize];
+    const char* first = digitize_with_base (buf + c_BufSize, v, m_Base);
+    write_buffer (first, c_BufSize - distance(buf, first) - 1);
 }
+
+/// Generalization of iwrite for integer types
+template <typename T>
+inline void ostringstream::iwrite_integer (T v)
+{
+    const size_t c_BufSize = BitsInType(v) / 2;
+    char buf [c_BufSize];
+    char* first = digitize_with_base (buf + c_BufSize, absv(v), m_Base);
+    if (v < 0)
+	*--first = '-';
+    write_buffer (first, c_BufSize - distance(buf, first) - 1);
+}
+
+/// Writes long value \p sv into the stream.
+void ostringstream::iwrite (long sv) { iwrite_integer (sv); }
+/// Writes number \p v into the stream as text.
+void ostringstream::iwrite (u_long v) { iwrite_uinteger (v); }
 
 #ifdef HAVE_LONG_LONG
 /// Writes number \p v into the stream as text.
-void ostringstream::iwrite (long long sv)
-{
-    assert (m_Base < VectorSize(c_Digits));
-    const bool negative = (sv < 0);
-    u_long v (negative ? -sv : sv);
-    const size_t c_BufSize = BitsInType(v) + 1;
-    char buffer [c_BufSize];
-    uoff_t i = c_BufSize - 1;
-    buffer [i--] = 0;
-    do {
-	buffer[i--] = c_Digits[v % m_Base];
-	v /= m_Base;
-    } while (v);
-    if (negative)
-	buffer[i--] = '-';
-    ++ i;
-    write_buffer (buffer + i, c_BufSize - i - 1);
-}
-
+void ostringstream::iwrite (long long sv) { iwrite_integer (sv); }
 /// Writes number \p v into the stream as text.
-void ostringstream::iwrite (unsigned long long v)
-{
-    assert (m_Base < VectorSize(c_Digits));
-    const size_t c_BufSize = BitsInType(v) + 1;
-    char buffer [c_BufSize];
-    uoff_t i = c_BufSize - 1;
-    buffer [i--] = 0;
-    do {
-	buffer[i--] = c_Digits[v % m_Base];
-	v /= m_Base;
-    } while (v);
-    ++ i;
-    write_buffer (buffer + i, c_BufSize - i - 1);
-}
+void ostringstream::iwrite (unsigned long long v) { iwrite_uinteger (v); }
 #endif
 
 /// Writes number \p iv into the stream as text.
@@ -195,10 +168,8 @@ void ostringstream::iwrite (double iv)
 /// Writes value \p v into the stream as text.
 void ostringstream::iwrite (bool v)
 {
-    if (v)
-	write_buffer ("true", 4);
-    else
-	write_buffer ("false", 5);
+    const char* c_Names[2] = { "false", "true" };
+    write_buffer (c_Names[v], 5 - v);
 }
 
 /// Writes string \p s into the stream.
@@ -243,19 +214,7 @@ void ostringstream::iwrite (ios::fmtflags f)
 	    m_Flags |= ios::right;
 	    m_Flags &= ~ios::left;
 	    break;
-	case ios::boolalpha:
-	case ios::fixed:
-	case ios::internal:
-	case ios::scientific:
-	case ios::showbase:
-	case ios::showpoint:
-	case ios::showpos:
-	case ios::skipws:
-	case ios::unitbuf:
-	case ios::uppercase:
-	case ios::adjustfield:
-	case ios::basefield:
-	case ios::floatfield:
+	default:
 	    m_Flags |= f;
 	    break;
     }
