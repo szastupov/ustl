@@ -47,6 +47,9 @@ public:
 			       ~vector (void) throw();
     inline const vector<T>&	operator= (const vector<T>& v);
     inline bool			operator== (const vector<T>& v)	{ return (m_Data == v.m_Data); }
+    inline			operator cmemlink (void) const	{ return (cmemlink (m_Data)); }
+    inline			operator cmemlink (void)	{ return (cmemlink (m_Data)); }
+    inline			operator memlink (void)		{ return (memlink (m_Data)); }
     inline void			reserve (size_type n, bool bExact = true);
     inline void			resize (size_type n, bool bExact = true);
     inline size_type		capacity (void) const		{ return (m_Data.capacity() / sizeof(T));	}
