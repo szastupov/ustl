@@ -59,6 +59,8 @@ int main (void)
 	packed64 = UINT64_C(0x123456789ABCDEF0);
 	pack_type (uint32_t(0x42434445), packed64);
 	cout << "pack_type(uint32_t, uint64_t) = " << packed64 << endl;
+    #else
+	cout << "No 64bit types available on this platform" << endl;
     #endif
     cout << endl;
     #ifdef HAVE_BYTESWAP_H
@@ -82,6 +84,8 @@ int main (void)
 	    cout << "be_to_native(" << v3 << ") = " << be_to_native(v3) << endl;
 	    cout << "native_to_le(" << v3 << ") = " << native_to_le(v3) << endl;
 	    cout << "native_to_be(" << v3 << ") = " << native_to_be(v3) << endl;
+	#else
+	    cout << "No 64bit types available on this platform" << endl;
 	#endif
     #else
 	cout << "byteswap.h does not exist." << endl;

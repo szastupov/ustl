@@ -25,7 +25,11 @@ int main (void)
 	s3[i] = s3[i];
     cout << s3 << endl;
     cout << "s3.size() = " << s3.size();
-    cout << ", max_size() = " << s3.max_size();
+    cout << ", max_size() = ";
+    if (s3.max_size() == SIZE_MAX / s3.elementSize() - 1)
+	cout << "(SIZE_MAX/elsize)-1";
+    else
+	cout << s3.max_size();
     cout << ", capacity() = " << s3.capacity() << endl;
 
     s1.unlink();

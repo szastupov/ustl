@@ -98,7 +98,7 @@ int main (void)
 	TestCtr<tuple<1,uint64_t> >("uint64_t[1]");
 	TestCtr<tuple<1,int64_t> >("int64_t[1]");
     #else
-	cout << "CAN'T TEST: 64 bit types are not available on this platform." << endl;
+	cout << "No 64bit types available on this platform" << endl;
     #endif
     TestCtr<tuple<2,float> >("float[2]");
     TestCtr<tuple<4,float> >("float[4]");

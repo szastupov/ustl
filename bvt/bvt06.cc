@@ -31,7 +31,11 @@ int main (void)
     for_each (v.begin(), v.end(), &PrintBlock);
     cout << "---" << endl;
     cout << "size() = " << v.size();
-    cout << ", max_size() = " << v.max_size();
+    cout << ", max_size() = ";
+    if (v.max_size() == SIZE_MAX / v.elementSize())
+	cout << "SIZE_MAX/elsize";
+    else
+	cout << v.max_size();
     cout << ", empty() = " << (v.empty() ? "true" : "false") << endl;
     v.push_back (memblock(5));
     cout << "back()->size() = " << v.back().size() << endl;

@@ -22,9 +22,26 @@ int main (void)
     double d = magic_Double;
     bool bv = magic_Bool;
 
+    size_t totalSize = stream_size_of(c);
+    totalSize += stream_size_of(uc);
+    totalSize = Align (totalSize, alignof(bv));
+    totalSize += stream_size_of(bv);
+    totalSize = Align (totalSize, alignof(i));
+    totalSize += stream_size_of(i);
+    totalSize += stream_size_of(ui);
+    totalSize = Align (totalSize);
+    totalSize += stream_size_of(li);
+    totalSize += stream_size_of(uli);
+    totalSize = Align (totalSize, alignof(f));
+    totalSize += stream_size_of(f);
+    totalSize = Align (totalSize, alignof(d));
+    totalSize += stream_size_of(d);
+    totalSize += stream_size_of(si);
+    totalSize += stream_size_of(usi);
+
     memblock b;
-    b.resize (64);
-    b.fill (b.begin(), "\xCD", 1, 64);
+    b.resize (totalSize);
+    b.fill (b.begin(), "\xCD", 1, b.size());
     ostream os (b);
 
     os << c;
@@ -38,8 +55,12 @@ int main (void)
     os << ios::talign<double>() << d;
     os << si;
     os << usi;
-    b.resize (os.pos());
-    cout << os.pos() << " bytes written" << endl;
+    if (b.size() == os.pos())
+	cout << "Correct";
+    else
+	cout << "Incorrect (" << os.pos() << " of " << b.size() << ')';
+    cout << " number of bytes written" << endl;
+    cout.flush();
 
     c = 0;
     uc = 0;
@@ -51,8 +72,8 @@ int main (void)
     istream is (b);
     is >> c;
     is >> uc;
-    is >> ios::align(sizeof(bool)) >> bv;
-    is >> ios::align(sizeof(int)) >> i;
+    is >> ios::talign<bool>() >> bv;
+    is >> ios::talign<int>() >> i;
     is >> ui;
     is >> ios::align() >> li;
     is >> uli;

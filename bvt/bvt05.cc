@@ -173,6 +173,8 @@ int main (void)
 #ifdef HAVE_INT64_T
     cout << "fill 64083 uint64_t(0x4142434445464748) ";
     TestBigFill<uint64_t> (64083, UINT64_C(0x4142434445464748));
+#else
+    cout << "No 64bit types available on this platform" << endl;
 #endif
 
     cout << "copy 64083 uint8_t(0x41) ";
@@ -184,6 +186,8 @@ int main (void)
 #ifdef HAVE_INT64_T
     cout << "copy 64083 uint64_t(0x4142434445464748) ";
     TestBigCopy<uint64_t> (64083, UINT64_C(0x4142434445464748));
+#else
+    cout << "No 64bit types available on this platform" << endl;
 #endif
 
     cout << "generate(genint)" << endl;

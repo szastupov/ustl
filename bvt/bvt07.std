@@ -2,7 +2,7 @@
 abcdefghijklmnopqrstuvwxyz
 123456789012345678901234567890
 12345678901234567890
-s3.size() = 20, max_size() = 4294967294, capacity() = 48
+s3.size() = 20, max_size() = (SIZE_MAX/elsize)-1, capacity() = 48
 abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ$
 HelloWorld
 Concatenated HelloWorld string.

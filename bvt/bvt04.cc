@@ -31,8 +31,13 @@ int main (void)
     v.push_back (1);
     PrintVector (v);
     v.reserve (20);
-    cout << "Reserved to capacity() == " << v.capacity()
-	 << " (" << v.size() << " used, " << v.max_size() << " max)" << endl;
+    cout << "Reserved to capacity() == " << v.capacity();
+    cout << " (" << v.size() << " used, ";
+    if (v.max_size() == SIZE_MAX / v.elementSize())
+	cout << "SIZE_MAX/elsize";
+    else
+	cout << v.max_size();
+    cout << " max)" << endl;
     v.insert (v.begin() + 1, c_TestNumbers + 1, c_TestNumbers + VectorSize(c_TestNumbers));
     PrintVector (v);
     cout.format ("front() = %d, back() = %d\n", v.front(), v.back());

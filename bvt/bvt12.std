@@ -1,13 +1,12 @@
-Allocating 56 bytes
-Write const void*, pos = 4
-Write void*, pos = 8
-Write string, pos = 19
-Write const string*, pos = 24
-Write string*, pos = 28
-Write vector<int>(6), pos = 56
-Read const void*, pos = 4, value is right
-Read void*, pos = 8, value is right
-Read string, pos = 19, value is TestString
-Read const string*, pos = 24, value is right
-Read string*, pos = 28, value is right
-Read vector<int>(6), pos = 56, value is right
+Write const void*, pos is right
+Write void*, pos is right
+Write string, pos is right
+Write const string*, pos is right
+Write string*, pos is right
+Write vector<int>(6), pos is right
+Read const void*, pos is right, value is right
+Read void*, pos is right, value is right
+Read string, pos is right, value is TestString
+Read const string*, pos is right, value is right
+Read string*, pos is right, value is right
+Read vector<int>(6), pos is right, value is right
