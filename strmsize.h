@@ -104,10 +104,10 @@ inline size_t stream_size_of (unsigned long long v)	{ return (sizeof (v));	}
     }
 
 /// Placed into a class it declares the methods required by STD_STREAMABLE. Syntactic sugar.
-#define DECLARE_STD_STREAMABLE		\
-    public:				\
-        void	read (::ustl::istream& is);		\
-	void	write (::ustl::ostream& os) const;	\
+#define DECLARE_STD_STREAMABLE			\
+    public:					\
+	void	read (istream& is);		\
+	void	write (ostream& os) const;	\
 	size_t	stream_size (void) const
 
 /// Declares T to be writable to text streams. Reading is not implemented because you should not do it.

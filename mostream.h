@@ -88,6 +88,7 @@ public:
     inline void		iwrite (const T& v);
     virtual void	unlink (void);
     inline void		link (void* p, size_type n)	{ memlink::link (p, n); }
+    inline void		link (void* f, void* l)		{ memlink::link (f, l); }
     inline void		link (memlink& l)		{ memlink::link (l.data(), l.writable_size()); }
 private:
     uoff_t		m_Pos;	///< Current write position.

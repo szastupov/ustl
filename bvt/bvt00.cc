@@ -25,6 +25,7 @@ void TestCML (void)
 	cout << "a.begin() failed: " << ios::hex << uintptr_t(a.begin());
         cout << " != " << uintptr_t(pstrTest) << ios::dec << endl;
     }
+    a.link (pstrTest, pstrTest + strTestLen);
     if (*(const char*)(a.begin() + 5) != strTest[5]) {
 	cout << "begin()[5] failed: " << *(const char*)(a.begin() + 5);
 	cout << " != " << strTest[5] << endl;

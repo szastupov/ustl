@@ -61,7 +61,7 @@
 <type name=blksize_t format=integral size=blksize_t/>
 
 <!-- Types within the ustl library -->
-<type name=utf8 format=integral minSize="1" maxSize="7"/>
+<type name=utf8 format=integral minSize="1" maxSize="8"/>
 <type name=auto format=unstructured id="AUTO"/>
 <namespace name=ustl>
     <type name=uoff_t extends=size_t/>

@@ -17,7 +17,7 @@
 // Boston, MA  02111-1307  USA.
 //
 /// \file upair.h
-//
+/// \brief Pair-related functionality.
 
 #ifndef UPAIR_H_7DC08F1B7FECF8AE6856D84C3B617A75
 #define UPAIR_H_7DC08F1B7FECF8AE6856D84C3B617A75

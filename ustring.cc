@@ -45,7 +45,7 @@ const char string::empty_string[string::size_Terminator] = "";
 string::string (void)
 : memblock ()
 {
-    link (empty_string, 0);
+    link (empty_string, 0U);
 }
 
 /// Assigns itself the value of string \p s
@@ -150,6 +150,7 @@ void string::assign (const_pointer s)
 /// Assigns itself the value of string \p s of length \p len.
 void string::assign (const_pointer s, size_type len)
 {
+    assert ((s < begin() || s >= end() || len == size()) && "Self-assignment can not resize");
     while (len && s[len - 1] == c_Terminator)
 	-- len;
     resize (len);
@@ -167,6 +168,7 @@ void string::append (const_pointer s)
 /// Appends to itself the value of string \p s of length \p len.
 void string::append (const_pointer s, size_type len)
 {
+    assert ((s < begin() || s >= end() || size() + len < capacity()) && "Appending a string to itself with autoresize is not supported");
     while (len && s[len - 1] == c_Terminator)
 	-- len;
     resize (size() + len);
@@ -290,6 +292,7 @@ void string::insert (iterator start, const_pointer first, const_pointer last, si
 {
     assert (first <= last);
     assert (begin() <= start && end() >= start);
+    assert ((first < begin() || first >= end() || size() + abs_distance(first,last) < capacity()) && "Insertion of self with autoresize is not supported");
     start = iterator (memblock::insert (memblock::iterator(start), distance(first, last) * n));
     fill (memblock::iterator(start), first, distance(first, last), n);
     *end() = c_Terminator;
@@ -331,6 +334,7 @@ void string::replace (iterator first, iterator last, const_pointer i1, const_poi
     assert (first <= last);
     assert (n || distance(first, last));
     assert (first >= begin() && first <= end() && last >= first && last <= end());
+    assert ((i1 < begin() || i1 >= end() || abs_distance(i1,i2) * n + size() < capacity()) && "Replacement by self can not autoresize");
     const size_type bte = distance(first, last);
     const size_type bti = distance(i1, i2) * n;
     if (bti < bte)

@@ -25,7 +25,8 @@
 namespace ustl {
 
 /// \class numeric_limits ulimits.h ustl.h
-/// Defines numeric limits for a type.
+/// \brief Defines numeric limits for a type.
+///
 template <typename T> 
 struct numeric_limits {
     /// Returns the minimum value for type T.

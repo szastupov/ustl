@@ -45,10 +45,9 @@ namespace ustl {
 /// Returns the number of bytes required to UTF-8 encode \p v.
 inline size_t Utf8Bytes (wchar_t v)
 {
-    const uint32_t c_Bounds[] = { 0x00000080, 0x00000800, 0x00010000, 0x00200000, 0x04000000, 0x80000000, 0xFFFFFFFF, };
+    static const uint32_t c_Bounds[] = { 0x0000007F, 0x000007FF, 0x0000FFFF, 0x001FFFFF, 0x03FFFFFF, 0x7FFFFFFF, 0xFFFFFFFF, };
     size_t bi = 0;
-    while (c_Bounds[bi++] <= uint32_t(v))
-	;
+    while (c_Bounds[bi++] < uint32_t(v));
     return (bi);
 }
 

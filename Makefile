@@ -22,6 +22,8 @@ TOCLEAN	+= config.status config.log
 
 ########################################################################
 
+.PHONY:	install uninstall install-incs uninstall-inst
+
 ifdef LIBSOBLD
 TARGET	= ${LIBSOBLD}
 ${LIBSOBLD}:	${OBJS}
@@ -77,6 +79,8 @@ uninstall-incs:
 %.s:	%.cc
 	@echo "    Compiling $< to assembly ..."
 	@${CXX} ${CXXFLAGS} -S -o $@ -c $<
+
+.PHONY:	gch clean depend dox dist dist-clean maintainer-clean
 
 gch:	${INCDIR}/ustl.h.gch
 ${INCDIR}/ustl.h.gch:	${INCS}

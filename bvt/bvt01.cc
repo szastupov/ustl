@@ -22,6 +22,7 @@ void TestML (void)
     a.link (strTest, strTestLen);
     if (a.begin() != strTest)
 	cout << "begin() failed on memlink" << endl;
+    a.link (strTest, strTest + strTestLen);
     if (a.begin() + 5 != &strTest[5])
 	cout << "begin() + 5 failed on memlink" << endl;
     if (0 != memcmp (a.begin(), strTest, strTestLen))

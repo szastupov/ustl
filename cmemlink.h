@@ -69,6 +69,7 @@ public:
     inline virtual     ~cmemlink (void) {}
     void		link (const void* p, size_type n);
     inline void		link (const cmemlink& l);
+    inline void		link (const void* first, const void* last);
     virtual void	unlink (void);
     const cmemlink&	operator= (const cmemlink& l);
     bool		operator== (const cmemlink& l) const;
@@ -139,6 +140,12 @@ inline cmemlink::iterator cmemlink::end (void) const
 inline void cmemlink::link (const cmemlink& l)
 {
     link (l.begin(), l.size());
+}
+
+/// Links to iterator range \p first - \p last
+inline void cmemlink::link (const void* first, const void* last)
+{
+    link (first, distance (first, last));
 }
 
 /// Reads the object from stream \p os

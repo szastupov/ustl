@@ -14,6 +14,7 @@ Release 0.4-3
 				  type into a big one.
 	    alignof		- recommended alignment for a type (uses GCC
 				  __alignof__ extension, if available)
+	    eachfor		- same as foreach, but for reverse_iterator
 	* get_temporary_buffer implemented using alloca and macros
 	* Updated rotate to use alloca for small moves.
 		This should speed up vector operations, like insert and erase.
@@ -25,6 +26,7 @@ Release 0.4-3
 		for the null terminator instead of tweaking size() all the
 		time. It's cleaner and saner this way.
 	* benchmarking tool in bvt	
+	* More functions implemented in bitset.
 
 Release 0.4-2
 	* ostringstreams will now correctly resize the buffer as needed.

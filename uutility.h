@@ -19,7 +19,10 @@
 /// \file uutility.h
 ///
 /// \brief Utility templates.
-//
+///
+/// Everything in here except min(), max(), distance(), and advance()
+/// are uSTL extensions and are absent from other STL implementations.
+///
 
 #ifndef UUTILITY_H_6A58BD296269A82A4AAAA4FD19FDB3AC
 #define UUTILITY_H_6A58BD296269A82A4AAAA4FD19FDB3AC
@@ -56,6 +59,8 @@ namespace ustl {
 
 /// Shorthand for container iteration.
 #define foreach(type,i,ctr)	for (type i = ctr.begin(); i != ctr.end(); ++ i)
+/// Shorthand for container reverse iteration.
+#define eachfor(type,i,ctr)	for (type i = ctr.rbegin(); i != ctr.rend(); ++ i)
 
 /// The alignment performed by default.
 const size_t c_DefaultAlignment = sizeof(void*);
@@ -74,7 +79,8 @@ inline const T1 max (const T1& a, const T2& b)
     return (b < a ? a : b);
 }
 
-/// Divides \p n1 by \p n2 and rounds the result up (regular division rounds down).
+/// \brief Divides \p n1 by \p n2 and rounds the result up.
+/// This is in contrast to regular division, which rounds down.
 /// Negative numbers are rounded down because they are an unusual case, supporting
 /// which would require a branch. Since this is frequently used in graphics, the
 /// speed is important.
@@ -117,6 +123,7 @@ inline T advance (T i, ssize_t offset)
     return (i + offset);
 }
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 /// Offsets a void pointer
 template <>
 inline const void* advance (const void* p, ssize_t offset)
@@ -132,6 +139,7 @@ inline void* advance (void* p, ssize_t offset)
     assert (p || !offset);
     return (reinterpret_cast<uint8_t*>(p) + offset);
 }
+#endif
 
 /// Returns the difference \p p1 - \p p2
 template <typename T1, typename T2>
@@ -140,6 +148,7 @@ inline ptrdiff_t distance (T1 i1, T2 i2)
     return (i2 - i1);
 }
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 #define UNVOID_DISTANCE(T1const,T2const)				   \
 template <> inline ptrdiff_t distance (T1const void* p1, T2const void* p2) \
 { return ((T2const uint8_t*)(p2) - (T1const uint8_t*)(p1)); }
@@ -148,6 +157,7 @@ UNVOID_DISTANCE(const,const)
 UNVOID_DISTANCE(,const)
 UNVOID_DISTANCE(const,)
 #undef UNVOID_DISTANCE
+#endif
 
 /// \brief Returns the absolute value of \p v
 /// Unlike the stdlib functions, this is inline and works with all types.

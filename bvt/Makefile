@@ -16,6 +16,8 @@ CXXFLAGS	+= -I ${INCDIR}
 LDFLAGS		+= -L ${LIBDIR}
 TOCLEAN		+= ${BVTS}
 
+.PHONY:	all run clean depend
+
 all:	${BVTS} bench
 
 run:	${BVTS}

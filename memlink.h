@@ -69,6 +69,8 @@ public:
     inline void		link (const cmemlink& l);
     inline void		link (void* p, size_type n);
     inline void		link (memlink& l);
+    inline void		link (const void* first, const void* last);
+    inline void		link (void* first, void* last);
     virtual void	unlink (void);
     inline void		copy (const cmemlink& l);
     inline void		copy (const void* p, size_type n);
@@ -168,6 +170,18 @@ inline void memlink::link (memlink& l)
 {
     cmemlink::link (l);
     m_Data = l.data();
+}
+
+/// Links to iterator range \p first - \p last
+inline void memlink::link (const void* first, const void* last)
+{
+    link (first, distance (first, last));
+}
+
+/// Links to iterator range \p first - \p last
+inline void memlink::link (void* first, void* last)
+{
+    link (first, distance (first, last));
 }
 
 /// Reads object \p l from stream \p is

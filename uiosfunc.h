@@ -28,7 +28,10 @@ namespace ustl {
 namespace ios {
     /// \class align uiosfunc.h ustl.h
     /// \ingroup StreamFunctors
-    /// Stream functor to allow inline align() calls. os << ios::align(sizeof(uint16_t));
+    /// \brief Stream functor to allow inline align() calls.
+    ///
+    /// Example: os << ios::align(sizeof(uint16_t));
+    ///
     class align {
     public:
 	inline explicit		align (size_t grain = c_DefaultAlignment) : m_Grain(grain) {}
@@ -41,7 +44,7 @@ namespace ios {
 
     /// \class talign uiosfunc.h ustl.h
     /// \ingroup StreamFunctors
-    /// Stream functor to allow type-based alignment.
+    /// \brief Stream functor to allow type-based alignment.
     template <typename T>
     class talign : public align {
     public:
@@ -50,7 +53,10 @@ namespace ios {
 
     /// \class skip uiosfunc.h ustl.h
     /// \ingroup StreamFunctors
-    /// Stream functor to allow inline skip() calls. os << ios::skip(sizeof(uint16_t));
+    /// \brief Stream functor to allow inline skip() calls.
+    ///
+    /// Example: os << ios::skip(sizeof(uint16_t));
+    ///
     class skip {
     public:
 	inline explicit 	skip (size_t nBytes) : m_nBytes(nBytes) {}
@@ -63,7 +69,10 @@ namespace ios {
 
     /// \class width uiosfunc.h ustl.h
     /// \ingroup StreamFunctors
-    /// Stream functor to allow inline set_width() calls. os << ios::width(15);
+    /// \brief Stream functor to allow inline set_width() calls.
+    ///
+    /// Example: os << ios::width(15);
+    ///
     class width {
     public:
 	inline explicit		width (size_t nBytes) : m_nBytes(nBytes) {}
@@ -74,7 +83,10 @@ namespace ios {
 
     /// \class base uiosfunc.h ustl.h
     /// \ingroup StreamFunctors
-    /// Stream functor to allow inline set_base() calls. os << ios::base(15);
+    /// \brief Stream functor to allow inline set_base() calls.
+    ///
+    /// Example: os << ios::base(15);
+    ///
     class base {
     public:
 	inline explicit		base (size_t n) : m_Base(n) {}

@@ -116,6 +116,7 @@ void memblock::manage (void* p, size_type n)
 /// Copies data from \p p, \p n.
 void memblock::assign (const void* p, size_type n)
 {
+    assert ((p != (const void*) cdata() || size() == n) && "Self-assignment can not resize");
     resize (n);
     copy (p, n);
 }

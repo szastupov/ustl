@@ -28,6 +28,10 @@ int main (void)
     bitset<70> bs2 ("0101101");
     cout << "bitset<" << bs2.size() << "> bs2: capacity() = " << bs2.capacity() << ", sizeof() = " << sizeof(bs2) << endl;
     cout << bs2 << endl;
+    bs2.set (34, 40, 13);
+    cout << "bs2.set(34,40,13)" << endl;
+    cout << bs2 << endl;
+    cout << "bs2.at(34,40) = " << bs2.at(34,40) << endl;
 
     bitset<256> bs3 (0x3030);
     cout << "bitset<" << bs3.size() << "> bs3: capacity() = " << bs3.capacity() << ", sizeof() = " << sizeof(bs3) << endl;
@@ -36,6 +40,28 @@ int main (void)
     bitset<30> bs4 (bs1);
     if (bs1 == bs4)
 	cout << "bs4 == bs1" << endl;
+
+    bs4 = 0x50505050;
+    cout << "bs4 = 0x50505050: " << bs4 << endl;
+    bs1 = 0x30303030;
+    cout << "bs1 = 0x30303030: " << bs1 << endl;
+    bs4 &= bs1;
+    cout << "bs4 &= bs1; bs4 = " << bs4 << endl;
+    bs4 = 0x50505050;
+    bs4 &= bs1;
+    cout << "bs4 & bs1;  bs4 = " << bs4 << endl;
+    bs4 = 0x50505050;
+    bs4 |= bs1;
+    cout << "bs4 |= bs1; bs4 = " << bs4 << endl;
+    bs4 = 0x50505050;
+    bs4 = bs4 | bs1;
+    cout << "bs4 | bs1;  bs4 = " << bs4 << endl;
+    bs4 = 0x50505050;
+    bs4 ^= bs1;
+    cout << "bs4 ^= bs1; bs4 = " << bs4 << endl;
+    bs4 = 0x50505050;
+    bs4 = bs4 ^ 0x30303030;
+    cout << "bs4 ^ bs1;  bs4 = " << bs4 << endl;
 
     return (0);
 }

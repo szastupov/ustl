@@ -107,7 +107,7 @@ fdistringstream::fdistringstream (int fd)
   m_Buffer (256),
   m_Fd (fd)
 {
-    link (m_Buffer.data(), 0);
+    link (m_Buffer.data(), 0U);
 }
 
 fdistringstream::size_type fdistringstream::underflow (size_type n)
@@ -116,7 +116,7 @@ fdistringstream::size_type fdistringstream::underflow (size_type n)
     size_type br = 0;
     if (m_Buffer.size() - pos() < n) {
 	m_Buffer.resize (pos() + n);
-	link (m_Buffer.data(), 0);
+	link (m_Buffer.data(), 0U);
     }
     while (br < n) {
 	errno = 0;

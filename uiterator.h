@@ -17,6 +17,7 @@
 // Boston, MA  02111-1307  USA.
 //
 /// \file uiterator.h
+/// \brief Contains various iterator adapters.
 //
 
 #ifndef UITERATOR_H_5BCA176C7214A30F2069E2614D2DC226
@@ -26,7 +27,9 @@ namespace ustl {
 
 //----------------------------------------------------------------------
 
-/// Contains the type traits of \p Iterator
+/// \struct iterator_traits uiterator.h ustl.h
+/// \brief Contains the type traits of \p Iterator
+///
 template <typename Iterator>
 struct iterator_traits {
     typedef typename Iterator::value_type        value_type;

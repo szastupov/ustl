@@ -46,6 +46,9 @@ template <class T> struct bitwise_not	: public unary_function<T,T>    { inline T
 /// Normally used for state flags; allows setting and unsetting of individual
 /// bits as well as bitwise operations on the entire set. The interface is
 /// most like that of unsigned integers, and is intended to be used as such.
+/// If you were using begin() and end() functions in STL's bitset, you would
+/// not be able to do the same thing here, because those functions return
+/// host type iterators, not bits.
 ///
 template <size_t Size>
 class bitset {
@@ -62,20 +65,21 @@ private:
     static const size_t	s_nHosts	= Size / s_HostBits + ((Size % s_HostBits) != 0);
     static const size_t	s_nBits		= s_nHosts * s_HostBits;
 private:
-    inline value_type&		BitRef (size_t n)	{ assert (n < Size); return (m_Bits [n / s_HostBits]); }
-    inline const value_type	BitRef (size_t n) const	{ assert (n < Size); return (m_Bits [n / s_HostBits]); }
-    inline const value_type	Mask (size_t n) const	{ assert (n < Size); return (1 << (n % s_HostBits)); }
+    inline value_type&		BitRef (uoff_t n)	{ assert (n < Size); return (m_Bits [n / s_HostBits]); }
+    inline const value_type	BitRef (uoff_t n) const	{ assert (n < Size); return (m_Bits [n / s_HostBits]); }
+    inline const value_type	Mask (uoff_t n) const	{ assert (n < Size); return (1 << (n % s_HostBits)); }
 public:
     inline		bitset (value_type v = 0)	{ fill_n (m_Bits, s_nHosts, 0); m_Bits[0] = v; }
     inline		bitset (const string& buf)	{ convert_from_bitstring (buf, m_Bits, s_nHosts); }
-    inline void		flip (size_t n)			{ BitRef(n) ^= Mask(n); }
+    inline void		flip (uoff_t n)			{ BitRef(n) ^= Mask(n); }
     inline void		reset (void)			{ fill_n (m_Bits, s_nHosts, 0); }
+    inline void		clear (void)			{ fill_n (m_Bits, s_nHosts, 0); }
     inline void		set (void)			{ fill_n (m_Bits, s_nHosts, -1); }
     inline bitset	operator~ (void) const		{ bitset rv (*this); rv.flip(); return (rv); }
-    inline size_t	size (void) const		{ return (Size); }
-    inline size_t	capacity (void) const		{ return (s_nBits); }
-    inline const bool	test (size_t n) const		{ return (BitRef(n) & Mask(n)); }
-    inline const bool	operator[] (size_t n) const	{ return (test(n)); }
+    inline size_type	size (void) const		{ return (Size); }
+    inline size_type	capacity (void) const		{ return (s_nBits); }
+    inline const bool	test (uoff_t n) const		{ return (BitRef(n) & Mask(n)); }
+    inline const bool	operator[] (uoff_t n) const	{ return (test(n)); }
   inline const_iterator	begin (void) const		{ return (m_Bits); }
     inline iterator	begin (void)			{ return (m_Bits); }
   inline const_iterator	end (void) const		{ return (m_Bits + s_nHosts); }
@@ -85,13 +89,23 @@ public:
     			/// Flips all the bits in the set.
     inline void		flip (void) { transform (begin(), end(), begin(), bitwise_not<value_type>()); }
 			/// Sets or clears bit \p n.
-    inline void		set (size_t n, bool val = true)
+    inline void		set (uoff_t n, bool val = true)
 			{
 			    if (val)
 				BitRef(n) |= Mask(n);
 			    else
 				BitRef(n) &= ~Mask(n);
 			}
+			// Sets the value of the bitrange \p first through \p last to the equivalent number of bits from \p v.
+    inline void		set (uoff_t first, uoff_t last, value_type v)
+			{
+			    assert (size_t (distance (first, last)) <= s_HostBits && "Bit ranges must be 32 bits or smaller");
+			    assert (first / s_HostBits == last / s_HostBits && "Bit ranges can not cross dword (4 byte) boundary");
+			    assert ((v & BitMask(value_type,distance(first,last))) == v && "The value is too large to fit in the given bit range");
+			    BitRef(first) |= v << (first % s_HostBits);
+			}
+    			/// Clears the bit \p n.
+    inline void		reset (uoff_t n)		{ set (n, false); }
 			/// Returns a string with bits MSB "001101001..." LSB.
     inline string	to_string (void) const
 			{
@@ -99,13 +113,28 @@ public:
 			    convert_to_bitstring (m_Bits, s_nHosts, rv);
 			    return (rv);
 			}
-    inline bool		operator== (const bitset<Size>& v) const
+    inline value_type	at (uoff_t n) const		{ return (test(n)); }
+			/// Returns the value in bits \p first through \p last.
+    inline value_type	at (uoff_t first, uoff_t last) const
 			{
-			    if (s_nHosts == 1)
-				return (m_Bits[0] == v.m_Bits[0]);
-			    else
-				return (equal (begin(), end(), v.begin()));
+			    assert (size_t (distance (first, last)) <= s_HostBits && "Bit ranges must be 32 bits or smaller");
+			    assert (first / s_HostBits == last / s_HostBits && "Bit ranges can not cross dword (4 byte) boundary");
+			    return ((BitRef(first) >> (first % s_HostBits)) & BitMask(value_type,distance(first, last)));
 			}
+    inline bool		operator== (const bitset<Size>& v) const
+			    { return (s_nHosts == 1 ? (m_Bits[0] == v.m_Bits[0]) : equal (begin(), end(), v.begin())); }
+    inline const bitset	operator& (const bitset<Size>& v)
+			    { bitset<Size> result; transform (begin(), end(), v.begin(), result.begin(), bitwise_and<value_type>()); return (result); }
+    inline const bitset	operator| (const bitset<Size>& v)
+			    { bitset<Size> result; transform (begin(), end(), v.begin(), result.begin(), bitwise_or<value_type>()); return (result); }
+    inline const bitset	operator^ (const bitset<Size>& v)
+			    { bitset<Size> result; transform (begin(), end(), v.begin(), result.begin(), bitwise_xor<value_type>()); return (result); }
+   inline const bitset&	operator&= (const bitset<Size>& v)
+			    { transform (begin(), end(), v.begin(), begin(), bitwise_and<value_type>()); return (*this); }
+   inline const bitset&	operator|= (const bitset<Size>& v)
+			    { transform (begin(), end(), v.begin(), begin(), bitwise_or<value_type>()); return (*this); }
+   inline const bitset&	operator^= (const bitset<Size>& v)
+			    { transform (begin(), end(), v.begin(), begin(), bitwise_xor<value_type>()); return (*this); }
 private:
     value_type		m_Bits [s_nHosts];
 };
