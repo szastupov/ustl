@@ -12,6 +12,7 @@
 #include "umultiset.h"
 #include "ubitset.h"
 #include "ulaalgo.h"
+#include "uctralgo.h"
 #include "ufunction.h"
 #include "mistream.h"
 #include "mostream.h"
@@ -127,16 +128,10 @@ istream& operator>> (istream& is, vector<T>& v)
     size_t n;
     is >> n;
     const size_t expectedSize = n * stream_size_of(T());
-#ifdef WANT_STREAM_BOUNDS_CHECKING
     if (expectedSize > is.remaining())
 	throw stream_bounds_exception ("read", typeid(v).name(), is.pos(), expectedSize, is.remaining());
-#else
-    assert (expectedSize <= is.remaining() && "This does not look like a written vector.");
-#endif
-    if (expectedSize <= is.remaining()) {
-	v.resize (n);
-	copy_n (istream_iterator<T>(is), n, v.begin());
-    }
+    v.resize (n);
+    copy_n (istream_iterator<T>(is), n, v.begin());
     is.align();
     return (is);
 }
@@ -146,7 +141,7 @@ template <typename T>
 ostream& operator<< (ostream& os, const vector<T>& v)
 {
     os << v.size();
-    copy_n (v.begin(), v.size(), ostream_iterator<T>(os));
+    copy (v, ostream_iterator<T>(os));
     os.align();
     return (os);
 }
@@ -171,7 +166,7 @@ size_t stream_size_of (const vector<T>& v)
 {
     typedef typename vector<T>::const_iterator viter_t;
     size_t s = sizeof(size_t);
-    for (viter_t first = v.begin(); first < v.end(); ++ first)
+    foreach (viter_t, first, v)
 	s += stream_size_of(*first);
     return (Align (s));
 }
@@ -182,7 +177,7 @@ size_t stream_size_of (const vector<T>& v)
 template <size_t Size>
 inline istream& operator>> (istream& is, bitset<Size>& v)
 {
-    for (typename bitset<Size>::iterator i = v.begin(); i < v.end(); ++ i)
+    foreach (typename bitset<Size>::iterator, i, v)
 	is >> *i;
     return (is);
 }
@@ -191,7 +186,7 @@ inline istream& operator>> (istream& is, bitset<Size>& v)
 template <size_t Size>
 inline ostream& operator<< (ostream& os, const bitset<Size>& v)
 {
-    for (typename bitset<Size>::const_iterator i = v.begin(); i < v.end(); ++ i)
+    foreach (typename bitset<Size>::const_iterator, i, v)
 	os << *i;
     return (os);
 }
@@ -216,7 +211,8 @@ inline size_t stream_size_of (const bitset<Size>& v)
 template <size_t N, typename T>
 inline istream& operator>> (istream& is, tuple<N,T>& v)
 {
-    for (typename tuple<N,T>::iterator i = v.begin(); i < v.end(); ++ i)
+    typedef typename tuple<N,T>::iterator iter_t;
+    foreach (iter_t, i, v)
 	is >> *i;
     is.align();
     return (is);
@@ -226,7 +222,8 @@ inline istream& operator>> (istream& is, tuple<N,T>& v)
 template <size_t N, typename T>
 inline ostream& operator<< (ostream& os, const tuple<N,T>& v)
 {
-    for (typename tuple<N,T>::const_iterator i = v.begin(); i < v.end(); ++ i)
+    typedef typename tuple<N,T>::const_iterator iter_t;
+    foreach (iter_t, i, v)
 	os << *i;
     os.align();
     return (os);

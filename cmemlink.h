@@ -161,6 +161,9 @@ inline void cmemlink::read (istream&)
     assert (false && "ustl::cmemlink is a read-only object.");
 }
 
+// Specialization for stream alignment
+template <> inline size_t alignof (cmemlink) { return (alignof (size_t())); }
+
 } // namespace ustl
 
 #endif

@@ -165,6 +165,7 @@ void memlink::erase (iterator start, size_type n)
 /// Override to initialize malloc'ed space, like calling constructors, for example.
 void memlink::constructBlock (void* p, size_type n) const
 {
+    assert (elementSize() && "You can't create an array of empty types");
     assert (n % elementSize() == 0 && "You are trying to write an incompatible element type");
     fill_n (p, n, uint8_t(0));
 }

@@ -197,7 +197,7 @@ inline string::operator string::value_type* (void)
 /// Assigns itself the value of string \p s
 inline const string& string::operator= (const string& s)
 {
-    memblock::operator= (s);
+    assign (s.begin(), s.end());
     return (*this);
 }
 
@@ -381,6 +381,9 @@ inline bool operator>= (const char* s1, const string& s2)
 {
     return (s2 <= s1);
 }
+
+// Specialization for stream alignment
+template <> inline size_t alignof (string) { return (alignof (string::value_type())); }
 
 } // namespace ustl
 

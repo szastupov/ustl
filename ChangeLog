@@ -1,5 +1,9 @@
 Release 0.4-4
 	* configure will now properly enable mmx compiler flags.
+	* Fixed a bug in ostringstream format inserting extra '\0'
+	* Fixed a bug in string find which sometimes did not match at the
+		beginning of the text.
+	* New alignof specializations for cmemlink(size_t) and string(1)
 
 2004-07-28 Release 0.4-3
 	* A ChangeLog! After all these years...

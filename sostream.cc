@@ -185,7 +185,7 @@ void ostringstream::iwrite (double iv)
 /// Writes value \p v into the stream as text.
 void ostringstream::iwrite (bool v)
 {
-    const char* c_Names[2] = { "false", "true" };
+    static const char* c_Names[2] = { "false", "true" };
     write_buffer (c_Names[v], 5 - v);
 }
 
@@ -206,10 +206,11 @@ int ostringstream::format (const char* fmt, ...)
 {
     va_list args;
     va_start (args, fmt);
-    int rv = vsnprintf (ipos(), remaining(), fmt, args);
+    const bool bIsString = m_pResizable;
+    int rv = vsnprintf (ipos(), remaining() + bIsString, fmt, args);
     if (rv > 0) {
-	if (rv > int(remaining()))
-	    rv = (rv > int(overflow (rv)) ? 0 : vsnprintf (ipos(), remaining(), fmt, args));
+	if (rv >= remaining())
+	    rv = (rv > overflow(rv) ? 0 : vsnprintf (ipos(), remaining() + bIsString, fmt, args));
 	skip (rv);
     }
     va_end (args);
@@ -273,10 +274,8 @@ ostringstream::size_type ostringstream::overflow (size_type n)
     assert (n > remaining() && "Don't call overflow if you don't need to");
     if (m_pResizable) {
 	const uoff_t oldPos (pos());
-	string* pResizable (m_pResizable);	// reset in unlink
-	pResizable->resize (pos() + n);
-	link (*pResizable);
-	m_pResizable = pResizable;
+	m_pResizable->resize (pos() + n);
+	link (*m_pResizable);
 	seek (oldPos);
     }
     if (remaining() < n)

@@ -24,7 +24,7 @@
 
 #include "sistream.h"
 #include "sostream.h"
-#include "memblock.h"
+#include "ustring.h"
 
 #ifndef WITHOUT_CIN_COUT_CERR
 namespace ustl {
@@ -43,7 +43,7 @@ public:
 protected:
     virtual size_t		overflow (size_t n = 1);
 private:
-    memblock			m_Buffer;
+    string			m_Buffer;
     int				m_Fd;
 };
 
@@ -77,7 +77,7 @@ public:
 protected:
     virtual size_t		underflow (size_t n = 1);
 private:
-    memblock			m_Buffer;
+    string			m_Buffer;
     int				m_Fd;
 };
 

@@ -360,22 +360,17 @@ string::const_iterator string::find (const string& s, const_iterator pos) const
 {
     if (!pos) pos = begin();
     assert (pos >= begin() && pos <= end());
-    if (s.empty() || s.size() > size_type(distance (pos, end())))
+    if (s.empty() || ptrdiff_t(s.size()) > distance (pos, end()))
 	return (end());
     const uoff_t endi = s.size() - 1;
     const_reference endchar = s[endi];
     uoff_t lastPos = endi;
     while (lastPos-- && s[lastPos] != endchar);
     const size_type skip = endi - lastPos;
-    const_iterator i = pos + s.size() - 1;
-    while (i < end()) {
-	i = ::ustl::find (i, end(), endchar);
-	if (!i)
-	    break;
+    const_iterator i = pos + endi;
+    for (; i < end() && (i = ::ustl::find (i, end(), endchar)) < end(); i += skip)
 	if (memcmp (i - endi, s.c_str(), s.size()) == 0)
 	    return (i - endi);
-	i += skip;
-    }
     return (end());
 }
 
@@ -458,7 +453,7 @@ int string::format (const char* fmt, ...)
     va_list args;
     va_start (args, fmt);
     char nullbuf [size_Terminator] = ""; // On SunOS and Darwin vsnprintf can't handle NULL pointers, and this is faster than calling malloc.
-    int rv = vsnprintf (capacity() ? data() : nullbuf, capacity() + size_Terminator, fmt, args);
+    int rv = vsnprintf (memblock::capacity() ? data() : nullbuf, memblock::capacity(), fmt, args);
     //
     // glibc 2.0.6 or later required for reallocation to work.
     // 		earlier versions will require the string to already
@@ -468,7 +463,7 @@ int string::format (const char* fmt, ...)
     // 		See vsnprintf man page for additional information.
     //
     if (rv >= 0) {
-	if (rv > int(capacity())) {
+	if (size_t(rv) > capacity()) {
 	    reserve (rv);
 	    rv = vsnprintf (data(), memblock::capacity(), fmt, args);
 	}

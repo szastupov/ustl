@@ -75,12 +75,8 @@ fdostringstream::size_type fdostringstream::overflow (size_type n)
 	    bw += bwn;
     }
     erase (begin(), bw);
-    if (remaining() < n) {
-	uoff_t oldPos = pos();
-	m_Buffer.resize (oldPos + n);
-	link (m_Buffer);
-	seek (oldPos);
-    }
+    if (remaining() < n)
+	ostringstream::overflow (n);
     return (remaining());
 }
 
@@ -129,6 +125,7 @@ fdistringstream::size_type fdistringstream::underflow (size_type n)
 	else
 	    br += brn;
     }
+    m_Buffer[br] = string::c_Terminator;
     link (m_Buffer.data(), br);
     return (remaining());
 }

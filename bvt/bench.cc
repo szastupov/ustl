@@ -81,7 +81,7 @@ void mmx_copy (const char* src, size_t nBytes, char* dest)
 	"movq 8(%%esi), %%mm1	\n\t"
 	"movq 16(%%esi), %%mm2	\n\t"
 	"movq 24(%%esi), %%mm3	\n\t"
-#if CPU_HAS_SSE
+#if 0
 	"movntq %%mm0, (%%edi)	\n\t"
 	"movntq %%mm1, 8(%%edi)	\n\t"
 	"movntq %%mm2, 16(%%edi)\n\t"
@@ -109,9 +109,6 @@ void sse_copy (const char* src, size_t nBytes, char* dest)
     for (; nBytes && (uintptr_t(src) % 16 || uintptr_t(dest) % 16); --nBytes)
 	*dest++ = *src++;
     asm volatile (
-	"mov %0, %%esi			\n\t"
-	"mov %1, %%edi			\n\t"
-	"mov %2, %%ecx			\n\t"
 	"shr $6, %%ecx			\n\t"
 	"1:				\n\t"
 	"prefetch 512(%%esi)		\n\t"
@@ -127,12 +124,9 @@ void sse_copy (const char* src, size_t nBytes, char* dest)
 	"add $64, %%edi			\n\t"
 	"dec %%ecx			\n\t"
 	"jnz 1b				\n\t"
-	:
-	: "m"(src), "m"(dest), "m"(nBytes)
-	: "memory", "xmm0", "xmm1", "xmm2", "xmm3", "esi", "edi", "ecx");
-    const size_t bw = (nBytes / 64) * 64;
-    src += bw;
-    dest += bw;
+	: "=&S"(src), "=&D"(dest)
+	: "0"(src), "1"(dest), "c"(nBytes)
+	: "memory", "xmm0", "xmm1", "xmm2", "xmm3");
     nBytes = nBytes % 64;
     for (; nBytes; --nBytes)
 	*dest++ = *src++;
@@ -236,7 +230,7 @@ void mmx_fill (const char* dest, size_t nBytes, char v)
 	"prefetchw 512(%%edi)	\n\t"
 #endif
 	"1:			\n\t"
-#if CPU_HAS_SSE
+#if 0
 	"movntq %2, (%%edi)	\n\t"
 	"movntq %2, 8(%%edi)	\n\t"
 	"movntq %2, 16(%%edi)	\n\t"

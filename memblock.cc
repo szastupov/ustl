@@ -95,7 +95,8 @@ memblock::~memblock (void)
 void memblock::deallocate (void)
 {
     if (m_AllocatedSize) {
-	assert (data() && cdata());
+	assert (cdata() && "Internal error: space allocated, but the pointer is NULL");
+	assert (data() && "Internal error: read-only block is marked as allocated space");
 	destructBlock (data(), m_AllocatedSize);
 	free (data());
     }
@@ -121,8 +122,9 @@ void memblock::assign (const void* p, size_type n)
     copy (p, n);
 }
 
-/// Reallocates internal block to hold at least \p newSize bytes. Some
-/// additional memory may be allocated, but for efficiency it is a very
+/// \brief Reallocates internal block to hold at least \p newSize bytes.
+///
+/// Additional memory may be allocated, but for efficiency it is a very
 /// good idea to call reserve before doing byte-by-byte edit operations.
 /// The block size as returned by size() is not altered. reserve will not
 /// reduce allocated memory. If you think you are wasting space, call
@@ -135,7 +137,7 @@ void memblock::reserve (size_type newSize, bool bExact)
     newSize += minimumFreeCapacity();
     if (m_AllocatedSize >= newSize)
 	return;
-    void* oldBlock = is_linked() ? NULL : data();
+    void* oldBlock (is_linked() ? NULL : data());
     if (!bExact)
 	newSize = Align (newSize, Align (c_PageSize, elementSize()));
     assert (newSize % elementSize() == 0 && "reserve can only allocate units of elementType.");
