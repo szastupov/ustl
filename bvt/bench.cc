@@ -1,3 +1,9 @@
+// This file is part of the ustl library, an STL implementation.
+//
+// Copyright (C) 2005 by Mike Sharov <msharov@talentg.com>
+// This file is free software, distributed under the MIT License.
+//
+
 #include <ustl.h>
 #include <time.h>
 using namespace ustl;
@@ -50,20 +56,20 @@ void unroll_copy (const char* src, size_t nBytes, char* dest)
 	"shr $4, %%ecx		\n\t"
 	"1:			\n\t"
 	"mov (%%esi), %%eax	\n\t"
-	"mov 4(%%esi), %%ebx	\n\t"
+	"mov 4(%%esi), %%edx	\n\t"
 	"mov %%eax, (%%edi)	\n\t"
-	"mov %%ebx, 4(%%edi)	\n\t"
+	"mov %%edx, 4(%%edi)	\n\t"
 	"mov 8(%%esi), %%eax	\n\t"
-	"mov 12(%%esi), %%ebx	\n\t"
+	"mov 12(%%esi), %%edx	\n\t"
 	"mov %%eax, 8(%%edi)	\n\t"
-	"mov %%ebx, 12(%%edi)	\n\t"
+	"mov %%edx, 12(%%edi)	\n\t"
 	"add $16, %%esi		\n\t"
 	"add $16, %%edi		\n\t"
 	"dec %%ecx		\n\t"
 	"jnz 1b			\n\t"
 	: "=&S"(src), "=&D"(dest)
 	: "0"(src), "1"(dest), "c"(nBytes)
-	: "memory", "eax", "ebx");
+	: "memory", "eax", "edx");
 }
 
 #if CPU_HAS_MMX
