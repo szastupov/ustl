@@ -47,6 +47,7 @@ public:
     void			iwrite (int32_t v);
     void			iwrite (uint32_t v);
     void			iwrite (wchar_t v);
+    void			iwrite (float v);
     void			iwrite (double v);
     void			iwrite (bool v);
     void			iwrite (const char* s);
@@ -154,7 +155,7 @@ OSTRSTREAM_OPERATOR (int16_t,		int32_t)
 OSTRSTREAM_OPERATOR (uint16_t,		uint32_t)
 OSTRSTREAM_OPERATOR (int32_t,		int32_t)
 OSTRSTREAM_OPERATOR (uint32_t,		uint32_t)
-OSTRSTREAM_OPERATOR (float,		double)
+OSTRSTREAM_OPERATOR (float,		float)
 OSTRSTREAM_OPERATOR (double,		double)
 OSTRSTREAM_OPERATOR (bool,		bool)
 OSTRSTREAM_OPERATOR (wchar_t,		wchar_t)

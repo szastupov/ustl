@@ -25,6 +25,7 @@
 #include "utf8.h"
 #include <stdio.h>	// for vsnprintf in ostringstream::format
 #include <stdarg.h>
+#include "simd.h"
 
 namespace ustl {
 
@@ -165,10 +166,18 @@ void ostringstream::iwrite (wchar_t v)
     write_buffer (buffer, Utf8Bytes(v));
 }
 
+/// Writes number \p v into the stream as text.
+void ostringstream::iwrite (float v)
+{
+    simd::reset_mmx();
+    iwrite (double(v));
+}
+
 /// Writes number \p iv into the stream as text.
 void ostringstream::iwrite (double iv)
 {
     assert (m_Base < VectorSize(c_Digits));
+    simd::reset_mmx();
     const size_type c_BufSize = BitsInType(double) + 1;
     char buffer [c_BufSize];
     char fmt [16];
@@ -204,14 +213,16 @@ void ostringstream::iwrite (const string& v)
 /// Equivalent to a sprintf on the string.
 int ostringstream::format (const char* fmt, ...)
 {
+    simd::reset_mmx();
     va_list args;
     va_start (args, fmt);
     const bool bIsString = m_pResizable;
     assert (ipos());
     int rv = vsnprintf (ipos(), remaining() + bIsString, fmt, args);
     if (rv > 0) {
-	if (rv > remaining() + bIsString)
-	    rv = (rv < overflow(rv) ? 0 : vsnprintf (ipos(), remaining() + bIsString, fmt, args));
+	const size_t urv (rv);
+	if (urv > remaining() + bIsString)
+	    rv = (urv < overflow(urv) ? 0 : vsnprintf (ipos(), remaining() + bIsString, fmt, args));
 	skip (rv);
     }
     va_end (args);
