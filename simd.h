@@ -203,7 +203,7 @@ SIMD_SINGLEOP1 (stan, ftan)
 
 SIMD_CONVERTOP (pround, fround)
 
-template <typename T> inline int32_t sround (T op) { const fround<T,int32_t> obj; return (obj (op)); }
+template <typename T> inline int32_t sround (T op) { fround<T,int32_t> obj; return (obj (op)); }
 #endif
 
 #undef SIMD_SINGLEOP1
