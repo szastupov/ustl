@@ -31,19 +31,25 @@ CXXWARNOPTS	= ${CWARNOPTS} -Wconversion -Wsign-promo -Wsynth -Woverloaded-virtua
 #BUILD_SHARED	= 1
 #BUILD_STATIC	= 1
 #DEBUG		= 1
+#PROFILE	= 1
 #STANDALONE	= -nodefaultlibs
 
+CFLAGS		= @CFLAGS@ ${CWARNOPTS} ${STANDALONE}
+CXXFLAGS	= @CXXFLAGS@ ${CXXWARNOPTS} ${STANDALONE}
+LDFLAGS		= @LDFLAGS@ ${STANDALONE}
 ifdef DEBUG
-    CFLAGS	= @CFLAGS@ -O0 -g
-    CXXFLAGS	= @CFLAGS@ -O0 -g
-    LDFLAGS	= @LDFLAGS@ ${STANDALONE}
+    CFLAGS	+= -O0 -g
+    CXXFLAGS	+= -O0 -g
 else
-    CFLAGS	= -O3 -DNDEBUG=1 @CFLAGS@
-    CXXFLAGS	= -O3 -DNDEBUG=1 @CXXFLAGS@
-    LDFLAGS	= @LDFLAGS@ -s ${STANDALONE}
+    CFLAGS	+= -O3 -DNDEBUG=1
+    CXXFLAGS	+= -O3 -DNDEBUG=1
+    LDFLAGS	+= -s
 endif
-CFLAGS		+= ${CWARNOPTS} ${STANDALONE}
-CXXFLAGS	+= ${CWARNOPTS} ${STANDALONE}
+ifdef PROFILE
+    CFLAGS	+= -pg
+    CXXFLAGS	+= -pg
+    LDFLAGS	+= -pg
+endif
 ifdef STANDALONE
     LIBS	+= @libsupc++@ @libgcc@ @libgcc_eh@ @libc@
 endif

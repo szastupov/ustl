@@ -110,7 +110,7 @@ inline memblock::size_type memblock::capacity (void) const
 /// resizes the block to \p newSize bytes, reallocating if necessary.
 inline void memblock::resize (size_type newSize, bool bExact)
 {
-    if (m_AllocatedSize < newSize + minimumFreeCapacity())
+    if (m_AllocatedSize < newSize + 1)
 	reserve (newSize, bExact);
     memlink::resize (newSize);
 }

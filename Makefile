@@ -94,10 +94,10 @@ uninstall-incs:
 
 .PHONY:	gch clean depend dox dist dist-clean maintainer-clean
 
-gch:	${INCDIR}/ustl.h.gch
-${INCDIR}/ustl.h.gch:	${INCS}
+gch:	${INCDIR}/${LIBNAME}.h.gch
+${INCDIR}/${LIBNAME}.h.gch:	${INCS}
 	@echo "    Creating precompiled header ..."
-	@${CXX} ${CXXFLAGS} -o $@ -c ${INCDIR}/ustl.h
+	@${CXX} ${CXXFLAGS} -o $@ -c ${INCDIR}/${LIBNAME}.h
 
 clean:
 	@echo "Removing generated files ..."
@@ -113,7 +113,7 @@ dox:
 
 TMPDIR	= /tmp
 DISTDIR	= ${HOME}/stored
-DISTNAM	= ustl-${MAJOR}.${MINOR}
+DISTNAM	= ${LIBNAME}-${MAJOR}.${MINOR}
 DISTTAR	= ${DISTNAM}-${BUILD}.tar.bz2
 
 dist:
@@ -124,10 +124,10 @@ dist:
 	(cd ${TMPDIR}; tar jcf ${DISTDIR}/${DISTTAR} ${DISTNAM}; rm -rf ${DISTNAM})
 
 dist-clean:	clean
-	@rm -f Common.mk config.h ustl.spec bsconf.o bsconf .depend bvt/.depend
+	@rm -f Common.mk config.h ${LIBNAME}.spec bsconf.o bsconf .depend bvt/.depend
 
 maintainer-clean: dist-clean
-	@rm -rf docs ustl.spec
+	@rm -rf docs
 
 -include .depend
  
