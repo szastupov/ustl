@@ -37,7 +37,7 @@ namespace ustl {
 /// *(result + n) = *(first + n). Assignments are performed in forward order,
 /// i.e. in order of increasing n. 
 ///
-template <class Container, class OutputIterator>
+template <typename Container, typename OutputIterator>
 inline OutputIterator copy (const Container& ctr, OutputIterator result)
 {
     return (copy (ctr.begin(), ctr.end(), result));
@@ -46,7 +46,7 @@ inline OutputIterator copy (const Container& ctr, OutputIterator result)
 /// Copy_if copies elements from the range [first, last) to the range
 /// [result, result + (last - first)) if pred(*i) returns true.
 ///
-template <class Container, class OutputIterator, class Predicate>
+template <typename Container, typename OutputIterator, typename Predicate>
 inline OutputIterator copy_if (Container& ctr, OutputIterator result, Predicate pred)
 {
     return (copy_if (ctr.begin(), ctr.end(), result, pred));
@@ -57,7 +57,7 @@ inline OutputIterator copy_if (Container& ctr, OutputIterator result, Predicate 
 /// performed in forward order, i.e. from first to last. For_each returns
 /// the function object after it has been applied to each element.
 ///
-template <class Container, class UnaryFunction>
+template <typename Container, typename UnaryFunction>
 inline UnaryFunction for_each (Container& ctr, UnaryFunction f)
 {
     return (for_each (ctr.begin(), ctr.end(), f));
@@ -68,7 +68,7 @@ inline UnaryFunction for_each (Container& ctr, UnaryFunction f)
 /// performed in forward order, i.e. from first to last. For_each returns
 /// the function object after it has been applied to each element.
 ///
-template <class Container, class UnaryFunction>
+template <typename Container, typename UnaryFunction>
 inline UnaryFunction for_each (const Container& ctr, UnaryFunction f)
 {
     return (for_each (ctr.begin(), ctr.end(), f));
@@ -77,12 +77,12 @@ inline UnaryFunction for_each (const Container& ctr, UnaryFunction f)
 /// Returns the first iterator i in the range [first, last) such that
 /// *i == value. Returns last if no such iterator exists. 
 ///
-template <class Container, class EqualityComparable>
+template <typename Container, typename EqualityComparable>
 inline typename Container::const_iterator find (const Container& ctr, const EqualityComparable& value)
 {
     return (find (ctr.begin(), ctr.end(), value));
 }
-template <class Container, class EqualityComparable>
+template <typename Container, typename EqualityComparable>
 inline typename Container::iterator find (Container& ctr, const EqualityComparable& value)
 {
     return (find (ctr.begin(), ctr.end(), value));
@@ -91,12 +91,12 @@ inline typename Container::iterator find (Container& ctr, const EqualityComparab
 /// Returns the first iterator i in the range [first, last) such that
 /// pred(*i) is true. Returns last if no such iterator exists.
 ///
-template <class Container, class Predicate>
+template <typename Container, typename Predicate>
 inline typename Container::const_iterator find_if (const Container& ctr, Predicate pred)
 {
     return (find_if (ctr.begin(), ctr.end(), pred));
 }
-template <class Container, class Predicate>
+template <typename Container, typename Predicate>
 inline typename Container::iterator find_if (Container& ctr, Predicate pred)
 {
     return (find_if (ctr.begin(), ctr.end(), pred));
@@ -106,7 +106,7 @@ inline typename Container::iterator find_if (Container& ctr, Predicate pred)
 /// to value. More precisely, the first version of count returns the
 /// number of iterators i in [first, last) such that *i == value.
 ///
-template <class Container, class EqualityComparable>
+template <typename Container, typename EqualityComparable>
 inline size_t count (const Container& ctr, const EqualityComparable& value)
 {
     return (count (ctr.begin(), ctr.end(), value));
@@ -116,7 +116,7 @@ inline size_t count (const Container& ctr, const EqualityComparable& value)
 /// predicate pred. More precisely, the first version of count_if returns the
 /// number of iterators i in [first, last) such that pred(*i) is true.
 ///
-template <class Container, class Predicate>
+template <typename Container, typename Predicate>
 inline size_t count_if (const Container& ctr, Predicate pred)
 {
     return (count_if (ctr.begin(), ctr.end(), pred));
@@ -129,7 +129,7 @@ inline size_t count_if (const Container& ctr, Predicate pred)
 /// *(result + n) = op(*(first + n)).
 /// The return value is result + (last - first).
 ///
-template <class Container, class UnaryFunction>
+template <typename Container, typename UnaryFunction>
 inline void transform (Container& ctr, UnaryFunction op)
 {
     transform (ctr.begin(), ctr.end(), ctr.begin(), op);
@@ -142,7 +142,7 @@ inline void transform (Container& ctr, UnaryFunction op)
 /// *(result + n) = op(*(first + n)).
 /// The return value is result + (last - first).
 ///
-template <class Container, class OutputIterator, class UnaryFunction>
+template <typename Container, typename OutputIterator, typename UnaryFunction>
 inline OutputIterator transform (Container& ctr, OutputIterator result, UnaryFunction op)
 {
     return (transform (ctr.begin(), ctr.end(), result, op));
@@ -157,7 +157,7 @@ inline OutputIterator transform (Container& ctr, OutputIterator result, UnaryFun
 /// *(result + n) = op(*(first1 + n), *(first2 + n).
 /// The return value is result + (last1 - first1).
 ///
-template <class Container, class InputIterator, class OutputIterator, class BinaryFunction>
+template <typename Container, typename InputIterator, typename OutputIterator, typename BinaryFunction>
 inline OutputIterator transform (Container& ctr, InputIterator first, OutputIterator result, BinaryFunction op)
 {
     return (transform (ctr.begin(), ctr.end(), first, result, op));
@@ -167,7 +167,7 @@ inline OutputIterator transform (Container& ctr, InputIterator first, OutputIter
 /// old_value with new_value. That is: for every iterator i,
 /// if *i == old_value then it performs the assignment *i = new_value.
 ///
-template <class Container, class T>
+template <typename Container, typename T>
 inline void replace (Container& ctr, const T& old_value, const T& new_value)
 {
     replace (ctr.begin(), ctr.end(), old_value, new_value);
@@ -177,7 +177,7 @@ inline void replace (Container& ctr, const T& old_value, const T& new_value)
 /// pred returns true with new_value. That is: for every iterator i, if
 /// pred(*i) is true then it performs the assignment *i = new_value.
 ///
-template <class Container, class Predicate, class T>
+template <typename Container, typename Predicate, typename T>
 inline void replace_if (Container& ctr, Predicate pred, const T& new_value)
 {
     replace_if (ctr.begin(), ctr.end(), pred, new_value);
@@ -190,7 +190,7 @@ inline void replace_if (Container& ctr, Predicate pred, const T& new_value)
 /// assignment *(result+n) = new_value if *(first+n) == old_value, and
 /// *(result+n) = *(first+n) otherwise.
 ///
-template <class Container, class OutputIterator, class T>
+template <typename Container, typename OutputIterator, typename T>
 inline OutputIterator replace_copy (const Container& ctr, OutputIterator result, const T& old_value, const T& new_value)
 {
     return (replace_copy (ctr.begin(), ctr.end(), result, old_value, new_value));
@@ -203,7 +203,7 @@ inline OutputIterator replace_copy (const Container& ctr, OutputIterator result,
 /// assignment *(result+n) = new_value if pred(*(first+n)),
 /// and *(result+n) = *(first+n) otherwise.
 ///
-template <class Container, class OutputIterator, class Predicate, class T>
+template <typename Container, typename OutputIterator, typename Predicate, typename T>
 inline OutputIterator replace_copy_if (const Container& ctr, OutputIterator result, Predicate pred, const T& new_value) 
 {
     return (replace_copy_if (ctr.begin(), ctr.end(), result, pred, new_value));
@@ -213,7 +213,7 @@ inline OutputIterator replace_copy_if (const Container& ctr, OutputIterator resu
 /// That is, for every iterator i in [first, last),
 /// it performs the assignment *i = value.
 ///
-template <class Container, class T>
+template <typename Container, typename T>
 inline void fill (Container& ctr, const T& value)
 {
     fill (ctr.begin(), ctr.end(), value);
@@ -222,7 +222,7 @@ inline void fill (Container& ctr, const T& value)
 /// Generate assigns the result of invoking gen, a function object that
 /// takes no arguments, to each element in the range [first, last).
 ///
-template <class Container, class Generator>
+template <typename Container, typename Generator>
 inline void generate (Container& ctr, Generator gen)
 {
     generate (ctr.begin(), ctr.end(), gen);
@@ -234,7 +234,7 @@ inline void generate (Container& ctr, Generator gen)
 /// relative order of the elements that are copied is the same as in the
 /// range [first, last).
 ///
-template <class Container, class OutputIterator, class T>
+template <typename Container, typename OutputIterator, typename T>
 inline OutputIterator remove_copy (const Container& ctr, OutputIterator result, const T& value)
 {
     return (remove_copy (ctr.begin(), ctr.end(), result, value));
@@ -246,7 +246,7 @@ inline OutputIterator remove_copy (const Container& ctr, OutputIterator result, 
 /// is stable, meaning that the relative order of the elements that are copied
 /// is the same as in the range [first, last).
 ///
-template <class Container, class OutputIterator, class Predicate>
+template <typename Container, typename OutputIterator, typename Predicate>
 inline OutputIterator remove_copy_if (const Container& ctr, OutputIterator result, Predicate pred)
 {
     return (remove_copy_if (ctr.begin(), ctr.end(), result, pred));
@@ -258,7 +258,7 @@ inline OutputIterator remove_copy_if (const Container& ctr, OutputIterator resul
 /// meaning that the relative order of elements that are not equal to value is
 /// unchanged.
 ///
-template <class Container, typename T>
+template <typename Container, typename T>
 inline void remove (Container& ctr, const T& value)
 {
     ctr.erase (remove_copy (ctr.begin(), ctr.end(), ctr.begin(), value), ctr.end());
@@ -271,7 +271,7 @@ inline void remove (Container& ctr, const T& value)
 /// meaning that the relative order of elements that are not equal to value is
 /// unchanged. This version of the algorithm is a uSTL extension.
 ///
-template <class Container, typename ForwardIterator>
+template <typename Container, typename ForwardIterator>
 inline void remove (Container& ctr, ForwardIterator rfirst, ForwardIterator rlast)
 {
     ctr.erase (remove_copy (ctr.begin(), ctr.end(), ctr.begin(), rfirst, rlast), ctr.end());
@@ -285,7 +285,7 @@ inline void remove (Container& ctr, ForwardIterator rfirst, ForwardIterator rlas
 /// meaning that the relative order of elements that are not removed is
 /// unchanged.
 ///
-template <class Container, class Predicate>
+template <typename Container, typename Predicate>
 inline void remove_if (Container& ctr, Predicate pred)
 {
     ctr.erase (remove_copy_if (ctr.begin(), ctr.end(), ctr.begin(), pred), ctr.end());
@@ -297,7 +297,7 @@ inline void remove_if (Container& ctr, Predicate pred)
 /// the range to which the elements are copied. This behavior is similar
 /// to the Unix filter uniq.
 ///
-template <class Container, class OutputIterator>
+template <typename Container, typename OutputIterator>
 inline OutputIterator unique_copy (const Container& ctr, OutputIterator result)
 {
     return (unique_copy (ctr.begin(), ctr.end(), result));
@@ -312,7 +312,7 @@ inline OutputIterator unique_copy (const Container& ctr, OutputIterator result)
 /// meaning that the relative order of elements that are not removed is
 /// unchanged.
 ///
-template <class Container>
+template <typename Container>
 inline void unique (Container& ctr)
 {
     ctr.erase (unique_copy (ctr.begin(), ctr.end(), ctr.begin()), ctr.end());
@@ -327,7 +327,7 @@ inline void unique (Container& ctr)
 /// meaning that the relative order of elements that are not removed is
 /// unchanged.
 ///
-template <class Container, class BinaryPredicate>
+template <typename Container, typename BinaryPredicate>
 inline void unique (Container& ctr, BinaryPredicate binary_pred)
 {
     ctr.erase (unique_copy (ctr.begin(), ctr.end(), ctr.begin(), binary_pred), ctr.end());
@@ -337,7 +337,7 @@ inline void unique (Container& ctr, BinaryPredicate binary_pred)
 /// That is: for every i such that 0 <= i <= (last - first) / 2),
 /// it exchanges *(first + i) and *(last - (i + 1)).
 ///
-template <class Container>
+template <typename Container>
 inline void reverse (Container& ctr)
 {
     reverse (ctr.begin(), ctr.end());
@@ -345,7 +345,7 @@ inline void reverse (Container& ctr)
 
 /// Exchanges ranges [first, middle) and [middle, last)
 ///
-template <class Container>
+template <typename Container>
 inline void rotate (Container& ctr, off_t offset)
 {
     assert (size_t(offset > 0 ? offset : -offset) < ctr.size());
@@ -359,12 +359,12 @@ inline void rotate (Container& ctr, off_t offset)
 /// for every iterator j in [first, i), *j < value
 /// Assumes the range is sorted.
 ///
-template <class Container, class LessThanComparable>
+template <typename Container, typename LessThanComparable>
 inline typename Container::const_iterator lower_bound (const Container& ctr, const LessThanComparable& value)
 {
     return (lower_bound (ctr.begin(), ctr.end(), value));
 }
-template <class Container, class LessThanComparable>
+template <typename Container, typename LessThanComparable>
 inline typename Container::iterator lower_bound (Container& ctr, const LessThanComparable& value)
 {
     return (lower_bound (ctr.begin(), ctr.end(), value));
@@ -373,12 +373,12 @@ inline typename Container::iterator lower_bound (Container& ctr, const LessThanC
 /// Returns the furthermost iterator i in [first,last) such that for
 /// every iterator j in [first,i), value < *j is false.
 ///
-template <class Container, class LessThanComparable>
+template <typename Container, typename LessThanComparable>
 inline typename Container::const_iterator upper_bound (const Container& ctr, const LessThanComparable& value)
 {
     return (upper_bound (ctr.begin(), ctr.end(), value));
 }
-template <class Container, class LessThanComparable>
+template <typename Container, typename LessThanComparable>
 inline typename Container::iterator upper_bound (Container& ctr, const LessThanComparable& value)
 {
     return (upper_bound (ctr.begin(), ctr.end(), value));
@@ -387,12 +387,12 @@ inline typename Container::iterator upper_bound (Container& ctr, const LessThanC
 /// Performs a binary search for \p value.
 /// Assumes the range is sorted.
 ///
-template <class Container>
+template <typename Container>
 inline typename Container::const_iterator binary_search (const Container& ctr, const typename Container::value_type& value)
 {
     return (binary_search (ctr.begin(), ctr.end(), value));
 }
-template <class Container>
+template <typename Container>
 inline typename Container::iterator binary_search (Container& ctr, const typename Container::value_type& value)
 {
     return (binary_search (ctr.begin(), ctr.end(), value));
@@ -400,12 +400,12 @@ inline typename Container::iterator binary_search (Container& ctr, const typenam
 
 /// Returns pair<lower_bound,upper_bound>
 ///
-template <class Container, class LessThanComparable>
+template <typename Container, typename LessThanComparable>
 inline pair<typename Container::const_iterator,typename Container::const_iterator> equal_range (const Container& ctr, const LessThanComparable& value)
 {
     return (equal_range (ctr.begin(), ctr.end(), value));
 }
-template <class Container, class LessThanComparable>
+template <typename Container, typename LessThanComparable>
 inline pair<typename Container::iterator,typename Container::iterator> equal_range (Container& ctr, const LessThanComparable& value)
 {
     return (equal_range (ctr.begin(), ctr.end(), value));
@@ -413,7 +413,7 @@ inline pair<typename Container::iterator,typename Container::iterator> equal_ran
 
 /// Sorts the container
 ///
-template <class Container>
+template <typename Container>
 inline void sort (Container& ctr)
 {
     sort (ctr.begin(), ctr.end());
@@ -421,7 +421,7 @@ inline void sort (Container& ctr)
 
 /// Sorts the container
 ///
-template <class Container, class Compare>
+template <typename Container, typename Compare>
 inline void sort (Container& ctr, Compare comp)
 {
     sort (ctr.begin(), ctr.end(), comp);
@@ -429,7 +429,7 @@ inline void sort (Container& ctr, Compare comp)
 
 /// Sorts the container
 ///
-template <class Container>
+template <typename Container>
 inline void stable_sort (Container& ctr)
 {
     stable_sort (ctr.begin(), ctr.end());
@@ -437,7 +437,7 @@ inline void stable_sort (Container& ctr)
 
 /// Sorts the container
 ///
-template <class Container, class Compare>
+template <typename Container, typename Compare>
 inline void stable_sort (Container& ctr, Compare comp)
 {
     stable_sort (ctr.begin(), ctr.end(), comp);
@@ -445,7 +445,7 @@ inline void stable_sort (Container& ctr, Compare comp)
 
 /// Converts the given const_iterator into an iterator.
 ///
-template <class Container>
+template <typename Container>
 inline typename Container::iterator unconst (typename Container::const_iterator i, Container& ctr)
 {
     const Container& cctr = ctr;
@@ -455,7 +455,7 @@ inline typename Container::iterator unconst (typename Container::const_iterator 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 
 #define IBYI(Iter1, Iter2, Ctr1, Ctr2)	\
-template <class Container1, class Container2>		\
+template <typename Container1, typename Container2>	\
 inline typename Container2::Iter2 ibyi (typename Container1::Iter1 idx, Ctr1& ctr1, Ctr2& ctr2)	\
 {							\
     assert (ctr1.size() == ctr2.size());		\
@@ -472,7 +472,7 @@ IBYI(iterator, const_iterator, Container1, const Container2)
 #error This declaration is for doxygen only; it is not compiled.
 
 /// Converts a const_iterator in one container into a const_iterator in another container.
-template <class Container1, class Container2>
+template <typename Container1, typename Container2>
 inline typename Container2::iterator ibyi (typename Container1::iterator idx, Container1& ctr1, Container2& ctr2) {}
 
 #endif // DOXYGEN
