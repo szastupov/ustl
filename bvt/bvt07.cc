@@ -47,6 +47,8 @@ int main (void)
 	cout << "s1 < s2" << endl;
     if (s1 == s1)
 	cout << "s1 == s1" << endl;
+    if (s1[0] != s1[0])
+	cout << "s1[0] != s1[0]" << endl;
 
     string s4;
     s4.link (s1);

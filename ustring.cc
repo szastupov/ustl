@@ -35,7 +35,7 @@ namespace ustl {
 //----------------------------------------------------------------------
 
 const uoff_t string::npos;
-const size_t string::size_Terminator;
+const string::size_type string::size_Terminator;
 const string::value_type string::c_Terminator;
 const char string::empty_string[string::size_Terminator] = "";
 
@@ -74,7 +74,7 @@ string::string (const_pointer s)
 }
 
 /// Copies the value of \p s of length \p len into itself.
-string::string (const_pointer s, size_t len)
+string::string (const_pointer s, size_type len)
 : memblock ()
 {
     assign (s, len);
@@ -89,30 +89,30 @@ string::string (const_pointer s1, const_pointer s2)
 }
 
 /// Creates a string of length \p n filled with character \p c.
-string::string (size_t n, value_type c)
+string::string (size_type n, value_type c)
 : memblock (n + size_Terminator)
 {
     fill_n (begin(), n, c);
 }
 
 /// Resize the string to \p n characters. New space contents is undefined.
-void string::resize (size_t n)
+void string::resize (size_type n)
 {
     memblock::resize (n + size_Terminator);
     at(n) = c_Terminator;
 }
 
 /// Returns the size of the readable area.
-size_t string::readable_size (void) const
+string::size_type string::readable_size (void) const
 {
-    const size_t realSize = memblock::readable_size();
+    const size_type realSize = memblock::readable_size();
     return (realSize ? realSize - size_Terminator : 0);
 }
 
 /// Returns the size of the writable area.
-size_t string::writable_size (void) const
+string::size_type string::writable_size (void) const
 {
-    const size_t realSize = memblock::writable_size();
+    const size_type realSize = memblock::writable_size();
     return (realSize ? realSize - size_Terminator : 0);
 }
 
@@ -120,9 +120,9 @@ size_t string::writable_size (void) const
 /// This may be different from the value returned by size() if
 /// you have non-ascii characters (UTF-8) in the string.
 ///
-size_t string::length (void) const
+string::size_type string::length (void) const
 {
-    size_t nc = 0;
+    size_type nc = 0;
     utf8in_iterator<const_iterator> endfinder (begin());
     for (; endfinder.base() < end(); ++ endfinder, ++ nc);
     return (nc);
@@ -161,7 +161,7 @@ void string::assign (const_pointer s)
 }
 
 /// Assigns itself the value of string \p s of length \p len.
-void string::assign (const_pointer s, size_t len)
+void string::assign (const_pointer s, size_type len)
 {
     while (len && s[len - 1] == c_Terminator)
 	-- len;
@@ -178,7 +178,7 @@ void string::append (const_pointer s)
 }
 
 /// Appends to itself the value of string \p s of length \p len.
-void string::append (const_pointer s, size_t len)
+void string::append (const_pointer s, size_type len)
 {
     while (len && s[len - 1] == c_Terminator)
 	-- len;
@@ -187,14 +187,14 @@ void string::append (const_pointer s, size_t len)
 }
 
 /// Appends to itself \p n characters of value \p c.
-void string::append (size_t n, value_type c)
+void string::append (size_type n, value_type c)
 {
     memblock::insert (memblock::iterator(end()), n);
     fill_n (end() - n, n, c);
 }
 
 /// Appends to itself \p n characters of value \p c.
-void string::append (size_t n, wchar_t c)
+void string::append (size_type n, wchar_t c)
 {
     iterator ipp (end());
     ipp = iterator (memblock::insert (memblock::iterator(ipp), n * Utf8Bytes(c)));
@@ -202,12 +202,12 @@ void string::append (size_t n, wchar_t c)
 }
 
 /// Copies into itself at offset \p start, the value of string \p p of length \p n.
-size_t string::copyto (pointer p, size_t n, const_iterator start) const
+string::size_type string::copyto (pointer p, size_type n, const_iterator start) const
 {
     assert (p && n);
     if (!start)
 	start = begin();
-    const size_t btc = min(n - size_Terminator, size());
+    const size_type btc = min(n - size_Terminator, size());
     copy_n (start, btc, p);
     p[btc] = c_Terminator;
     return (btc + size_Terminator);
@@ -222,8 +222,8 @@ size_t string::copyto (pointer p, size_t n, const_iterator start) const
 int string::compare (const_iterator first1, const_iterator last1, const_iterator first2, const_iterator last2) const
 {
     assert (first1 <= last1 && (first2 <= last2 || !last2) && "Negative ranges result in memory allocation errors.");
-    const size_t len1 = distance (first1, last1);
-    const size_t len2 = last2 ? distance (first2, last2) : strlen(first2);
+    const size_type len1 = distance (first1, last1);
+    const size_type len2 = last2 ? distance (first2, last2) : strlen(first2);
     int rv = memcmp (first1, first2, min (len1, len2));
     if (rv == 0) {
 	if (len1 < len2)
@@ -245,7 +245,7 @@ bool string::operator== (const_pointer s) const
 {
     if (!s)
 	s = empty_string;
-    const size_t slen = strlen(s);
+    const size_type slen = strlen(s);
     return (size() == slen && 0 == memcmp (c_str(), s, size()));
 }
 
@@ -258,7 +258,7 @@ bool string::operator== (const_pointer s) const
 /// argument, which is rather ugly. Besides, then this insert would be
 /// ambiguous with the regular character insert.
 ///
-void string::insert (const uoff_t ip, wchar_t c, size_t n)
+void string::insert (const uoff_t ip, wchar_t c, size_type n)
 {
     iterator ipp = ichar (ip);
     ipp = iterator (memblock::insert (memblock::iterator(ipp), n * Utf8Bytes(c)));
@@ -266,10 +266,10 @@ void string::insert (const uoff_t ip, wchar_t c, size_t n)
 }
 
 /// Inserts sequence of wide characters at \p ip.
-void string::insert (const uoff_t ip, const wchar_t* first, const wchar_t* last, const size_t n)
+void string::insert (const uoff_t ip, const wchar_t* first, const wchar_t* last, const size_type n)
 {
     iterator ipp = ichar (ip);
-    size_t nti = distance (first, last), bti = 0;
+    size_type nti = distance (first, last), bti = 0;
     for (uoff_t i = 0; i < nti; ++ i)
 	bti += Utf8Bytes(first[i]);
     ipp = iterator (memblock::insert (memblock::iterator(ipp), n * bti));
@@ -280,14 +280,14 @@ void string::insert (const uoff_t ip, const wchar_t* first, const wchar_t* last,
 }
 
 /// Inserts character \p c into this string at \p start.
-void string::insert (iterator start, const_reference c, size_t n)
+void string::insert (iterator start, const_reference c, size_type n)
 {
     start = iterator (memblock::insert (memblock::iterator(start), n));
     fill_n (start, n, c);
 }
 
 /// Inserts \p count instances of string \p s at offset \p start.
-void string::insert (iterator start, const_pointer s, size_t n)
+void string::insert (iterator start, const_pointer s, size_type n)
 {
     if (!s)
 	s = empty_string;
@@ -295,7 +295,7 @@ void string::insert (iterator start, const_pointer s, size_t n)
 }
 
 /// Inserts [first,last] \p n times.
-void string::insert (iterator start, const_pointer first, const_pointer last, size_t n)
+void string::insert (iterator start, const_pointer first, const_pointer last, size_type n)
 {
     assert (first <= last);
     assert (begin() <= start && end() >= start);
@@ -307,7 +307,7 @@ void string::insert (iterator start, const_pointer first, const_pointer last, si
 /// \p start is a character position, not a byte position, and must be
 /// in the 0..length() range.
 ///
-void string::erase (uoff_t ep, size_t n)
+void string::erase (uoff_t ep, size_type n)
 {
     utf8in_iterator<iterator> rfinder (begin());
     rfinder += ep;
@@ -317,7 +317,7 @@ void string::erase (uoff_t ep, size_t n)
 }
 
 /// Replaces range [\p start, \p start + \p len] with string \p s.
-void string::replace (iterator first, iterator last, const_pointer s, size_t n)
+void string::replace (iterator first, iterator last, const_pointer s, size_type n)
 {
     if (!s)
 	s = empty_string;
@@ -325,13 +325,13 @@ void string::replace (iterator first, iterator last, const_pointer s, size_t n)
 }
 
 /// Replaces range [\p start, \p start + \p len] with \p count instances of string \p s.
-void string::replace (iterator first, iterator last, const_pointer i1, const_pointer i2, size_t n)
+void string::replace (iterator first, iterator last, const_pointer i1, const_pointer i2, size_type n)
 {
     assert (first <= last);
     assert (n || distance(first, last));
     assert (first >= begin() && first <= end() && last >= first && last <= end());
-    const size_t bte = distance(first, last);
-    const size_t bti = distance(i1, i2) * n;
+    const size_type bte = distance(first, last);
+    const size_type bti = distance(i1, i2) * n;
     if (bti < bte)
 	first = iterator (memblock::erase (memblock::iterator(first), bte - bti));
     else if (bte < bti)
@@ -353,13 +353,13 @@ string::const_iterator string::find (const string& s, const_iterator pos) const
 {
     if (!pos) pos = begin();
     assert (pos >= begin() && pos <= end());
-    if (s.empty() || s.size() > size_t(distance (pos, end())))
+    if (s.empty() || s.size() > size_type(distance (pos, end())))
 	return (end());
     const uoff_t endi = s.size() - 1;
     const_reference endchar = s[endi];
     uoff_t lastPos = endi;
     while (lastPos-- && s[lastPos] != endchar);
-    const size_t skip = endi - lastPos;
+    const size_type skip = endi - lastPos;
     const_iterator i = pos + s.size() - 1;
     while (i < end()) {
 	i = ::ustl::find (i, end(), endchar);
@@ -389,7 +389,7 @@ string::const_iterator string::rfind (const string& s, const_iterator pos) const
 {
     if (!pos) pos = end();
     assert (pos >= begin() && pos <= end());
-    if (s.empty() || s.size() > size_t(distance (pos, end())))
+    if (s.empty() || s.size() > size_type(distance (pos, end())))
 	return (begin());
     // Match from the tail, iterating backwards.
     const_iterator d = --pos;

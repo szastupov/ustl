@@ -10,7 +10,7 @@ INCS	= cmemlink.h memblock.h memlink.h mistream.h mostream.h ustdxept.h \
 	uexception.h strmsize.h sistream.h sostream.h ulimits.h uset.h \
 	umultiset.h uspecial.h uios.h fdostream.h umap.h umultimap.h \
 	umemory.h uiosfunc.h utf8.h config.h ubitset.h unumeric.h utuple.h \
-	ulocale.h ufacets.h ulist.h upredalgo.h ustl.tbff
+	umatrix.h ulaalgo.h ulocale.h ufacets.h ulist.h upredalgo.h ustl.tbff
 DOCT	= ustldoc.in
 
 ifdef STANDALONE

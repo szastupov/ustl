@@ -572,7 +572,7 @@ static void SubstituteHostOptions (void)
     sprintf (buf, "#define SIZE_OF_LONG_LONG %d", sizeof(long long));
     Substitute ("#undef SIZE_OF_LONG_LONG", buf);
 #endif
-#if __GNUC__ > 3
+#if __GNUC__ >= 3
     Substitute ("#undef HAVE_VECTOR_EXTENSIONS", "#define HAVE_VECTOR_EXTENSIONS 1");
 #endif
 

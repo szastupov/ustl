@@ -101,14 +101,18 @@ struct numeric_limits<unsigned long> {
     static inline bool is_signed (void)		{ return (false); }
 };
 
-#ifdef WCHAR_MAX
 template <>
 struct numeric_limits<wchar_t> {
     static inline wchar_t min (void)		{ return (0); }
+#ifdef WCHAR_MAX
     static inline wchar_t max (void)		{ return (WCHAR_MAX); }
+#elif defined(__WCHAR_MAX__)
+    static inline wchar_t max (void)		{ return (__WCHAR_MAX__); }
+#else
+    static inline wchar_t max (void)		{ return (CHAR_MAX); }
+#endif
     static inline bool is_signed (void)		{ return (false); }
 };
-#endif
 
 template <>
 struct numeric_limits<float> {

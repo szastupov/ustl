@@ -39,7 +39,7 @@ istringstream::istringstream (void)
     set_delimiters (ios::c_DefaultDelimiters);
 }
 
-istringstream::istringstream (const void* p, size_t n)
+istringstream::istringstream (const void* p, size_type n)
 : istream (),
   m_Base (10),
   m_DecimalSeparator ('.'),
@@ -313,7 +313,7 @@ void istringstream::iread (string& v)
     }
 }
 
-void istringstream::read (void* buffer, size_t sz)
+void istringstream::read (void* buffer, size_type sz)
 {
     if (remaining() < sz && underflow(sz) < sz)
 #ifdef WANT_STREAM_BOUNDS_CHECKING

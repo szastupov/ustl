@@ -11,7 +11,7 @@
 #include "uset.h"
 #include "umultiset.h"
 #include "ubitset.h"
-#include "utuple.h"
+#include "ulaalgo.h"
 #include "ufunction.h"
 #include "mistream.h"
 #include "mostream.h"
@@ -31,6 +31,7 @@ template <> inline void swap (string& a, string& b)			{ a.swap (b); }
 template <typename T> inline void swap (vector<T>& a, vector<T>& b)	{ a.swap (b); }
 template <typename T> inline void swap (set<T>& a, set<T>& b)		{ a.swap (b); }
 template <typename T> inline void swap (multiset<T>& a, multiset<T>& b)	{ a.swap (b); }
+template <size_t N, typename T> inline void swap (tuple<N,T>& a, tuple<N,T>& b)	{ a.swap (b); }
 
 //----------------------------------------------------------------------
 // Streamable definitions. Not used in the library and require streams.
@@ -233,7 +234,7 @@ inline ostream& operator<< (ostream& os, const tuple<N,T>& v)
 
 /// Writes tuple \p v into stream \p os.
 template <size_t N, typename T>
-inline ostringstream& operator<< (ostringstream& os, const tuple<N,T>& v)
+ostringstream& operator<< (ostringstream& os, const tuple<N,T>& v)
 {
     typename tuple<N,T>::const_iterator i = v.begin();
     os << '(';
@@ -250,6 +251,26 @@ template <size_t N, typename T>
 inline size_t stream_size_of (const tuple<N,T>& v)
 {
     return (Align (v.size() * stream_size_of(T())));
+}
+
+//----{ matrix }--------------------------------------------------------
+
+/// Writes tuple \p v into stream \p os.
+template <size_t NX, size_t NY, typename T>
+ostringstream& operator<< (ostringstream& os, const matrix<NX,NY,T>& v)
+{
+    os << '(';
+    for (uoff_t row = 0; row < NY; ++ row) {
+	os << '(';
+        for (uoff_t column = 0; column < NX; ++ column) {
+	    os << v[row][column];
+	    if (column < NX - 1)
+		os << ',';
+	}
+	os << ')';
+    }
+    os << ')';
+    return (os);
 }
 
 //----------------------------------------------------------------------

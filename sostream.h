@@ -40,7 +40,7 @@ class string;
 class ostringstream : public ostream {
 public:
 				ostringstream (void);
-				ostringstream (void* p, size_t n);
+				ostringstream (void* p, size_type n);
     explicit			ostringstream (string& dest);
     explicit			ostringstream (memlink& dest);
     void			iwrite (uint8_t v);
@@ -66,16 +66,16 @@ public:
     inline void			set_decimal_separator (char s);
     inline void			set_thousand_separator (char s);
     inline void			set_precision (uint16_t precision);
-    inline void			link (void* p, size_t n)	{ ostream::link (p, n); }
+    inline void			link (void* p, size_type n)	{ ostream::link (p, n); }
     inline void			link (memlink& l)		{ ostream::link (l); }
     void			link (string& l);
     virtual void		unlink (void);
-    void			write (const void* buffer, size_t size);
+    void			write (const void* buffer, size_type size);
     void			write (const cmemlink& buf);
     inline void			write_strz (const char* str);
 protected:
-    virtual size_t		overflow (size_t n = 1);
-    void			write_buffer (const char* buf, size_t bufSize);
+    virtual size_type		overflow (size_type n = 1);
+    void			write_buffer (const char* buf, size_type bufSize);
 private:
     template <typename T>
     inline void			iwrite_integer (T v);

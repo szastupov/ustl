@@ -38,10 +38,10 @@ class string;
 ///
 class istringstream : public istream {
 public:
-    static const size_t c_MaxDelimiters = 16;	///< Maximum number of word delimiters.
+    static const size_type	c_MaxDelimiters = 16;	///< Maximum number of word delimiters.
 public:
     				istringstream (void);
-				istringstream (const void* p, size_t n);
+				istringstream (const void* p, size_type n);
     explicit			istringstream (const cmemlink& source);
     void			iread (int8_t& v);
     void			iread (int32_t& v);
@@ -59,12 +59,12 @@ public:
     inline void			set_base (short base);
     inline void			set_decimal_separator (char s);
     inline void			set_thousand_separator (char s);
-    void			read (void* buffer, size_t size);
+    void			read (void* buffer, size_type size);
     void			read (memlink& buf);
     inline void			read_strz (string& str);
 protected:
-    inline virtual size_t	underflow (size_t = 1)	{ return (0); }
-    inline void			ungetc (void)		{ seek (pos() - sizeof(char)); }
+    inline virtual size_type	underflow (size_type = 1)	{ return (0); }
+    inline void			ungetc (void)			{ seek (pos() - sizeof(char)); }
     char			skip_delimiters (void);
 private:
     inline bool			is_delimiter (char c) const;

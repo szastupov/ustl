@@ -105,11 +105,11 @@ inline T Align (T n, T grain = c_DefaultAlignment)
     }
 }
 
-/// Returns the recommended alignment for the type of \p v.
+/// Returns the recommended alignment for type \p T.
 template <typename T>
-inline size_t DefaultGrain (T v)
+inline size_t alignof (T)
 {
-    return (__alignof__(v));
+    return (__alignof__(T));
 }
 
 /// Offsets an iterator

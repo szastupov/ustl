@@ -40,7 +40,7 @@ memblock::memblock (void)
 }
 
 /// Allocates \p n bytes for the internal block.
-memblock::memblock (size_t n)
+memblock::memblock (size_type n)
 : memlink (),
   m_AllocatedSize (0)
 {
@@ -48,7 +48,7 @@ memblock::memblock (size_t n)
 }
 
 /// links to \p p, \p n. Data can not be modified and will not be freed.
-memblock::memblock (const void* p, size_t n)
+memblock::memblock (const void* p, size_type n)
 : memlink (),
   m_AllocatedSize (0)
 {
@@ -104,7 +104,7 @@ void memblock::deallocate (void)
 
 /// Assumes control of the memory block \p p of size \p n.
 /// The block assigned using this function will be freed in the destructor.
-void memblock::manage (void* p, size_t n)
+void memblock::manage (void* p, size_type n)
 {
     assert (p || !n);
     assert (!data() || !m_AllocatedSize);	// Can't link to an allocated block.
@@ -114,7 +114,7 @@ void memblock::manage (void* p, size_t n)
 }
 
 /// Copies data from \p p, \p n.
-void memblock::assign (const void* p, size_t n)
+void memblock::assign (const void* p, size_type n)
 {
     resize (n);
     copy (p, n);
@@ -129,7 +129,7 @@ void memblock::assign (const void* p, size_t n)
 /// only one purpose, and try to get that purpose to use similar amounts
 /// of memory on each iteration.
 ///
-void memblock::reserve (size_t newSize, bool bExact)
+void memblock::reserve (size_type newSize, bool bExact)
 {
     if (m_AllocatedSize >= newSize)
 	return;
@@ -148,14 +148,14 @@ void memblock::reserve (size_t newSize, bool bExact)
 }
 
 /// resizes the block to \p newSize bytes, reallocating if necessary.
-void memblock::resize (size_t newSize)
+void memblock::resize (size_type newSize)
 {
     reserve (newSize);
     memlink::resize (newSize);
 }
 
 /// Shifts the data in the linked block from \p start to \p start + \p n.
-memblock::iterator memblock::insert (iterator start, size_t n)
+memblock::iterator memblock::insert (iterator start, size_type n)
 {
     const uoff_t ip = start - begin();
     assert (ip <= size());
@@ -166,7 +166,7 @@ memblock::iterator memblock::insert (iterator start, size_t n)
 }
 
 /// Shifts the data in the linked block from \p start + \p n to \p start.
-memblock::iterator memblock::erase (iterator start, size_t n)
+memblock::iterator memblock::erase (iterator start, size_type n)
 {
     const uoff_t ep = start - begin();
     assert (ep + n <= size());
@@ -193,7 +193,7 @@ void memblock::unlink (void)
 /// Reads the object from stream \p s
 void memblock::read (istream& is)
 {
-    size_t n;
+    size_type n;
     is >> n;
     if (is.remaining() < n)
 	throw stream_bounds_exception ("read", "ustl::memblock", is.pos(), n, is.remaining());
@@ -212,9 +212,9 @@ void memblock::read_file (const char* filename)
     int fd = open (filename, O_RDONLY);
     if (fd < 0)
 	throw file_exception ("open", filename);
-    const size_t btr = writable_size();
+    const size_type btr = writable_size();
     ssize_t br = ::read (fd, data(), btr);
-    if (size_t(br) != btr) {
+    if (size_type(br) != btr) {
 	close (fd);
 	throw file_exception ("read", filename);
     }

@@ -63,31 +63,31 @@ class string;
 class ostream : public memlink {
 public:
 			ostream (void);
-			ostream (void* p, size_t n);
+			ostream (void* p, size_type n);
     explicit		ostream (const memlink& source);
     inline void		seek (uoff_t newPos);
     inline void		seek (const_iterator newPos);
-    inline void		skip (size_t nBytes);
+    inline void		skip (size_type nBytes);
     inline uoff_t	pos (void) const;
     inline iterator	ipos (void);
     inline const_iterator ipos (void) const;
-    inline size_t	remaining (void) const;
-    inline bool		aligned (size_t grain = c_DefaultAlignment) const;
-    inline size_t	align_size (size_t grain = c_DefaultAlignment) const;
-    inline void		align (size_t grain = c_DefaultAlignment);
-    void		write (const void* buffer, size_t size);
+    inline size_type	remaining (void) const;
+    inline bool		aligned (size_type grain = c_DefaultAlignment) const;
+    inline size_type	align_size (size_type grain = c_DefaultAlignment) const;
+    inline void		align (size_type grain = c_DefaultAlignment);
+    void		write (const void* buffer, size_type size);
     inline void		write (const cmemlink& buf);
     void		write_strz (const char* str);
     void		read (istream& is);
     void		write (ostream& os) const;
-    void		insert (iterator start, size_t size);
-    void		erase (iterator start, size_t size);
+    void		insert (iterator start, size_type size);
+    void		erase (iterator start, size_type size);
     void		swap (ostream& os);
     inline size_t	stream_size (void) const;
     template <typename T>
     inline void		iwrite (const T& v);
     virtual void	unlink (void);
-    inline void		link (void* p, size_t n)	{ memlink::link (p, n); }
+    inline void		link (void* p, size_type n)	{ memlink::link (p, n); }
     inline void		link (memlink& l)		{ memlink::link (l.data(), l.writable_size()); }
 private:
     uoff_t		m_Pos;	///< Current write position.
@@ -107,6 +107,7 @@ public:
     typedef ptrdiff_t		difference_type;
     typedef value_type*		pointer;
     typedef value_type&		reference;
+    typedef ostream::size_type	size_type;
 public:
     inline explicit		ostream_iterator (ostream& os)
 				    : m_Os (os) {}
@@ -118,7 +119,7 @@ public:
     inline ostream_iterator&	operator* (void) { return (*this); }
     inline ostream_iterator&	operator++ (void) { return (*this); }
     inline ostream_iterator	operator++ (int) { return (*this); }
-    inline ostream_iterator&	operator+= (size_t n) { m_Os.skip (n); return (*this); }
+    inline ostream_iterator&	operator+= (size_type n) { m_Os.skip (n); return (*this); }
     inline bool			operator== (const ostream_iterator& i) const
 				    { return (m_Os.pos() == i.m_Os.pos()); }
     inline bool			operator< (const ostream_iterator& i) const
@@ -166,32 +167,32 @@ inline void ostream::seek (const_iterator newPos)
 }
 
 /// Skips \p nBytes without writing anything.
-inline void ostream::skip (size_t nBytes)
+inline void ostream::skip (size_type nBytes)
 {
     seek (pos() + nBytes);
 }
 
 /// Returns number of bytes remaining in the write buffer.
-inline size_t ostream::remaining (void) const
+inline ostream::size_type ostream::remaining (void) const
 {
     return (size() - pos());
 }
 
 /// Returns \c true if the write pointer is aligned on \p grain
-inline bool ostream::aligned (size_t grain) const
+inline bool ostream::aligned (size_type grain) const
 {
     assert (uintptr_t(begin()) % grain == 0 && "Streams should be attached aligned at the maximum element grain to avoid bus errors.");
     return (pos() % grain == 0);
 }
 
 /// Returns the number of bytes to skip to be aligned on \p grain.
-inline size_t ostream::align_size (size_t grain) const
+inline ostream::size_type ostream::align_size (size_type grain) const
 {
     return (Align (pos(), grain) - pos());
 }
 
 /// Aligns the write pointer on \p grain. Nothing is written to the skipped bytes.
-inline void ostream::align (size_t grain)
+inline void ostream::align (size_type grain)
 {
     seek (Align (pos(), grain));
 }
@@ -212,7 +213,7 @@ inline size_t ostream::stream_size (void) const
 template <typename T>
 inline void ostream::iwrite (const T& v)
 {
-    assert (aligned (DefaultGrain (v)));
+    assert (aligned (alignof (v)));
 #ifdef WANT_STREAM_BOUNDS_CHECKING
     if (remaining() < sizeof(T))
 	throw stream_bounds_exception ("write", typeid(v).name(), pos(), sizeof(T), remaining());

@@ -40,6 +40,7 @@ public:
     typedef const K&					const_key_ref;
     typedef const V&					const_data_ref;
     typedef typename vector<pair<K,V> >::value_type	value_type;
+    typedef typename vector<pair<K,V> >::size_type	size_type;
     typedef typename vector<pair<K,V> >::pointer	pointer;
     typedef typename vector<pair<K,V> >::const_pointer	const_pointer;
     typedef typename vector<pair<K,V> >::reference	reference;
@@ -52,12 +53,12 @@ public:
     typedef pair<iterator,iterator>			range_t;
 public:
     				multimap (void);
-    explicit			multimap (size_t n);
+    explicit			multimap (size_type n);
     				multimap (const multimap<K,V>& v);
 				multimap (const_iterator i1, const_iterator i2);
     inline const multimap<K,V>&	operator= (const multimap<K,V>& v);
     inline void			assign (const_iterator i1, const_iterator i2);
-    size_t			count (const_key_ref k) const;
+    size_type			count (const_key_ref k) const;
     inline void			push_back (const_reference v);
     inline const_range_t	equal_range (const_key_ref k) const;
     inline range_t		equal_range (const_key_ref k);
@@ -69,7 +70,7 @@ public:
     inline iterator		erase (iterator ep);
     inline iterator		erase (iterator ep1, iterator ep2);
     inline void			clear (void)		{ vector<pair<K,V> >::clear(); }
-    inline size_t		size (void) const	{ return (vector<pair<K,V> >::size()); }
+    inline size_type		size (void) const	{ return (vector<pair<K,V> >::size()); }
     inline iterator		begin (void)		{ return (vector<pair<K,V> >::begin()); }
     inline const_iterator	begin (void) const	{ return (vector<pair<K,V> >::begin()); }
     inline iterator		end (void)		{ return (vector<pair<K,V> >::end()); }
@@ -85,7 +86,7 @@ multimap<K,V>::multimap (void)
 
 /// Creates container with enough space for \p n elements.
 template <typename K, typename V>
-multimap<K,V>::multimap (size_t n)
+multimap<K,V>::multimap (size_type n)
 : vector<pair<K,V> > (n)
 {
 }
@@ -139,7 +140,7 @@ multimap<K,V>::equal_range (const_key_ref k)
 
 /// Returns the number of elements with key value \p k.
 template <typename K, typename V>
-size_t multimap<K,V>::count (const_key_ref k) const
+typename multimap<K,V>::size_type multimap<K,V>::count (const_key_ref k) const
 {
     const pair<const_iterator,const_iterator> fr = equal_range (k);
     return (distance (fr.first, fr.second));

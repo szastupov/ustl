@@ -56,7 +56,7 @@ public:
     inline bool			operator< (const queue& s);
 private:
     Sequence			m_Storage;
-    size_t			m_Front;
+    size_type			m_Front;
 };
 
 /// Default constructor.

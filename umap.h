@@ -40,6 +40,7 @@ public:
     typedef const K&					const_key_ref;
     typedef const V&					const_data_ref;
     typedef typename vector<pair<K,V> >::value_type	value_type;
+    typedef typename vector<pair<K,V> >::size_type	size_type;
     typedef typename vector<pair<K,V> >::pointer	pointer;
     typedef typename vector<pair<K,V> >::const_pointer	const_pointer;
     typedef typename vector<pair<K,V> >::reference	reference;
@@ -52,7 +53,7 @@ public:
     typedef pair<iterator,iterator>			range_t;
 public:
     				map (void);
-    explicit			map (size_t n);
+    explicit			map (size_type n);
     				map (const map<K,V>& v);
 				map (const_iterator i1, const_iterator i2);
     inline const map<K,V>&	operator= (const map<K,V>& v);
@@ -70,7 +71,7 @@ public:
     inline iterator		erase (iterator ep);
     inline iterator		erase (iterator ep1, iterator ep2);
     inline void			clear (void)		{ vector<pair<K,V> >::clear(); }
-    inline size_t		size (void) const	{ return (vector<pair<K,V> >::size()); }
+    inline size_type		size (void) const	{ return (vector<pair<K,V> >::size()); }
     inline iterator		begin (void)		{ return (vector<pair<K,V> >::begin()); }
     inline const_iterator	begin (void) const	{ return (vector<pair<K,V> >::begin()); }
     inline iterator		end (void)		{ return (vector<pair<K,V> >::end()); }
@@ -86,7 +87,7 @@ map<K,V>::map (void)
 
 /// Constructs the container with space for \p n elements.
 template <typename K, typename V>
-map<K,V>::map (size_t n)
+map<K,V>::map (size_type n)
 : vector<pair<K,V> > (n)
 {
 }

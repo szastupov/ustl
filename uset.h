@@ -37,6 +37,7 @@ public:
     typedef typename vector<T>::value_type	key_type;
     typedef typename vector<T>::value_type	data_type;
     typedef typename vector<T>::value_type	value_type;
+    typedef typename vector<T>::size_type	size_type;
     typedef typename vector<T>::pointer		pointer;
     typedef typename vector<T>::const_pointer	const_pointer;
     typedef typename vector<T>::reference	reference;
@@ -47,7 +48,7 @@ public:
     typedef typename vector<T>::const_reverse_iterator	const_reverse_iterator;
 public:
     				set (void);
-    explicit			set (size_t n);
+    explicit			set (size_type n);
     				set (const set<T>& v);
 				set (const_iterator i1, const_iterator i2);
     inline const set<T>&	operator= (const set<T>& v);
@@ -61,7 +62,7 @@ public:
     inline iterator		erase (iterator ep);
     inline iterator		erase (iterator ep1, iterator ep2);
     inline void			clear (void)		{ vector<T>::clear(); }
-    inline size_t		size (void) const	{ return (vector<T>::size()); }
+    inline size_type		size (void) const	{ return (vector<T>::size()); }
     inline iterator		begin (void)		{ return (vector<T>::begin()); }
     inline const_iterator	begin (void) const	{ return (vector<T>::begin()); }
     inline iterator		end (void)		{ return (vector<T>::end()); }
@@ -77,7 +78,7 @@ set<T>::set (void)
 
 /// Creates a container able to hold at least \p n elements.
 template <typename T>
-set<T>::set (size_t n)
+set<T>::set (size_type n)
 : vector<T> (n)
 {
 }

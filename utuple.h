@@ -34,14 +34,15 @@ namespace ustl {
 template <size_t N, typename T>
 class tuple {
 public:
-    typedef T				value_type;
-    typedef value_type*			pointer;
-    typedef const value_type*		const_pointer;
-    typedef value_type&			reference;
-    typedef const value_type&		const_reference;
-    typedef pointer			iterator;
-    typedef const_pointer		const_iterator;
-    typedef ::ustl::reverse_iterator<iterator>	reverse_iterator;
+    typedef T						value_type;
+    typedef size_t					size_type;
+    typedef value_type*					pointer;
+    typedef const value_type*				const_pointer;
+    typedef value_type&					reference;
+    typedef const value_type&				const_reference;
+    typedef pointer					iterator;
+    typedef const_pointer				const_iterator;
+    typedef ::ustl::reverse_iterator<iterator>		reverse_iterator;
     typedef ::ustl::reverse_iterator<const_iterator>	const_reverse_iterator;
     typedef pair<iterator,iterator>			range_t;
     typedef pair<const_iterator,const_iterator>		const_range_t;
@@ -59,34 +60,36 @@ public:
     inline const_iterator	begin (void) const		{ return (m_v); }
     inline iterator		end (void)			{ return (begin() + N); }
     inline const_iterator	end (void) const		{ return (begin() + N); }
-    inline size_t		size (void) const		{ return (N); }
-    inline size_t		max_size (void) const		{ return (N); }
+    inline size_type		size (void) const		{ return (N); }
+    inline size_type		max_size (void) const		{ return (N); }
     inline bool			empty (void) const		{ return (N == 0); }
-    inline const_reference	at (size_t i) const		{ return (m_v[i]); }
-    inline reference		at (size_t i)			{ return (m_v[i]); }
-    inline const_reference	operator[] (size_t i) const	{ return (m_v[i]); }
-    inline reference		operator[] (size_t i)		{ return (m_v[i]); }
+    inline const_reference	at (size_type i) const		{ return (m_v[i]); }
+    inline reference		at (size_type i)		{ return (m_v[i]); }
+    inline const_reference	operator[] (size_type i) const	{ return (m_v[i]); }
+    inline reference		operator[] (size_type i)	{ return (m_v[i]); }
     template <typename T2>
     inline const tuple&		operator= (const tuple<N,T2>& src)
 				    { for (uoff_t i = 0; i < N; ++ i) m_v[i] = T(src.at(i)); return (*this); }
     inline const tuple&		operator= (const tuple<N,T>& src)
 				    { copy_n (src.begin(), N, begin()); return (*this); }
     inline const tuple&		operator+= (const_reference v)
-				    { for (size_t i = 0; i < N; ++ i) m_v[i] += v; return (*this); }
+				    { for (uoff_t i = 0; i < N; ++ i) m_v[i] += v; return (*this); }
     inline const tuple&		operator-= (const_reference v)
-				    { for (size_t i = 0; i < N; ++ i) m_v[i] -= v; return (*this); }
+				    { for (uoff_t i = 0; i < N; ++ i) m_v[i] -= v; return (*this); }
     inline const tuple&		operator*= (const_reference v)
-				    { for (size_t i = 0; i < N; ++ i) m_v[i] *= v; return (*this); }
+				    { for (uoff_t i = 0; i < N; ++ i) m_v[i] *= v; return (*this); }
     inline const tuple&		operator/= (const_reference v)
-				    { for (size_t i = 0; i < N; ++ i) m_v[i] /= v; return (*this); }
+				    { for (uoff_t i = 0; i < N; ++ i) m_v[i] /= v; return (*this); }
     inline const tuple		operator+ (const_reference v) const
-				    { tuple result; for (size_t i = 0; i < N; ++ i) result[i] = m_v[i] + v; return (result); }
+				    { tuple result; for (uoff_t i = 0; i < N; ++ i) result[i] = m_v[i] + v; return (result); }
     inline const tuple		operator- (const_reference v) const
-				    { tuple result; for (size_t i = 0; i < N; ++ i) result[i] = m_v[i] - v; return (result); }
+				    { tuple result; for (uoff_t i = 0; i < N; ++ i) result[i] = m_v[i] - v; return (result); }
     inline const tuple		operator* (const_reference v) const
-				    { tuple result; for (size_t i = 0; i < N; ++ i) result[i] = m_v[i] * v; return (result); }
+				    { tuple result; for (uoff_t i = 0; i < N; ++ i) result[i] = m_v[i] * v; return (result); }
     inline const tuple		operator/ (const_reference v) const
-				    { tuple result; for (size_t i = 0; i < N; ++ i) result[i] = m_v[i] / v; return (result); }
+				    { tuple result; for (uoff_t i = 0; i < N; ++ i) result[i] = m_v[i] / v; return (result); }
+    inline void			swap (tuple<N,T>& v)
+				    { for (uoff_t i = 0; i < N; ++ i) ::ustl::swap (m_v[i], v.m_v[i]); }
 private:
     T				m_v [N];
 };

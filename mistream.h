@@ -77,23 +77,23 @@ class string;
 class istream : public cmemlink {
 public:
 			istream (void);
-			istream (const void* p, size_t n);
+			istream (const void* p, size_type n);
     explicit		istream (const cmemlink& source);
     explicit		istream (const ostream& source);
-    inline void		link (const void* p, size_t n)	{ cmemlink::link (p, n); }
-    inline void		link (const cmemlink& l)	{ cmemlink::link (l.cdata(), l.readable_size()); }
+    inline void		link (const void* p, size_type n)	{ cmemlink::link (p, n); }
+    inline void		link (const cmemlink& l)		{ cmemlink::link (l.cdata(), l.readable_size()); }
     virtual void	unlink (void);
     inline void		seek (uoff_t newPos);
     inline void		seek (const_iterator newPos);
-    inline void		skip (size_t nBytes);
+    inline void		skip (size_type nBytes);
     inline uoff_t	pos (void) const;
     inline const_iterator ipos (void) const;
-    inline size_t	remaining (void) const;
-    inline bool		aligned (size_t grain = c_DefaultAlignment) const;
-    inline size_t	align_size (size_t grain = c_DefaultAlignment) const;
-    inline void		align (size_t grain = c_DefaultAlignment);
+    inline size_type	remaining (void) const;
+    inline bool		aligned (size_type grain = c_DefaultAlignment) const;
+    inline size_type	align_size (size_type grain = c_DefaultAlignment) const;
+    inline void		align (size_type grain = c_DefaultAlignment);
     void		swap (istream& is);
-    void		read (void* buffer, size_t size);
+    void		read (void* buffer, size_type size);
     void		read (memlink& buf);
     void		read_strz (string& str);
     void		read (istream& is);
@@ -119,6 +119,7 @@ public:
     typedef ptrdiff_t		difference_type;
     typedef const value_type*	pointer;
     typedef const value_type&	reference;
+    typedef istream::size_type	size_type;
 public:
     explicit			istream_iterator (istream& is)
 				    : m_Is (is), m_v (T()), m_vPos (is.size()) {}
@@ -137,7 +138,7 @@ public:
 				}
     inline istream_iterator&	operator++ (void) { ++ m_vPos; return (*this); }
     inline istream_iterator	operator++ (int) { istream_iterator old (*this); ++ m_vPos; return (old); }
-    inline istream_iterator&	operator+= (size_t n) { m_vPos += n; return (*this); }
+    inline istream_iterator&	operator+= (size_type n) { m_vPos += n; return (*this); }
     inline bool			operator== (const istream_iterator& i) const
 				    { return (m_Is.pos() == i.m_Is.pos()); }
     inline bool			operator< (const istream_iterator& i) const
@@ -181,32 +182,32 @@ inline void istream::seek (const_iterator newPos)
 }
 
 /// skips \p nBytes without reading anything.
-inline void istream::skip (size_t nBytes)
+inline void istream::skip (size_type nBytes)
 {
     seek (pos() + nBytes);
 }
 
 /// Returns the number of bytes remaining in the input buffer.
-inline size_t istream::remaining (void) const
+inline istream::size_type istream::remaining (void) const
 {
     return (size() - pos());
 }
 
 /// Returns the number of bytes to skip to be aligned on \p grain.
-inline size_t istream::align_size (size_t grain) const
+inline istream::size_type istream::align_size (size_type grain) const
 {
     return (Align (pos(), grain) - pos());
 }
 
 /// Returns \c true if the read position is aligned on \p grain
-inline bool istream::aligned (size_t grain) const
+inline bool istream::aligned (size_type grain) const
 {
     assert (uintptr_t(begin()) % grain == 0 && "Streams should be attached aligned at the maximum element grain to avoid bus errors.");
     return (pos() % grain == 0);
 }
 
 /// aligns the read position on \p grain
-inline void istream::align (size_t grain)
+inline void istream::align (size_type grain)
 {
     seek (Align (pos(), grain));
 }
@@ -221,7 +222,7 @@ inline size_t istream::stream_size (void) const
 template <typename T>
 inline void istream::iread (T& v)
 {
-    assert (aligned (DefaultGrain (v)));
+    assert (aligned (alignof (v)));
 #ifdef WANT_STREAM_BOUNDS_CHECKING
     if (remaining() < sizeof(T))
 	throw stream_bounds_exception ("read", typeid(v).name(), pos(), sizeof(T), remaining());

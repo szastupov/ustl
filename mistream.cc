@@ -41,7 +41,7 @@ istream::istream (void)
 }
 
 /// Attaches the stream to a block at \p p of size \p n.
-istream::istream (const void* p, size_t n)
+istream::istream (const void* p, size_type n)
 : cmemlink (p, n),
   m_Pos (0)
 {
@@ -69,7 +69,7 @@ void istream::swap (istream& is)
 }
 
 /// Reads \p n bytes into \p buffer.
-void istream::read (void* buffer, size_t n)
+void istream::read (void* buffer, size_type n)
 {
 #ifdef WANT_STREAM_BOUNDS_CHECKING
     if (remaining() < n)
@@ -87,7 +87,7 @@ void istream::read_strz (string& str)
     const_iterator zp = find (ipos(), end(), string::c_Terminator);
     if (zp == end())
 	zp = ipos();
-    const size_t strl = distance (ipos(), zp);
+    const size_type strl = distance (ipos(), zp);
     str.resize (strl);
     copy (ipos(), zp, str.begin());
     skip (strl + 1);
@@ -130,7 +130,7 @@ ostream::ostream (void)
 }
 
 /// Attaches the stream to a block at \p p of size \p n.
-ostream::ostream (void* p, size_t n)
+ostream::ostream (void* p, size_type n)
 : memlink (p, n),
   m_Pos (0)
 {
@@ -151,7 +151,7 @@ void ostream::unlink (void)
 }
 
 /// Writes \p n bytes from \p buffer.
-void ostream::write (const void* buffer, size_t n)
+void ostream::write (const void* buffer, size_type n)
 {
 #ifdef WANT_STREAM_BOUNDS_CHECKING
     if (remaining() < n)
@@ -184,14 +184,14 @@ void ostream::write (ostream& os) const
 }
 
 /// Inserts an empty area of \p size, at \p start.
-void ostream::insert (iterator start, size_t s)
+void ostream::insert (iterator start, size_type s)
 {
     memlink::insert (start, s);
     m_Pos += s;
 }
 
 /// Erases an area of \p size, at \p start.
-void ostream::erase (iterator start, size_t s)
+void ostream::erase (iterator start, size_type s)
 {
     m_Pos -= s;
     memlink::erase (start, s);

@@ -42,7 +42,7 @@ ostringstream::ostringstream (void)
 }
 
 /// Creates a stream for writing into \p p of size \p n.
-ostringstream::ostringstream (void* p, size_t n)
+ostringstream::ostringstream (void* p, size_type n)
 : ostream (),
   m_pResizable (NULL),
   m_Flags (0),
@@ -89,9 +89,9 @@ ostringstream::ostringstream (memlink& dest)
 const char c_Digits[] = "0123456789ABCDEF";
 
 /// Writes \p buf of size \p bufSize through the internal buffer.
-void ostringstream::write_buffer (const char* buf, size_t bufSize)
+void ostringstream::write_buffer (const char* buf, size_type bufSize)
 {
-    size_t btw = 0, written = 0;
+    size_type btw = 0, written = 0;
     while ((written += btw) < bufSize && (remaining() || overflow(bufSize - written)))
 	write (buf + written, btw = min (remaining(), bufSize - written));
 }
@@ -120,7 +120,7 @@ inline char* digitize_with_base (char* end, T v, size_t base)
 template <typename T>
 inline void ostringstream::iwrite_uinteger (T v)
 {
-    const size_t c_BufSize = BitsInType(v) / 2;
+    const size_type c_BufSize = BitsInType(v) / 2;
     char buf [c_BufSize];
     const char* first = digitize_with_base (buf + c_BufSize, v, m_Base);
     write_buffer (first, c_BufSize - distance(buf, first) - 1);
@@ -130,7 +130,7 @@ inline void ostringstream::iwrite_uinteger (T v)
 template <typename T>
 inline void ostringstream::iwrite_integer (T v)
 {
-    const size_t c_BufSize = BitsInType(v) / 2;
+    const size_type c_BufSize = BitsInType(v) / 2;
     char buf [c_BufSize];
     char* first = digitize_with_base (buf + c_BufSize, absv(v), m_Base);
     if (v < 0)
@@ -169,12 +169,12 @@ void ostringstream::iwrite (wchar_t v)
 void ostringstream::iwrite (double iv)
 {
     assert (m_Base < VectorSize(c_Digits));
-    const size_t c_BufSize = BitsInType(double) + 1;
+    const size_type c_BufSize = BitsInType(double) + 1;
     char buffer [c_BufSize];
     char fmt [16];
     assert (m_Precision < c_BufSize / 2);
     snprintf (fmt, 16, "%%.%dlf", m_Precision);
-    size_t i = snprintf (buffer, c_BufSize, fmt, iv);
+    size_type i = snprintf (buffer, c_BufSize, fmt, iv);
     if (i > c_BufSize)
 	i = c_BufSize - 1;
     buffer [c_BufSize - 1] = 0;
@@ -252,7 +252,7 @@ void ostringstream::unlink (void)
 }
 
 /// Writes the contents of \p buffer of \p size into the stream.
-void ostringstream::write (const void* buffer, size_t sz)
+void ostringstream::write (const void* buffer, size_type sz)
 {
     if (remaining() < sz && overflow(sz) < sz)
 	return;
@@ -268,7 +268,7 @@ void ostringstream::write (const cmemlink& buf)
 }
 
 /// Attempts to create more output space. Returns remaining().
-size_t ostringstream::overflow (size_t n)
+ostringstream::size_type ostringstream::overflow (size_type n)
 {
     assert (n > remaining() && "Don't call overflow if you don't need to");
     if (m_pResizable) {

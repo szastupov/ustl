@@ -39,7 +39,7 @@ cmemlink::cmemlink (void)
 }
 
 /// Attaches the object to pointer \p p of size \p n.
-cmemlink::cmemlink (const void* p, size_t n)
+cmemlink::cmemlink (const void* p, size_type n)
 : m_CData (reinterpret_cast<const_pointer>(p)),
   m_Size (n)
 {
@@ -56,7 +56,7 @@ cmemlink::cmemlink (const cmemlink& l)
 }
 
 /// Attaches the object to pointer \p p of size \p n.
-void cmemlink::link (const void* p, size_t n)
+void cmemlink::link (const void* p, size_type n)
 {
     unlink();
     assert (p || !n);
@@ -85,13 +85,13 @@ void cmemlink::write (ostream& os) const
 }
 
 /// Returns the number of bytes required to write this object to a stream.
-size_t cmemlink::stream_size (void) const
+cmemlink::size_type cmemlink::stream_size (void) const
 {
     return (Align (stream_size_of(m_Size) + size()));
 }
 
 /// Returns the size of the readable area
-size_t cmemlink::readable_size (void) const
+cmemlink::size_type cmemlink::readable_size (void) const
 {
     return (size());
 }
@@ -102,9 +102,9 @@ void cmemlink::write_file (const char* filename, int mode) const
     int fd = open (filename, O_WRONLY | O_CREAT | O_TRUNC, mode);
     if (fd < 0)
 	throw file_exception ("open", filename);
-    const size_t btw = readable_size();
+    const size_type btw = readable_size();
     ssize_t bw = ::write (fd, cdata(), btw);
-    if (size_t(bw) != btw) {
+    if (size_type(bw) != btw) {
 	close (fd);
 	throw file_exception ("write", filename);
     }
@@ -138,7 +138,7 @@ bool cmemlink::operator== (const cmemlink& l) const
 }
 
 /// Returns the size of the atomic element in the block, if any.
-size_t cmemlink::elementSize (void) const
+cmemlink::size_type cmemlink::elementSize (void) const
 {
     return (1);
 }

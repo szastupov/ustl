@@ -41,17 +41,18 @@ namespace ustl {
 template <typename T>
 class list : public vector<T> {
 public:
+    typedef typename vector<T>::size_type	size_type;
     typedef typename vector<T>::iterator	iterator;
     typedef typename vector<T>::const_iterator	const_iterator;
     typedef typename vector<T>::reference	reference;
     typedef typename vector<T>::const_reference	const_reference;
 public:
     inline			list (void)			: vector<T> () {}
-    inline explicit		list (size_t n)			: vector<T> (n) {}
-    inline			list (size_t n, const T& v)	: vector<T> (n, v) {}
+    inline explicit		list (size_type n)		: vector<T> (n) {}
+    inline			list (size_type n, const T& v)	: vector<T> (n, v) {}
     inline			list (const list<T>& v)		: vector<T> (v) {}
     inline			list (const_iterator i1, const_iterator i2)	: vector<T> (i1, i2) {}
-    inline size_t		size (void) const		{ return (vector<T>::size()); }
+    inline size_type		size (void) const		{ return (vector<T>::size()); }
     inline iterator		begin (void)			{ return (vector<T>::begin()); }
     inline const_iterator	begin (void) const		{ return (vector<T>::begin()); }
     inline iterator		end (void)			{ return (vector<T>::end()); }

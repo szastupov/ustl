@@ -31,15 +31,13 @@
 	#define __attribute__(p) /* nothing */
     #endif
 #endif
-#if !defined(__GNUC__) || (__GNUC__ < 3)
+#if defined(__GNUC__) && (__GNUC__ >= 3)
     /* GCC supports the prefetch directive, which some CPUs use to improve caching */
-    #ifndef __builtin_prefetch
-	#define __builtin_prefetch(p,rw,loc)
-    #endif
+    #define prefetch(p,rw,loc)	__builtin_prefetch(p,rw,loc)
+#else
+    #define prefetch(p,rw,loc)
     /* __alignof__ returns the recommended alignment for the type */
-    #ifndef __alignof__
-	#define __alignof__(v)	min (sizeof(v), c_DefaultAlignment);
-    #endif
+    #define __alignof__(v)	min(sizeof(v), c_DefaultAlignment)
 #endif
 
 /* Define to 1 if you have the `atexit' function. */

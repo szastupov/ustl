@@ -36,14 +36,14 @@ memlink::memlink (void)
 }
 
 /// Initializes the const link to point to \p p, \p n. Non-const link is NULL.
-memlink::memlink (const void* p, size_t n)
+memlink::memlink (const void* p, size_type n)
 : cmemlink (p, n),
   m_Data (NULL)
 {
 }
 
 /// Initializes both links to point to \p p, \p n
-memlink::memlink (void* p, size_t n)
+memlink::memlink (void* p, size_type n)
 : cmemlink (p, n),
   m_Data (reinterpret_cast<pointer>(p))
 {
@@ -80,7 +80,7 @@ const memlink& memlink::operator= (const memlink& l)
 }
 
 /// Returns the size of the writable area
-size_t memlink::writable_size (void) const
+memlink::size_type memlink::writable_size (void) const
 {
     return (m_Data ? size() : 0);
 }
@@ -95,10 +95,10 @@ void memlink::unlink (void)
 /// Reads the object from stream \p s
 void memlink::read (istream& is)
 {
-    size_t n;
+    size_type n;
     is >> n;
     assert (n % elementSize() == 0 && "You are trying to read a block with different element type.");
-    const size_t btr = min (n, size());
+    const size_type btr = min (n, size());
     if (is.remaining() < btr)
 	throw stream_bounds_exception ("read", "ustl::memlink", is.pos(), btr, is.remaining());
     is.read (data(), btr);
@@ -108,7 +108,7 @@ void memlink::read (istream& is)
 }
 
 /// Copies data from \p p, \p n to the linked block starting at \p start.
-void memlink::copy (iterator start, const void* p, size_t n)
+void memlink::copy (iterator start, const void* p, size_type n)
 {
     assert (m_Data || !n);
     assert (p || !n);
@@ -125,7 +125,7 @@ void memlink::copy (iterator start, const void* p, size_t n)
 /// \arg elCount Number of times to write the pattern.
 /// Total number of bytes written is \p elSize * \p elCount.
 ///
-void memlink::fill (iterator start, const void* p, size_t elSize, size_t elCount)
+void memlink::fill (iterator start, const void* p, size_type elSize, size_type elCount)
 {
     assert (m_Data || !elCount || !elSize);
     assert (start >= begin() && start + elSize * elCount <= end());
@@ -140,7 +140,7 @@ void memlink::fill (iterator start, const void* p, size_t elSize, size_t elCount
 
 /// Shifts the data in the linked block from \p start to \p start + \p n.
 /// The contents of the uncovered bytes is undefined.
-void memlink::insert (iterator start, size_t n)
+void memlink::insert (iterator start, size_type n)
 {
     assert (m_Data || !n);
     assert (cmemlink::begin() || !n);
@@ -152,7 +152,7 @@ void memlink::insert (iterator start, size_t n)
 
 /// Shifts the data in the linked block from \p start + \p n to \p start.
 /// The contents of the uncovered bytes is undefined.
-void memlink::erase (iterator start, size_t n)
+void memlink::erase (iterator start, size_type n)
 {
     assert (m_Data || !n);
     assert (cmemlink::begin() || !n);
@@ -163,7 +163,7 @@ void memlink::erase (iterator start, size_t n)
 }
 
 /// Override to initialize malloc'ed space, like calling constructors, for example.
-void memlink::constructBlock (void* p, size_t n) const
+void memlink::constructBlock (void* p, size_type n) const
 {
     assert (n % elementSize() == 0 && "You are trying to write an incompatible element type");
     fill_n (p, n, uint8_t(0));
@@ -171,13 +171,13 @@ void memlink::constructBlock (void* p, size_t n) const
 
 #ifndef NDEBUG
 /// Override to deinitialize malloc'ed space, like calling destructors, for example.
-void memlink::destructBlock (void* p, size_t n) const
+void memlink::destructBlock (void* p, size_type n) const
 {
     assert (n % elementSize() == 0 && "You are trying to write an incompatible element type");
     fill_n (p, n, uint8_t(0xCD));
 }
 #else
-void memlink::destructBlock (void*, size_t) const
+void memlink::destructBlock (void*, size_type) const
 {
 }
 #endif

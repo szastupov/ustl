@@ -81,8 +81,8 @@ inline OutputIterator copy (InputIterator first, InputIterator last, OutputItera
 template <typename InputIterator, typename OutputIterator>
 inline OutputIterator copy_n (InputIterator first, size_t count, OutputIterator result)
 {
-    for (; count; --count)
-	*result++ = *first++;
+    for (; count; --count, ++result, ++first)
+	*result = *first;
     return (result);
 }
 
@@ -132,8 +132,8 @@ inline void fill (ForwardIterator first, ForwardIterator last, const T& value)
 template <typename OutputIterator, typename T>
 inline OutputIterator fill_n (OutputIterator first, size_t count, const T& value)
 {
-    for (; count; --count)
-	*first++ = value;
+    for (; count; --count, ++first)
+	*first = value;
     return (first);
 }
 
@@ -146,8 +146,8 @@ inline OutputIterator fill_n (OutputIterator first, size_t count, const T& value
 template <typename T>
 inline T* unrolled_copy (const T* first, size_t count, T* result)
 {
-    __builtin_prefetch (first, 0, 1);
-    __builtin_prefetch (result, 1, 1);
+    prefetch (first, 0, 1);
+    prefetch (result, 1, 1);
     typedef unsigned long vec_t;
     const size_t multi = sizeof(vec_t) / sizeof(T);
     size_t nCarriers = count / multi;
@@ -173,7 +173,7 @@ template <typename T>
 inline T* unrolled_fill (T* first, size_t count, const T v)
 {
     typedef unsigned long vec_t;
-    __builtin_prefetch (first, 1, 1);
+    prefetch (first, 1, 1);
     const size_t multi = sizeof(vec_t) / sizeof(T);
     size_t nCarriers = count / multi;
     if (nCarriers > 2) {					// This is faster than count > 64 (???)
@@ -203,8 +203,8 @@ inline T* unrolled_fill (T* first, size_t count, const T v)
 template <>					\
 inline type* unrolled_copy (const type* first, size_t count, type* result)	\
 {								\
-    __builtin_prefetch (first, 0, 1);				\
-    __builtin_prefetch (result, 1, 1);				\
+    prefetch (first, 0, 1);				\
+    prefetch (result, 1, 1);				\
     typedef unsigned long vec_t __attribute__((mode(vtype)));	\
     const size_t multi = (sizeof(vec_t) / sizeof(type)) * 4;	\
     size_t nCarriers = count / multi;				\
@@ -243,8 +243,8 @@ template <>					\
 inline type* copy_backward (ctype* first, ctype* last, type* result)	\
 {						\
     size_t count = distance (first, last);	\
-    __builtin_prefetch (first, 0, 1);		\
-    __builtin_prefetch (result - count, 1, 1);	\
+    prefetch (first, 0, 1);		\
+    prefetch (result - count, 1, 1);	\
     typedef unsigned long vec_t;				\
     const size_t multi = sizeof(vec_t) / sizeof(type);		\
     size_t nCarriers = count / multi;				\
@@ -270,7 +270,7 @@ inline type* copy_backward (ctype* first, ctype* last, type* result)	\
 template <>								\
 inline type* unrolled_fill (type* first, size_t count, const type v)	\
 {									\
-    __builtin_prefetch (first, 1, 1);					\
+    prefetch (first, 1, 1);					\
     typedef unsigned long vec_t __attribute__((mode(vtype)));		\
     const size_t multi = (sizeof(vec_t) / sizeof(type)) * 8;		\
     size_t nCarriers = count / multi;					\

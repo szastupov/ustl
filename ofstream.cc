@@ -60,9 +60,9 @@ void fdostringstream::flush (void)
 }
 
 /// Called when more buffer space (\p n bytes) is needed.
-size_t fdostringstream::overflow (size_t n)
+fdostringstream::size_type fdostringstream::overflow (size_type n)
 {
-    size_t bw = 0;
+    size_type bw = 0;
     while (!bw) {
 	errno = 0;
 	ssize_t bwn = ::write (m_Fd, cdata() + bw, pos() - bw);
@@ -110,10 +110,10 @@ fdistringstream::fdistringstream (int fd)
     link (m_Buffer.data(), 0);
 }
 
-size_t fdistringstream::underflow (size_t n)
+fdistringstream::size_type fdistringstream::underflow (size_type n)
 {
     m_Buffer.erase (m_Buffer.begin(), pos());
-    size_t br = 0;
+    size_type br = 0;
     if (m_Buffer.size() - pos() < n) {
 	m_Buffer.resize (pos() + n);
 	link (m_Buffer.data(), 0);

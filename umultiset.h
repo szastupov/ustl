@@ -37,6 +37,7 @@ template <typename T>
 class multiset : public vector<T> {
 public:
     typedef typename vector<T>::value_type	value_type;
+    typedef typename vector<T>::size_type	size_type;
     typedef typename vector<T>::pointer		pointer;
     typedef typename vector<T>::const_pointer	const_pointer;
     typedef typename vector<T>::reference	reference;
@@ -47,12 +48,12 @@ public:
     typedef typename vector<T>::const_reverse_iterator	const_reverse_iterator;
 public:
     				multiset (void);
-    explicit			multiset (size_t n);
+    explicit			multiset (size_type n);
     				multiset (const multiset<T>& v);
 				multiset (const_iterator i1, const_iterator i2);
     inline const multiset<T>&	operator= (const multiset<T>& v);
     inline void			assign (const_iterator i1, const_iterator i2);
-    size_t			count (const_reference v) const;
+    size_type			count (const_reference v) const;
     inline void			push_back (const_reference v);
     iterator			insert (const_reference v);
     inline void			insert (const_iterator i1, const_iterator i2);
@@ -60,7 +61,7 @@ public:
     inline iterator		erase (iterator ep);
     inline iterator		erase (iterator ep1, iterator ep2);
     inline void			clear (void)		{ vector<T>::clear(); }
-    inline size_t		size (void) const	{ return (vector<T>::size()); }
+    inline size_type		size (void) const	{ return (vector<T>::size()); }
     inline iterator		begin (void)		{ return (vector<T>::begin()); }
     inline const_iterator	begin (void) const	{ return (vector<T>::begin()); }
     inline iterator		end (void)		{ return (vector<T>::end()); }
@@ -76,7 +77,7 @@ multiset<T>::multiset (void)
 
 /// Creates the container with space enough to hold \p n elements.
 template <typename T>
-multiset<T>::multiset (size_t n)
+multiset<T>::multiset (size_type n)
 : vector<T> (n)
 {
 }
@@ -114,7 +115,7 @@ inline void multiset<T>::assign (const_iterator i1, const_iterator i2)
 
 /// Returns the number of elements of value \p v.
 template <typename T>
-size_t multiset<T>::count (const_reference v) const
+typename multiset<T>::size_type multiset<T>::count (const_reference v) const
 {
     const pair<const_iterator,const_iterator> fr = equal_range (begin(), end(), v);
     return (distance (fr.first, fr.second));

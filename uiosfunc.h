@@ -45,7 +45,7 @@ namespace ios {
     template <typename T>
     class talign : public align {
     public:
-	inline explicit		talign (void) : align (DefaultGrain (T())) {}
+	inline explicit		talign (void) : align (alignof (T())) {}
     };
 
     /// \class skip uiosfunc.h ustl.h
