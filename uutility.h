@@ -275,6 +275,34 @@ inline void pack_type (TSmall s, TBig& b)
     b = (b << min (BitsInType(TSmall) * 4, BitsInType(TBig))) | b;
 }
 
+/// Sets the contents of \p pm to 1 and returns true if the previous value was 0.
+inline bool TestAndSet (int* pm)
+{
+#if CPU_HAS_CMPXCHG8
+    register bool rv;
+    int oldVal (1);
+    asm volatile ( // cmpxchg compares to %eax and swaps if equal
+	"cmpxchgl %3, %1\n\t"
+	"sete %0"
+	: "=r" (rv), "=m" (*pm), "=r" (oldVal)
+	: "2" (oldVal), "a" (0)
+	: "memory");
+    return (rv);
+#elif __i386__
+    int oldVal (1);
+    asm volatile ("xchgl %0, %1" : "=r"(oldVal), "=m"(*pm) : "0"(oldVal), "m"(*pm) : "memory");
+    return (!oldVal);
+#elif __sparc32__	// This has not been tested
+    int rv;
+    asm volatile ("ldstub %1, %0" : "=r"(rv), "=m"(*pm) : "m"(pm));
+    return (!rv);
+#else
+    const int oldVal (*pm);
+    *pm = 1;
+    return (!oldVal);
+#endif
+}
+
 namespace simd {
 /// Call after you are done using SIMD algorithms for 64 bit tuples.
 #if CPU_HAS_MMX
