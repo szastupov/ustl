@@ -7,6 +7,8 @@
 <type name=uint16_t format=integral size=int16_t/>
 <type name=uint32_t format=integral size=int32_t/>
 <type name=uint64_t format=integral size=int64_t/>
+<type name=float format=float size=float/>
+<type name=double format=float size=double/>
 
 <!-- Standard types of variable size, these are machine specific -->
 <type name=int_least8_t format=signedIntegral size=int8_t/>
