@@ -77,6 +77,7 @@ static void FindPrograms (void);
 static void SubstitutePaths (void);
 static void SubstituteEnvironment (int bForce);
 static void SubstitutePrograms (void);
+static void SubstituteCpuCaps (void);
 static void SubstituteHostOptions (void);
 static void SubstituteHeaders (void);
 static void SubstituteFunctions (void);
@@ -108,6 +109,11 @@ static void  FatalError (const char *errortext);
 static int  g_BufSize;
 static char g_Buf [BUFSIZE];
 
+typedef struct {
+    int		m_bDefaultOn;
+    string_t	m_Description;
+} SComponentInfo;
+
 #include "bsconf.h"
 
 static string_t g_ConfigV [vv_last] = {
@@ -135,6 +141,34 @@ static strbuf_t g_ProgLocs [VectorSize (g_ProgVars) / 4];
 
 static struct utsname g_Uname;
 
+typedef struct {
+    int		m_Bit;
+    const char*	m_Description;
+    const char*	m_Disabled;
+    const char*	m_Enabled;
+} SCpuCaps;
+
+static const SCpuCaps g_CpuCaps [] = {
+    {  0, "FPU",	"#undef CPU_HAS_FPU",		"#define CPU_HAS_FPU 1"		},
+    {  2, "DEBUG",	"#undef CPU_HAS_EXT_DEBUG",	"#define CPU_HAS_EXT_DEBUG 1"	},
+    {  4, "TimeStamp",	"#undef CPU_HAS_TIMESTAMPC",	"#define CPU_HAS_TIMESTAMPC 1"	},
+    {  5, "MSR",	"#undef CPU_HAS_MSR",		"#define CPU_HAS_MSR 1"		},
+    {  8, "CMPXCHG8",	"#undef CPU_HAS_CMPXCHG8",	"#define CPU_HAS_CMPXCHG8 1"	},
+    {  9, "APIC",	"#undef CPU_HAS_APIC",		"#define CPU_HAS_APIC 1"	},
+    { 11, "SYSCALL",	"#undef CPU_HAS_SYSCALL",	"#define CPU_HAS_SYSCALL 1"	},
+    { 12, "MTRR",	"#undef CPU_HAS_MTRR",		"#define CPU_HAS_MTRR 1"	},
+    { 15, "CMOV",	"#undef CPU_HAS_CMOV",		"#define CPU_HAS_CMOV 1"	},
+    { 16, "FCMOV",	"#undef CPU_HAS_FCMOV",		"#define CPU_HAS_FCMOV 1"	},
+    { 22, "SSE",	"#undef CPU_HAS_SSE ",		"#define CPU_HAS_SSE 1"		},
+    { 23, "MMX",	"#undef CPU_HAS_MMX",		"#define CPU_HAS_MMX 1"		},
+    { 24, "FXSAVE",	"#undef CPU_HAS_FXSAVE",	"#define CPU_HAS_FXSAVE 1"	},
+    { 25, "SSE",	"#undef CPU_HAS_SSE ",		"#define CPU_HAS_SSE 1"		},
+    { 26, "SSE2",	"#undef CPU_HAS_SSE2",		"#define CPU_HAS_SSE2 1"	},
+    { 27, "SSE3",	"#undef CPU_HAS_SSE3",		"#define CPU_HAS_SSE3 1"	},
+    { 30, "3dNow!+",	"#undef CPU_HAS_EXT_3DNOW",	"#define CPU_HAS_EXT_3DNOW 1"	},
+    { 31, "3dNow!",	"#undef CPU_HAS_3DNOW",		"#define CPU_HAS_3DNOW 1"	}
+};
+
 /*--------------------------------------------------------------------*/
 
 int main (int argc, const char* const* argv)
@@ -151,6 +185,7 @@ int main (int argc, const char* const* argv)
 	copy_n (".in", srcFile + StrLen(g_Files[f]), 4);
 	ReadFile (srcFile);
 	SubstituteHostOptions();
+	SubstituteCpuCaps();
 	SubstitutePaths();
 	SubstituteEnvironment (0);
 	SubstitutePrograms();
@@ -421,9 +456,46 @@ static void SubstitutePrograms (void)
     }
 }
 
+#if defined(__GNUC__) && defined(__i386__)
+    #define AMD_SPECIFIC_BITS	0xC1480000
+    static unsigned cpuid (void)
+    {
+	unsigned eax, ebx, ecx, edx, caps;
+	__asm__("cpuid" : "=a" (eax), "=b" (ebx), "=c" (ecx), "=d" (edx) : "0" (0x00000000));
+	if (eax > 0) {
+	    __asm__("cpuid" : "=a" (eax), "=b" (ebx), "=c" (ecx), "=d" (edx) : "0" (0x00000001));
+	    caps = edx & ~AMD_SPECIFIC_BITS;
+	}
+	__asm__("cpuid" : "=a" (eax), "=b" (ebx), "=c" (ecx), "=d" (edx) : "0" (0x80000000));
+	if (eax > 0) {
+	    __asm__("cpuid" : "=a" (eax), "=b" (ebx), "=c" (ecx), "=d" (edx) : "0" (0x80000001));
+	    caps |= edx & AMD_SPECIFIC_BITS;
+	}
+	return (caps);
+    }
+#else
+    #define cpuid()	0
+#endif
+
+static void SubstituteCpuCaps (void)
+{
+    unsigned int caps = 0, i;
+    if (!compare (g_Uname.sysname, "i386"))
+	return;
+    else if (!compare (g_Uname.sysname, "i486"))
+	caps = 1;	/* FPU available */
+    else {
+	caps = cpuid();
+    }
+    for (i = 0; i < VectorSize(g_CpuCaps); ++ i)
+	if (caps & (1 << g_CpuCaps[i].m_Bit))
+	    Substitute (g_CpuCaps[i].m_Disabled, g_CpuCaps[i].m_Enabled);
+}
+
 static void SubstituteHostOptions (void)
 {
     strbuf_t buf;
+
     if (!compare (g_Uname.sysname, "osx") ||
 	!compare (g_Uname.sysname, "darwin"))
 	Substitute ("@SYSWARNS@", "-Wno-long-double");
@@ -459,6 +531,9 @@ static void SubstituteHostOptions (void)
     Substitute ("#undef HAVE_LONG_LONG", "#define HAVE_LONG_LONG 1");
     sprintf (buf, "#define SIZE_OF_LONG_LONG %d", sizeof(long long));
     Substitute ("#undef SIZE_OF_LONG_LONG", buf);
+#endif
+#if __GNUC__ > 2
+    Substitute ("#undef HAVE_VECTOR_EXTENSIONS", "#define HAVE_VECTOR_EXTENSIONS 1");
 #endif
 
     Substitute ("#undef LSTAT_FOLLOWS_SLASHED_SYMLINK", "#define LSTAT_FOLLOWS_SLASHED_SYMLINK 1");

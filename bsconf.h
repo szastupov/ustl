@@ -81,10 +81,6 @@ static string_t g_Components [] = {
     "libstdc++",	"STANDALONE\t= -nodefaultlibs ",	"#STANDALONE\t= -nodefaultlibs"
 };
 
-typedef struct {
-    int		m_bDefaultOn;
-    string_t	m_Description;
-} SComponentInfo;
 static SComponentInfo g_ComponentInfos [VectorSize(g_Components) / 3] = {
     { 0, "Compiles the library with debugging information" },
     { 0, "Enable runtime bounds checking on stream reads/writes" },
