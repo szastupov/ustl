@@ -9,9 +9,9 @@ using namespace ustl;
 
 int main (void)
 {
+    const void* pBufC;
+    void* pBuf;
     memblock buffer;
-    const void* pBufC = buffer.cdata();
-    void* pBuf = buffer.data();
     string testString ("TestString");
     const string* pStrC = NULL;
     string* pStr = NULL;
@@ -23,6 +23,8 @@ int main (void)
 			   stream_size_of(pStr);
     cout << "Allocating " << bufSize << " bytes" << endl;
     buffer.resize (bufSize);
+    pBufC = buffer.cdata();
+    pBuf = buffer.data();
 
     ostream os (buffer);
     os << pBufC;

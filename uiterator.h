@@ -22,6 +22,8 @@
 #ifndef UITERATOR_H
 #define UITERATOR_H
 
+#include "utypes.h"
+
 namespace ustl {
 
 //----------------------------------------------------------------------
@@ -93,6 +95,11 @@ protected:
 /// Calls push_back on bound container for each assignment.
 template <class Container>
 class back_insert_iterator {
+public:
+    typedef typename Container::value_type	value_type;
+    typedef typename Container::difference_type	difference_type;
+    typedef typename Container::pointer		pointer;
+    typedef typename Container::reference	reference;
 public:
     					back_insert_iterator (Container& ctr) : m_rCtr (ctr) {}
     inline back_insert_iterator&	operator= (typename Container::const_reference v)

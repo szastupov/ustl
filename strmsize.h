@@ -44,6 +44,7 @@ inline size_t stream_size_of (u_long)	{ return (sizeof(u_long));	}
 inline size_t stream_size_of (float)	{ return (sizeof(float));	}
 inline size_t stream_size_of (double)	{ return (sizeof(double));	}
 inline size_t stream_size_of (bool)	{ return (sizeof(bool));	}
+inline size_t stream_size_of (wchar_t)	{ return (sizeof(wchar_t));	}
 #endif // DOXYGEN_SHOULD_IGNORE_THIS
 
 } // namespace ustl

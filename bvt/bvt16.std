@@ -1,0 +1,6 @@
+Generating Unicode characters 0 - 65534
+Encoding to utf8.
+Decoding back.
+Comparing.
+src = 65535 chars, encoded = 194429 chars, decoded = 65535
+0 differences between src and decoded.

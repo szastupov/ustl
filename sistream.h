@@ -43,6 +43,7 @@ public:
     inline istringstream&	operator>> (u_short& v);
     inline istringstream&	operator>> (u_int& v);
     inline istringstream&	operator>> (u_long& v);
+    inline istringstream&	operator>> (wchar_t& v);
     inline istringstream&	operator>> (float& v);
     istringstream&		operator>> (double& v);
     istringstream&		operator>> (bool& v);
@@ -112,6 +113,12 @@ inline istringstream& istringstream::operator>> (u_int& v)
 inline istringstream& istringstream::operator>> (u_long& v)
 {
     long vl; operator>> (vl); v = vl; return (*this);
+}
+
+/// Reads a number into \p v.
+inline istringstream& istringstream::operator>> (wchar_t& v)
+{
+    long vl; operator>> (vl); v = static_cast<wchar_t>(vl); return (*this);
 }
 
 /// Reads a floating point number into \p v.

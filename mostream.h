@@ -92,6 +92,7 @@ public:
     inline ostream&	operator<< (float v)	{ iwrite(v); return (*this); }
     inline ostream&	operator<< (double v)	{ iwrite(v); return (*this); }
     inline ostream&	operator<< (bool v)	{ iwrite(v); return (*this); }
+    inline ostream&	operator<< (wchar_t v)	{ iwrite(v); return (*this); }
 private:
     uoff_t		m_Pos;	///< Current write position.
 };
@@ -101,6 +102,11 @@ private:
 /// An iterator over an ostream to use with uSTL algorithms.
 template <class T>
 class ostream_iterator {
+public:
+    typedef T			value_type;
+    typedef ptrdiff_t		difference_type;
+    typedef T*			pointer;
+    typedef T&			reference;
 public:
     explicit			ostream_iterator (ostream& os)
 				    : m_Os (os) {}

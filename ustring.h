@@ -127,6 +127,7 @@ public:
     void			insert (iterator start, const_reference c, size_t n = 1);
     void			insert (iterator start, const_pointer s, size_t n = 1);
     void			insert (iterator start, const_pointer first, const_iterator last, size_t n = 1);
+    inline void			push_back (const_reference c);
     inline void			replace (iterator first, iterator last, const_reference c, size_t n = 1);
     void			replace (iterator first, iterator last, const_pointer s, size_t n = 1);
     void			replace (iterator first, iterator last, const_pointer i1, const_pointer i2, size_t n = 1);
@@ -388,6 +389,12 @@ inline bool string::operator> (const_pointer s) const
 inline void string::clear (void)
 {
     assign (empty_string, size_t(0));
+}
+
+/// Inserts \p c at the end of the string.
+inline void string::push_back (const_reference c)
+{
+    insert (end(), c);
 }
 
 /// Replaces range [\p start, \p start + \p len] with character \p c.

@@ -60,7 +60,7 @@ void fdostringstream::flush (void)
 
 inline void fdostringstream::flush_if_full (void)
 {
-    if (remaining() < 128)
+    if (remaining() < USTL_COUT_FLUSH_THRESHOLD)
 	flush();
 }
 
@@ -73,7 +73,7 @@ fdostringstream& fdostringstream::operator<< (char c)
 
 fdostringstream& fdostringstream::operator<< (const char* s)
 {
-    if (remaining() < 128 + strlen(s))
+    if (remaining() < USTL_COUT_FLUSH_THRESHOLD + strlen(s))
 	flush();
     ostringstream::operator<< (s);
     flush_if_full();
@@ -82,7 +82,7 @@ fdostringstream& fdostringstream::operator<< (const char* s)
 
 fdostringstream& fdostringstream::operator<< (const string& s)
 {
-    if (remaining() < 128 + s.length())
+    if (remaining() < USTL_COUT_FLUSH_THRESHOLD + s.length())
 	flush();
     ostringstream::operator<< (s);
     flush_if_full();
@@ -92,7 +92,7 @@ fdostringstream& fdostringstream::operator<< (const string& s)
 /// Equivalent to a sprintf on the string.
 int fdostringstream::format (const char* fmt, ...)
 {
-    if (remaining() < 128 + strlen(fmt))
+    if (remaining() < USTL_COUT_FLUSH_THRESHOLD + strlen(fmt))
 	flush();
     va_list args;
     va_start (args, fmt);

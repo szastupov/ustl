@@ -69,9 +69,7 @@ You may also chdir to the bvt subdirectory and 'make -I .. run' to verify that
 	regular libc headers or something.  GNU extensions may be used
 	(like long long), but are not required and if you are failing
 	the build because of them it is a bug.
-Documentation may be built with doxygen by typing 'make dox'. This is not
-	working very well right now because doxygen is blind to templates.
-	You do get a page for all the static classes though.
+Documentation may be built with doxygen by typing 'make dox'.
 The .mk files in this distribution are actually another project, giving
 	common rules for people who hate writing makefiles. I am not
 	satisfied though and might turn to some other build system later.

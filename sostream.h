@@ -44,6 +44,7 @@ public:
     inline ostringstream&	operator<< (float v);
     ostringstream&		operator<< (double v);
     ostringstream&		operator<< (bool v);
+    inline ostringstream&	operator<< (wchar_t v);
     ostringstream&		operator<< (const char* s);
     inline ostringstream&	operator<< (char* s);
     inline ostringstream&	operator<< (const u_char* s);
@@ -129,6 +130,12 @@ inline ostringstream& ostringstream::operator<< (u_int v)
 inline ostringstream& ostringstream::operator<< (float v)
 {
     operator<< (double(v)); return (*this);
+}
+
+/// Writes number \p v into the stream as text.
+inline ostringstream& ostringstream::operator<< (wchar_t v)
+{
+    operator<< (long(v)); return (*this);
 }
 
 /// Writes text pointed to by \p s into the stream.

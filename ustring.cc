@@ -26,7 +26,7 @@
 #include "mistream.h"
 #include "mostream.h"
 #include "strmsize.h"
-#include "varsize.h"
+#include "utf8.h"
 #include <string.h>
 #include <memory.h>
 #include <stdarg.h>	// for va_list, va_start, and va_end (in string::format)
@@ -82,19 +82,17 @@ string::string (const_pointer s, size_t len)
 	-- len;
     resize (len);
     memblock::copy (s, len);
-    assert (*end() == c_Terminator);
 }
 
 /// Copies into itself the string data between \p s1 and \p s2
 string::string (const_pointer s1, const_pointer s2)
 : memblock ()
 {
-    assert (s1 <= s2);
+    assert (s1 <= s2 && "Negative ranges result in memory allocation errors.");
     while (s2 > s1 && s2[-1] == c_Terminator)
 	-- s2;
     resize (s2 - s1);
     memblock::copy (s1, s2 - s1);
-    assert (*end() == c_Terminator);
 }
 
 /// Resize the string to \p n characters. New space contents is undefined.
@@ -165,7 +163,7 @@ size_t string::copyto (pointer p, size_t n, const_iterator start) const
 ///
 int string::compare (const_iterator first1, const_iterator last1, const_iterator first2, const_iterator last2) const
 {
-    assert (first1 <= last1 && first2 <= last2);
+    assert (first1 <= last1 && first2 <= last2 && "Negative ranges result in memory allocation errors.");
     const size_t len1 = distance (first1, last1);
     const size_t len2 = last2 ? distance (first2, last2) : strlen(first2);
     int rv = memcmp (first1, first2, min (len1, len2));
@@ -375,22 +373,20 @@ int string::format (const char* fmt, ...)
 /// Returns the number of bytes required to write this object to a stream.
 size_t string::stream_size (void) const
 {
-    return (stream_size_of(varsize(length())) + length());
+    return (Utf8Bytes(length()) + length());
 }
 
 /// Reads the object from stream \p os
 void string::read (istream& is)
 {
-    varsize n;
-    is >> n;
-    resize (n);
+    resize (*utf8in(is));
     is.read (data(), length());
 }
 
 /// Writes the object to stream \p os
 void string::write (ostream& os) const
 {
-    os << varsize(size());
+    *utf8out(os)++ = length();
     os.write (cdata(), length());
 }
 

@@ -101,6 +101,7 @@ public:
     inline istream&	operator>> (float& v)	{ iread(v); return (*this); }
     inline istream&	operator>> (double& v)	{ iread(v); return (*this); }
     inline istream&	operator>> (bool& v)	{ iread(v); return (*this); }
+    inline istream&	operator>> (wchar_t& v)	{ iread(v); return (*this); }
 private:
     uoff_t		m_Pos;		///< The current read position.
 };
@@ -110,6 +111,11 @@ private:
 /// An iterator over an istream to use with uSTL algorithms.
 template <class T>
 class istream_iterator {
+public:
+    typedef T			value_type;
+    typedef ptrdiff_t		difference_type;
+    typedef const T*		pointer;
+    typedef const T&		reference;
 public:
     explicit			istream_iterator (istream& is)
 				    : m_Is (is), m_v (T()), m_vPos (is.size()) {}

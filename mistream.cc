@@ -65,7 +65,7 @@ void istream::swap (istream& is)
 /// Reads \p n bytes into \p buffer.
 void istream::read (void* buffer, size_t n)
 {
-    assert (remaining() >= n);
+    assert (remaining() >= n && "Reading past end of buffer. Make sure you are reading the right format.");
     memcpy (buffer, begin() + pos(), n);
     skip (n);
 }
@@ -130,7 +130,7 @@ void ostream::unlink (void)
 /// Writes \p n bytes from \p buffer.
 void ostream::write (const void* buffer, size_t n)
 {
-    assert (remaining() >= n);
+    assert (remaining() >= n && "Buffer overrun. Check your stream size calculations.");
     memcpy (begin() + pos(), buffer, n);
     skip (n);
 }

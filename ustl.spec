@@ -63,5 +63,5 @@ make install
 %{_prefix}/include/ustl/utypes.h
 %{_prefix}/include/ustl/uutility.h
 %{_prefix}/include/ustl/uvector.h
-%{_prefix}/include/ustl/varsize.h
+%{_prefix}/include/ustl/utf8.h
 %doc COPYING README

@@ -94,6 +94,7 @@
 #include "ustl/uspecial.h"
 #include "ustl/uiosfunc.h"
 #include "ustl/fdostream.h"
+#include "ustl/utf8.h"
 
 #endif
 
