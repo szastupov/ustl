@@ -1,6 +1,6 @@
 %define name	@PACKAGE_NAME@
 %define version @PACKAGE_VERSION@
-%define release 1
+%define release @LIB_BUILD@
 
 Summary:	uSTL - Codespace frugal STL implementation.
 Name:		%{name}

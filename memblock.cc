@@ -27,11 +27,7 @@
 #include "uexception.h"
 #include <fcntl.h>
 #include <unistd.h>
-#ifdef HAVE_MALLOC_H
-    #include <malloc.h>
-#else
-    #include <stdlib.h>
-#endif
+#include <stdlib.h>
 #include <sys/stat.h>
 
 namespace ustl {

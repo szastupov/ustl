@@ -33,14 +33,14 @@ namespace ustl {
 const size_t c_DefaultAlignment = sizeof(u_int);
 
 /// Divides \p n1 by \p n2 and rounds the result up (regular division rounds down).
-template <class T>
-inline T DivRU (T n1, T n2)
+template <typename T1, typename T2>
+inline T1 DivRU (T1 n1, T2 n2)
 {
     return (n1 / n2 + (n1 % n2 != 0));
 }
 
 /// Rounds \p n up to be divisible by \p grain
-template <class T>
+template <typename T>
 inline T Align (T n, T grain = c_DefaultAlignment)
 {
     const T remainder = n % grain;
@@ -49,14 +49,14 @@ inline T Align (T n, T grain = c_DefaultAlignment)
 
 /// Offsets an iterator
 template <typename T>
-inline T advance (T i, int offset)
+inline T advance (T i, ssize_t offset)
 {
     return (i + offset);
 }
 
 /// Offsets a void pointer
 template <>
-inline const void* advance (const void* p, int offset)
+inline const void* advance (const void* p, ssize_t offset)
 {
     assert (p || !offset);
     return (reinterpret_cast<const u_char*>(p) + offset);
@@ -64,7 +64,7 @@ inline const void* advance (const void* p, int offset)
 
 /// Offsets a void pointer
 template <>
-inline void* advance (void* p, int offset)
+inline void* advance (void* p, ssize_t offset)
 {
     assert (p || !offset);
     return (reinterpret_cast<u_char*>(p) + offset);
@@ -123,8 +123,8 @@ inline void DeleteVector (T* p)
 }
 
 /// Returns the minimum of \p a and \p b
-template <typename T>
-inline const T& min (const T& a, const T& b)
+template <typename T1, typename T2>
+inline const T1& min (const T1& a, const T2& b)
 {
 #ifdef __GNUC__
     return (a <? b);
@@ -134,8 +134,8 @@ inline const T& min (const T& a, const T& b)
 }
 
 /// Returns the maximum of \p a and \p b
-template <typename T>
-inline const T& max (const T& a, const T& b)
+template <typename T1, typename T2>
+inline const T1& max (const T1& a, const T2& b)
 {
 #ifdef __GNUC__
     return (a >? b);

@@ -66,14 +66,13 @@
 /// \section install Installation
 ///
 /// You should have received a copy of the configure script with your distribution.
-/// If you did not, run \c autoconf to generate it from \c configure.in. Then run
-/// \c configure with parameters appropriate for your system (usually none). Finally,
-/// run \c make and \c make \c install to compile the static library and install it,
-/// along with necessary headers into system-standard directories (see \c LIBDIR and
-/// \c INCDIR in Common.mk for values). To use the library, include \c ustl.h and link
-/// to \c -lustl . Tutorials on using STL are numerous on the web and the information
-/// in there mostly applies, except for iostream usage, which is not supported in uSTL
-/// for philosophical reasons.
+/// Then run \c configure with parameters appropriate for your system (usually none).
+/// Finally, run \c make and \c make \c install to compile the shared library and
+/// install it, along with necessary headers into system-standard directories (see
+/// \c LIBDIR and \c INCDIR in Common.mk for values). To use the library, include
+/// \c ustl.h and link to \c -lustl . Tutorials on using STL are numerous on the
+/// web and the information in there mostly applies, except for iostream usage,
+/// which is not supported in uSTL for philosophical reasons.
 ///
 
 #ifndef USTL_H_99881273

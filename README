@@ -43,9 +43,16 @@ classes for unstructured storage management (cmemlink - link to constant
 memory, memlink - link to mutable memory, and memblock - owner of mutable
 memory) are, of course, also available for use as data buffers wherever
 those are needed, and streams that efficiently read and write binary data
-into them are also available. The present implementation is about 75%
-complete, with STL-equivalent containers vector<T>, string, stack<T>,
-set<T>, multiset<T>, map<T>, and multimap<T> available and working.
+into them are also available. The present implementation contains all the
+containers I intend to implement: vector<T>, string, stack<T>,
+set<T>, multiset<T>, map<T>, and multimap<T> are available and working.
+The others, list, hash, and tree, will probably not be implemented at
+all, since I do not think anyone should be using them. Vectors work
+just fine instead of linked lists in almost all cases. The only
+exception is a really long list of data that is frequently modified
+in random places, which indicates a bad design, rather than anything
+else. I can say the same thing about hash maps and trees: if you are
+using them, you are doing something wrong.
 
 ------------
 COMPILATION:
@@ -53,12 +60,13 @@ COMPILATION:
 
 ./configure
 	(you may edit Common.mk at this point to adjust compiler flags)
+	Standard autoconf flags may be passed in.
 
 Clean builds have been thus obtained on (SourceForge compile farm):
 	* x86 architecture (dual-processor SMP Intel Pentium III) - Linux OS kernel version 2.2 (Debian GNU/Linux 2.2)
 	* PowerPC architecture (Apple Mac G4 systems) - MacOS X (version 10.1)
-	* DEC Alpha architecture (EV67) - Linux OS kernel version 2.2 (Debian GNU/Linux 2.2)
 	* PowerPC architecture (IBM RS/6000 with PPC processor) - Linux OS kernel version 2.2 (Debian GNU/Linux 2.2)
+	* DEC Alpha architecture (EV67) - Linux OS kernel version 2.2 (Debian GNU/Linux 2.2)
 	* Sun Sparc (Sun Ultra60 system, sparc64) - Linux OS kernel version 2.2 (Debian GNU/Linux 2.2)
 	* Sun Ultra Enterprise 220R - Sun Solaris (version 8)
 	* StrongArm 10000 host.
@@ -68,19 +76,16 @@ make install
 	(usually /usr/local/lib) and the headers to your include directory
 	(usually /usr/local/include).
 
-You may also chdir to the bvt subdirectory and 'make -I .. run' to verify that
-	the library works correctly on your system.  Note the -I flag;
-	it is required to properly include the .mk files, which are
-	really supposed to be installed in a common include directory.
+You may also chdir to the bvt subdirectory and 'make  run' to verify that
+	the library works correctly on your system. This works only after
+	you installed the library, because ld.so will not load anything
+	from .. for security reasons.
 	I pretty much assume an ANSI-compliant system, and have no
 	desire whatsoever to support some weird architecture that lacks
 	regular libc headers or something.  GNU extensions may be used
 	(like long long), but are not required and if you are failing
 	the build because of them it is a bug.
 Documentation may be built with doxygen by typing 'make dox'.
-The .mk files in this distribution are actually another project, giving
-	common rules for people who hate writing makefiles. I am not
-	satisfied though and might turn to some other build system later.
 
 ------
 USAGE:

@@ -1,3 +1,8 @@
+LIBNAME		= @LIBNAME@
+MAJOR		= @LIB_MAJOR@
+MINOR		= @LIB_MINOR@
+BUILD		= @LIB_BUILD@
+
 CC		= @CC@
 CXX		= @CXX@
 LD		= @CXX@
@@ -10,9 +15,9 @@ LN		= @LN@
 
 prefix		= @prefix@
 exec_prefix	= @exec_prefix@
-BINDIR		= ${prefix}/bin
-INCDIR		= ${prefix}/include
-LIBDIR		= ${exec_prefix}/lib
+BINDIR		= @bindir@
+INCDIR		= @includedir@
+LIBDIR		= @libdir@
 
 INSTALLDIR	= ${INSTALL} -d
 INSTALLLIB	= ${INSTALL} -p -m 644

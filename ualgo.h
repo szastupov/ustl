@@ -39,7 +39,7 @@ namespace ustl {
 template <typename InputIterator, typename OutputIterator>
 inline OutputIterator copy_backward (InputIterator first, InputIterator last, OutputIterator result)
 {
-    for (; first < last; ++result)
+    for (; first != last; ++result)
 	*result = *--last;
     return (result);
 }
@@ -48,7 +48,7 @@ inline OutputIterator copy_backward (InputIterator first, InputIterator last, Ou
 template <typename ForwardIterator1, typename ForwardIterator2>
 inline ForwardIterator2 swap_ranges (ForwardIterator1 first, ForwardIterator2 last, ForwardIterator2 result)
 {
-    for (; first < last; ++first, ++result)
+    for (; first != last; ++first, ++result)
 	iterator_swap (first, result);
     return (result);
 }
@@ -60,7 +60,7 @@ inline ForwardIterator2 swap_ranges (ForwardIterator1 first, ForwardIterator2 la
 template <typename InputIterator, typename OutputIterator, typename Predicate>
 inline OutputIterator copy_if (InputIterator first, InputIterator last, OutputIterator result, Predicate pred)
 {
-    for (; first < last; ++first) {
+    for (; first != last; ++first) {
 	if (pred(*first)) {
 	    *result = *first;
 	    ++ result;
@@ -76,7 +76,7 @@ inline OutputIterator copy_if (InputIterator first, InputIterator last, OutputIt
 template <typename InputIterator, typename EqualityComparable>
 inline InputIterator find (InputIterator first, InputIterator last, const EqualityComparable& value)
 {
-    while (first < last && !(*first == value))
+    while (first != last && !(*first == value))
 	++ first;
     return (first);
 }
@@ -88,7 +88,7 @@ inline InputIterator find (InputIterator first, InputIterator last, const Equali
 template <typename InputIterator, typename Predicate>
 inline InputIterator find_if (InputIterator first, InputIterator last, Predicate pred)
 {
-    while (first < last && !pred (*first))
+    while (first != last && !pred (*first))
 	++ first;
     return (first);
 }
@@ -100,7 +100,7 @@ template <typename InputIterator, typename BinaryPredicate>
 inline pair<InputIterator,InputIterator>
 mismatch (InputIterator first1, InputIterator last1, InputIterator first2, BinaryPredicate comp)
 {
-    while (first1 < last1 && comp(*first1, *first2))
+    while (first1 != last1 && comp(*first1, *first2))
 	++ first1, ++ first2;
     return (make_pair (first1, first2));
 }
@@ -112,7 +112,7 @@ template <typename InputIterator>
 inline pair<InputIterator,InputIterator>
 mismatch (InputIterator first1, InputIterator last1, InputIterator first2)
 {
-    while (first1 < last1 && *first1 == *first2)
+    while (first1 != last1 && *first1 == *first2)
 	++ first1, ++ first2;
     return (make_pair (first1, first2));
 }
@@ -146,7 +146,7 @@ template <typename InputIterator, typename EqualityComparable>
 inline size_t count (InputIterator first, InputIterator last, const EqualityComparable& value)
 {
     size_t total = 0;
-    for (; first < last; ++first)
+    for (; first != last; ++first)
 	if (*first == value)
 	    ++ total;
     return (total);
@@ -161,7 +161,7 @@ template <typename InputIterator, typename Predicate>
 inline size_t count_if (InputIterator first, InputIterator last, Predicate pred)
 {
     size_t total = 0;
-    for (; first < last; ++first)
+    for (; first != last; ++first)
 	if (pred (*first))
 	    ++ total;
     return (total);
@@ -178,7 +178,7 @@ inline size_t count_if (InputIterator first, InputIterator last, Predicate pred)
 template <typename InputIterator, typename OutputIterator, typename UnaryFunction>
 inline OutputIterator transform (InputIterator first, InputIterator last, OutputIterator result, UnaryFunction op)
 {
-    for (; first < last; ++result, ++first)
+    for (; first != last; ++result, ++first)
 	*result = op (*first);
     return (result);
 }
@@ -196,7 +196,7 @@ inline OutputIterator transform (InputIterator first, InputIterator last, Output
 template <typename InputIterator1, typename InputIterator2, typename OutputIterator, typename BinaryFunction>
 inline OutputIterator transform (InputIterator1 first1, InputIterator1 last1, InputIterator2 first2, OutputIterator result, BinaryFunction op)
 {
-    for (; first1 < last1; ++result, ++first1, ++first2)
+    for (; first1 != last1; ++result, ++first1, ++first2)
 	*result = op (*first1, *first2);
     return (result);
 }
@@ -209,7 +209,7 @@ inline OutputIterator transform (InputIterator1 first1, InputIterator1 last1, In
 template <typename ForwardIterator, typename T>
 inline void replace (ForwardIterator first, ForwardIterator last, const T& old_value, const T& new_value)
 {
-    for (; first < last; ++first)
+    for (; first != last; ++first)
 	if (*first == old_value)
 	    *first = new_value;
 }
@@ -222,7 +222,7 @@ inline void replace (ForwardIterator first, ForwardIterator last, const T& old_v
 template <typename ForwardIterator, typename Predicate, typename T>
 inline void replace_if (ForwardIterator first, ForwardIterator last, Predicate pred, const T& new_value)
 {
-    for (; first < last; ++first)
+    for (; first != last; ++first)
 	if (pred (*first))
 	    *first = new_value;
 }
@@ -238,7 +238,7 @@ inline void replace_if (ForwardIterator first, ForwardIterator last, Predicate p
 template <typename InputIterator, typename OutputIterator, typename T>
 inline OutputIterator replace_copy (InputIterator first, InputIterator last, OutputIterator result, const T& old_value, const T& new_value)
 {
-    for (; first < last; ++result, ++first)
+    for (; first != last; ++result, ++first)
         *result = (*first == old_value) ? new_value : *first;
 }
 
@@ -253,7 +253,7 @@ inline OutputIterator replace_copy (InputIterator first, InputIterator last, Out
 template <typename InputIterator, typename OutputIterator, typename Predicate, typename T>
 inline OutputIterator replace_copy_if (InputIterator first, InputIterator last, OutputIterator result, Predicate pred, const T& new_value) 
 {
-    for (; first < last; ++result, ++first)
+    for (; first != last; ++result, ++first)
         *result = pred(*first) ? new_value : *first;
 }
 
@@ -264,7 +264,7 @@ inline OutputIterator replace_copy_if (InputIterator first, InputIterator last, 
 template <typename ForwardIterator, typename Generator>
 inline void generate (ForwardIterator first, ForwardIterator last, Generator gen)
 {
-    for (; first < last; ++first)
+    for (; first != last; ++first)
 	*first = gen();
 }
 
@@ -276,7 +276,7 @@ inline void generate (ForwardIterator first, ForwardIterator last, Generator gen
 template <typename OutputIterator, typename Generator>
 inline OutputIterator generate_n (OutputIterator first, size_t n, Generator gen)
 {
-    for (; n--; ++first)
+    for (size_t i = 0; i != n; ++i, ++first)
 	*first = gen();
     return (first);
 }
@@ -289,8 +289,8 @@ inline OutputIterator generate_n (OutputIterator first, size_t n, Generator gen)
 template <typename BidirectionalIterator>
 inline void reverse (BidirectionalIterator first, BidirectionalIterator last)
 {
-    for (; first < last; ++first)
-	swap (*first, *--last);
+    for (; first != last && first != --last; ++first)
+	swap (*first, *last);
 }
 
 ///
@@ -300,10 +300,10 @@ template <typename ForwardIterator>
 ForwardIterator rotate (ForwardIterator first, ForwardIterator middle, ForwardIterator last)
 {
     if (first == middle || middle == last)
-	return (first); // the push_back implementation will always go here.
+	return (first);
     reverse (first, middle);
     reverse (middle, last);
-    for (;first < middle && middle < last; ++first)
+    for (;first != middle && middle != last; ++first)
 	swap (*first, *--last);
     if (first == middle)
 	reverse (middle, last);
@@ -319,7 +319,7 @@ template <typename InputIterator1, typename InputIterator2, typename OutputItera
 OutputIterator merge (InputIterator1 first1, InputIterator1 last1,
 		      InputIterator2 first2, InputIterator2 last2, OutputIterator result)
 {
-    for (; first1 < last1 && first2 < last2; ++result) {
+    for (; first1 != last1 && first2 != last2; ++result) {
 	if (*first1 < *first2)
 	    *result = *first1++;
 	else
@@ -337,7 +337,7 @@ OutputIterator merge (InputIterator1 first1, InputIterator1 last1,
 template <typename InputIterator>
 void inplace_merge (InputIterator first, InputIterator middle, InputIterator last)
 {
-    for (; middle < last; ++first) {
+    for (; middle != last; ++first) {
 	while (*first < *middle)
 	    ++ first;
 	reverse (first, middle);
@@ -355,7 +355,7 @@ void inplace_merge (InputIterator first, InputIterator middle, InputIterator las
 template <typename InputIterator, typename OutputIterator, typename T>
 inline OutputIterator remove_copy (InputIterator first, InputIterator last, OutputIterator result, const T& value)
 {
-    for (; first < last; ++first) {
+    for (; first != last; ++first) {
 	if (*first != value) {
 	    *result = *first;
 	    ++ result;
@@ -375,8 +375,8 @@ inline OutputIterator remove_copy (InputIterator first, InputIterator last, Outp
 template <typename InputIterator, typename OutputIterator, typename RInputIterator>
 OutputIterator remove_copy (InputIterator first, InputIterator last, OutputIterator result, RInputIterator rfirst, RInputIterator rlast)
 {
-    for (; first < last; ++first) {
-	while (rfirst < rlast && *rfirst < first)
+    for (; first != last; ++first) {
+	while (rfirst != rlast && *rfirst < first)
 	    ++ rfirst;
 	if (rfirst == rlast || first != *rfirst) {
 	    *result = *first;
@@ -396,7 +396,7 @@ OutputIterator remove_copy (InputIterator first, InputIterator last, OutputItera
 template <typename InputIterator, typename OutputIterator, typename Predicate>
 inline OutputIterator remove_copy_if (InputIterator first, InputIterator last, OutputIterator result, Predicate pred)
 {
-    for (; first < last; ++first)
+    for (; first != last; ++first)
 	if (pred (*first))
 	    *result++ = *first;
     return (result);
@@ -442,9 +442,9 @@ inline ForwardIterator remove_if (ForwardIterator first, ForwardIterator last, P
 template <typename InputIterator, typename OutputIterator>
 OutputIterator unique_copy (InputIterator first, InputIterator last, OutputIterator result)
 {
-    if (first < last) {
+    if (first != last) {
 	*result = *first;
-	while (++first < last)
+	while (++first != last)
 	    if (*first != *result)
 		*++result = *first;
 	++ result;
@@ -465,9 +465,9 @@ OutputIterator unique_copy (InputIterator first, InputIterator last, OutputItera
 template <typename InputIterator, typename OutputIterator, typename BinaryPredicate>
 OutputIterator unique_copy (InputIterator first, InputIterator last, OutputIterator result, BinaryPredicate binary_pred)
 {
-    if (first < last) {
+    if (first != last) {
 	*result = *first;
-	while (++first < last)
+	while (++first != last)
 	    if (binary_pred (*first, prev_value))
 		*++result = *first;
 	++ result;
@@ -516,8 +516,8 @@ template <typename ForwardIterator, typename LessThanComparable>
 ForwardIterator lower_bound (ForwardIterator first, ForwardIterator last, const LessThanComparable& value)
 {
     ForwardIterator mid;
-    while (first < last) {
-	mid = (first + (last - first) / 2);
+    while (first != last) {
+	mid = advance (first, distance (first,last) / 2);
 	if (*mid < value)
 	    first = mid + 1;
 	else
@@ -535,8 +535,8 @@ template <typename ForwardIterator, typename T, typename StrictWeakOrdering>
 ForwardIterator lower_bound (ForwardIterator first, ForwardIterator last, const T& value, StrictWeakOrdering comp)
 {
     ForwardIterator mid;
-    while (first < last) {
-	mid = (first + (last - first) / 2);
+    while (first != last) {
+	mid = advance (first, distance (first,last) / 2);
 	if (comp (*mid, value))
 	    first = mid + 1;
 	else
@@ -573,8 +573,8 @@ template <typename ForwardIterator, typename LessThanComparable>
 ForwardIterator upper_bound (ForwardIterator first, ForwardIterator last, const LessThanComparable& value)
 {
     ForwardIterator mid;
-    while (first < last) {
-	mid = (first + (last - first) / 2);
+    while (first != last) {
+	mid = advance (first, distance (first,last) / 2);
 	if (value < *mid)
 	    last = mid;
 	else
@@ -591,8 +591,8 @@ template <typename ForwardIterator, typename T, typename StrictWeakOrdering>
 ForwardIterator upper_bound (ForwardIterator first, ForwardIterator last, const T& value, StrictWeakOrdering comp)
 {
     ForwardIterator mid;
-    while (first < last) {
-	mid = (first + (last - first) / 2);
+    while (first != last) {
+	mid = advance (first, distance (first,last) / 2);
 	if (comp (value, *mid))
 	    last = mid;
 	else
@@ -609,7 +609,7 @@ inline pair<ForwardIterator,ForwardIterator> equal_range (ForwardIterator first,
 {
     pair<ForwardIterator,ForwardIterator> rv;
     rv.second = rv.first = lower_bound (first, last, value);
-    while (rv.second < last && !(value < *(rv.second)))
+    while (rv.second != last && !(value < *(rv.second)))
 	++ rv.second;
     return (rv);
 }
@@ -622,7 +622,7 @@ inline pair<ForwardIterator,ForwardIterator> equal_range (ForwardIterator first,
 {
     pair<ForwardIterator,ForwardIterator> rv;
     rv.second = rv.first = lower_bound (first, last, value, comp);
-    while (rv.second < last && !comp(value, *(rv.second)))
+    while (rv.second != last && !comp(value, *(rv.second)))
 	++ rv.second;
     return (rv);
 }
@@ -633,9 +633,9 @@ inline pair<ForwardIterator,ForwardIterator> equal_range (ForwardIterator first,
 template <typename RandomAccessIterator, typename Compare>
 void sort (RandomAccessIterator first, RandomAccessIterator last, Compare comp)
 {
-    for (RandomAccessIterator ip (first); ip < last; ++ ip) {
+    for (RandomAccessIterator ip (first); ip != last; ++ ip) {
 	RandomAccessIterator minEl (ip), curEl (ip);
-	while (++curEl < last)
+	while (++curEl != last)
 	    if (comp(*curEl, *minEl))
 		minEl = curEl;
 	if (ip != minEl)

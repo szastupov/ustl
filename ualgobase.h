@@ -63,7 +63,7 @@ inline void iterator_swap (Iterator& a, Iterator& b)
 template <typename InputIterator, typename OutputIterator>
 inline OutputIterator copy (InputIterator first, InputIterator last, OutputIterator result)
 {
-    for (; first < last; ++result, ++first)
+    for (; first != last; ++result, ++first)
 	*result = *first;
     return (result);
 }
@@ -93,7 +93,7 @@ inline OutputIterator copy_n (InputIterator first, size_t count, OutputIterator 
 template <typename InputIterator, typename UnaryFunction>
 inline UnaryFunction for_each (InputIterator first, InputIterator last, UnaryFunction f)
 {
-    for (; first < last; ++first)
+    for (; first != last; ++first)
 	f (*first);
     return (f);
 }
@@ -106,7 +106,7 @@ inline UnaryFunction for_each (InputIterator first, InputIterator last, UnaryFun
 template <typename ForwardIterator, typename T>
 inline void fill (ForwardIterator first, ForwardIterator last, const T& value)
 {
-    for (; first < last; ++first)
+    for (; first != last; ++first)
 	*first = value;
 }
 

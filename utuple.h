@@ -23,7 +23,6 @@
 #define UTUPLE_H_7324ADEC49B397CA74A56F6050FD5A6B
 
 #include "ualgo.h"
-#include <stdarg.h>
 
 namespace ustl {
 
@@ -45,7 +44,11 @@ public:
 public:
     inline			tuple (void)			{ fill_n (m_v, N, T()); }
     inline			tuple (const tuple<N,T>& t)	{ copy_n (t.m_v, N, m_v); }
-    inline			tuple (const_reference v1, ...);
+    inline			tuple (const_pointer v)		{ copy_n (v, N, m_v); }
+    inline			tuple (const_reference v0);
+    inline			tuple (const_reference v0, const_reference v1);
+    inline			tuple (const_reference v0, const_reference v1, const_reference v2);
+    inline			tuple (const_reference v0, const_reference v1, const_reference v2, const_reference v3);
     inline iterator		begin (void)			{ return (m_v); }
     inline const_iterator	begin (void) const		{ return (m_v); }
     inline iterator		end (void)			{ return (begin() + N); }
@@ -60,28 +63,33 @@ public:
 				    { copy_n (src.begin(), N, begin()); return (*this); }
     inline const tuple&		operator= (const tuple<N,T>& src)
 				    { copy_n (src.begin(), N, begin()); return (*this); }
-    inline void			operator+= (const_reference v)
-				    { for (size_t i = 0; i < N; ++ i) m_v[i] += v; }
-    inline void			operator-= (const_reference v)
-				    { for (size_t i = 0; i < N; ++ i) m_v[i] -= v; }
-    inline void			operator*= (const_reference v)
-				    { for (size_t i = 0; i < N; ++ i) m_v[i] *= v; }
-    inline void			operator/= (const_reference v)
-				    { for (size_t i = 0; i < N; ++ i) m_v[i] /= v; }
+    inline const tuple&		operator+= (const_reference v)
+				    { for (size_t i = 0; i != N; ++ i) m_v[i] += v; return (*this); }
+    inline const tuple&		operator-= (const_reference v)
+				    { for (size_t i = 0; i != N; ++ i) m_v[i] -= v; return (*this); }
+    inline const tuple&		operator*= (const_reference v)
+				    { for (size_t i = 0; i != N; ++ i) m_v[i] *= v; return (*this); }
+    inline const tuple&		operator/= (const_reference v)
+				    { for (size_t i = 0; i != N; ++ i) m_v[i] /= v; return (*this); }
 private:
     T				m_v [N];
 };
 
 template <size_t N, typename T>
-inline tuple<N,T>::tuple (const_reference v1, ...)
-{
-    va_list args;
-    va_start (args, v1);
-    m_v[0] = v1;
-    for (size_t i = 1; i < N; ++ i)
-	m_v[i] = va_arg (args, T);
-    va_end (args);
-}
+inline tuple<N,T>::tuple (const_reference v0)
+{ m_v[0] = v0; }
+
+template <size_t N, typename T>
+inline tuple<N,T>::tuple (const_reference v0, const_reference v1)
+{ m_v[0] = v0; m_v[1] = v1; }
+
+template <size_t N, typename T>
+inline tuple<N,T>::tuple (const_reference v0, const_reference v1, const_reference v2)
+{ m_v[0] = v0; m_v[1] = v1; m_v[2] = v2; }
+
+template <size_t N, typename T>
+inline tuple<N,T>::tuple (const_reference v0, const_reference v1, const_reference v2, const_reference v3)
+{ m_v[0] = v0; m_v[1] = v1; m_v[2] = v2; m_v[3] = v3; }
 
 template <size_t N, typename T1, typename T2>
 inline bool operator== (const tuple<N,T1>& t1, const tuple<N,T2>& t2)
