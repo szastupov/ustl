@@ -36,10 +36,14 @@ namespace ustl {
 const size_t c_DefaultAlignment = sizeof(u_int);
 
 /// Divides \p n1 by \p n2 and rounds the result up (regular division rounds down).
+/// Negative numbers are rounded down because they are an unusual case, supporting
+/// which would require a branch. Since this is frequently used in graphics, the
+/// speed is important.
+///
 template <typename T1, typename T2>
 inline T1 DivRU (T1 n1, T2 n2)
 {
-    return (n1 / n2 + (n1 % n2 != 0));
+    return (n1 / n2 + (n1 % n2 > 0));
 }
 
 /// Rounds \p n up to be divisible by \p grain
@@ -80,20 +84,17 @@ inline size_t distance (T1 i1, T2 i2)
     return (i2 - i1);
 }
 
-/// Returns the difference \p p1 - \p p2
-template <>
-inline size_t distance (void* p1, void* p2)
-{
-    return (reinterpret_cast<u_char*>(p2) - reinterpret_cast<u_char*>(p1));
+#define UNVOID_DISTANCE(T1const,T2const)			\
+template <>							\
+inline size_t distance (T1const void* p1, T2const void* p2)	\
+{								\
+    return (reinterpret_cast<T2const u_char*>(p2) -		\
+	    reinterpret_cast<T1const u_char*>(p1));		\
 }
-
-/// Returns the difference \p p1 - \p p2
-template <>
-inline size_t distance (const void* p1, const void* p2)
-{
-    return (reinterpret_cast<const u_char*>(p2) -
-	    reinterpret_cast<const u_char*>(p1));
-}
+UNVOID_DISTANCE(,)
+UNVOID_DISTANCE(const,const)
+UNVOID_DISTANCE(,const)
+UNVOID_DISTANCE(const,)
 
 /// Returns the number of elements in the static vector
 #define VectorSize(v)	(sizeof(v) / sizeof(*v))
@@ -102,7 +103,7 @@ inline size_t distance (const void* p1, const void* p2)
 #define BitsInType(t)	(sizeof(t) * CHAR_BIT)
 
 /// Returns the mask of type \p t with the first \p n bits set.
-#define BitMask(t,n)	(t(-1) >> ((sizeof(t) * CHAR_BIT) - n))
+#define BitMask(t,n)	(t(~t(0)) >> ((sizeof(t) * CHAR_BIT) - n))
 
 /// Argument that is used only in debug builds (as in an assert)
 #ifndef NDEBUG
