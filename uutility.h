@@ -86,8 +86,6 @@ inline T1 DivRU (T1 n1, T2 n2)
 }
 
 /// \brief Rounds \p n up to be divisible by \p grain
-/// This is optimized for constant grains to avoid division.
-///
 template <typename T>
 inline T Align (T n, T grain = c_DefaultAlignment)
 {

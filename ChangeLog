@@ -1,6 +1,6 @@
 Release 0.4-3
 	* A ChangeLog! After all these years...
-	* SIMD instruction support for fill and copy via gcc vector extensions
+	* SIMD instruction support for fill and copy
 	* matrix template (on top of tuple)
 		3dNow! instructions are supported for vector transforms.
 	* New utility templates
@@ -24,6 +24,7 @@ Release 0.4-3
 	* ustring.cc: changed allocation strategy to simply reserve the space
 		for the null terminator instead of tweaking size() all the
 		time. It's cleaner and saner this way.
+	* benchmarking tool in bvt	
 
 Release 0.4-2
 	* ostringstreams will now correctly resize the buffer as needed.
