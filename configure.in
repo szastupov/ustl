@@ -3,6 +3,22 @@ AC_INIT(Common.mk.in)
 AC_CONFIG_SRCDIR([Common.mk.in])
 AC_CONFIG_HEADER([config.h])
 
+AC_CANONICAL_HOST
+case $host in
+    *-*-osx*)
+        # A bogus warning that nobody cares about.
+        SYSWARNS="-Wno-long-double"
+	;;
+    *-*-solaris*)
+	# Because system headers are screwed up.
+        SYSWARNS="-Wno-redundant-decls"
+	;;
+    *)
+        SYSWARNS=""
+	;;
+esac
+AC_SUBST(SYSWARNS)
+
 # Checks for programs.
 AC_PROG_CXX
 AC_PROG_CC
@@ -37,3 +53,4 @@ AC_CHECK_FUNCS([atexit strtol memchr memmove memset strrchr strsignal])
 
 AC_CONFIG_FILES([Common.mk])
 AC_OUTPUT
+

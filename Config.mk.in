@@ -19,8 +19,8 @@ INSTALLLIB	= ${INSTALL} -p -m 644
 INSTALLEXE	= ${INSTALL} -p -m 755
 INSTALLDATA	= ${INSTALL} -p -m 644
 
-CWARNOPTS	= -Werror -Wall -W -Winline -Wpointer-arith -Wcast-qual \
-		-Wno-cast-align -Wwrite-strings -Wshadow -Wredundant-decls
+CWARNOPTS	= -Werror -Wall -W -Winline -Wpointer-arith -Wno-cast-align \
+		-Wcast-qual -Wwrite-strings -Wshadow -Wredundant-decls @SYSWARNS@
 CXXWARNOPTS	= ${CWARNOPTS} -Wmissing-prototypes -Wconversion -Wsign-promo \
 		-Wsynth -Woverloaded-virtual
 
