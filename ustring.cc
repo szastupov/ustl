@@ -33,26 +33,20 @@ namespace ustl {
 
 const char string::empty_string[string::c_TerminatorSize] = "";
 
-/// Links to the value of \p s
-string::string (pointer s)
+/// Links to \p s
+string::string (const_pointer s)
 : memblock ()
 {
-    // When given a NULL pointer, link to it, but as const, so that
-    // write operations will fail, but checking for an empty string will work.
     if (!s)
-	assign (s);
-    else
-	link (s, strlen(s) + c_TerminatorSize);
+	s = empty_string;
+    link (s, strlen(s) + c_TerminatorSize);
 }
 
 /// Copies the value of \p s of length \p len into itself.
 string::string (const_pointer s, size_t len)
 : memblock ()
 {
-    while (len && s[len - 1] == c_Terminator)
-	-- len;
-    resize (len);
-    memblock::copy (s, len);
+    assign (s, len);
 }
 
 /// Copies into itself the string data between \p s1 and \p s2
@@ -60,10 +54,7 @@ string::string (const_pointer s1, const_pointer s2)
 : memblock ()
 {
     assert (s1 <= s2 && "Negative ranges result in memory allocation errors.");
-    while (s2 > s1 && s2[-1] == c_Terminator)
-	-- s2;
-    resize (s2 - s1);
-    memblock::copy (s1, s2 - s1);
+    assign (s1, s2);
 }
 
 /// Resize the string to \p n characters. New space contents is undefined.

@@ -42,16 +42,16 @@ public:
 public:
     inline 		memblock (void);
     explicit		memblock (size_t n);
-    inline 		memblock (void* p, size_t n);
     inline		memblock (const void* p, size_t n);
-    inline explicit	memblock (const cmemlink& b);
-    inline explicit	memblock (const memlink& b);
+    explicit		memblock (const cmemlink& b);
+    explicit		memblock (const memlink& b);
     explicit		memblock (const memblock& b);
     inline virtual     ~memblock (void);
-    const memblock&	operator= (const cmemlink& b);
-    const memblock&	operator= (const memlink& b);
-    const memblock&	operator= (const memblock& b);
-    void		assign (const cmemlink& l);
+ inline const memblock&	operator= (const cmemlink& b);
+ inline const memblock&	operator= (const memlink& b);
+ inline const memblock&	operator= (const memblock& b);
+    void		assign (const void* p, size_t n);
+    inline void		assign (const cmemlink& l);
     inline void		swap (memblock& l);
     void		reserve (size_t newSize, bool bExact = true);
     inline void		resize (size_t newSize, bool bExact = true);
@@ -78,34 +78,6 @@ inline memblock::memblock (void)
 {
 }
 
-/// links to \p p, \p n. Data can be modified but will not be freed.
-inline memblock::memblock (void* p, size_t n)
-: memlink (p, n),
-  m_AllocatedSize (0)
-{
-}
-
-/// links to \p p, \p n. Data can not be modified and will not be freed.
-inline memblock::memblock (const void* p, size_t n)
-: memlink (p, n),
-  m_AllocatedSize (0)
-{
-}
-
-/// Links to what \p b is linked to.
-inline memblock::memblock (const cmemlink& b)
-: memlink (b),
-  m_AllocatedSize (0)
-{
-}
-
-/// Links to what \p b is linked to.
-inline memblock::memblock (const memlink& b)
-: memlink (b),
-  m_AllocatedSize (0)
-{
-}
-
 /// Frees internal data, if appropriate
 /// Only if the block was allocated using resize, or linked to using Manage,
 /// will it be freed. Also, Derived classes should call DestructBlock from
@@ -116,6 +88,33 @@ inline memblock::~memblock (void)
 {
     if (!is_linked())
 	deallocate();
+}
+
+/// Copies data from \p l.
+inline void memblock::assign (const cmemlink& l)
+{
+    assign (l.cdata(), l.size());
+}
+
+/// Allocates enough space and copies the contents of \p b.
+inline const memblock& memblock::operator= (const cmemlink& l)
+{
+    assign (l);
+    return (*this);
+}
+
+/// Allocates enough space and copies the contents of \p b.
+inline const memblock& memblock::operator= (const memlink& l)
+{
+    assign (l);
+    return (*this);
+}
+
+/// Allocates enough space and copies the contents of \p b.
+inline const memblock& memblock::operator= (const memblock& l)
+{
+    assign (l);
+    return (*this);
 }
 
 /// Returns the number of bytes allocated.

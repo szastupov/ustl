@@ -25,7 +25,6 @@
 #include "memblock.h"
 #include "ualgo.h"
 #include "uexception.h"
-#include <memory.h>
 #include <fcntl.h>
 #include <unistd.h>
 #ifdef HAVE_MALLOC_H
@@ -45,39 +44,36 @@ memblock::memblock (size_t n)
     resize (n);
 }
 
-/// Allocates enough space and copies the contents of \p b.
+/// links to \p p, \p n. Data can not be modified and will not be freed.
+memblock::memblock (const void* p, size_t n)
+: memlink (),
+  m_AllocatedSize (0)
+{
+    assign (p, n);
+}
+
+/// Links to what \p b is linked to.
+memblock::memblock (const cmemlink& b)
+: memlink (),
+  m_AllocatedSize (0)
+{
+    assign (b);
+}
+
+/// Links to what \p b is linked to.
+memblock::memblock (const memlink& b)
+: memlink (),
+  m_AllocatedSize (0)
+{
+    assign (b);
+}
+
+/// Links to what \p b is linked to.
 memblock::memblock (const memblock& b)
 : memlink (),
   m_AllocatedSize (0)
 {
-    resize (b.size());
-    copy (b.begin(), b.size());
-}
-
-/// Links to what \p b links to.
-const memblock& memblock::operator= (const cmemlink& b)
-{
-    deallocate();
-    memlink::operator= (b);
-    return (*this);
-}
-
-/// Links to what \p b links to.
-const memblock& memblock::operator= (const memlink& b)
-{
-    deallocate();
-    memlink::operator= (b);
-    return (*this);
-}
-
-/// Allocates enough space and copies the contents of \p b.
-const memblock& memblock::operator= (const memblock& b)
-{
-    if (is_linked())
-	memblock::unlink();
-    resize (b.size());
-    copy (b.begin(), b.size());
-    return (*this);
+    assign (b);
 }
 
 /// Frees internal data.
@@ -102,13 +98,11 @@ void memblock::manage (void* p, size_t n)
     m_AllocatedSize = n;
 }
 
-/// Copies data from \p p, \p n to the linked block starting at \p start.
-void memblock::assign (const cmemlink& l)
+/// Copies data from \p p, \p n.
+void memblock::assign (const void* p, size_t n)
 {
-    if (is_linked())
-	memblock::unlink();
-    resize (l.size());
-    copy (l.cdata(), l.size());
+    resize (n);
+    copy (p, n);
 }
 
 /// Reallocates internal block to hold at least \p newSize bytes. Some
@@ -122,15 +116,18 @@ void memblock::assign (const cmemlink& l)
 ///
 void memblock::reserve (size_t newSize, bool bExact)
 {
-    if (m_AllocatedSize >= newSize || is_linked())
+    if (m_AllocatedSize >= newSize)
 	return;
+    void* oldBlock = is_linked() ? NULL : data();
     if (!bExact)
 	newSize = Align (newSize, Align (c_PageSize, elementSize()));
     assert (newSize % elementSize() == 0 && "reserve can only allocate units of elementType.");
-    void* newBlock = realloc (data(), newSize);
+    void* newBlock = realloc (oldBlock, newSize);
     if (!newBlock)
 	throw bad_alloc(newSize);
     constructBlock (advance (newBlock, m_AllocatedSize), newSize - m_AllocatedSize);
+    if (!oldBlock && cdata())
+	copy_n (cdata(), size(), newBlock);
     link (newBlock, size());
     m_AllocatedSize = newSize;
 }
@@ -140,8 +137,7 @@ memblock::iterator memblock::insert (iterator start, size_t n)
 {
     const uoff_t ip = start - begin();
     assert (ip <= size());
-    if (!is_linked())
-	resize (size() + n, false);
+    resize (size() + n, false);
     memlink::insert (begin() + ip, n);
     return (begin() + ip);
 }
@@ -152,30 +148,23 @@ memblock::iterator memblock::erase (iterator start, size_t n)
     const uoff_t ep = start - begin();
     assert (ep + n <= size());
     memlink::erase (begin() + ep, n);
-    if (!is_linked())
-	resize (size() - n, false);
+    resize (size() - n, false);
     return (begin() + ep);
 }
 
 /// Reads the object from stream \p s
 void memblock::read (istream& is)
 {
-    if (is_linked())
-	memlink::read (is);
-    else {
-	size_t n;
-	is >> n;
-	resize (n);
-	is.read (data(), size());
-	is.align();
-    }
+    size_t n;
+    is >> n;
+    resize (n);
+    is.read (data(), size());
+    is.align();
 }
 
 /// Reads the entire file \p "filename".
 void memblock::read_file (const char* filename)
 {
-    if (is_linked())
-	memblock::unlink();
     struct stat st;
     if (stat (filename, &st))
 	throw file_exception ("stat", filename);

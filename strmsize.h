@@ -84,6 +84,12 @@ inline size_t stream_size_of (wchar_t)	{ return (sizeof(wchar_t));	}
 	inline size_t stream_size_of (const T& v)		{ return (v.stream_size()); }	\
     }
 
+/// Declares that private member T is STD_STREAMABLE
+#define FRIEND_STD_STREAMABLE(T)					\
+    friend ustl::istream& ustl::operator>> (ustl::istream& is, T& v);	\
+    friend ustl::ostream& ustl::operator<< (ostream& os, const T& v);	\
+    friend size_t ustl::stream_size_of (const T& v)
+
 /// Declares that T is to be cast into TSUB for streaming.
 #define CAST_STREAMABLE(T,TSUB)	\
     namespace ustl {		\

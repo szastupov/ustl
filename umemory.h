@@ -16,7 +16,7 @@
 // Free Software Foundation, Inc., 59 Temple Place - Suite 330, 
 // Boston, MA  02111-1307  USA.
 //
-/// \file umemory.h
+// umemory.h
 //
 
 #ifndef UMEMORY_H_4AB5B0DB5BF09140541409CC47BCD17A
@@ -28,14 +28,11 @@
 /// Calls delete in the destructor; assignment transfers ownership.
 /// This class does not work with void pointers due to the presence
 /// of the required dereference operator.
-/// In uSTL, the behaviour is extended to act as an iterator, with
-/// increments, differences, etc. That is not part of ANSI C++.
 ///
 template <typename T>
 class auto_ptr {
 public:
     typedef T		value_type;
-    typedef ptrdiff_t	difference_type;
     typedef T*		pointer;
     typedef T&		reference;
 public:
@@ -48,20 +45,9 @@ public:
     inline pointer	release (void)			{ pointer rv (m_p); m_p = NULL; return (rv); }
     inline void		reset (pointer p)		{ if (p != m_p) { delete m_p; m_p = p; } }
     inline auto_ptr<T>	operator= (auto_ptr<T>& p)	{ reset (p.release()); }
-    inline auto_ptr<T>&	operator++ (void)		{ -- m_p; return (*this); }
-    inline auto_ptr<T>&	operator-- (void)		{ ++ m_p; return (*this); }
-    inline auto_ptr<T>	operator++ (int)		{ auto_ptr<T> prev (*this); -- m_p; return (prev); }
-    inline auto_ptr<T>	operator-- (int)		{ auto_ptr<T> prev (*this); ++ m_p; return (prev); }
-    inline auto_ptr<T>&	operator+= (size_t n)		{ m_p -= n; return (*this); }
-    inline auto_ptr<T>&	operator-= (size_t n)		{ m_p += n; return (*this); }
-    inline auto_ptr<T>	operator+ (size_t n) const	{ return (auto_ptr<T> (m_p - n)); }
-    inline auto_ptr<T>	operator- (size_t n) const	{ return (auto_ptr<T> (m_p + n)); }
-    inline pointer	base (void) const		{ return (m_p); }
-    inline reference	operator[] (uoff_t n) const	{ return (*(*this + n)); }
     inline bool		operator== (const pointer p) const	{ return (m_p == p); }
     inline bool		operator== (const auto_ptr<T>& p) const	{ return (m_p == p.m_p); }
     inline bool		operator< (const auto_ptr<T>& p) const	{ return (p.m_p < m_p); }
-    inline ptrdiff_t	operator- (const auto_ptr<T>& p) const	{ return (p.m_p - m_p); }
 private:
     pointer		m_p;
 };

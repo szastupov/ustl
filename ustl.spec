@@ -1,17 +1,22 @@
 %define name ustl
-%define version 0.2
+%define version 0.3
 %define release 1
 
 Summary:	uSTL - Codespace frugal STL implementation.
 Name:		%{name}
 Version:	%{version}
 Release:	%{release}
-Source0:	%{name}-%{version}.tar.gz
+Source0:	%{name}-%{version}-%{release}.tar.bz2
 URL:		http://sourceforge.net/projects/ustl
 License:	LGPL
 Group:		Development/Libraries
 Prefix:		%{_prefix}
 BuildRoot:	%{buildroot}
+Provides:	ustl
+BuildRequires:	glibc-devel >= 2.0.6
+BuildRequires:	libstdc++-devel
+Requires:	glibc >= 2.0.6
+Requires:	libstdc++
 
 %description
 uSTL library reimplements the STL specification with the goal of
@@ -33,7 +38,7 @@ make install
 %defattr(-,root,root)
 %{_prefix}/lib/libustl.a
 %{_prefix}/include/ustl.h
-%{_prefix}/include/ustl/
+%dir %{_prefix}/include/ustl/
 %{_prefix}/include/ustl/cmemlink.h
 %{_prefix}/include/ustl/fdostream.h
 %{_prefix}/include/ustl/memblock.h
@@ -44,6 +49,7 @@ make install
 %{_prefix}/include/ustl/sostream.h
 %{_prefix}/include/ustl/strmsize.h
 %{_prefix}/include/ustl/ualgo.h
+%{_prefix}/include/ustl/ualgobase.h
 %{_prefix}/include/ustl/uctralgo.h
 %{_prefix}/include/ustl/uexception.h
 %{_prefix}/include/ustl/ufunction.h
@@ -52,6 +58,7 @@ make install
 %{_prefix}/include/ustl/uiterator.h
 %{_prefix}/include/ustl/ulimits.h
 %{_prefix}/include/ustl/umap.h
+%{_prefix}/include/ustl/umemory.h
 %{_prefix}/include/ustl/umultimap.h
 %{_prefix}/include/ustl/umultiset.h
 %{_prefix}/include/ustl/unew.h
@@ -60,8 +67,13 @@ make install
 %{_prefix}/include/ustl/uspecial.h
 %{_prefix}/include/ustl/ustack.h
 %{_prefix}/include/ustl/ustring.h
+%{_prefix}/include/ustl/utf8.h
 %{_prefix}/include/ustl/utypes.h
 %{_prefix}/include/ustl/uutility.h
 %{_prefix}/include/ustl/uvector.h
-%{_prefix}/include/ustl/utf8.h
-%doc COPYING README docs/html bvt
+%{_prefix}/include/ustl/config.h
+%{_prefix}/include/ustl/ustl.h
+%doc COPYING
+%doc README
+%doc docs/html/
+

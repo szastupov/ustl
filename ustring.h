@@ -73,8 +73,7 @@ public:
     inline			string (void);
     inline			string (const string& s);
     inline explicit		string (const cmemlink& l);
-    explicit			string (pointer s);
-    inline 			string (const_pointer s);
+				string (const_pointer s);
 				string (const_pointer s, size_t len);
 				string (const_pointer s1, const_pointer s2);
     inline size_t		size (void) const;
@@ -148,9 +147,9 @@ public:
 
 /// Creates an empty string.
 inline string::string (void)
-: memblock (c_TerminatorSize)
+: memblock ()
 {
-    *end() = c_Terminator;
+    link (empty_string, sizeof(empty_string));
 }
 
 /// Assigns itself the value of string \p s
@@ -163,13 +162,6 @@ inline string::string (const string& s)
 inline string::string (const cmemlink& s)
 : memblock (s)
 {
-}
-
-/// Links to the value of \p s
-inline string::string (const_pointer s)
-: memblock ()
-{
-    assign (s);
 }
 
 /// Returns the number of characters in the string, not including the terminator.
@@ -347,19 +339,20 @@ inline const string& string::operator+= (const_pointer s)
 inline string string::operator+ (const string& s) const
 {
     string result (*this);
-    return (result += s);
+    result += s;
+    return (result);
 }
 
 /// Assigns itself the value of the range [\p i1, \p i2]
 inline void string::assign (const_iterator i1, const_iterator i2)
 {
-    assign (i1, i2 - i1);
+    assign (i1, distance (i1, i2));
 }
 
 /// Appends to itself the value of the range [\p i1, \p i2]
 inline void string::append (const_iterator i1, const_iterator i2)
 {
-    append (i1, i2 - i1);
+    append (i1, distance (i1, i2));
 }
 
 /// \brief Returns comparison value regarding string \p s.
@@ -415,7 +408,7 @@ inline bool string::operator> (const_pointer s) const
 /// Sets the size of the string to 0. begin is not overwritten.
 inline void string::clear (void)
 {
-    assign (empty_string, size_t(0));
+    resize (0);
 }
 
 /// Inserts \p c at the end of the string.
