@@ -141,6 +141,8 @@ public:
     void			insert (iterator start, const_pointer first, const_iterator last, size_type n = 1);
     iterator			erase (iterator start, size_type size = 1);
     void			erase (uoff_t start, size_type size = 1);
+    inline iterator		erase (iterator first, const_iterator last)	{ return (erase (first, size_type(distance(first,last)))); }
+				OVERLOAD_POINTER_AND_SIZE_T_V2(erase, iterator)
     inline void			push_back (const_reference c);
     inline void			push_back (wchar_t c);
     inline void			pop_back (void);
