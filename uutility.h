@@ -317,14 +317,15 @@ namespace simd {
 } // namespace simd
 
 /// \brief Type that is not size_t
+///
 /// Because size_t may be declared as unsigned long or unsigned int on
 /// different machines, this macro is convenient when defining overloads
 /// of size_t to use other types.
 ///
-#if SIZE_OF_SIZE_T == SIZE_OF_INT
-    #define NOT_SIZE_T_I_OR_L	unsigned long
-#else
+#ifdef SIZE_T_IS_LONG
     #define NOT_SIZE_T_I_OR_L	unsigned int
+#else
+    #define NOT_SIZE_T_I_OR_L	unsigned long
 #endif
 
 /// \brief Required when you want to overload size_t and a pointer.
@@ -338,11 +339,11 @@ namespace simd {
 /// implicit cast is already detected by gcc.
 ///
 #define OVERLOAD_POINTER_AND_SIZE_T_V2(name, arg1type)						\
-    inline void	name (arg1type a1, short a2)			{ link (a1, size_t(a2)); }	\
-    inline void	name (arg1type a1, unsigned short a2)		{ link (a1, size_t(a2)); }	\
-    inline void	name (arg1type a1, int a2)			{ link (a1, size_t(a2)); }	\
-    inline void	name (arg1type a1, long a2)			{ link (a1, size_t(a2)); }	\
-    inline void	name (arg1type a1, NOT_SIZE_T_I_OR_L a2)	{ link (a1, size_t(a2)); }
+    inline void	name (arg1type a1, short a2)			{ name (a1, size_t(a2)); }	\
+    inline void	name (arg1type a1, unsigned short a2)		{ name (a1, size_t(a2)); }	\
+    inline void	name (arg1type a1, int a2)			{ name (a1, size_t(a2)); }	\
+    inline void	name (arg1type a1, long a2)			{ name (a1, size_t(a2)); }	\
+    inline void	name (arg1type a1, NOT_SIZE_T_I_OR_L a2)	{ name (a1, size_t(a2)); }
 
 } // namespace ustl
 
