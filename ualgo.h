@@ -112,8 +112,9 @@ template <typename InputIterator>
 inline pair<InputIterator,InputIterator>
 mismatch (InputIterator first1, InputIterator last1, InputIterator first2)
 {
-    typedef typename iterator_traits<InputIterator>::value_type value_type;
-    return (mismatch (first1, last1, first2, equal_to<value_type>()));
+    while (first1 < last1 && *first1 == *first2)
+	++ first1, ++ first2;
+    return (make_pair (first1, first2));
 }
 
 ///

@@ -11,6 +11,7 @@
 #include "uset.h"
 #include "umultiset.h"
 #include "ubitset.h"
+#include "utuple.h"
 #include "ufunction.h"
 #include "mistream.h"
 #include "mostream.h"
@@ -164,6 +165,47 @@ template <size_t Size>
 inline size_t stream_size_of (const bitset<Size>& v)
 {
     return (v.capacity() / CHAR_BIT);
+}
+
+//----{ tuple }---------------------------------------------------------
+
+/// Reads tuple \p v from stream \p is.
+template <size_t N, typename T>
+inline istream& operator>> (istream& is, tuple<N,T>& v)
+{
+    for (typename tuple<N,T>::iterator i = v.begin(); i < v.end(); ++ i)
+	is >> *i;
+    return (is);
+}
+
+/// Writes tuple \p v into stream \p os.
+template <size_t N, typename T>
+inline ostream& operator<< (ostream& os, const tuple<N,T>& v)
+{
+    for (typename tuple<N,T>::const_iterator i = v.begin(); i < v.end(); ++ i)
+	os << *i;
+    return (os);
+}
+
+/// Writes tuple \p v into stream \p os.
+template <size_t N, typename T>
+inline ostringstream& operator<< (ostringstream& os, const tuple<N,T>& v)
+{
+    typename tuple<N,T>::const_iterator i = v.begin();
+    os << '(';
+    if (i < v.end())
+	os << *i;
+    while (++i < v.end())
+	os << ',' << *i;
+    os << ')';
+    return (os);
+}
+
+/// Returns the number of bytes necessary to write this object to a stream
+template <size_t N, typename T>
+inline size_t stream_size_of (const tuple<N,T>& v)
+{
+    return (v.size() * stream_size_of(T()));
 }
 
 //----------------------------------------------------------------------
