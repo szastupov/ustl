@@ -84,6 +84,14 @@ public:
     inline iterator		insert (iterator ip, const_iterator i1, const_iterator i2);
     inline iterator		erase (iterator ep, size_type n = 1);
     inline iterator		erase (iterator ep1, iterator ep2);
+    inline void			link (const void* p, size_type n)	{ memblock::link (p, n * sizeof(T)); }
+    inline void			link (void* p, size_type n)		{ memblock::link (p, n * sizeof(T)); }
+    inline void			link (const vector<T>& v)		{ memblock::link (v); }
+    inline void			link (vector<T>& v)			{ memblock::link (v); }
+    inline void			link (const void* first, const void* last)	{ memblock::link (first, last); }
+    inline void			link (void* first, void* last)		{ memblock::link (first, last); }
+				OVERLOAD_POINTER_AND_SIZE_T_V2(link, void*)
+				OVERLOAD_POINTER_AND_SIZE_T_V2(link, const void*)
 protected:
     virtual void		constructBlock (void* p, size_type s) const;
     virtual void		destructBlock (void* p, size_type s) const;
