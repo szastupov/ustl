@@ -8,7 +8,7 @@ INCS	= cmemlink.h memblock.h memlink.h mistream.h mostream.h ustdxept.h \
 	ualgo.h ustl.h ustring.h utypes.h uutility.h uvector.h ualgobase.h \
 	uctralgo.h ufunction.h upair.h uiterator.h ustack.h uqueue.h \
 	uexception.h strmsize.h sistream.h sostream.h ulimits.h uset.h \
-	umultiset.h uspecial.h uios.h fdostream.h umap.h umultimap.h \
+	umultiset.h uspecial.h uios.h fdostream.h umap.h umultimap.h simd.h \
 	umemory.h uiosfunc.h utf8.h config.h ubitset.h unumeric.h utuple.h \
 	umatrix.h ulaalgo.h ulocale.h ufacets.h ulist.h upredalgo.h ustl.tbff
 DOCT	= ustldoc.in
