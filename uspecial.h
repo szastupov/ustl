@@ -71,6 +71,14 @@ ostream& operator<< (ostream& os, const pair<T1,T2>& p)
     return (os);
 }
 
+/// Writes pair \p p to stream \p os.
+template <typename T1, typename T2>
+ostringstream& operator<< (ostringstream& os, const pair<T1,T2>& p)
+{
+    os << '(' << p.first << ',' << p.second << ')';
+    return (os);
+}
+
 /// Returns the written size of the object.
 template <typename T1, typename T2>
 inline size_t stream_size_of (const pair<T1,T2>&)
@@ -124,6 +132,20 @@ ostream& operator<< (ostream& os, const vector<T>& v)
     os << v.size();
     copy_n (v.begin(), v.size(), ostream_iterator<T>(os));
     os.align();
+    return (os);
+}
+
+/// Writes the vector to stream \p os.
+template <typename T>
+ostringstream& operator<< (ostringstream& os, const vector<T>& v)
+{
+    typename vector<T>::const_iterator i = v.begin();
+    os << '(';
+    if (i < v.end())
+	os << *i;
+    while (++i < v.end())
+	os << ',' << *i;
+    os << ')';
     return (os);
 }
 

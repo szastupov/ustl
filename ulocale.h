@@ -38,6 +38,7 @@ public:
 	time_bit,
 	monetary_bit,
 	messages_bit,
+	numpunct_bit,
 	all_categories
     };
     typedef u_int	category;

@@ -46,9 +46,9 @@ public:
 
 class ctype : public locale::facet, public ctype_base {
 public:
-    static const locale::category c_Category = locale::ctype;
+    static const locale::category_bit c_Category = locale::ctype_bit;
 public:
-			ctype (void);
+    explicit		ctype (const locale& loc);
     bool		is (mask m, wchar_t c) const;
     const char*		scan_is (mask m, const char* first, const char* last) const;
     const char*		scan_not (mask m, const char* first, const char* last) const;
@@ -64,6 +64,9 @@ public:
 
 class numpunct : public locale::facet {
 public:
+    static const locale::category_bit c_Category = locale::numpunct_bit;
+public:
+    explicit		numpunct (const locale& loc);
     wchar_t		decimal_point (void) const;
     wchar_t		thousands_sep (void) const;
     string		grouping (void) const;
@@ -73,10 +76,10 @@ public:
 
 class num_get : public locale::facet {
 public:
-    static const category c_Category = locale::numeric;
+    static const locale::category_bit c_Category = locale::numeric_bit;
     typedef uint32_t	iosflags_t;
 public:
-			num_get (void);
+    explicit		num_get (const locale& loc);
     const_iterator	get (const_iterator first, const_iterator last, iosflags_t flags, bool& v) const;
     const_iterator	get (const_iterator first, const_iterator last, iosflags_t flags, short& v) const;
     const_iterator	get (const_iterator first, const_iterator last, iosflags_t flags, int& v) const;
@@ -98,7 +101,7 @@ class num_put : public locale::facet {
 public:
     typedef uint32_t	iosflags_t;
 public:
-			num_put (void);
+    explicit		num_put (const locale& loc);
     iterator		put (iterator first, iterator last, iosflags_t flags, bool v, wchar_t filler = ' ') const;
     iterator		put (iterator first, iterator last, iosflags_t flags, long v, wchar_t filler = ' ') const;
     iterator		put (iterator first, iterator last, iosflags_t flags, u_long v, wchar_t filler = ' ') const;
@@ -110,11 +113,16 @@ public:
     iterator		put (iterator first, iterator last, iosflags_t flags, long long v, wchar_t filler = ' ') const;
     iterator		put (iterator first, iterator last, iosflags_t flags, unsigned long long v, wchar_t filler = ' ') const;
 #endif
+private:
+    inline size_t	base_from_flags (iosflags_t flags) const;
+    inline iterator	write_buffer (const iterator& from, size_t n, iterator first, iterator last) const;
 };
+
+extern hashvalue_t char_hash (const char* first, const char* last); // in uhash.cc
 
 class collate : public locale::facet {
 public:
-			collate (void);
+    explicit		collate (const locale& loc);
     int			compare (const char* f1, const char* l1, const char* f2, const char* l2) const;
     string		transform (const char* f1, const char* l1) const;
     inline hashvalue_t	hash (const char* f1, const char* l1) const { return (char_hash (f1, l1)); }
@@ -129,7 +137,7 @@ struct tm;
 
 class time_get : public locale::facet, public time_base {
 public:
-			time_get (void);
+    explicit		time_get (const locale& loc);
     dateorder		date_order (void) const;
     const_iterator	get_time (const_iterator first, const_iterator last, iosflags_t flags, tm* v) const;
     const_iterator	get_date (const_iterator first, const_iterator last, iosflags_t flags, tm* v) const;
@@ -140,7 +148,7 @@ public:
 
 class time_put : public locale::facet, public time_base {
 public:
-			time_put (void);
+    explicit		time_put (const locale& loc);
     iterator		put (iterator first, iterator last, iosflags_t flags, const tm* v, wchar_t filler = ' ') const;
 };
 
@@ -152,7 +160,7 @@ public:
 
 class money_punct : public locale::facet, public money_base {
 public:
-			money_punct (void);
+    explicit		money_punct (const locale& loc);
     wchar_t		decimal_point (void) const;
     wchar_t		thousands_sep (void) const;
     string		grouping (void) const;
@@ -166,14 +174,14 @@ public:
 
 class money_get : public locale::facet, public money_base {
 public:
-			money_get (void);
+    explicit		money_get (const locale& loc);
     const_iterator	get (const_iterator first, const_iterator last, iosflags_t flags, long double& v) const;
     const_iterator	get (const_iterator first, const_iterator last, iosflags_t flags, string& v) const;
 };
 
 class money_put : public locale::facet, public money_base {
 public:
-			money_put (void);
+    explicit		money_put (const locale& loc);
     iterator		put (iterator first, iterator last, iosflags_t flags, long double v, wchar_t filler = ' ') const;
     iterator		put (iterator first, iterator last, iosflags_t flags, const string& v, wchar_t filler = ' ') const;
 };
@@ -182,7 +190,7 @@ class messages : public locale::facet {
 public:
     typedef int		catalog;
 public:
-			messages (void);
+			messages (const locale& loc);
     catalog		open (const string& name, const locale& loc);
     string		get (catalog c, int s, int msgid) const;
     void		close (catalog c);

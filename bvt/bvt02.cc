@@ -13,7 +13,7 @@ void WriteCML (const memblock& l)
     size_t nc = l.size();
     while (nc && pc[nc - 1] == 0)
 	-- nc;
-    cout.write (l, nc);
+    cout.write (l.cdata(), nc);
     cout << endl;
 }
 
@@ -29,7 +29,7 @@ void TestMB (void)
 	cout << "begin() failed on memblock" << endl;
     if (a.begin() + 5 != &strTest[5])
 	cout << "begin() + 5 failed on memblock" << endl;
-    if (0 != memcmp (a, strTest, strTestLen))
+    if (0 != memcmp (a.begin(), strTest, strTestLen))
 	cout << "memcmp failed on memblock" << endl;
     WriteCML (a);
     b.link (cstrTest, strTestLen);

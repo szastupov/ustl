@@ -61,7 +61,7 @@ inline size_t Utf8SequenceBytes (u_char c)
     //	1 - error, in the middle of the character. Take 6 bits (0xFF >> 2)
     //	    so you will keep reading invalid entries until you hit the next character.
     //	>2 - multibyte character. Take remaining bits, and get the next bytes.
-    // All errors are ignored, since nothing can be done about them.
+    // All errors are ignored, since the user can not correct them.
     //
     u_char mask = (1 << (BitsInType(u_char) - 1));
     size_t nBytes = 0;
@@ -69,7 +69,7 @@ inline size_t Utf8SequenceBytes (u_char c)
 	mask >>= 1;
 	++ nBytes;
     }
-    return (nBytes ? nBytes : 1);
+    return (nBytes ? nBytes : 1); // A sequence is always at least 1 byte.
 }
 
 //----------------------------------------------------------------------
@@ -83,7 +83,20 @@ inline size_t Utf8SequenceBytes (u_char c)
 /// to the start of the next character, that would result in omitting the
 /// misformatted character and the one after it, making it very difficult to
 /// detect by the user. It is better to write some strange characters and let
-/// the user know his file is corrupted.
+/// the user know his file is corrupted. Another problem is overflow on bad
+/// encodings (like a 0xFF on the end of a string). You may be tempted to
+/// put an end-of-buffer check in here by, for example, passing the end
+/// iterator to the constructor. That is a bad idea because encoding errors
+/// should occur in only one place: unprocessed user data freshly received
+/// from the disk or the keyboard where it was either physically damaged, or
+/// maliciously altered. Encoding validation should be done in the input
+/// layer, as soon as you discover the relevant format, in order to be able
+/// to correct it properly. If you throw an exception from here, you would
+/// have a hard time finding a place for the error-correcting code, since
+/// your reading layer probably reads many different objects with various
+/// formats, and you might make the horrible mistake of showing that awful
+/// "File is corrupt" dialog instead of actually fixing the problem or at
+/// least telling the user where the error is. So do it right, ok?
 ///
 template <typename Iterator, typename WChar = wchar_t>
 class utf8in_iterator {

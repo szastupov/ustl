@@ -68,7 +68,6 @@ public:
     void		link (const void* p, size_t n);
     inline void		link (const cmemlink& l);
     virtual void	unlink (void);
-    inline		operator const void* (void) const;
     const cmemlink&	operator= (const cmemlink& l);
     bool		operator== (const cmemlink& l) const;
     void		swap (cmemlink& l);
@@ -92,12 +91,6 @@ private:
 
 /// Returns the pointer to the internal data
 inline cmemlink::const_pointer cmemlink::cdata (void) const
-{
-    return (m_CData);
-}
-
-/// Returns the pointer to the internal data
-inline cmemlink::operator const void* (void) const
 {
     return (m_CData);
 }

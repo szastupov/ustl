@@ -35,7 +35,7 @@ public:
     typedef typename Sequence::const_reference	const_reference;
     typedef typename Sequence::pointer		pointer;
 public:
-    				stack (void);
+				stack (void);
     explicit			stack (const Sequence& s);
     inline bool			empty (void) const;
     inline size_type		size (void) const;
@@ -46,7 +46,7 @@ public:
     inline bool			operator== (const stack& s);
     inline bool			operator< (const stack& s);
 private:
-    Sequence	m_Storage;
+    Sequence			m_Storage;
 };
 
 /// Default constructor.
@@ -95,7 +95,7 @@ inline typename stack<Sequence>::const_reference stack<Sequence>::top (void) con
 template <class Sequence>
 inline void stack<Sequence>::push (const value_type& v)
 {
-    m_Storage.push_back (b);
+    m_Storage.push_back (v);
 }
 
 /// Pops the topmost element from the stack.
@@ -116,7 +116,7 @@ inline bool stack<Sequence>::operator== (const stack& s)
 template <class Sequence>
 inline bool stack<Sequence>::operator< (const stack& s)
 {
-    return (m_Storage < s.m_Storage);
+    return (m_Storage.size() < s.m_Storage.size());
 }
 
 }; // namespace ustl

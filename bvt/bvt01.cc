@@ -13,7 +13,7 @@ void WriteCML (const cmemlink& l)
     size_t nc = l.size();
     if (pc[nc - 1] == 0)
 	-- nc;
-    cout.write (l, nc);
+    cout.write (l.cdata(), nc);
     cout << endl;
 }
 
@@ -29,7 +29,7 @@ void TestML (void)
 	cout << "begin() failed on memlink" << endl;
     if (a.begin() + 5 != &strTest[5])
 	cout << "begin() + 5 failed on memlink" << endl;
-    if (0 != memcmp (a, strTest, strTestLen))
+    if (0 != memcmp (a.begin(), strTest, strTestLen))
 	cout << "memcmp failed on memlink" << endl;
     WriteCML (a);
     b.link (cstrTest, strTestLen);

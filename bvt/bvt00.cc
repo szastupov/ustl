@@ -9,12 +9,12 @@ using namespace ustl;
 void WriteCML (const cmemlink& l)
 {
     cout << "cmemlink{" << l.size() << "}: ";
-    const void* pv = l;
+    const void* pv = l.cdata();
     const char* pc = reinterpret_cast<const char*>(pv);
     size_t nc = l.size();
     if (pc[nc - 1] == 0)
 	-- nc;
-    cout.write (l, nc);
+    cout.write (l.begin(), nc);
     cout << endl;
 }
 
@@ -29,7 +29,7 @@ void TestCML (void)
 	cout << "CData() failed on cmemlink" << endl;
     if (*(const char*)(a.begin() + 5) != strTest[5])
 	cout << "CData() failed on cmemlink" << endl;
-    if (0 != memcmp (a, strTest, strTestLen))
+    if (0 != memcmp (a.begin(), strTest, strTestLen))
 	cout << "memcmp failed on cmemlink" << endl;
     b.link (strTest, strTestLen);
     WriteCML (a);

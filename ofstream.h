@@ -48,6 +48,27 @@ private:
 };
 
 /// A string stream that reads from an fd. Implements cin.
+///
+/// I would discourage the use of cin in general. As a quick-n-dirty
+/// hack to read a configuration file it is ok, but if you want to
+/// do real user input, it becomes much less acceptable. The problem
+/// is not really the implementation, but the way it is used, expecting
+/// the completely unverified information coming from the user to be
+/// magically converted to numbers, strings, etc. Bounds checking and
+/// filter adaptors like utf8 are damn hard to do directly over cin.
+/// Furthermore, you are sitting there, blocking on user input, when
+/// you could be doing something useful. Instead, implement a nonblocking
+/// block reading routine (I cannot provide you with one, since it
+/// depends on your event framework), which reads all available data
+/// and sends it through a series of validation filters. UTF8 format
+/// checking should be done this way for maximum simplicity. Then later
+/// you can use istringstream directly on the buffer, which allows you
+/// to restart reading in case of errors, for instance, whereas cin
+/// will simply drop the offending characters (this implementation will
+/// keep some, but you are not supposed to know that). Anyway, this
+/// class is here only because it is really very very small and does
+/// next to nothing.
+///
 class fdistringstream : public istringstream {
 public:
     explicit			fdistringstream (int fd, size_t bufSize = USTL_CIN_BUFFER_SIZE);

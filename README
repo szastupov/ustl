@@ -24,27 +24,27 @@ good thing, placing memory management code into a template necessitates
 its reinstantiation for every template instance used by the derivative
 program. This produces substantial code bloat, that is frequently derided
 by C developers and used by them as an argument that C is better than
-C++. The uSTL implementation attempts to solve this problem
-by factoring memory management code into a non-template base class,
-ustl::memblock, which performs unstructured memory allocation. STL
-containers are then implemented as template wrappers for memblock to
-provide a measure of type safety. The result is that each template
-instantiation contains less code, and although it does not completely
-"disappear", due to the requirement for calling placement constructors on
-the allocated memory, most of it does, being replaced by calls to memblock
-methods. A vector<T> template instance, for instance, implements virtuals
-constructBlock (simply a call to placement new[]) and destructBlock
-(iterates over all elements to manually call the destructor) and two
-algorithms copy and fill (which most STL programs use anyway); everything
-else melts away at compile time as if you were using only unstructured
-storage in the first place. ustl::string is implemented as a static class,
-not a template, so it is shared among all users of the library. The base
-classes for unstructured storage management (cmemlink - link to constant
-memory, memlink - link to mutable memory, and memblock - owner of mutable
-memory) are, of course, also available for use as data buffers wherever
-those are needed, and streams that efficiently read and write binary data
-into them (istream and ostream; plaintext support is the exception in this
-library, because I consider it evil) are also available.
+C++. The uSTL implementation attempts to solve this problem by factoring
+memory management code into a non-template base class, ustl::memblock,
+which performs unstructured memory allocation. STL containers are then
+implemented as template wrappers for memblock to provide a measure of
+type safety. The result is that each template instantiation contains
+less code, and although it does not completely "disappear", due to the
+requirement for calling placement constructors on the allocated memory,
+most of it does, being replaced by calls to memblock methods. A vector<T>
+template instance, for instance, implements virtuals constructBlock
+(simply a call to placement new[]) and destructBlock (iterates over all
+elements to manually call the destructor) and two algorithms copy and
+fill (which most STL programs use anyway); everything else melts away at
+compile time as if you were using only unstructured storage in the first
+place. ustl::string is implemented as a static class, not a template,
+so it is shared among all users of the library. The base classes for
+unstructured storage management (cmemlink - link to constant memory,
+memlink - link to mutable memory, and memblock - owner of mutable memory)
+are, of course, also available for use as data buffers wherever those are
+needed, and streams that efficiently read and write binary data into them
+(istream and ostream; plaintext support is the exception in this library,
+because I consider it evil) are also available.
 
 ------------
 COMPILATION:
@@ -62,6 +62,7 @@ Clean builds have been thus obtained on (SourceForge compile farm):
 	* Sun Sparc (Sun Ultra60 system, sparc64) - Linux OS kernel version 2.2 (Debian GNU/Linux 2.2)
 	* Sun Ultra Enterprise 220R - Sun Solaris (version 8)
 	* StrongArm 10000 host.
+	My own development platform is a dual-proc Athlon-MP 1GHz with Debian 3.1
 
 make install
 	This copies the shared library libustl.so to your lib directory,
@@ -88,9 +89,9 @@ by uncommenting the STANDALONE= line in Common.mk . This will add the
 all your code with that flag as well, passed in to both the compiler
 and the linker. You may also need to link with -lsupc++ -lgcc_s -lc to
 get definitions not used by ustl. This is a great way to reduce your
-memory footprint; libstdc++ is 850k, standalone libustl is 85k. The
+memory footprint; libstdc++.so.5 is 860k, standalone libustl is 85k. The
 former also links to libm, which you most likely do not need, saving an
-additional 137k. This leaves only libc and libgcc_s, both unavoidable.
+additional 130k. This leaves only libc and libgcc_s, both unavoidable.
 Unfortunately, the linking procedure is not too user friendly, and can be
 inconvenient unless you can factor out all that stuff into some common
 make include file, like I do.
@@ -108,34 +109,79 @@ This is usually the only thing you need to do, aside from possibly adding
 using namespace ustl;
 
 to avoid having to prefix everything with ustl::
-Most of the library is compliant with the STL specification (or, at least, it
-should be), so if you know how to use STL, you know how to use uSTL. Excellent
-tutorials on STL are found all over the web and can explain it much better
-than I. For information on usage of uSTL-specific extensions, read through
-the bvt sources, which try to call every method at least once, and by doing
-so give a reasonably good example for how I expect the library to be used.
-Incidentally, all the source code is formatted with the expectation of the
-tab size to be 8, and it may look really weird otherwise.
 
-It is worthwhile to note that while it is possible to convert a project that
-already uses STL to compile with uSTL instead, this is not intended to be the
-most common scenario. Reduction of template bloat is not going to save your
-project if it happens to be dreadfully slow; the causes for poor performance
-usually lie elsewhere. The motivation for uSTL is only simplification and
-reduction of code size for aesthetic reasons. The performance gains, if any,
-will probably be minimal.
+Most of the library is compliant with the STL specification (or, at
+least, it should be), so if you know how to use STL, you know how to
+use uSTL. Excellent tutorials on STL are found all over the web and can
+explain it much better than I. For information on usage of uSTL-specific
+extensions, read through the bvt sources, which try to call every method
+at least once, and by doing so give a reasonably good example for how
+I expect the library to be used.  Incidentally, all the source code is
+formatted with the expectation of the tab size to be 8, and it may look
+really weird otherwise.
 
-If you are using uSTL in your project, you should include a pointer to its
-website, or just bundle the release that you use with your own package. This
-practice, which I would recommend for all dependencies your project has, will
-help you avoid complaints of "this fool using a non-standard library". These
-days people expect every library to be bundled with the language compiler,
-as it is for perl or Java, and use the contrary situation as a misguided
-"proof" that those languages are better than C++. Such arguments come out not
-necessarily from laziness or stupidity, but from countless experiences with
-packages which have obscure dependencies and do not mention where those
-dependencies may be found. So please, make your users' life simpler and maybe
-they will eventually see that C++ really is the best programming language.
+You will find the code somewhat biased against direct I/O. This is because
+I expect that you will also be using a UI library of some kind and would
+not want blocking inputs anywhere. Almost all UI systems have an event
+mechanism of some kind, messages like Win32, or callbacks like GNOME and
+KDE, and the assumed mechanism for all I/O operations is that they are
+always buffered and asynchronous. This means that you read the data as
+a raw block before processing and write it in the same manner. For this
+reason, most classes in uSTL operate on memory buffers and you will find
+using that method much more convenient with this library than the direct
+stream manipulation that is advocated in most STL examples.
+
+The other problem you may run into is the lack of error checking in many
+places. My philosophy is that programmer errors do not throw exceptions,
+but cause asserts instead. An example: a buggy utf8 encoder that you
+just wrote causes a crash when you try to use the utf8in_iterator and
+get an overflow due to a 0xFF at the end of the string. This will not
+throw an exception because you should correct the code before the user
+ever sees it. This means you need to actually test your code before
+shipping it. Most code is written to silently ignore such errors and
+continue as much as possible, since that is what the user wants. (See
+comments in utf8.h for reasons why the iterator overflows). Exceptions
+are thrown when the user has somehow caused the error.
+
+Data corruption is almost never caused by the user, but either by
+hardware failures or by haphazard editing, and should be detected
+and _corrected_. Because the errors should be corrected, it is not a
+good idea to rely on the streams throwing exceptions when something
+bad happens. Where is the error? Where is the buffer? Who owns the
+buffer? How will the reading process be restarted? How will the user be
+told what was done? Who actually handles the exception, anyway? You will
+save yourself a lot of trouble by separating the reading stage from the
+verification/correction stage. With a separate verification stage you
+do not have to worry about restarting the reads, about looking up the
+owner of the buffer, about error reporting, about incomplete objects,
+etc. While it may seem like duplicating the work, the two stages do
+very different things. The verification stage reads the _format_, and
+the reading stage reads the _data_. The verification stage is only run
+on untrusted inputs, such as user files, while the reading stage is run
+on everything. Of course, you don't have to do all this, but be aware
+that the code usually assumes this approach, and insert workarounds
+(like enabling stream bounds checking in the makefile).
+
+It is worthwhile to note that while it is possible to convert a project
+that already uses STL to compile with uSTL instead, this is not intended
+to be the most common scenario. Reduction of template bloat is not going
+to save your project if it happens to be dreadfully slow; the causes for
+poor performance usually lie elsewhere. The motivation for uSTL is only
+simplification and reduction of code size for aesthetic reasons. The
+performance gains, if any, will probably be minimal.
+
+If you are using uSTL in your project, you should include a pointer to
+its website, or at least bundle the release that you use with your own
+package. This practice, which I would recommend for all dependencies
+your project has, will help you avoid complaints of "this fool using
+a non-standard library". These days people expect every library to be
+bundled with the language compiler, as it is for perl or Java, and use
+the contrary situation as a misguided "proof" that those languages are
+better than C++. Such arguments come out not necessarily from laziness
+or stupidity, but from countless experiences with packages which have
+obscure dependencies and do not mention where those dependencies may
+be found. So please, make your users' life simpler and maybe they will
+eventually see that C++ really is the best programming language.
 
 --------------
 BUG REPORTING:

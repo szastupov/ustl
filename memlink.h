@@ -72,7 +72,6 @@ public:
     inline void		copy (const void* p, size_t n);
     void		copy (iterator offset, const void* p, size_t n);
     inline pointer	data (void);
-    inline		operator void* (void) const;
     const memlink&	operator= (const cmemlink& l);
     const memlink&	operator= (const memlink& l);
     inline void		swap (memlink& l);
@@ -114,12 +113,6 @@ inline void memlink::unlink (void)
 
 /// Returns a modifiable pointer to the block
 inline memlink::pointer memlink::data (void)
-{
-    return (m_Data);
-}
-
-/// Returns a modifiable pointer to the block
-inline memlink::operator void* (void) const
 {
     return (m_Data);
 }

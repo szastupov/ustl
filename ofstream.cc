@@ -95,7 +95,7 @@ fdistringstream::fdistringstream (int fd, size_t bufSize)
   m_Buffer (bufSize),
   m_Fd (fd)
 {
-    link (m_Buffer, 0);
+    link (m_Buffer.data(), 0);
 }
 
 fdistringstream::~fdistringstream (void)
@@ -117,7 +117,7 @@ size_t fdistringstream::underflow (void)
 	else
 	    br += brn;
     }
-    link (m_Buffer, br);
+    link (m_Buffer.data(), br);
     return (remaining());
 }
 
