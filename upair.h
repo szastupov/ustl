@@ -31,32 +31,18 @@ public:
     typedef T1		first_type;
     typedef T2		second_type;
 public:
-   	 		pair (void);
-			pair (const T1& a, const T2& b);
+    /// Default constructor.
+    pair (void)				: first (T1()), second (T2()) {}
+    /// Initializes members with \p a, and \p b.
+    pair (const T1& a, const T2& b)	: first (a), second (b) {}
 public:
     first_type		first;
     second_type		second;
 };
 
-/// Default constructor.
-template <typename T1, typename T2>
-pair<T1,T2>::pair (void)
-: first (T1()),
-  second (T2())
-{
-}
-
-/// Initializes members with \p a, and \p b.
-template <typename T1, typename T2>
-pair<T1,T2>::pair (const T1& a, const T2& b)
-: first (a),
-  second (b)
-{
-}
-
 /// Compares both values of \p p1 to those of \p p2.
 template <typename T1, typename T2>
-bool operator== (const pair<T1,T2>& p1, const pair<T1,T2>& p2)
+inline bool operator== (const pair<T1,T2>& p1, const pair<T1,T2>& p2)
 {
     return (p1.first == p2.first && p1.second == p2.second);
 }

@@ -1,5 +1,5 @@
-%define name ustl
-%define version 0.3
+%define name	@PACKAGE_NAME@
+%define version @PACKAGE_VERSION@
 %define release 1
 
 Summary:	uSTL - Codespace frugal STL implementation.
@@ -12,7 +12,7 @@ License:	LGPL
 Group:		Development/Libraries
 Prefix:		%{_prefix}
 BuildRoot:	%{buildroot}
-Provides:	ustl
+Provides:	%{name}
 BuildRequires:	glibc-devel >= 2.0.6
 BuildRequires:	libstdc++-devel
 Requires:	glibc >= 2.0.6

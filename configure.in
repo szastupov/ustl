@@ -1,5 +1,5 @@
 # Process this file with autoconf to produce a configure script.
-AC_INIT(Common.mk.in)
+AC_INIT(ustl, 0.3, Mike Sharov <msharov@talentg.com>)
 AC_CONFIG_SRCDIR([Common.mk.in])
 AC_CONFIG_HEADER([config.h])
 
@@ -35,7 +35,7 @@ AC_CHECK_PROG(DOXYGEN,doxygen,doxygen)
 # Checks for header files.
 AC_HEADER_STDC
 AC_HEADER_SYS_WAIT
-AC_CHECK_HEADERS([fcntl.h float.h limits.h memory.h stddef.h stdlib.h string.h unistd.h])
+AC_CHECK_HEADERS([fcntl.h float.h limits.h malloc.h memory.h stddef.h stdint.h stdlib.h string.h unistd.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
@@ -49,8 +49,9 @@ AC_CHECK_TYPES([ptrdiff_t])
 AC_FUNC_MEMCMP
 AC_FUNC_STRTOD
 AC_FUNC_STAT
-AC_CHECK_FUNCS([atexit strtol memchr memmove memset strrchr strsignal])
+AC_FUNC_MALLOC
+AC_CHECK_FUNCS([atexit strtol memchr memmove memset strrchr strsignal strerror])
 
-AC_CONFIG_FILES([Common.mk])
+AC_CONFIG_FILES([Common.mk ustl.spec])
 AC_OUTPUT
 
