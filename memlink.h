@@ -256,7 +256,8 @@ inline void memlink::link (const cmemlink& l)
 /// Links to \p l
 inline void memlink::link (memlink& l)
 {
-    link (l.begin(), l.size());
+    cmemlink::link (l);
+    m_Data = l.begin();
 }
 
 /// Reads object \p l from stream \p is

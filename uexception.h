@@ -35,6 +35,7 @@ namespace ustl {
 class string;
 class istream;
 class ostream;
+class ostringstream;
 
 typedef u_int		xfmt_t;
 
@@ -52,6 +53,7 @@ public:
     virtual void	info (string& msgbuf, const char* fmt = NULL) const;
     virtual void	read (istream& is);
     virtual void	write (ostream& os) const;
+    void		text_write (ostringstream& os) const;
     virtual size_t	stream_size (void) const;
     /// Format of the exception is used to lookup exception::info format string.
     /// Another common use is the instantiation of serialized exceptions, used

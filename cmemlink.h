@@ -22,7 +22,6 @@
 #ifndef CMEMLINK_H
 #define CMEMLINK_H
 
-#include "uutility.h"
 #include "ualgobase.h"
 
 /// The ustl namespace contains all ustl classes and algorithms.

@@ -21,7 +21,6 @@
 
 #include "sostream.h"
 #include "ustring.h"
-#include <string.h>
 #include <stdio.h>	// for vsnprintf in ostringstream::format
 #include <stdarg.h>
 
@@ -29,28 +28,34 @@ namespace ustl {
 
 ostringstream::ostringstream (void)
 : ostream (),
-  m_Base (10),
   m_DecimalSeparator ('.'),
   m_ThousandSeparator (','),
-  m_Precision (2)
+  m_Base (10),
+  m_Precision (2),
+  m_Width (0),
+  m_Flags (0)
 {
 }
 
 ostringstream::ostringstream (void* p, size_t n)
 : ostream (p, n),
-  m_Base (10),
   m_DecimalSeparator ('.'),
   m_ThousandSeparator (','),
-  m_Precision (2)
+  m_Base (10),
+  m_Precision (2),
+  m_Width (0),
+  m_Flags (0)
 {
 }
 
 ostringstream::ostringstream (const memlink& source)
 : ostream (source),
-  m_Base (10),
   m_DecimalSeparator ('.'),
   m_ThousandSeparator (','),
-  m_Precision (2)
+  m_Base (10),
+  m_Precision (2),
+  m_Width (0),
+  m_Flags (0)
 {
 }
 
@@ -165,6 +170,40 @@ int ostringstream::format (const char* fmt, ...)
 	skip (rv);
     va_end (args);
     return (rv);
+}
+
+/// Sets the flag \p f in the stream.
+ostringstream& ostringstream::operator<< (ios::fmtflags f)
+{
+    switch (f) {
+	case ios::oct:		set_base (8); break;
+	case ios::dec:		set_base (10); break;
+	case ios::hex:		set_base (16); break;
+	case ios::left:
+	    m_Flags |= ios::left;
+	    m_Flags &= ~ios::right;
+	    break;
+	case ios::right:
+	    m_Flags |= ios::right;
+	    m_Flags &= ~ios::left;
+	    break;
+	case ios::boolalpha:
+	case ios::fixed:
+	case ios::internal:
+	case ios::scientific:
+	case ios::showbase:
+	case ios::showpoint:
+	case ios::showpos:
+	case ios::skipws:
+	case ios::unitbuf:
+	case ios::uppercase:
+	case ios::adjustfield:
+	case ios::basefield:
+	case ios::floatfield:
+	    m_Flags |= f;
+	    break;
+    }
+    return (*this);
 }
 
 } // namespace ustl

@@ -35,8 +35,8 @@ class string;
 /// A string stream that writes to an fd. Implements cout and cerr.
 class fdostringstream : public ostringstream {
 public:
-    				fdostringstream (int fd, size_t bufSize = USTL_COUT_BUFFER_SIZE);
-			       ~fdostringstream (void);
+    explicit			fdostringstream (int fd, size_t bufSize = USTL_COUT_BUFFER_SIZE);
+    virtual		       ~fdostringstream (void);
     void			flush (void);
     fdostringstream&		operator<< (char c);
     inline fdostringstream&	operator<< (char* s);
@@ -57,6 +57,7 @@ public:
     inline fdostringstream&	operator<< (u_char* s);
     inline fdostringstream&	operator<< (const void* s);
     inline fdostringstream&	operator<< (void* s);
+    inline fdostringstream&	operator<< (ios::fmtflags f);
     int				format (const char* fmt, ...) __attribute__((__format__(__printf__, 2, 3)));
 private:
     inline void			flush_if_full (void);
@@ -93,6 +94,7 @@ inline fdostringstream& fdostringstream::operator<< (bool v)	{ ostringstream::op
 inline fdostringstream& fdostringstream::operator<< (wchar_t v)	{ ostringstream::operator<< (v); return (*this); }
 inline fdostringstream& fdostringstream::operator<< (void* s)	{ ostringstream::operator<< (s); return (*this); }
 inline fdostringstream& fdostringstream::operator<< (const void* s)	{ ostringstream::operator<< (s); return (*this); }
+inline fdostringstream& fdostringstream::operator<< (ios::fmtflags f)	{ ostringstream::operator<< (f); return (*this); }
 
 extern fdostringstream cout, cerr;
 

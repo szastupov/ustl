@@ -23,6 +23,7 @@
 #define SOSTREAM_H
 
 #include "mostream.h"
+#include "uios.h"
 
 namespace ustl {
 
@@ -52,22 +53,32 @@ public:
     inline ostringstream&	operator<< (const void* s);
     inline ostringstream&	operator<< (void* s);
     ostringstream&		operator<< (const string& v);
+    ostringstream&		operator<< (ios::fmtflags f);
     int				format (const char* fmt, ...) __attribute__((__format__(__printf__, 2, 3)));
-    inline void			set_base (u_short base);
+    inline void			set_base (uint16_t b);
+    inline void			set_width (uint16_t w);
     inline void			set_decimal_separator (char s);
     inline void			set_thousand_separator (char s);
     inline void			set_precision (u_short precision);
 private:
-    u_short			m_Base;			///< Numeric base for writing numbers.
     char			m_DecimalSeparator;	///< Period by default.
     char			m_ThousandSeparator;	///< Comma by default.
-    u_short			m_Precision;		///< Number of digits after the decimal separator.
+    uint16_t			m_Base;			///< Numeric base for writing numbers.
+    uint16_t			m_Precision;		///< Number of digits after the decimal separator.
+    uint16_t			m_Width;		///< Field width.
+    uint32_t			m_Flags;		///< See ios::fmtflags.
 };
 
 /// Sets the numeric base for writing numbers.
-inline void ostringstream::set_base (u_short base)
+inline void ostringstream::set_base (uint16_t b)
 {
-    m_Base = base;
+    m_Base = b;
+}
+
+/// Sets the numeric base for writing numbers.
+inline void ostringstream::set_width (uint16_t w)
+{
+    m_Width = w;
 }
 
 /// Sets the decimal separator in numbers. Period by default.

@@ -28,6 +28,9 @@
 #ifndef UALGOBASE_H
 #define UALGOBASE_H
 
+#include <string.h>
+#include "uutility.h"
+
 namespace ustl {
 
 ///
@@ -67,7 +70,7 @@ OutputIterator copy (InputIterator first, InputIterator last, OutputIterator res
 /// in forward order, i.e. in order of increasing n.
 ///
 template <class InputIterator, class OutputIterator>
-OutputIterator copy_n (InputIterator first, size_t count, OutputIterator result)
+inline OutputIterator copy_n (InputIterator first, size_t count, OutputIterator result)
 {
     while (count--)
 	*result++ = *first++;
@@ -111,6 +114,82 @@ OutputIterator fill_n (OutputIterator first, size_t n, const T& value)
     while (n--)
 	*first++ = value;
     return (first);
+}
+
+//
+// Specializations for void* and char*.
+//
+template <>
+inline void* copy (const void* first, const void* last, void* result)
+{
+    memcpy (result, first, distance (first, last));
+    return (advance (result, distance (first, last)));
+}
+template <>
+inline char* copy (const char* first, const char* last, char* result)
+{
+    memcpy (result, first, distance (first, last));
+    return (advance (result, distance (first, last)));
+}
+template <>
+inline u_char* copy (const u_char* first, const u_char* last, u_char* result)
+{
+    memcpy (result, first, distance (first, last));
+    return (advance (result, distance (first, last)));
+}
+template <>
+inline void* copy_n (const void* first, size_t count, void* result)
+{
+    memcpy (result, first, count);
+    return (advance (result, count));
+}
+template <>
+inline char* copy_n (const char* first, size_t count, char* result)
+{
+    memcpy (result, first, count);
+    return (advance (result, count));
+}
+template <>
+inline u_char* copy_n (const u_char* first, size_t count, u_char* result)
+{
+    memcpy (result, first, count);
+    return (advance (result, count));
+}
+inline void fill (void* first, void* last, char value)
+{
+    memset (first, value, distance (first, last));
+}
+inline void fill (void* first, void* last, u_char value)
+{
+    memset (first, value, distance (first, last));
+}
+inline void fill (char* first, char* last, char value)
+{
+    memset (first, value, distance (first, last));
+}
+inline void fill (u_char* first, u_char* last, u_char value)
+{
+    memset (first, value, distance (first, last));
+}
+inline void* fill_n (void* first, size_t n, char value)
+{
+    memset (first, value, n);
+    return (advance (first, n));
+}
+inline void* fill_n (void* first, size_t n, u_char value)
+{
+    memset (first, value, n);
+    return (advance (first, n));
+}
+inline char* fill_n (char* first, size_t n, char value)
+{
+    memset (first, value, n);
+    return (advance (first, n));
+}
+inline u_char* fill_n (u_char* first, size_t n, u_char value)
+{
+    memset (first, value, n);
+    return (advance (first, n));
 }
 
 } // namespace ustl

@@ -23,10 +23,8 @@
 
 #include "mistream.h"
 #include "memlink.h"
-#include "uutility.h"
 #include "ualgo.h"
 #include <stdlib.h>
-#include <string.h>
 
 namespace ustl {
 
@@ -51,7 +49,7 @@ void memlink::copy (iterator start, const void* p, size_t n)
     assert (start >= begin() && start + n <= end());
     assert (n % elementSize() == 0 && "You are trying to write an incompatible element type");
     if (p && n && p != m_Data)
-	memcpy (start, p, n);
+	copy_n (p, n, start.base());
 }
 
 /// Fills the linked block with the given pattern.
@@ -67,12 +65,10 @@ void memlink::fill (iterator start, const void* p, size_t elSize, size_t elCount
     assert (start >= begin() && start + elSize * elCount <= end());
     assert (elSize % elementSize() == 0 && "You are trying to write an incompatible element type");
     if (elSize == 1)
-	memset (start, *reinterpret_cast<const u_char*>(p), elCount);
+	fill_n (start.base(), elCount, *reinterpret_cast<const u_char*>(p));
     else {
-	while (elCount--) {
-	    memcpy (start, p, elSize);
-	    start += elSize;
-	}
+	while (elCount--)
+	    start = copy_n (p, elSize, start.base());
     }
 }
 
@@ -110,7 +106,7 @@ void memlink::erase (iterator start, size_t n)
 void memlink::constructBlock (void* p, size_t n) const
 {
     assert (n % elementSize() == 0 && "You are trying to write an incompatible element type");
-    memset (p, 0, n);
+    fill_n (p, n, u_char(0));
 }
 
 #ifndef NDEBUG
@@ -118,7 +114,7 @@ void memlink::constructBlock (void* p, size_t n) const
 void memlink::destructBlock (void* p, size_t n) const
 {
     assert (n % elementSize() == 0 && "You are trying to write an incompatible element type");
-    memset (p, 0xCD, n);
+    fill_n (p, n, u_char(0xCD));
 }
 #else
 void memlink::destructBlock (void*, size_t) const

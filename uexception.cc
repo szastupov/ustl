@@ -23,9 +23,9 @@
 #include "ustring.h"
 #include "mistream.h"
 #include "mostream.h"
+#include "sostream.h"
 #include "uiosfunc.h"
 #include <errno.h>
-#include <string.h>
 
 namespace ustl {
 
@@ -69,7 +69,7 @@ void exception::read (istream& is)
     xfmt_t fmt;
     is >> fmt >> stmSize;
     assert (fmt == m_Format && "The saved exception is of a different type.");
-    assert (stmSize <= is.remaining() && "The saved exception data is corrupt.");
+    assert (stmSize - exception::stream_size() <= is.remaining() && "The saved exception data is corrupt.");
     m_Format = fmt;
 }
 
@@ -83,6 +83,16 @@ void exception::write (ostream& os) const
 size_t exception::stream_size (void) const
 {
     return (stream_size_of (m_Format) + stream_size_of(size_t()));
+}
+
+/// Writes the exception as text into stream \p os.
+void exception::text_write (ostringstream& os) const
+{
+    try {
+	string buf;
+	info (buf);
+	os << buf;
+    } catch (...) {}
 }
 
 //----------------------------------------------------------------------

@@ -21,14 +21,11 @@
 //	STL basic_string equivalent functionality.
 //
 
-#include "uutility.h"
 #include "ustring.h"
 #include "mistream.h"
 #include "mostream.h"
 #include "strmsize.h"
 #include "utf8.h"
-#include <string.h>
-#include <memory.h>
 #include <stdarg.h>	// for va_list, va_start, and va_end (in string::format)
 #include <stdio.h>	// for vsnprintf (in string::format)
 
@@ -107,14 +104,14 @@ void string::append (const_pointer s, size_t len)
     while (len && s[len - 1] == c_Terminator)
 	-- len;
     memblock::insert (end(), len);
-    memcpy (end() - len, s, len);
+    copy_n (s, len, end() - len);
 }
 
 /// Appends to itself \p n characters of value \p c.
 void string::append (size_t n, value_type c)
 {
     memblock::insert (end(), n);
-    memset (end() - n, c, n);
+    fill_n (end() - n, n, c);
 }
 
 /// Copies into itself at offset \p start, the value of string \p p of length \p n.
@@ -124,7 +121,7 @@ size_t string::copyto (pointer p, size_t n, const_iterator start) const
     if (!start)
 	start = begin();
     const size_t btc = min(n - c_TerminatorSize, length());
-    memcpy (p, start, btc);
+    copy_n (start, btc, p);
     p[btc] = c_Terminator;
     return (btc + c_TerminatorSize);
 }
@@ -169,7 +166,7 @@ bool string::operator== (const_pointer s) const
 void string::insert (iterator start, const_reference c, size_t n)
 {
     start = reinterpret_cast<iterator>(memblock::insert (start, n).base());
-    memset (start, c, n);
+    fill_n (start, n, c);
 }
 
 /// Inserts \p count instances of string \p s at offset \p start.

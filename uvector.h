@@ -26,7 +26,6 @@
 #include "mostream.h"
 #include "memblock.h"
 #include "ualgo.h"
-#include "uutility.h"
 #include "uiterator.h"
 #include "strmsize.h"
 #include "unew.h"
