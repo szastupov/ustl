@@ -174,7 +174,7 @@ inline istream& operator>> (istream& is, memlink& l)
 }
 
 /// Use with memlink-derived classes to allocate and link to stack space. \p n is in elements, not bytes!
-#define alloca_link(m,n)	(m).memlink::link (alloca ((m).elementBytes (n)), (n))
+#define alloca_link(m,n)	(m).link (alloca ((m).elementBytes (n)), (n))
 
 } // namespace ustl
 
