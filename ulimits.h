@@ -33,115 +33,115 @@ namespace ustl {
 template <typename T> 
 struct numeric_limits {
     /// Returns the minimum value for type T.
-    static inline T min (void) throw()		{ return (static_cast<T>(0)); }
+    static inline T min (void)		{ return (static_cast<T>(0)); }
     /// Returns the minimum value for type T.
-    static inline T max (void) throw()		{ return (static_cast<T>(0)); }
+    static inline T max (void)		{ return (static_cast<T>(0)); }
     /// Returns true if the type is signed.
-    static inline bool is_signed (void) throw()	{ return (false); }
+    static inline bool is_signed (void)	{ return (false); }
 };
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 
 template <>
 struct numeric_limits<bool> {
-    static inline bool min (void) throw()	{ return (false); }
-    static inline bool max (void) throw()	{ return ( true); }
-    static inline bool is_signed (void) throw()	{ return (false); }
+    static inline bool min (void)	{ return (false); }
+    static inline bool max (void)	{ return ( true); }
+    static inline bool is_signed (void)	{ return (false); }
 };
 
 template <>
 struct numeric_limits<char> {
-    static inline char min (void) throw()	{ return (CHAR_MIN); }
-    static inline char max (void) throw()	{ return (CHAR_MAX); }
-    static inline bool is_signed (void) throw()	{ return (true); }
+    static inline char min (void)	{ return (CHAR_MIN); }
+    static inline char max (void)	{ return (CHAR_MAX); }
+    static inline bool is_signed (void)	{ return (true); }
 };
 
 template <>
 struct numeric_limits<int> {
-    static inline int min (void) throw()	{ return (INT_MIN); }
-    static inline int max (void) throw()	{ return (INT_MAX); }
-    static inline bool is_signed (void) throw()	{ return (true); }
+    static inline int min (void)	{ return (INT_MIN); }
+    static inline int max (void)	{ return (INT_MAX); }
+    static inline bool is_signed (void)	{ return (true); }
 };
 
 template <>
 struct numeric_limits<short> {
-    static inline short min (void) throw()	{ return (SHRT_MIN); }
-    static inline short max (void) throw()	{ return (SHRT_MAX); }
-    static inline bool is_signed (void) throw()	{ return (true); }
+    static inline short min (void)	{ return (SHRT_MIN); }
+    static inline short max (void)	{ return (SHRT_MAX); }
+    static inline bool is_signed (void)	{ return (true); }
 };
 
 template <>
 struct numeric_limits<long> {
-    static inline long min (void) throw()	{ return (LONG_MIN); }
-    static inline long max (void) throw()	{ return (LONG_MAX); }
-    static inline bool is_signed (void) throw()	{ return (true); }
+    static inline long min (void)	{ return (LONG_MIN); }
+    static inline long max (void)	{ return (LONG_MAX); }
+    static inline bool is_signed (void)	{ return (true); }
 };
 
 template <>
 struct numeric_limits<u_char> {
-    static inline u_char min (void) throw()	{ return (0); }
-    static inline u_char max (void) throw()	{ return (UCHAR_MAX); }
-    static inline bool is_signed (void) throw()	{ return (false); }
+    static inline u_char min (void)	{ return (0); }
+    static inline u_char max (void)	{ return (UCHAR_MAX); }
+    static inline bool is_signed (void)	{ return (false); }
 };
 
 template <>
 struct numeric_limits<u_int> {
-    static inline u_int min (void) throw()	{ return (0); }
-    static inline u_int max (void) throw()	{ return (UINT_MAX); }
-    static inline bool is_signed (void) throw()	{ return (false); }
+    static inline u_int min (void)	{ return (0); }
+    static inline u_int max (void)	{ return (UINT_MAX); }
+    static inline bool is_signed (void)	{ return (false); }
 };
 
 template <>
 struct numeric_limits<u_short> {
-    static inline u_short min (void) throw()	{ return (0); }
-    static inline u_short max (void) throw()	{ return (USHRT_MAX); }
-    static inline bool is_signed (void) throw()	{ return (false); }
+    static inline u_short min (void)	{ return (0); }
+    static inline u_short max (void)	{ return (USHRT_MAX); }
+    static inline bool is_signed (void)	{ return (false); }
 };
 
 template <>
 struct numeric_limits<u_long> {
-    static inline u_long min (void) throw()	{ return (0); }
-    static inline u_long max (void) throw()	{ return (ULONG_MAX); }
-    static inline bool is_signed (void) throw()	{ return (false); }
+    static inline u_long min (void)	{ return (0); }
+    static inline u_long max (void)	{ return (ULONG_MAX); }
+    static inline bool is_signed (void)	{ return (false); }
 };
 
 template <>
 struct numeric_limits<float> {
-    static inline float min (void) throw()	{ return (FLT_MIN); }
-    static inline float max (void) throw()	{ return (FLT_MAX); }
-    static inline bool is_signed (void) throw()	{ return (true); }
+    static inline float min (void)	{ return (FLT_MIN); }
+    static inline float max (void)	{ return (FLT_MAX); }
+    static inline bool is_signed (void)	{ return (true); }
 };
 
 template <>
 struct numeric_limits<double> {
-    static inline double min (void) throw()	{ return (DBL_MIN); }
-    static inline double max (void) throw()	{ return (DBL_MAX); }
-    static inline bool is_signed (void) throw()	{ return (true); }
+    static inline double min (void)	{ return (DBL_MIN); }
+    static inline double max (void)	{ return (DBL_MAX); }
+    static inline bool is_signed (void)	{ return (true); }
 };
 
 template <>
 struct numeric_limits<long double> {
-    static inline long double min (void) throw(){ return (LDBL_MIN); }
-    static inline long double max (void) throw(){ return (LDBL_MAX); }
-    static inline bool is_signed (void) throw()	{ return (true); }
+    static inline long double min (void){ return (LDBL_MIN); }
+    static inline long double max (void){ return (LDBL_MAX); }
+    static inline bool is_signed (void)	{ return (true); }
 };
 
-#if defined(__USE_ISOC99) && !defined(__STRICT_ANSI__)
+#ifdef __GNUC__
 typedef long long llong;
 typedef unsigned long long u_llong;
 
 template <>
 struct numeric_limits<llong> {
-    static inline llong min (void) throw()	{ return (LONG_LONG_MIN); }
-    static inline llong max (void) throw()	{ return (LONG_LONG_MAX); }
-    static inline bool is_signed (void) throw()	{ return (true); }
+    static inline llong min (void)	{ return (LONG_LONG_MIN); }
+    static inline llong max (void)	{ return (LONG_LONG_MAX); }
+    static inline bool is_signed (void)	{ return (true); }
 };
 
 template <>
 struct numeric_limits<u_llong> {
-    static inline u_llong min (void) throw()	{ return (0); }
-    static inline u_llong max (void) throw()	{ return (ULONG_LONG_MAX); }
-    static inline bool is_signed (void) throw()	{ return (false); }
+    static inline u_llong min (void)	{ return (0); }
+    static inline u_llong max (void)	{ return (ULONG_LONG_MAX); }
+    static inline bool is_signed (void)	{ return (false); }
 };
 #endif
 #endif // DOXYGEN_SHOULD_SKIP_THIS
