@@ -30,76 +30,6 @@
 
 namespace ustl {
 
-/// Initializes both links to point to NULL,0
-memlink::memlink (void)
-: cmemlink (),
-  m_Data (NULL)
-{
-}
-
-/// Initializes the const link to point to \p p, \p n. Non-const link is NULL.
-memlink::memlink (const void* p, size_t n)
-: cmemlink (p, n),
-  m_Data (NULL)
-{
-}
-
-/// Initializes both links to point to \p p, \p n
-memlink::memlink (void* p, size_t n)
-: cmemlink (p, n),
-  m_Data (p)
-{
-}
-
-/// Copies information from \p l
-memlink::memlink (const cmemlink& l)
-: cmemlink (l),
-  m_Data (NULL)
-{
-}
-
-/// Copies information from \p l
-memlink::memlink (const memlink& l)
-: cmemlink (l),
-  m_Data (l.m_Data)
-{
-}
-
-/// Does nothing
-memlink::~memlink (void)
-{
-}
-
-/// Copies information from \p l
-const memlink& memlink::operator= (const cmemlink& l)
-{
-    cmemlink::operator= (l);
-    m_Data = NULL;
-    return (*this);
-}
-
-/// Copies information from \p l
-const memlink& memlink::operator= (const memlink& l)
-{
-    cmemlink::operator= (l);
-    m_Data = l.m_Data;
-    return (*this);
-}
-
-/// Exchanges the contents with \p l
-void memlink::swap (memlink& l)
-{
-    cmemlink::swap (l);
-    ::ustl::swap (m_Data, l.m_Data);
-}
-
-/// Initializes both links to point to \p p, \p n
-void memlink::link (void* p, size_t n)
-{
-    cmemlink::link (p, n);
-    m_Data = p;
-}
-
 /// Reads the object from stream \p s
 void memlink::read (istream& is)
 {
@@ -111,13 +41,6 @@ void memlink::read (istream& is)
     resize (btr);
     is.skip (n - btr);
     is.align();
-}
-
-/// Resets all members to 0
-void memlink::unlink (void)
-{
-    cmemlink::unlink();
-    m_Data = NULL;
 }
 
 /// Copies data from \p p, \p n to the linked block starting at \p start.

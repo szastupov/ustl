@@ -23,6 +23,7 @@
 #define CMEMLINK_H
 
 #include "uutility.h"
+#include "ualgobase.h"
 
 /// The ustl namespace contains all ustl classes and algorithms.
 namespace ustl {
@@ -87,10 +88,10 @@ public:
     };
     typedef iterator		const_iterator;
 public:
-			cmemlink (void);
-			cmemlink (const void* p, size_t n);
-			cmemlink (const cmemlink& l);
-    virtual	       ~cmemlink (void) {}
+    inline 		cmemlink (void);
+    inline 		cmemlink (const void* p, size_t n);
+    inline 		cmemlink (const cmemlink& l);
+    inline virtual     ~cmemlink (void) {}
     void		link (const void* p, size_t n);
     inline void		link (const cmemlink& l);
     virtual void	unlink (void);
@@ -115,6 +116,30 @@ private:
     const void*		m_CData;	///< Pointer to the data block (const)
     size_t		m_Size;		///< size of the data block
 };
+
+/// Default constructor initializes to point to NULL,0
+inline cmemlink::cmemlink (void)
+: m_CData (NULL),
+  m_Size (0)
+{
+}
+
+/// Attaches the object to pointer \p p of size \p n.
+inline cmemlink::cmemlink (const void* p, size_t n)
+: m_CData (p),
+  m_Size (n)
+{
+    assert (p || !n);
+    assert (size() % elementSize() == 0 && "You are trying to link to a block of different element type.");
+}
+
+/// Copies values from l
+inline cmemlink::cmemlink (const cmemlink& l)
+: m_CData (l.m_CData),
+  m_Size (l.m_Size)
+{
+    assert (size() % elementSize() == 0 && "You are trying to link to a block of different element type.");
+}
 
 /// Returns the pointer to the internal data
 inline const void* cmemlink::cdata (void) const

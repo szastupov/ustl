@@ -33,6 +33,15 @@
 namespace ustl {
 
 class string;
+class istream;
+class ostream;
+
+typedef u_int		xfmt_t;
+
+static const xfmt_t	xfmt_Exception = 0;
+static const xfmt_t	xfmt_BadAlloc = 1;
+static const xfmt_t	xfmt_LibcException = 2;
+static const xfmt_t	xfmt_FileException = 3;
 
 /// Base class for exceptions, equivalent to std::exception.
 class exception {
@@ -41,6 +50,17 @@ public:
     virtual	       ~exception (void);
     virtual const char*	what (void) const;
     virtual void	info (string& msgbuf, const char* fmt = NULL) const;
+    virtual void	read (istream& is);
+    virtual void	write (ostream& os) const;
+    virtual size_t	stream_size (void) const;
+    /// Format of the exception is used to lookup exception::info format string.
+    /// Another common use is the instantiation of serialized exceptions, used
+    /// by the error handler node chain to troubleshoot specific errors.
+    inline xfmt_t	format (void) const { return (m_Format); }
+protected:
+    inline void		set_format (xfmt_t fmt) { m_Format = fmt; }
+private:
+    xfmt_t		m_Format;	///< Format of the exception's data.
 };
 
 /// Exception thrown on memory allocation failure by memblock::reserve.
@@ -49,6 +69,9 @@ public:
     			bad_alloc (size_t nBytes);
     virtual const char*	what (void) const;
     virtual void	info (string& msgbuf, const char* fmt = NULL) const;
+    virtual void	read (istream& is);
+    virtual void	write (ostream& os) const;
+    virtual size_t	stream_size (void) const;
 protected:
     size_t		m_nBytesRequested;	///< Number of bytes requested by the failed allocation.
 };
@@ -61,6 +84,9 @@ public:
     const libc_exception& operator= (const libc_exception& v);
     virtual const char*	what (void) const;
     virtual void	info (string& msgbuf, const char* fmt = NULL) const;
+    virtual void	read (istream& is);
+    virtual void	write (ostream& os) const;
+    virtual size_t	stream_size (void) const;
 protected:
     int			m_Errno;		///< Error code returned by the failed operation.
     const char*		m_Operation;		///< Name of the failed operation.
@@ -72,6 +98,9 @@ public:
     			file_exception (const char* operation, const char* filename);
     virtual const char*	what (void) const;
     virtual void	info (string& msgbuf, const char* fmt = NULL) const;
+    virtual void	read (istream& is);
+    virtual void	write (ostream& os) const;
+    virtual size_t	stream_size (void) const;
 protected:
     char		m_Filename [PATH_MAX];	///< Name of the file causing the error.
 };

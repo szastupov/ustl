@@ -36,25 +36,6 @@ namespace ustl {
 
 const char string::empty_string[string::c_TerminatorSize] = "";
 
-/// Creates an empty string.
-string::string (void)
-: memblock (c_TerminatorSize)
-{
-    *end() = c_Terminator;
-}
-
-/// Assigns itself the value of string \p s
-string::string (const string& s)
-: memblock (s)
-{
-}
-
-/// Assigns itself the value of string \p s
-string::string (const cmemlink& s)
-: memblock (s)
-{
-}
-
 /// Links to the value of \p s
 string::string (pointer s)
 : memblock ()
@@ -65,13 +46,6 @@ string::string (pointer s)
 	assign (s);
     else
 	link (s, strlen(s) + c_TerminatorSize);
-}
-
-/// Links to the value of \p s
-string::string (const_pointer s)
-: memblock ()
-{
-    assign (s);
 }
 
 /// Copies the value of \p s of length \p len into itself.

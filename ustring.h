@@ -70,11 +70,11 @@ public:
     static const value_type c_Terminator = 0;			///< String terminator
     static const char empty_string [c_TerminatorSize];		///< An empty string.
 public:
-				string (void);
-				string (const string& s);
-    explicit			string (const cmemlink& l);
+    inline			string (void);
+    inline			string (const string& s);
+    inline explicit		string (const cmemlink& l);
     explicit			string (pointer s);
-				string (const_pointer s);
+    inline 			string (const_pointer s);
 				string (const_pointer s, size_t len);
 				string (const_pointer s1, const_pointer s2);
     inline size_t		size (void) const;
@@ -145,6 +145,32 @@ public:
     void			write (ostream& os) const;
     size_t			stream_size (void) const;
 };
+
+/// Creates an empty string.
+inline string::string (void)
+: memblock (c_TerminatorSize)
+{
+    *end() = c_Terminator;
+}
+
+/// Assigns itself the value of string \p s
+inline string::string (const string& s)
+: memblock (s)
+{
+}
+
+/// Assigns itself the value of string \p s
+inline string::string (const cmemlink& s)
+: memblock (s)
+{
+}
+
+/// Links to the value of \p s
+inline string::string (const_pointer s)
+: memblock ()
+{
+    assign (s);
+}
 
 /// Returns the number of characters in the string, not including the terminator.
 inline size_t string::size (void) const

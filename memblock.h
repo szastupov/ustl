@@ -40,20 +40,21 @@ class memblock : public memlink {
 public:
     static const size_t c_PageSize = 64;		///< The default minimum allocation unit.
 public:
-			memblock (void);
+    inline 		memblock (void);
     explicit		memblock (size_t n);
-			memblock (void* p, size_t n);
-			memblock (const void* p, size_t n);
-    explicit		memblock (const cmemlink& b);
+    inline 		memblock (void* p, size_t n);
+    inline		memblock (const void* p, size_t n);
+    inline explicit	memblock (const cmemlink& b);
+    inline explicit	memblock (const memlink& b);
     explicit		memblock (const memblock& b);
-    virtual	       ~memblock (void);
+    inline virtual     ~memblock (void);
     const memblock&	operator= (const cmemlink& b);
     const memblock&	operator= (const memlink& b);
     const memblock&	operator= (const memblock& b);
     void		assign (const cmemlink& l);
-    void		swap (memblock& l);
+    inline void		swap (memblock& l);
     void		reserve (size_t newSize, bool bExact = true);
-    void		resize (size_t newSize, bool bExact = true);
+    inline void		resize (size_t newSize, bool bExact = true);
     iterator		insert (iterator start, size_t size);
     iterator		erase (iterator start, size_t size);
     inline void		clear (void);
@@ -61,7 +62,7 @@ public:
     void		manage (void* p, size_t n);
     inline void		manage (memlink& l);
     inline size_t	capacity (void) const;
-    virtual void	unlink (void);
+    inline virtual void	unlink (void);
     inline size_t	max_size (void) const;
     void		read (istream& is);
     void		read_file (const char* filename);
@@ -69,6 +70,53 @@ public:
 private:
     size_t		m_AllocatedSize;	///< Number of bytes allocated by Resize.
 };
+
+/// Allocates 0 bytes for the internal block.
+inline memblock::memblock (void)
+: memlink (),
+  m_AllocatedSize (0)
+{
+}
+
+/// links to \p p, \p n. Data can be modified but will not be freed.
+inline memblock::memblock (void* p, size_t n)
+: memlink (p, n),
+  m_AllocatedSize (0)
+{
+}
+
+/// links to \p p, \p n. Data can not be modified and will not be freed.
+inline memblock::memblock (const void* p, size_t n)
+: memlink (p, n),
+  m_AllocatedSize (0)
+{
+}
+
+/// Links to what \p b is linked to.
+inline memblock::memblock (const cmemlink& b)
+: memlink (b),
+  m_AllocatedSize (0)
+{
+}
+
+/// Links to what \p b is linked to.
+inline memblock::memblock (const memlink& b)
+: memlink (b),
+  m_AllocatedSize (0)
+{
+}
+
+/// Frees internal data, if appropriate
+/// Only if the block was allocated using resize, or linked to using Manage,
+/// will it be freed. Also, Derived classes should call DestructBlock from
+/// their destructor, because upstream virtual functions are unavailable at
+/// this point and will not be called automatically.
+///
+inline memblock::~memblock (void)
+{
+    if (!is_linked())
+	deallocate();
+}
 
 /// Returns the number of bytes allocated.
 inline size_t memblock::capacity (void) const
@@ -98,6 +146,27 @@ inline void memblock::clear (void)
 inline bool memblock::is_linked (void) const
 {
     return (!m_AllocatedSize && cdata());
+}
+
+/// Unlinks object.
+inline void memblock::unlink (void)
+{
+    memlink::unlink();
+    m_AllocatedSize = 0;
+}
+
+/// Swaps the contents with \p l
+inline void memblock::swap (memblock& l)
+{
+    memlink::swap (l);
+    ::ustl::swap (m_AllocatedSize, l.m_AllocatedSize);
+}
+
+/// resizes the block to \p newSize bytes, reallocating if necessary.
+inline void memblock::resize (size_t newSize, bool bExact)
+{
+    reserve (newSize, bExact);
+    memlink::resize (newSize);
 }
 
 /// Reads object \p l from stream \p is

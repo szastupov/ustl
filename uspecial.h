@@ -61,6 +61,7 @@ inline void swap (multiset<T>& a, multiset<T>& b)
 STD_STREAMABLE(ustl::cmemlink)
 STD_STREAMABLE(ustl::istream)
 STD_STREAMABLE(ustl::ostream)
+STD_STREAMABLE(ustl::exception)
 
 #endif
 

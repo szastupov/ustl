@@ -37,40 +37,12 @@
 
 namespace ustl {
 
-/// Allocates 0 bytes for the internal block.
-memblock::memblock (void)
-: memlink (),
-  m_AllocatedSize (0)
-{
-}
-
 /// Allocates \p n bytes for the internal block.
 memblock::memblock (size_t n)
 : memlink (),
   m_AllocatedSize (0)
 {
     resize (n);
-}
-
-/// links to \p p, \p n. Data can be modified but will not be freed.
-memblock::memblock (void* p, size_t n)
-: memlink (p, n),
-  m_AllocatedSize (0)
-{
-}
-
-/// links to \p p, \p n. Data can not be modified and will not be freed.
-memblock::memblock (const void* p, size_t n)
-: memlink (p, n),
-  m_AllocatedSize (0)
-{
-}
-
-/// Links to what \p b is linked to.
-memblock::memblock (const cmemlink& b)
-: memlink (b),
-  m_AllocatedSize (0)
-{
 }
 
 /// Allocates enough space and copies the contents of \p b.
@@ -80,17 +52,6 @@ memblock::memblock (const memblock& b)
 {
     resize (b.size());
     copy (b.begin(), b.size());
-}
-
-/// Frees internal data, if appropriate
-/// Only if the block was allocated using resize, or linked to using Manage,
-/// will it be freed. Also, Derived classes should call DestructBlock from
-/// their destructor, because upstream virtual functions are unavailable at
-/// this point and will not be called automatically.
-///
-memblock::~memblock (void)
-{
-    deallocate();
 }
 
 /// Links to what \p b links to.
@@ -113,7 +74,7 @@ const memblock& memblock::operator= (const memlink& b)
 const memblock& memblock::operator= (const memblock& b)
 {
     if (is_linked())
-	unlink();
+	memblock::unlink();
     resize (b.size());
     copy (b.begin(), b.size());
     return (*this);
@@ -127,7 +88,7 @@ void memblock::deallocate (void)
 	destructBlock (data(), m_AllocatedSize);
 	free (data());
     }
-    unlink();
+    memblock::unlink();
 }
 
 /// Assumes control of the memory block \p p of size \p n.
@@ -141,27 +102,13 @@ void memblock::manage (void* p, size_t n)
     m_AllocatedSize = n;
 }
 
-/// Unlinks object.
-void memblock::unlink (void)
-{
-    memlink::unlink();
-    m_AllocatedSize = 0;
-}
-
 /// Copies data from \p p, \p n to the linked block starting at \p start.
 void memblock::assign (const cmemlink& l)
 {
     if (is_linked())
-	unlink();
+	memblock::unlink();
     resize (l.size());
     copy (l.cdata(), l.size());
-}
-
-/// Swaps the contents with \p l
-void memblock::swap (memblock& l)
-{
-    memlink::swap (l);
-    ::ustl::swap (m_AllocatedSize, l.m_AllocatedSize);
 }
 
 /// Reallocates internal block to hold at least \p newSize bytes. Some
@@ -186,13 +133,6 @@ void memblock::reserve (size_t newSize, bool bExact)
     constructBlock (advance (newBlock, m_AllocatedSize), newSize - m_AllocatedSize);
     link (newBlock, size());
     m_AllocatedSize = newSize;
-}
-
-/// resizes the block to \p newSize bytes, reallocating if necessary.
-void memblock::resize (size_t newSize, bool bExact)
-{
-    reserve (newSize, bExact);
-    memlink::resize (newSize);
 }
 
 /// Shifts the data in the linked block from \p start to \p start + \p n.
@@ -235,7 +175,7 @@ void memblock::read (istream& is)
 void memblock::read_file (const char* filename)
 {
     if (is_linked())
-	unlink();
+	memblock::unlink();
     struct stat st;
     if (stat (filename, &st))
 	throw file_exception ("stat", filename);

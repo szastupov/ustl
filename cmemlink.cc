@@ -32,30 +32,6 @@
 
 namespace ustl {
 
-/// Default constructor initializes to point to NULL,0
-cmemlink::cmemlink (void)
-: m_CData (NULL),
-  m_Size (0)
-{
-}
-
-/// Attaches the object to pointer \p p of size \p n.
-cmemlink::cmemlink (const void* p, size_t n)
-: m_CData (p),
-  m_Size (n)
-{
-    assert (p || !n);
-    assert (size() % elementSize() == 0 && "You are trying to link to a block of different element type.");
-}
-
-/// Copies values from l
-cmemlink::cmemlink (const cmemlink& l)
-: m_CData (l.m_CData),
-  m_Size (l.m_Size)
-{
-    assert (size() % elementSize() == 0 && "You are trying to link to a block of different element type.");
-}
-
 /// Attaches the object to pointer \p p of size \p n.
 void cmemlink::link (const void* p, size_t n)
 {
@@ -66,7 +42,11 @@ void cmemlink::link (const void* p, size_t n)
     m_Size = n;
 }
 
-/// Resets all to 0
+/// Resets all to 0.
+/// Do NOT override this function. It is virtual only for
+/// memlink, memblock, and the streams; there is no way to
+/// "unvirtualize" a function, hence the documentation.
+///
 void cmemlink::unlink (void)
 {
     m_CData = NULL;
