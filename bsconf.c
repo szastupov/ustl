@@ -39,6 +39,7 @@ typedef char*		pchar_t;
 typedef const char*	cpchar_t;
 typedef const char	string_t [64];
 typedef char		strbuf_t [128];
+typedef unsigned int	uint;
 
 typedef enum {
     vv_prefix,
@@ -148,7 +149,7 @@ static int g_nCustomIncDirs = 0;
 static struct utsname g_Uname;
 
 typedef struct {
-    int		m_Bit;
+    uint	m_Bit;
     cpchar_t	m_Description;
     cpchar_t	m_Disabled;
     cpchar_t	m_Enabled;
@@ -174,18 +175,18 @@ static const SCpuCaps g_CpuCaps [] = {
     { 30, "3dNow!+",	"#undef CPU_HAS_EXT_3DNOW",	"#define CPU_HAS_EXT_3DNOW 1"	},
     { 31, "3dNow!",	"#undef CPU_HAS_3DNOW",		"#define CPU_HAS_3DNOW 1"	}
 };
-static unsigned int g_CpuCapBits = 0;
+static uint g_CpuCapBits = 0;
 
 static cpchar_t g_LibSuffixes[] = { ".a", ".so", ".la" };
 
-static unsigned int g_nSubs = 0;
+static uint g_nSubs = 0;
 static strbuf_t g_Subs [MAX_SUBSTITUTIONS * 2];
 
 /*--------------------------------------------------------------------*/
 
 int main (int argc, const char* const* argv)
 {
-    unsigned int f;
+    uint f;
     strbuf_t srcFile;
 
     GetConfigVarValues (--argc, ++argv);
@@ -217,7 +218,7 @@ int main (int argc, const char* const* argv)
 
 static void PrintHelp (void)
 {
-    unsigned i;
+    uint i;
     printf (
 "This program configures " PACKAGE_STRING " to adapt to many kinds of systems.\n"
 "\n"
@@ -288,7 +289,7 @@ static void PrintVersion (void)
 static void GetConfigVarValues (int argc, cpchar_t const* argv)
 {
     int a, apos, cvl;
-    unsigned cv;
+    uint cv;
     for (cv = 0; cv < vv_last; ++ cv)
 	fill_n (g_ConfigVV[cv], sizeof(strbuf_t), 0);
     /* --var=VALUE */
@@ -417,7 +418,7 @@ static int IsBadInstallDir (cpchar_t match)
 
 static void FindPrograms (void)
 {
-    unsigned int i, count;
+    uint i, count;
     cpchar_t path, pi;
     strbuf_t match;
 
@@ -505,7 +506,7 @@ static void SubstituteCFlags (void)
 static void SubstituteEnvironment (int bForce)
 {
     strbuf_t match;
-    unsigned int i;
+    uint i;
     cpchar_t envval;
 
     for (i = 0; i < VectorSize(g_EnvVars); ++ i) {
@@ -522,7 +523,7 @@ static void SubstituteEnvironment (int bForce)
 
 static void SubstitutePrograms (void)
 {
-    unsigned int i;
+    uint i;
     strbuf_t match;
     for (i = 0; i < VectorSize(g_ProgLocs); ++ i) {
 	MakeSubstString (g_ProgVars [i * 4], match);
@@ -530,50 +531,52 @@ static void SubstitutePrograms (void)
     }
 }
 
-#if defined(__GNUC__) && defined(__i386__)
-static unsigned int cpuid (void)
+static uint cpuid (void)
 {
-    unsigned caps = 0;
-    asm ("pushf\n\t"			/* First, test if cpuid instruction works */
-	"popl %%eax\n\t"
-	"mov %%eax, %%ecx\n\t"
-	"xor $0x200000, %%eax\n\t"	/* Toggle the ID bit in one copy of eflags */
-	"pushl %%eax\n\t"
-	"popf\n\t"
-	"pushf\n\t"
-	"popl %%eax\n\t"		/* If the the flags are unchanged, cpuid is not supported */
-	"test %%eax, %%ecx\n\t"
-	"jz 0f\n\t"
-	"xor %%eax, %%eax\n\t"		/* Ask whether feature list is supported */
-	"cpuid\n\t"
-	"test %%eax,%%eax\n\t"
-	"jz 0f\n\t"			/* This is how gcc says to declare local labels */
-	"xor %%eax, %%eax\n\t"
-	"inc %%eax\n\t"			/* Ask for feature list */
-	"cpuid\n\t"
-	"and $0x3EB7FFFF, %%edx\n\t"	/* The inverse of the AMD bit constant below */
-	"mov %%edx, %0\n\t"
-	"mov $0x80000000, %%eax\n\t"
-	"cpuid\n\t"
+    uint caps = 0;
+#if defined(__GNUC__) && defined(__i386__)
+    const uint amdBits = 0xC9480000;
+    asm (
+	"pushf			\n\t"	/* First, test if cpuid instruction works */
+	"popl %%eax		\n\t"
+	"mov %%eax, %%ecx	\n\t"
+	"xor $0x200000, %%eax	\n\t"	/* Toggle the ID bit in one copy of eflags */
+	"pushl %%eax		\n\t"
+	"popf			\n\t"
+	"pushf			\n\t"
+	"popl %%eax		\n\t"	/* If the the flags are unchanged, cpuid is not supported */
+	"test %%eax, %%ecx	\n\t"
+	"jz 0f			\n\t"	/* This is a gcc local label jump */
+	"xor %%eax, %%eax	\n\t"	/* Ask whether feature list is supported */
+	"cpuid			\n\t"
+	"test %%eax,%%eax	\n\t"
+	"jz 0f			\n\t"
+	"mov $1, %%eax		\n\t"	/* Ask for feature list */
+	"cpuid			\n\t"
+	"and %1, %%edx		\n\t"	/* The inverse of the AMD bit constant below */
+	"and $1, %%ecx		\n\t"	/* Extract SSE3 bit from Intel extensions */
+	"shl $27, %%ecx		\n\t"
+	"or %%ecx, %%edx	\n\t"	/* ... and put it at bit 27 */
+	"mov %%edx, %0		\n\t"
+	"mov $0x80000000, %%eax	\n\t"
+	"cpuid			\n\t"
 	"test $0x80000000, %%eax\n\t"	/* Test for extended feature support */
-	"jz 0f\n\t"
-	"mov $0x80000001, %%eax\n\t"	/* AMD extensions */
-	"cpuid\n\t"
-	"and $0xC1480000, %%edx\n\t"	/* Take only AMD specific bits */
-	"or %%edx, %0\n\t"
-	"0:\n\t"
+	"jz 0f			\n\t"
+	"mov $0x80000001, %%eax	\n\t"	/* AMD extensions */
+	"cpuid			\n\t"
+	"and %2, %%edx		\n\t"	/* Take only AMD specific bits */
+	"or %%edx, %0		\n\t"
+	"0:"
 	: "=m"(caps)
-	:
+	: "g"(~amdBits), "g"(amdBits)
 	: "cc", "%eax", "%ebx", "%ecx", "%edx");
+#endif
     return (caps);
 }
-#else
-    #define cpuid()	0
-#endif
 
 static void SubstituteCpuCaps (void)
 {
-    unsigned int i;
+    uint i;
     g_CpuCapBits = cpuid();
     for (i = 0; i < VectorSize(g_CpuCaps); ++ i)
 	if (g_CpuCapBits & (1 << g_CpuCaps[i].m_Bit))
@@ -641,7 +644,7 @@ static void SubstituteHostOptions (void)
     else
 	Substitute ("#undef SIZE_OF_BOOL ", "#define SIZE_OF_BOOL SIZE_OF_CHAR");
     if ((sizeof(size_t) == sizeof(unsigned long) &&
-	 sizeof(size_t) != sizeof(unsigned int)) ||
+	 sizeof(size_t) != sizeof(uint)) ||
 	compare (g_Uname.sysname, "osx") ||
 	compare (g_Uname.sysname, "darwin"))
 	Substitute ("#undef SIZE_T_IS_LONG", "#define SIZE_T_IS_LONG 1");
@@ -675,7 +678,7 @@ static void SubstituteHostOptions (void)
 
 static void SubstituteCustomVars (void)
 {
-    unsigned int i;
+    uint i;
     strbuf_t match;
     for (i = 0; i < VectorSize(g_CustomVars) / 2; ++ i) {
 	MakeSubstString (g_CustomVars [i * 2], match);
@@ -685,7 +688,7 @@ static void SubstituteCustomVars (void)
 
 static void SubstituteHeaders (void)
 {
-    unsigned int i;
+    uint i;
     cpchar_t pi;
     strbuf_t defaultPath;
     strbuf_t match;
@@ -693,7 +696,7 @@ static void SubstituteHeaders (void)
     copy (g_ConfigVV [vv_includedir], defaultPath);
     append2 (":", g_ConfigVV [vv_oldincludedir], defaultPath);
     append2 (":", g_ConfigVV [vv_gccincludedir], defaultPath);
-    for (i = 0; i < (unsigned) g_nCustomIncDirs; ++ i)
+    for (i = 0; i < (uint) g_nCustomIncDirs; ++ i)
 	append2 (":", g_CustomIncDirs [i], defaultPath);
     for (i = 0; i < VectorSize(g_Headers) / 3; ++ i) {
 	for (pi = defaultPath; pi; pi = CopyPathEntry (pi, match)) {
@@ -706,7 +709,7 @@ static void SubstituteHeaders (void)
 
 static void SubstituteLibs (void)
 {
-    unsigned int i, k, ok;
+    uint i, k, ok;
     cpchar_t pi;
     char defaultPath [4096];
     strbuf_t match;
@@ -717,7 +720,7 @@ static void SubstituteLibs (void)
 	append (pi, defaultPath);
     append2 (":", g_ConfigVV [vv_libdir], defaultPath);
     append2 (":", g_ConfigVV [vv_gcclibdir], defaultPath);
-    for (i = 0; i < (unsigned) g_nCustomLibDirs; ++ i)
+    for (i = 0; i < (uint) g_nCustomLibDirs; ++ i)
 	append2 (":", g_CustomLibDirs [i], defaultPath);
 
     for (i = 0; i < VectorSize(g_Libs) / 3; ++ i) {
@@ -739,14 +742,14 @@ static void SubstituteLibs (void)
 
 static void SubstituteFunctions (void)
 {
-    unsigned int i;
+    uint i;
     for (i = 0; i < VectorSize(g_Functions) / 3; ++ i)
 	Substitute (g_Functions [i * 3 + 1], g_Functions [i * 3 + 2]);
 }
 
 static void SubstituteComponents (void)
 {
-    unsigned int i, isOn;
+    uint i, isOn;
     for (i = 0; i < VectorSize(g_Components) / 3; ++ i) {
 	isOn = g_ComponentInfos[i].m_bDefaultOn;
 	Substitute (g_Components [i * 3 + 1 + !isOn], g_Components [i * 3 + 1 + isOn]);
@@ -766,7 +769,7 @@ static void Substitute (cpchar_t matchStr, cpchar_t replaceStr)
 
 static void ExecuteSubstitutionList (void)
 {
-    unsigned int i;
+    uint i;
     int rsl, taill, delta;
     pchar_t cp;
 
