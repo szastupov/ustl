@@ -134,7 +134,7 @@ inline tuple<4,float> operator* (const tuple<4,float>& t, const matrix<4,4,float
 {
     tuple<4,float> result;
     _sse_load_matrix (m.begin());
-    asm volatile ("movups (%0), %%xmm0	\n\t" : : "p"(&t[0]) : "xmm0");
+    asm volatile ("movups %0, %%xmm0	\n\t" : : "m"(t[0]) : "xmm0");
     _sse_transform_to_vector (result.begin());
     return (result);
 }
