@@ -119,7 +119,7 @@ inline tuple<4,float> operator* (const tuple<4,float>& t, const matrix<4,4,float
 	"femms				    "	// clear mmx state
 	:
 	: "r"(t.begin()), "r"(m.begin()), "r"(result.begin())
-	: "memory"
+	: "memory","mm0","mm1","mm2","mm3","mm4","mm5","mm6","mm7"
     );
     return (result);
 }

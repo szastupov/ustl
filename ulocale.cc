@@ -46,31 +46,41 @@ locale::locale (void)
 }
 
 locale::locale (const locale& l)
-: m_Facets (l.m_Facets),
+: m_Facets (),
   m_Name (l.m_Name),
   m_bFacetOwner (false)
 {
+    copy_n (l.m_Facets, all_categories, m_Facets);
 }
 
 locale::locale (const locale& l, const char* name, category)
-: m_Facets (l.m_Facets),
+: m_Facets (),
   m_Name (name),
   m_bFacetOwner (false)
 {
+    copy_n (l.m_Facets, all_categories, m_Facets);
 }
 
 locale::~locale (void)
 {
-    if (m_bFacetOwner)
-	for_each (m_Facets.begin(), m_Facets.end(), &Delete<facet>);
+    if (m_bFacetOwner) {
+	for (uoff_t i = 0; i < all_categories; ++ i) {
+	    delete m_Facets[i];
+	    m_Facets[i] = NULL;
+	}
+    }
 }
 
 const locale& locale::operator= (const locale& l)
 {
-    if (m_bFacetOwner)
-	for_each (m_Facets.begin(), m_Facets.end(), &Delete<facet>);
+    if (m_bFacetOwner) {
+	for (uoff_t i = 0; i < all_categories; ++ i) {
+	    delete m_Facets[i];
+	    m_Facets[i] = NULL;
+	}
+    }
     m_bFacetOwner = false;
-    m_Facets = l.m_Facets;
+    copy_n (l.m_Facets, all_categories, m_Facets);
     m_Name = l.m_Name;
     return (*this);
 }

@@ -275,6 +275,19 @@ inline void pack_type (TSmall s, TBig& b)
     b = (b << min (BitsInType(TSmall) * 4, BitsInType(TBig))) | b;
 }
 
+namespace simd {
+/// Call after you are done using SIMD algorithms for 64 bit tuples.
+#if CPU_HAS_MMX
+    #if CPU_HAS_3DNOW
+	inline void reset_mmx (void) { asm ("femms":::"mm0","mm1","mm2","mm3","mm4","mm5","mm6","mm7"); }
+    #else
+	inline void reset_mmx (void) { asm ("emms":::"mm0","mm1","mm2","mm3","mm4","mm5","mm6","mm7"); }
+    #endif
+#else
+    inline void reset_mmx (void) {}
+#endif
+} // namespace simd
+
 /// \brief Type that is not size_t
 /// Because size_t may be declared as unsigned long or unsigned int on
 /// different machines, this macro is convenient when defining overloads

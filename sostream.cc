@@ -25,7 +25,6 @@
 #include "utf8.h"
 #include <stdio.h>	// for vsnprintf in ostringstream::format
 #include <stdarg.h>
-#include "simd.h"
 
 namespace ustl {
 

@@ -60,9 +60,30 @@ void TestCtr (const char* ctrType)
     cout << "pmax(op3,op2) = " << op2 << endl;
     passign (op3, op2);
     reverse (op2);
+    reset_mmx();
     pavg (op3, op2);
     cout << "pavg(op3,op2) = " << op2 << endl;
     reset_mmx();
+}
+
+template <typename SrcCtr, typename DstCtr, typename Operation>
+void TestConversion (const char* ctrType)
+{
+    cout << "================================================" << endl;
+    cout << "Testing " << ctrType << endl;
+    cout << "================================================" << endl;
+    SrcCtr src;
+    DstCtr dst;
+    typedef typename SrcCtr::value_type srcval_t;
+    iota (src.begin(), src.end(), srcval_t(-1.4));
+    pconvert (src, dst, Operation());
+    cout << src << " -> " << dst << endl;
+    iota (src.begin(), src.end(), srcval_t(-1.5));
+    pconvert (src, dst, Operation());
+    cout << src << " -> " << dst << endl;
+    iota (src.begin(), src.end(), srcval_t(-1.7));
+    pconvert (src, dst, Operation());
+    cout << src << " -> " << dst << endl;
 }
 
 int main (void)
@@ -82,6 +103,15 @@ int main (void)
     TestCtr<tuple<2,float> >("float[2]");
     TestCtr<tuple<4,float> >("float[4]");
     TestCtr<tuple<7,uint32_t> >("uint32_t[7]");
+
+    #define CVT_TEST(size,src,dest,op) \
+    TestConversion<tuple<size,src>, tuple<size,dest>, op<src,dest> > (#op " " #src " -> " #dest)
+    CVT_TEST(4,int32_t,float,fround);
+    CVT_TEST(4,int32_t,double,fround);
+    CVT_TEST(4,float,int32_t,fround);
+    CVT_TEST(4,double,int32_t,fround);
+    CVT_TEST(4,float,int32_t,fcast);
+
     return (0);
 }
 

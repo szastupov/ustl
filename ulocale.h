@@ -22,7 +22,6 @@
 #ifndef ULOCALE_H_5CFAA64522EEF45851F2DED048480AD4
 #define ULOCALE_H_5CFAA64522EEF45851F2DED048480AD4
 
-#include "utuple.h"
 #include "ustring.h"
 
 namespace ustl {
@@ -81,7 +80,7 @@ public:
     inline bool		has_facet (category_bit f) const;
     const facet&	get_facet (category_bit f) const;
 private:
-    typedef tuple<all_categories, facet*> facetvec_t;
+    typedef facet*	facetvec_t [all_categories];
 private:
     facetvec_t		m_Facets;
     string		m_Name;

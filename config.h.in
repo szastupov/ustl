@@ -122,6 +122,9 @@
 /* Define to 1 if you have the <unistd.h> header file. */
 #undef HAVE_UNISTD_H
 
+/* Define to 1 if you have the <math.h> header file. */
+#undef HAVE_MATH_H
+
 /* Define to 1 if you have the <byteswap.h> header file. */
 #if (__GNUG__ >= 3) /* Older compilers are simply incapable of handling byteswap code */
 #undef HAVE_BYTESWAP_H
@@ -201,6 +204,12 @@
 /* GCC vector extensions */
 #if defined(CPU_HAS_MMX) || defined(CPU_HAS_SSE)
 #undef HAVE_VECTOR_EXTENSIONS
+#endif
+
+#if CPU_HAS_SSE && defined(__GNUC__)
+    #define __sse_align	__attribute__((aligned(16)))
+#else
+    #define __sse_align	
 #endif
 
 /* Define to empty if `const' does not conform to ANSI C. */

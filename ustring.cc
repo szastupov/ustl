@@ -450,6 +450,7 @@ string::const_iterator string::find_last_not_of (const string& s, const_iterator
 /// Equivalent to a sprintf on the string.
 int string::format (const char* fmt, ...)
 {
+    simd::reset_mmx();
     va_list args;
     va_start (args, fmt);
     if (is_linked() || !data() || !capacity())

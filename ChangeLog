@@ -7,6 +7,7 @@ Release 0.4-4
 	* Fixed tuple's value constructors to zero unspecified values.
 	* Added parentheses around ctr argument in foreach for computed vars.
 	* General simd interface for tuple optimization.
+	* Proper link interface in vector, that takes element count.
 
 2004-07-28 Release 0.4-3
 	* A ChangeLog! After all these years...

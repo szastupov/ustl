@@ -33,6 +33,9 @@
 
 #include "ualgo.h"
 #include "ulimits.h"
+#if HAVE_MATH_H
+    #include <math.h>
+#endif
 
 namespace ustl {
 namespace simd {
@@ -46,21 +49,6 @@ template <typename Ctr, typename UnaryOperation>
 inline void packop (Ctr& op1, UnaryOperation op)
 {
     transform (op1.begin(), op1.end(), op);
-}
-
-/// Copies \p op1 into \p result.
-template <typename Ctr>
-inline void passign (const Ctr& op1, Ctr& result)
-{
-    assert (op1.size() <= result.size());
-    copy (op1, result.begin());
-}
-
-/// Copies \p result.size() elements from \p op1 to \p result.
-template <typename Ctr>
-inline void ipassign (typename Ctr::const_iterator op1, Ctr& result)
-{
-    copy_n (op1, result.size(), result.begin());
 }
 
 /// Applies \p op to each element in \p op1 and \p op2 and stores in \p op2.
@@ -80,16 +68,27 @@ inline void packop (const Ctr& op1, const Ctr& op2, Ctr& result, BinaryOperation
     packop (op2, result);
 }
 
-/// Call after you are done using SIMD algorithms for 64 bit tuples.
-#if CPU_HAS_MMX
-    #if CPU_HAS_3DNOW
-	inline void reset_mmx (void) { asm ("femms"); }
-    #else
-	inline void reset_mmx (void) { asm ("emms"); }
-    #endif
-#else
-    inline void reset_mmx (void) {}
-#endif
+/// Copies \p op1 into \p result.
+template <typename Ctr>
+inline void passign (const Ctr& op1, Ctr& result)
+{
+    assert (op1.size() <= result.size());
+    copy (op1.begin(), op1.end(), result.begin());
+}
+
+/// Copies \p result.size() elements from \p op1 to \p result.
+template <typename Ctr>
+inline void ipassign (typename Ctr::const_iterator op1, Ctr& result)
+{
+    copy_n (op1, result.size(), result.begin());
+}
+
+template <typename Ctr1, typename Ctr2, typename ConvertFunction>
+inline void pconvert (const Ctr1& op1, Ctr2& op2, ConvertFunction f)
+{
+    assert (op1.size() <= op2.size());
+    transform (op1.begin(), op1.end(), op2.begin(), f);
+}
 
 // Functionoids for SIMD operations, like saturation arithmetic, shifts, etc.
 template <class T> struct fpadds: public binary_function<T,T,T> { inline T operator()(const T& a, const T& b) const
@@ -102,12 +101,18 @@ template <class T> struct fpshl	: public binary_function<T,T,T> { inline T opera
 template <class T> struct fpshr	: public binary_function<T,T,T> { inline T operator()(const T& a, const T& b) const { return (a >> b); } };
 template <class T> struct fpmin	: public binary_function<T,T,T> { inline T operator()(const T& a, const T& b) const { return (min (a, b)); } };
 template <class T> struct fpmax	: public binary_function<T,T,T> { inline T operator()(const T& a, const T& b) const { return (max (a, b)); } };
-template <class T> struct fpavg	: public binary_function<T,T,T> { inline T operator()(const T& a, const T& b) const { return ((a + b) / 2); } };
+template <class T> struct fpavg	: public binary_function<T,T,T> { inline T operator()(const T& a, const T& b) const { return ((a + b + 1) / 2); } };
 template <class T> struct fpreciprocal	: public unary_function<T,T> { inline T operator()(const T& a) const { return (1 / a); } };
-#ifdef __GNUC__
-template <class T> struct fpsqrt	: public unary_function<T,T> { inline T operator()(const T& a) const { return (__builtin_sqrtf (a)); } };
-template <class T> struct fprecipsqrt	: public unary_function<T,T> { inline T operator()(const T& a) const { return (1 / __builtin_sqrtf (a)); } };
-#endif
+template <class T> struct fpsqrt	: public unary_function<T,T> { inline T operator()(const T& a) const { reset_mmx(); return (T (sqrt (a))); } };
+template <class T> struct fprecipsqrt	: public unary_function<T,T> { inline T operator()(const T& a) const { reset_mmx(); return (1 / T(sqrt (a))); } };
+template <class T> struct fsin		: public unary_function<T,T> { inline T operator()(const T& a) const { reset_mmx(); return (T (sin (a))); } };
+template <class T> struct fcos		: public unary_function<T,T> { inline T operator()(const T& a) const { reset_mmx(); return (T (cos (a))); } };
+template <class T> struct ftan		: public unary_function<T,T> { inline T operator()(const T& a) const { reset_mmx(); return (T (tan (a))); } };
+template <class T, class D> struct fcast : public unary_function<T,D> { inline D operator()(const T& a) const { return (D(a)); } };
+template <class T, class D> struct fround : public unary_function<T,D> { inline D operator()(const T& a) const { reset_mmx(); return (D(roundf(a))); } };
+template <> inline int32_t fround<double,int32_t>::operator()(const double& a) const { reset_mmx(); return (int32_t(round(a))); }
+template <> inline float fpavg<float>::operator()(const float& a, const float& b) const { return ((a + b) / 2); }
+template <> inline double fpavg<double>::operator()(const double& a, const double& b) const { return ((a + b) / 2); }
 
 #define SIMD_PACKEDOP1(name, operation)		\
 template <typename Ctr>				\
@@ -130,6 +135,20 @@ inline void name (const Ctr& op1, const Ctr& op2, Ctr& result)	\
     typedef typename Ctr::value_type value_t;		\
     packop (op1, op2, result, operation<value_t>());	\
 }
+#define SIMD_SINGLEOP1(name, operation)		\
+template <typename T>				\
+inline T name (T op)				\
+{						\
+    return (operation<T>()(op));		\
+}
+#define SIMD_CONVERTOP(name, operation)		\
+template <typename Ctr1, typename Ctr2>		\
+inline void name (const Ctr1& op1, Ctr2& op2)	\
+{						\
+    typedef typename Ctr1::value_type value1_t;	\
+    typedef typename Ctr2::value_type value2_t;	\
+    pconvert (op1, op2, operation<value1_t, value2_t>());\
+}
 
 SIMD_PACKEDOP2 (padd, plus)
 SIMD_PACKEDOP2 (psub, minus)
@@ -148,6 +167,9 @@ SIMD_PACKEDOP2 (pavg, fpavg)
 SIMD_PACKEDOP1 (precip, fpreciprocal)
 SIMD_PACKEDOP1 (psqrt, fpsqrt)
 SIMD_PACKEDOP1 (precipsqrt, fprecipsqrt)
+SIMD_PACKEDOP1 (psin, fsin)
+SIMD_PACKEDOP1 (pcos, fcos)
+SIMD_PACKEDOP1 (ptan, ftan)
 
 SIMD_PACKEDOP3 (padd, plus)
 SIMD_PACKEDOP3 (psub, minus)
@@ -164,6 +186,18 @@ SIMD_PACKEDOP3 (pmin, fpmin)
 SIMD_PACKEDOP3 (pmax, fpmax)
 SIMD_PACKEDOP3 (pavg, fpavg)
 
+SIMD_SINGLEOP1 (srecip, fpreciprocal)
+SIMD_SINGLEOP1 (ssqrt, fpsqrt)
+SIMD_SINGLEOP1 (srecipsqrt, fprecipsqrt)
+SIMD_SINGLEOP1 (ssin, fsin)
+SIMD_SINGLEOP1 (scos, fcos)
+SIMD_SINGLEOP1 (stan, ftan)
+
+SIMD_CONVERTOP (pround, fround)
+
+template <typename T> inline int32_t sround (T op) { return (fround<T,int32_t>()(op)); }
+
+#undef SIMD_SINGLEOP1
 #undef SIMD_PACKEDOP3
 #undef SIMD_PACKEDOP2
 #undef SIMD_PACKEDOP1
@@ -195,123 +229,151 @@ inline void passign (const tuple<n,type>& oin, tuple<n,type>& oout)
 #define SIMD_IPASSIGN_SPEC(n, type)		\
 template <>					\
 inline void ipassign (tuple<n,type>::const_iterator oin, tuple<n,type>& oout)
+#define SIMD_CONVERT_SPEC(n, type1, type2, optype)	\
+template <>					\
+inline void pconvert (const tuple<n,type1>& oin, tuple<n,type2>& oout, optype<type1,type2>)
 
 #if CPU_HAS_MMX
-#define STD_MMX_ARGS(ptr_t)		"=&y"(*(ptr_t*)oout.begin()) : \
-					"y"(*(const ptr_t*)oin.begin()), \
-					"0"(*(ptr_t*)oout.begin())
-SIMD_PASSIGN_SPEC(8,uint8_t)		{ asm ("movq  %1, %0" : STD_MMX_ARGS(v8qi_t));	}
-SIMD_PKOP2_SPEC(8,uint8_t,plus)		{ asm ("paddb %1, %0" : STD_MMX_ARGS(v8qi_t));	}
-SIMD_PKOP2_SPEC(8,uint8_t,minus)	{ asm ("psubb %1, %0" : STD_MMX_ARGS(v8qi_t));	}
-SIMD_PKOP2_SPEC(8,uint8_t,bitwise_and)	{ asm ("pand  %1, %0" : STD_MMX_ARGS(v8qi_t));	}
-SIMD_PKOP2_SPEC(8,uint8_t,bitwise_or)	{ asm ("por   %1, %0" : STD_MMX_ARGS(v8qi_t));	}
-SIMD_PKOP2_SPEC(8,uint8_t,bitwise_xor)	{ asm ("pxor  %1, %0" : STD_MMX_ARGS(v8qi_t));	}
-SIMD_PKOP2_SPEC(8,uint8_t,fpadds)	{ asm ("paddusb %1, %0" : STD_MMX_ARGS(v8qi_t));}
-SIMD_PKOP2_SPEC(8,uint8_t,fpsubs)	{ asm ("psubusb %1, %0" : STD_MMX_ARGS(v8qi_t));}
+#define STD_MMX_ARGS(ptr_t)		"=o"(oout.at(0)) : "o"(oin.at(0)) : "mm0", "memory"
+#define MMX_PKOP2_SPEC(n,type,optype,instruction)	\
+SIMD_PKOP2_SPEC(n,type,optype)		\
+{ asm ("movq %0, %%mm0\n\t" #instruction " %1, %%mm0\n\tmovq %%mm0, %0" : STD_MMX_ARGS(v8qi_t)); reset_mmx(); }
+#define MMX_PASSIGN_SPEC(n,type)	\
+SIMD_PASSIGN_SPEC(n,type)		\
+{ asm ("movq %1, %%mm0\n\tmovq %%mm0, %0" : STD_MMX_ARGS(v8qi_t)); reset_mmx(); }
+#define MMX_IPASSIGN_SPEC(n,type)	\
+SIMD_IPASSIGN_SPEC(n,type)		\
+{ asm ("movq %1, %%mm0\n\tmovq %%mm0, %0" : "=o"(oout.at(0)) : "o"(oin[0]) : "mm0", "memory"); reset_mmx(); }
 
-SIMD_PASSIGN_SPEC(8,int8_t)		{ asm ("movq  %1, %0" : STD_MMX_ARGS(v8qi_t));	}
-SIMD_PKOP2_SPEC(8,int8_t,plus)		{ asm ("paddb %1, %0" : STD_MMX_ARGS(v8qi_t));	}
-SIMD_PKOP2_SPEC(8,int8_t,minus)		{ asm ("psubb %1, %0" : STD_MMX_ARGS(v8qi_t));	}
-SIMD_PKOP2_SPEC(8,int8_t,bitwise_and)	{ asm ("pand  %1, %0" : STD_MMX_ARGS(v8qi_t));	}
-SIMD_PKOP2_SPEC(8,int8_t,bitwise_or)	{ asm ("por   %1, %0" : STD_MMX_ARGS(v8qi_t));	}
-SIMD_PKOP2_SPEC(8,int8_t,bitwise_xor)	{ asm ("pxor  %1, %0" : STD_MMX_ARGS(v8qi_t));	}
-SIMD_PKOP2_SPEC(8,int8_t,fpadds)	{ asm ("paddsb %1, %0" : STD_MMX_ARGS(v8qi_t));	}
-SIMD_PKOP2_SPEC(8,int8_t,fpsubs)	{ asm ("psubsb %1, %0" : STD_MMX_ARGS(v8qi_t));	}
+MMX_PASSIGN_SPEC(8,uint8_t)
+MMX_PKOP2_SPEC(8,uint8_t,plus,paddb)
+MMX_PKOP2_SPEC(8,uint8_t,minus,psubb)
+MMX_PKOP2_SPEC(8,uint8_t,bitwise_and,pand)
+MMX_PKOP2_SPEC(8,uint8_t,bitwise_or,por)
+MMX_PKOP2_SPEC(8,uint8_t,bitwise_xor,pxor)
+MMX_PKOP2_SPEC(8,uint8_t,fpadds,paddusb)
+MMX_PKOP2_SPEC(8,uint8_t,fpsubs,psubusb)
 
-SIMD_PASSIGN_SPEC(4,uint16_t)		{ asm ("movq  %1, %0" : STD_MMX_ARGS(v4hi_t));	}
-SIMD_PKOP2_SPEC(4,uint16_t,plus)	{ asm ("paddw %1, %0" : STD_MMX_ARGS(v4hi_t));	}
-SIMD_PKOP2_SPEC(4,uint16_t,minus)	{ asm ("psubw %1, %0" : STD_MMX_ARGS(v4hi_t));	}
-SIMD_PKOP2_SPEC(4,uint16_t,bitwise_and)	{ asm ("pand  %1, %0" : STD_MMX_ARGS(v4hi_t));	}
-SIMD_PKOP2_SPEC(4,uint16_t,bitwise_or)	{ asm ("por   %1, %0" : STD_MMX_ARGS(v4hi_t));	}
-SIMD_PKOP2_SPEC(4,uint16_t,bitwise_xor)	{ asm ("pxor  %1, %0" : STD_MMX_ARGS(v4hi_t));	}
-/// \fixme psllw doesn't seem to do anything
-//SIMD_PKOP2_SPEC(4,uint16_t,fpshl)	{ asm ("psllw %1, %0" : STD_MMX_ARGS(v4hi_t));	}
-//SIMD_PKOP2_SPEC(4,uint16_t,fpshr)	{ asm ("psrlw %1, %0" : STD_MMX_ARGS(v4hi_t));	}
-SIMD_PKOP2_SPEC(4,uint16_t,fpadds)	{ asm ("paddusw %1, %0" : STD_MMX_ARGS(v4hi_t));}
-SIMD_PKOP2_SPEC(4,uint16_t,fpsubs)	{ asm ("psubusw %1, %0" : STD_MMX_ARGS(v4hi_t));}
+MMX_PASSIGN_SPEC(8,int8_t)
+MMX_PKOP2_SPEC(8,int8_t,plus,paddb)
+MMX_PKOP2_SPEC(8,int8_t,minus,psubb)
+MMX_PKOP2_SPEC(8,int8_t,bitwise_and,pand)
+MMX_PKOP2_SPEC(8,int8_t,bitwise_or,por)
+MMX_PKOP2_SPEC(8,int8_t,bitwise_xor,pxor)
+MMX_PKOP2_SPEC(8,int8_t,fpadds,paddsb)
+MMX_PKOP2_SPEC(8,int8_t,fpsubs,psubsb)
 
-SIMD_PASSIGN_SPEC(4,int16_t)		{ asm ("movq  %1, %0" : STD_MMX_ARGS(v4hi_t));	}
-SIMD_PKOP2_SPEC(4,int16_t,plus)		{ asm ("paddw %1, %0" : STD_MMX_ARGS(v4hi_t));	}
-SIMD_PKOP2_SPEC(4,int16_t,minus)	{ asm ("psubw %1, %0" : STD_MMX_ARGS(v4hi_t));	}
-SIMD_PKOP2_SPEC(4,int16_t,bitwise_and)	{ asm ("pand  %1, %0" : STD_MMX_ARGS(v4hi_t));	}
-SIMD_PKOP2_SPEC(4,int16_t,bitwise_or)	{ asm ("por   %1, %0" : STD_MMX_ARGS(v4hi_t));	}
-SIMD_PKOP2_SPEC(4,int16_t,bitwise_xor)	{ asm ("pxor  %1, %0" : STD_MMX_ARGS(v4hi_t));	}
-//SIMD_PKOP2_SPEC(4,int16_t,fpshl)	{ asm ("psllw %1, %0" : STD_MMX_ARGS(v4hi_t));	}
-//SIMD_PKOP2_SPEC(4,int16_t,fpshr)	{ asm ("psrlw %1, %0" : STD_MMX_ARGS(v4hi_t));	}
-SIMD_PKOP2_SPEC(4,int16_t,fpadds)	{ asm ("paddsw %1, %0" : STD_MMX_ARGS(v4hi_t));	}
-SIMD_PKOP2_SPEC(4,int16_t,fpsubs)	{ asm ("psubsw %1, %0" : STD_MMX_ARGS(v4hi_t));	}
+MMX_PASSIGN_SPEC(4,uint16_t)
+MMX_PKOP2_SPEC(4,uint16_t,plus,paddw)
+MMX_PKOP2_SPEC(4,uint16_t,minus,psubw)
+MMX_PKOP2_SPEC(4,uint16_t,bitwise_and,pand)
+MMX_PKOP2_SPEC(4,uint16_t,bitwise_or,por)
+MMX_PKOP2_SPEC(4,uint16_t,bitwise_xor,pxor)
+/// \fixme psllw does not work like other operations, it uses the first element for shift count.
+//MMX_PKOP2_SPEC(4,uint16_t,fpshl,psllw)
+//MMX_PKOP2_SPEC(4,uint16_t,fpshr,psrlw)
+MMX_PKOP2_SPEC(4,uint16_t,fpadds,paddusw)
+MMX_PKOP2_SPEC(4,uint16_t,fpsubs,psubusw)
 
-SIMD_PASSIGN_SPEC(2,uint32_t)		{ asm ("movq  %1, %0" : STD_MMX_ARGS(v2si_t));	}
-SIMD_PKOP2_SPEC(2,uint32_t,plus)	{ asm ("paddd %1, %0" : STD_MMX_ARGS(v2si_t));	}
-SIMD_PKOP2_SPEC(2,uint32_t,minus)	{ asm ("psubd %1, %0" : STD_MMX_ARGS(v2si_t));	}
-SIMD_PKOP2_SPEC(2,uint32_t,bitwise_and)	{ asm ("pand  %1, %0" : STD_MMX_ARGS(v2si_t));	}
-SIMD_PKOP2_SPEC(2,uint32_t,bitwise_or)	{ asm ("por   %1, %0" : STD_MMX_ARGS(v2si_t));	}
-SIMD_PKOP2_SPEC(2,uint32_t,bitwise_xor)	{ asm ("pxor  %1, %0" : STD_MMX_ARGS(v2si_t));	}
-//SIMD_PKOP2_SPEC(2,uint32_t,fpshl)	{ asm ("pslld %1, %0" : STD_MMX_ARGS(v2si_t));	}
-//SIMD_PKOP2_SPEC(2,uint32_t,fpshr)	{ asm ("psrld %1, %0" : STD_MMX_ARGS(v2si_t));	}
+MMX_PASSIGN_SPEC(4,int16_t)
+MMX_PKOP2_SPEC(4,int16_t,plus,paddw)
+MMX_PKOP2_SPEC(4,int16_t,minus,psubw)
+MMX_PKOP2_SPEC(4,int16_t,bitwise_and,pand)
+MMX_PKOP2_SPEC(4,int16_t,bitwise_or,por)
+MMX_PKOP2_SPEC(4,int16_t,bitwise_xor,pxor)
+//MMX_PKOP2_SPEC(4,int16_t,fpshl,psllw)
+//MMX_PKOP2_SPEC(4,int16_t,fpshr,psrlw)
+MMX_PKOP2_SPEC(4,int16_t,fpadds,paddsw)
+MMX_PKOP2_SPEC(4,int16_t,fpsubs,psubsw)
 
-SIMD_PASSIGN_SPEC(2,int32_t)		{ asm ("movq  %1, %0" : STD_MMX_ARGS(v2si_t));	}
-SIMD_PKOP2_SPEC(2,int32_t,plus)		{ asm ("paddd %1, %0" : STD_MMX_ARGS(v2si_t));	}
-SIMD_PKOP2_SPEC(2,int32_t,minus)	{ asm ("psubd %1, %0" : STD_MMX_ARGS(v2si_t));	}
-SIMD_PKOP2_SPEC(2,int32_t,bitwise_and)	{ asm ("pand  %1, %0" : STD_MMX_ARGS(v2si_t));	}
-SIMD_PKOP2_SPEC(2,int32_t,bitwise_or)	{ asm ("por   %1, %0" : STD_MMX_ARGS(v2si_t));	}
-SIMD_PKOP2_SPEC(2,int32_t,bitwise_xor)	{ asm ("pxor  %1, %0" : STD_MMX_ARGS(v2si_t));	}
-//SIMD_PKOP2_SPEC(2,int32_t,fpshl)	{ asm ("pslld %1, %0" : STD_MMX_ARGS(v2si_t));	}
-//SIMD_PKOP2_SPEC(2,int32_t,fpshr)	{ asm ("psrld %1, %0" : STD_MMX_ARGS(v2si_t));	}
+MMX_PASSIGN_SPEC(2,uint32_t)
+MMX_PKOP2_SPEC(2,uint32_t,plus,paddd)
+MMX_PKOP2_SPEC(2,uint32_t,minus,psubd)
+MMX_PKOP2_SPEC(2,uint32_t,bitwise_and,pand)
+MMX_PKOP2_SPEC(2,uint32_t,bitwise_or,por)
+MMX_PKOP2_SPEC(2,uint32_t,bitwise_xor,pxor)
+//MMX_PKOP2_SPEC(2,uint32_t,fpshl,pslld)
+//MMX_PKOP2_SPEC(2,uint32_t,fpshr,psrld)
+
+MMX_PASSIGN_SPEC(2,int32_t)
+MMX_PKOP2_SPEC(2,int32_t,plus,paddd)
+MMX_PKOP2_SPEC(2,int32_t,minus,psubd)
+MMX_PKOP2_SPEC(2,int32_t,bitwise_and,pand)
+MMX_PKOP2_SPEC(2,int32_t,bitwise_or,por)
+MMX_PKOP2_SPEC(2,int32_t,bitwise_xor,pxor)
+//MMX_PKOP2_SPEC(2,int32_t,fpshl,pslld)
+//MMX_PKOP2_SPEC(2,int32_t,fpshr,psrld)
 
 #if CPU_HAS_SSE || CPU_HAS_3DNOW
-SIMD_PKOP2_SPEC(8,uint8_t,fpavg)	{ asm ("pavgb %1, %0" : STD_MMX_ARGS(v8qi_t));	}
-SIMD_PKOP2_SPEC(8,int8_t,fpavg)		{ asm ("pavgb %1, %0" : STD_MMX_ARGS(v8qi_t));	}
-SIMD_PKOP2_SPEC(4,uint16_t,fpavg)	{ asm ("pavgw %1, %0" : STD_MMX_ARGS(v4hi_t));	}
-SIMD_PKOP2_SPEC(4,int16_t,fpavg)	{ asm ("pavgw %1, %0" : STD_MMX_ARGS(v4hi_t));	}
-SIMD_PKOP2_SPEC(8,uint8_t,fpmin)	{ asm ("pminub %1, %0" : STD_MMX_ARGS(v8qi_t));	}
-SIMD_PKOP2_SPEC(8,uint8_t,fpmax)	{ asm ("pmaxub %1, %0" : STD_MMX_ARGS(v8qi_t));	}
-SIMD_PKOP2_SPEC(4,int16_t,fpmax)	{ asm ("pmaxsw %1, %0" : STD_MMX_ARGS(v4hi_t));	}
-SIMD_PKOP2_SPEC(4,int16_t,fpmin)	{ asm ("pminsw %1, %0" : STD_MMX_ARGS(v4hi_t));	}
+MMX_PKOP2_SPEC(8,uint8_t,fpavg,pavgb)
+MMX_PKOP2_SPEC(8,int8_t,fpavg,pavgb)
+MMX_PKOP2_SPEC(4,uint16_t,fpavg,pavgw)
+MMX_PKOP2_SPEC(4,int16_t,fpavg,pavgw)
+MMX_PKOP2_SPEC(8,uint8_t,fpmin,pminub)
+MMX_PKOP2_SPEC(8,uint8_t,fpmax,pmaxub)
+MMX_PKOP2_SPEC(4,int16_t,fpmax,pmaxsw)
+MMX_PKOP2_SPEC(4,int16_t,fpmin,pminsw)
 #endif // CPU_HAS_SSE || CPU_HAS_3DNOW
 
 #if CPU_HAS_3DNOW
-SIMD_PASSIGN_SPEC(2,float)		{ asm ("movq  %1, %0" : STD_MMX_ARGS(v2sf_t));	}
-SIMD_PKOP2_SPEC(2,float,plus)		{ asm ("pfadd %1, %0" : STD_MMX_ARGS(v2sf_t));	}
-SIMD_PKOP2_SPEC(2,float,minus)		{ asm ("pfsub %1, %0" : STD_MMX_ARGS(v2sf_t));	}
-SIMD_PKOP2_SPEC(2,float,multiplies)	{ asm ("pfmul %1, %0" : STD_MMX_ARGS(v2sf_t));	}
-SIMD_PKOP2_SPEC(2,float,fpmin)		{ asm ("pfmin %1, %0" : STD_MMX_ARGS(v2sf_t));	}
-SIMD_PKOP2_SPEC(2,float,fpmax)		{ asm ("pfmax %1, %0" : STD_MMX_ARGS(v2sf_t));	}
+MMX_PASSIGN_SPEC(2,float)
+MMX_PKOP2_SPEC(2,float,plus,pfadd)
+MMX_PKOP2_SPEC(2,float,minus,pfsub)
+MMX_PKOP2_SPEC(2,float,multiplies,pfmul)
+MMX_PKOP2_SPEC(2,float,fpmin,pfmin)
+MMX_PKOP2_SPEC(2,float,fpmax,pfmax)
 #endif // CPU_HAS_3DNOW
 
+MMX_IPASSIGN_SPEC(8,uint8_t)
+MMX_IPASSIGN_SPEC(4,uint16_t)
+MMX_IPASSIGN_SPEC(2,uint32_t)
+MMX_IPASSIGN_SPEC(2,float)
+
+#undef MMX_IPASSIGN_SPEC
+#undef MMX_PASSIGN_SPEC
+#undef MMX_PKOP2_SPEC
 #undef STD_MMX_ARGS
-
-#define STD_MMX_I_ARGS(ptr_t)		"=&y"(*(ptr_t*)oout.begin()) :	\
-					"y"(*(const ptr_t*)oin), 	\
-					"0"(*(ptr_t*)oout.begin())
-SIMD_IPASSIGN_SPEC(8,uint8_t)		{ asm ("movq  %1, %0" : STD_MMX_I_ARGS(v8qi_t));}
-SIMD_IPASSIGN_SPEC(4,uint16_t)		{ asm ("movq  %1, %0" : STD_MMX_I_ARGS(v4hi_t));}
-SIMD_IPASSIGN_SPEC(2,uint32_t)		{ asm ("movq  %1, %0" : STD_MMX_I_ARGS(v2si_t));}
-SIMD_IPASSIGN_SPEC(2,float)		{ asm ("movq  %1, %0" : STD_MMX_I_ARGS(v2sf_t));}
-#undef STD_MMX_I_ARGS
-
 #endif // CPU_HAS_MMX
 
 #if CPU_HAS_SSE
-#define STD_SSE_ARGS(ptr_t)		"=&x"(*(ptr_t*)oout.begin()) : \
-					"x"(*(const ptr_t*)oin.begin()), \
-					"0"(*(ptr_t*)oout.begin())
-SIMD_PASSIGN_SPEC(4,float)		{ asm ("movups %1, %0" : STD_SSE_ARGS(v4sf_t));	}
-SIMD_PKOP2_SPEC(4,float,plus)		{ asm ("addps %1, %0" : STD_SSE_ARGS(v4sf_t));	}
-SIMD_PKOP2_SPEC(4,float,minus)		{ asm ("subps %1, %0" : STD_SSE_ARGS(v4sf_t));	}
-SIMD_PKOP2_SPEC(4,float,multiplies)	{ asm ("mulps %1, %0" : STD_SSE_ARGS(v4sf_t));	}
-SIMD_PKOP2_SPEC(4,float,divides)	{ asm ("divps %1, %0" : STD_SSE_ARGS(v4sf_t));	}
-SIMD_PKOP2_SPEC(4,float,bitwise_and)	{ asm ("andps %1, %0" : STD_SSE_ARGS(v4sf_t));	}
-SIMD_PKOP2_SPEC(4,float,bitwise_or)	{ asm ("orps  %1, %0" : STD_SSE_ARGS(v4sf_t));	}
-SIMD_PKOP2_SPEC(4,float,bitwise_xor)	{ asm ("xorps %1, %0" : STD_SSE_ARGS(v4sf_t));	}
-SIMD_PKOP2_SPEC(4,float,fpmax)		{ asm ("maxps %1, %0" : STD_SSE_ARGS(v4sf_t));	}
-SIMD_PKOP2_SPEC(4,float,fpmin)		{ asm ("minps %1, %0" : STD_SSE_ARGS(v4sf_t));	}
+#define STD_SSE_ARGS(ptr_t)		"=o"(oout.at(0)) : "o"(oin.at(0)) : "xmm0", "memory"
+#define SSE_PKOP2_SPEC(n,type,optype,instruction)	\
+SIMD_PKOP2_SPEC(n,type,optype)		\
+{ asm ("movups %0, %%xmm0\n\tmovups %1, %%xmm1\n\t" #instruction " %%xmm1, %%xmm0\n\tmovups %%xmm0, %0" : STD_SSE_ARGS(v4sf_t));	}
+#define SSE_PASSIGN_SPEC(n,type)			\
+SIMD_PASSIGN_SPEC(n,type)		\
+{ asm ("movups %1, %%xmm0\n\tmovups %%xmm0, %0" : STD_SSE_ARGS(v4sf_t));	}
+#define STD_SSE_I_ARGS(ptr_t)		"=o"(oout.at(0)) : "o"(oin[0]) : "xmm0", "memory"
+#define SSE_IPASSIGN_SPEC(n,type)	\
+SIMD_IPASSIGN_SPEC(n,type)		\
+{ asm ("movups %1, %%xmm0\n\tmovups %%xmm0, %0" : STD_SSE_I_ARGS(v4sf_t));}
+SSE_PASSIGN_SPEC(4,float)
+SSE_PASSIGN_SPEC(4,int32_t)
+SSE_PASSIGN_SPEC(4,uint32_t)
+SSE_PKOP2_SPEC(4,float,plus,addps)
+SSE_PKOP2_SPEC(4,float,minus,subps)
+SSE_PKOP2_SPEC(4,float,multiplies,mulps)
+SSE_PKOP2_SPEC(4,float,divides,divps)
+SSE_PKOP2_SPEC(4,float,bitwise_and,andps)
+SSE_PKOP2_SPEC(4,float,bitwise_or,orps)
+SSE_PKOP2_SPEC(4,float,bitwise_xor,xorps)
+SSE_PKOP2_SPEC(4,float,fpmax,maxps)
+SSE_PKOP2_SPEC(4,float,fpmin,minps)
+
+// For some reason SSE rounds to the nearest _even_ value
+//SIMD_CONVERT_SPEC(4,float,int32_t,fround) { asm ("movups (%2), %%xmm0\n\tcvtps2pi %%xmm0, %0\n\tshufps $0x4E,%%xmm0,%%xmm0\n\tcvtps2pi %%xmm0, %1" : "=&y"(*(v2si_t*)oout.begin()), "=y"(*(v2si_t*)(oout.begin() + 2)) : "g"(oin.begin()) : "xmm0"); }
+//SIMD_CONVERT_SPEC(4,int32_t,float,fround) { asm ("cvtpi2ps %2, %%xmm0\n\tshufps $0x4E,%%xmm0,%%xmm0\n\tcvtpi2ps %1, %%xmm0\n\tmovups %%xmm0, (%0)" : : "g"(oout.begin()), "y"(*(const v2si_t*)oin.begin()), "y"(*(const v2si_t*)(oin.begin() + 2)) : "xmm0", "memory"); }
+
+//template <> inline int32_t fround<float,int32_t>::operator()(const float& a) const { register int32_t rv; asm ("movss %1, %%xmm0; cvtss2si %%xmm0, %0" : "=r"(rv) : "m"(a) : "xmm0" ); return (rv); }
+
+SSE_IPASSIGN_SPEC(4,float)
+SSE_IPASSIGN_SPEC(4,int32_t)
+SSE_IPASSIGN_SPEC(4,uint32_t)
+
+#undef SSE_IPASSIGN_SPEC
+#undef SSE_PASSIGN_SPEC
+#undef SSE_PKOP2_SPEC
 #undef STD_SSE_ARGS
-#define STD_SSE_I_ARGS(ptr_t)		"=&y"(*(ptr_t*)oout.begin()) :	\
-					"y"(*(const ptr_t*)oin), 	\
-					"0"(*(ptr_t*)oout.begin())
-SIMD_IPASSIGN_SPEC(4,float)		{ asm ("movq %1, %0" : STD_SSE_I_ARGS(v4sf_t));}
-#undef STD_SSE_I_ARGS
 #endif // CPU_HAS_SSE
 
 #undef SIMD_PACKEDOP_SPEC
