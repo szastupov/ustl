@@ -104,10 +104,10 @@ public:
     inline size_t	size (void) const;
     inline size_t	max_size (void) const;
     inline bool		empty (void) const;
-    void		resize (size_t n);
-    virtual void	read (istream&);
-    virtual void	write (ostream& os) const;
-    virtual size_t	stream_size (void) const;
+    inline void		resize (size_t n);
+    inline void		read (istream&);
+    void		write (ostream& os) const;
+    size_t		stream_size (void) const;
     void		write_file (const char* filename, int mode = 0644) const;
 private:
     const void*		m_CData;	///< Pointer to the data block (const)
@@ -160,6 +160,18 @@ inline size_t cmemlink::max_size (void) const
 inline bool cmemlink::empty (void) const
 {
     return (size() == 0);
+}
+
+/// Resizes the block as seen by users of the class (no memory allocation)
+inline void cmemlink::resize (size_t n)
+{
+    m_Size = n;
+}
+
+/// Reads the object from stream \p os
+inline void cmemlink::read (istream&)
+{
+    assert (false && "ustl::cmemlink is a read-only object.");
 }
 
 } // namespace ustl

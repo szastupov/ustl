@@ -66,7 +66,7 @@ public:
     inline size_t	capacity (void) const;
     virtual void	unlink (void);
     inline size_t	max_size (void) const;
-    virtual void	read (istream& is);
+    void		read (istream& is);
     void		read_file (const char* filename);
     inline bool		is_linked (void) const;
 private:

@@ -41,6 +41,11 @@ namespace ustl {
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 
+template <typename Result>
+struct void_function {
+    typedef Result	result_type;
+};
+
 template <typename Arg, typename Result>
 struct unary_function {
     typedef Arg		argument_type;
@@ -104,35 +109,6 @@ private:
     BinaryFunction	m_pfn;
 };
 
-template <typename Arg, typename UnaryFunction>
-class vfunctor1 : public unary_function<Arg,void> {
-public:
-    typedef Arg		argument_type;
-    typedef void	result_type;
-public:
-    explicit		vfunctor1 (UnaryFunction pfn) : m_pfn (pfn) {}
-    			vfunctor1 (const vfunctor1& v) : m_pfn (v.m_pfn) {}
-    const vfunctor1&	operator= (const vfunctor1& v) { m_pfn = v.m_pfn; return (*this); }
-    inline void		operator() (argument_type v) const { m_pfn(v); }
-private:
-    UnaryFunction	m_pfn;
-};
-
-template <typename Arg1, typename Arg2, typename BinaryFunction>
-class vfunctor2 : public binary_function<Arg1,Arg2,void> {
-public:
-    typedef Arg1	first_argument_type;
-    typedef Arg2	second_argument_type;
-    typedef void	result_type;
-public:
-    explicit		vfunctor2 (BinaryFunction pfn) : m_pfn (pfn) {}
-    			vfunctor2 (const vfunctor2& v) : m_pfn (v.m_pfn) {}
-    const vfunctor2&	operator= (const vfunctor2& v) { m_pfn = v.m_pfn; return (*this); }
-    inline void		operator() (first_argument_type v1, second_argument_type v2) const { m_pfn(v1, v2); }
-private:
-    BinaryFunction	m_pfn;
-};
-
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 
 /// functor(pfn) wraps function pointer pfn into a functor class that calls it.
@@ -144,22 +120,10 @@ inline functor1<Arg,Result,Result (*)(Arg)> functor (Result (*pfn)(Arg))
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 
-template <typename Arg>
-inline vfunctor1<Arg,void (*)(Arg)> functor (void (*pfn)(Arg))
-{
-    return (vfunctor1<Arg,void (*)(Arg)> (pfn));
-}
-
 template <typename Arg1, typename Arg2, typename Result>
 inline functor2<Arg1,Arg2,Result,Result (*)(Arg1,Arg2)> functor (Result (*pfn)(Arg1,Arg2))
 {
     return (functor2<Arg1,Arg2,Result,Result (*)(Arg1,Arg2)> (pfn));
-}
-
-template <typename Arg1, typename Arg2>
-inline vfunctor2<Arg1,Arg2,void (*)(Arg1,Arg2)> functor (void (*pfn)(Arg1,Arg2))
-{
-    return (vfunctor2<Arg1,Arg2,void (*)(Arg1,Arg2)> (pfn));
 }
 
 //----------------------------------------------------------------------
@@ -250,117 +214,58 @@ bind2nd (const BinaryFunction& pfn, const typename BinaryFunction::second_argume
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 
-template <class T>
-class mem_fun_t : public unary_function<T*,void> {
-public:
-    explicit	mem_fun_t (void (T::*pf)()) : m_pf (pf) {}
-    		mem_fun_t (const mem_fun_t& v) : m_pf (v.m_pf) {}
-    inline const mem_fun_t& operator= (const mem_fun_t& v) { m_pf = v.m_pf; return (*this); }
-    inline void	operator() (T* p) const { (p->*m_pf)(); }
-private:
-    void	(T::*m_pf)();
-};
+#define MEM_FUN_T(WrapperName, ClassName, ArgType, FuncType, CallType)					\
+    template <typename Ret, class T>								\
+    class ClassName : public unary_function<ArgType,Ret> {					\
+    public:											\
+	typedef Ret (T::*func_t) FuncType;									\
+    public:											\
+	explicit	ClassName (func_t pf) : m_pf (pf) {}					\
+			ClassName (const ClassName& v) : m_pf (v.m_pf) {}			\
+	inline const ClassName& operator= (const ClassName& v) { m_pf = v.m_pf; return (*this); }	\
+	inline Ret	operator() (ArgType p) const { return ((p CallType m_pf)()); }		\
+    private:											\
+	func_t	m_pf;										\
+    };	\
+	\
+    template <class Ret, typename T>		\
+    inline ClassName<Ret,T> WrapperName (Ret (T::*pf) FuncType)	\
+    {						\
+	return (ClassName<Ret,T> (pf));		\
+    }
 
-template <class T>
-class const_mem_fun_t : public unary_function<const T*,void> {
-public:
-    explicit	const_mem_fun_t (void (T::*pf)() const) : m_pf (pf) {}
-    		const_mem_fun_t (const const_mem_fun_t& v) : m_pf (v.m_pf) {}
-    inline const const_mem_fun_t& operator= (const const_mem_fun_t& v) { m_pf = v.m_pf; return (*this); }
-    inline void	operator() (const T* p) const { (p->*m_pf)(); }
-private:
-    void	(T::*m_pf)() const;
-};
+MEM_FUN_T(mem_fun,	mem_fun_t, 		T*,		(void),		->*)
+MEM_FUN_T(mem_fun,	const_mem_fun_t, 	const T*,	(void) const,	->*)
+MEM_FUN_T(mem_fun_ref,	mem_fun_ref_t,		T*,		(void),		.*)
+MEM_FUN_T(mem_fun_ref,	const_mem_fun_ref_t, 	const T*,	(void) const,	.*)
 
-template <typename Ret, class T>
-class mem_rfun_t : public unary_function<T*,Ret> {
-public:
-    explicit	mem_rfun_t (void (T::*pf)()) : m_pf (pf) {}
-    		mem_rfun_t (const mem_rfun_t& v) : m_pf (v.m_pf) {}
-    inline const mem_rfun_t& operator= (const mem_rfun_t& v) { m_pf = v.m_pf; return (*this); }
-    inline Ret	operator() (T* p) const { return ((p->*m_pf)()); }
-private:
-    Ret		(T::*m_pf)();
-};
+#define EXT_MEM_FUN_T(ClassName, HostType, ArgType, FuncType) \
+    template <class T, typename Ret, typename V> \
+    class ClassName : public unary_function<V,void> { \
+    public: \
+	typedef Ret (T::*func_t)(ArgType) FuncType; \
+    public: \
+	explicit	ClassName (HostType t, func_t pf) : m_t (t), m_pf (pf) {} \
+			ClassName (const ClassName& v) : m_t (v.m_t), m_pf (v.m_pf) {} \
+	inline const ClassName& operator= (const ClassName& v) { m_t = v.m_t; m_pf = v.m_pf; return (*this); } \
+	inline Ret	operator() (ArgType v) const { return ((m_t->*m_pf)(v)); } \
+    private: \
+	HostType	m_t; \
+	func_t		m_pf; \
+    };	\
+	\
+    template <class T, typename Ret, typename V>					\
+    inline ClassName<T,Ret,V> mem_fun (HostType p, Ret (T::*pf)(ArgType) FuncType)	\
+    {											\
+	return (ClassName<T,Ret,V> (p, pf));						\
+    }
 
-template <typename Ret, class T>
-class const_mem_rfun_t : public unary_function<const T*,Ret> {
-public:
-    explicit	const_mem_rfun_t (void (T::*pf)() const) : m_pf (pf) {}
-    		const_mem_rfun_t (const const_mem_rfun_t& v) : m_pf (v.m_pf) {}
-    inline const const_mem_rfun_t& operator= (const const_mem_rfun_t& v) { m_pf = v.m_pf; return (*this); }
-    inline Ret	operator() (const T* p) const { return ((p->*m_pf)()); }
-private:
-    Ret		(T::*m_pf)() const;
-};
-
-template <class T, typename V>
-class ext_mem_fun_t : public unary_function<V,void> {
-public:
-    explicit	ext_mem_fun_t (T* t, void (T::*pf)(V& v)) : m_t (t), m_pf (pf) {}
-    		ext_mem_fun_t (const ext_mem_fun_t& v) : m_t (v.m_t), m_pf (v.m_pf) {}
-    inline const ext_mem_fun_t& operator= (const ext_mem_fun_t& v) { m_t = v.m_t; m_pf = v.m_pf; return (*this); }
-    inline void	operator() (V& v) { (m_t->*m_pf)(v); }
-private:
-    T*		m_t;
-    void	(T::*m_pf)(V& v);
-};
-
-template <class T, typename V>
-class const_ext_mem_fun_t : public unary_function<const V,void> {
-public:
-    explicit	const_ext_mem_fun_t (const T* t, void (T::*pf)(const V& v) const) : m_t (t), m_pf (pf) {}
-    		const_ext_mem_fun_t (const const_ext_mem_fun_t& v) : m_pf (v.m_pf) {}
-    inline const const_ext_mem_fun_t& operator= (const const_ext_mem_fun_t& v) { m_pf = v.m_pf; return (*this); }
-    inline void	operator() (const V& v) const { (m_t->*m_pf)(v); }
-private:
-    const T*	m_t;
-    void	(T::*m_pf)(const V& v) const;
-};
+EXT_MEM_FUN_T(ext_mem_fun_t,		T*,		V&,		)
+EXT_MEM_FUN_T(ext_mem_funbv_t,		T*,		V,		)
+EXT_MEM_FUN_T(const_ext_mem_fun_t,	const T*,	const V&,	const)
+EXT_MEM_FUN_T(const_ext_mem_funbv_t,	const T*,	V,		const)
 
 #endif // DOXYGEN_SHOULD_SKIP_THIS
-
-/// A unary functor that calls member function \p pf of given object.
-template <class T>
-inline mem_fun_t<T> mem_fun (void (T::*pf)())
-{
-    return (mem_fun_t<T> (pf));
-}
-
-/// A unary functor that calls member function \p pf of given object.
-template <class T>
-inline const_mem_fun_t<T> mem_fun (void (T::*pf)() const)
-{
-    return (const_mem_fun_t<T> (pf));
-}
-
-/// A unary functor that calls member function \p pf of given object.
-template <class Ret, typename T>
-inline mem_rfun_t<Ret,T> mem_fun (Ret (T::*pf)())
-{
-    return (mem_rfun_t<Ret,T> (pf));
-}
-
-/// A unary functor that calls member function \p pf of given object.
-template <class Ret, typename T>
-inline const_mem_rfun_t<Ret,T> mem_fun (Ret (T::*pf)() const)
-{
-    return (const_mem_rfun_t<Ret,T> (pf));
-}
-
-/// A unary functor that calls member function \p pf of bound object \p t.
-template <class T, typename V>
-inline ext_mem_fun_t<T,V> mem_fun (T* t, void (T::*pf)(V& v))
-{
-    return (ext_mem_fun_t<T,V> (t, pf));
-}
-
-/// A unary functor that calls member function \p pf of bound object \p t.
-template <class T, typename V>
-inline const_ext_mem_fun_t<T,V> mem_fun (const T* t, void (T::*pf)(const V& v) const)
-{
-    return (const_ext_mem_fun_t<T,V> (t, pf));
-}
 
 //----------------------------------------------------------------------
 // Member variable adaptors (uSTL extension)

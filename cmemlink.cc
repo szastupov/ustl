@@ -76,30 +76,18 @@ void cmemlink::unlink (void)
     m_Size = 0;
 }
 
-/// Resizes the block as seen by users of the class (no memory allocation)
-void cmemlink::resize (size_t n)
-{
-    m_Size = n;
-}
-
-/// Returns the number of bytes required to write this object to a stream.
-size_t cmemlink::stream_size (void) const
-{
-    return (Align (stream_size_of(m_Size) + size()));
-}
-
-/// Reads the object from stream \p os
-void cmemlink::read (istream&)
-{
-    assert (false);
-}
-
 /// Writes the object to stream \p os
 void cmemlink::write (ostream& os) const
 {
     os << size();
     os.write (cdata(), size());
     os.align();
+}
+
+/// Returns the number of bytes required to write this object to a stream.
+size_t cmemlink::stream_size (void) const
+{
+    return (Align (stream_size_of(m_Size) + size()));
 }
 
 /// Writes the data to file \p "filename".

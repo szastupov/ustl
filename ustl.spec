@@ -64,4 +64,4 @@ make install
 %{_prefix}/include/ustl/uutility.h
 %{_prefix}/include/ustl/uvector.h
 %{_prefix}/include/ustl/utf8.h
-%doc COPYING README
+%doc COPYING README docs/html bvt

@@ -112,7 +112,7 @@ public:
     void		fill (iterator start, const void* p, size_t elsize, size_t elCount = 1);
     void		insert (iterator start, size_t size);
     void		erase (iterator start, size_t size);
-    virtual void	read (istream& is);
+    void		read (istream& is);
 protected:
     virtual void	constructBlock (void*, size_t) const;
     virtual void	destructBlock (void*, size_t) const;

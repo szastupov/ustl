@@ -276,16 +276,28 @@ inline OutputIterator remove_copy_if (const Container& ctr, OutputIterator resul
 ///
 /// Remove removes from the range [first, last) all elements that are equal to
 /// value. That is, remove returns an iterator new_last such that the range
-/// [first, new_last) contains no elements equal to value. [1] The iterators
-/// in the range [new_last, last) are all still dereferenceable, but the
-/// elements that they point to are unspecified. Remove is stable, meaning
-/// that the relative order of elements that are not equal to value is
+/// [first, new_last) contains no elements equal to value. Remove is stable,
+/// meaning that the relative order of elements that are not equal to value is
 /// unchanged.
 ///
-template <class Container, class T>
+template <class Container, typename T>
 inline void remove (Container& ctr, const T& value)
 {
     ctr.erase (remove_copy (ctr.begin(), ctr.end(), ctr.begin(), value), ctr.end());
+}
+
+///
+/// Remove removes from the range [first, last) all elements that have an iterator
+/// in range [rfirst, rlast). The range is assumed to be sorted. That is, remove
+/// returns an iterator new_last such that the range [first, new_last) contains
+/// no elements whose iterators are in [rfirst, rlast). Remove is stable,
+/// meaning that the relative order of elements that are not equal to value is
+/// unchanged. This version of the algorithm is a uSTL extension.
+///
+template <class Container, typename ForwardIterator>
+inline void remove (Container& ctr, ForwardIterator rfirst, ForwardIterator rlast)
+{
+    ctr.erase (remove_copy (ctr.begin(), ctr.end(), ctr.begin(), rfirst, rlast), ctr.end());
 }
 
 ///

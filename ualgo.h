@@ -367,9 +367,30 @@ template <class InputIterator, class OutputIterator, class T>
 OutputIterator remove_copy (InputIterator first, InputIterator last, OutputIterator result, const T& value)
 {
     while (first < last) {
-	T cur_value = *first++;
-	if (cur_value != value)
-	    *result++ = cur_value;
+	if (*first != value)
+	    *result++ = *first;
+	++ first;
+    }
+    return (result);
+}
+
+///
+/// Remove_copy copies elements that are not equal to values in [rfirst, rlast)
+/// from the range [first, last) to a range beginning at result. The return
+/// value is the end of the resulting range. This operation is stable, meaning
+/// that the relative order of the elements that are copied is the same as in the
+/// range [first, last). Range [rfirst, rlast) is assumed to be sorted.
+/// This algorithm is a uSTL extension.
+///
+template <class InputIterator, class OutputIterator, class RInputIterator>
+OutputIterator remove_copy (InputIterator first, InputIterator last, OutputIterator result, RInputIterator rfirst, RInputIterator rlast)
+{
+    while (first < last) {
+	while (rfirst < rlast && *rfirst < first)
+	    ++ rfirst;
+	if (rfirst == rlast || first != *rfirst)
+	    *result++ = *first;
+	++ first;
     }
     return (result);
 }

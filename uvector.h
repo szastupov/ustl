@@ -94,8 +94,6 @@ public:
 protected:
     virtual void		constructBlock (void* p, size_t s) const;
     virtual void		destructBlock (void* p, size_t s) const;
-    virtual void		read (istream& is);
-    virtual void		write (ostream& os) const;
 };
 
 /// Initializes empty vector.
@@ -198,18 +196,6 @@ template <typename T>
 inline size_t vector<T>::max_size (void) const
 {
     return (memblock::max_size() / sizeof(T));
-}
-
-/// Returns the number of bytes necessary to write this object to a stream
-template <typename T>
-size_t vector<T>::stream_size (void) const
-{
-    size_t s = sizeof(size_t);
-    const_iterator first = begin();
-    while (first < end())
-	s += stream_size_of(*first++);
-    s = Align (s);
-    return (s);
 }
 
 /// Returns the pointer to the first element.
@@ -435,23 +421,36 @@ void vector<T>::destructBlock (void* p, size_t s) const
 
 /// Reads the vector from stream \p is.
 template <typename T>
-inline void vector<T>::read (istream& is)
+istream& operator>> (istream& is, vector<T>& v)
 {
     size_t n;
     is >> n;
-    assert (n * stream_size_of(T()) <= is.remaining());
-    resize (n);
-    copy_n (istream_iterator<T>(is), size(), begin());
+    assert (n * stream_size_of(T()) <= is.remaining() && "This does not look like a written vector.");
+    v.resize (n);
+    copy_n (istream_iterator<T>(is), n, v.begin());
     is.align();
+    return (is);
 }
 
 /// Writes the vector to stream \p os.
 template <typename T>
-inline void vector<T>::write (ostream& os) const
+ostream& operator<< (ostream& os, const vector<T>& v)
 {
-    os << size();
-    copy_n (begin(), size(), ostream_iterator<T>(os));
+    os << v.size();
+    copy_n (v.begin(), v.size(), ostream_iterator<T>(os));
     os.align();
+    return (os);
+}
+
+/// Returns the number of bytes necessary to write this object to a stream
+template <typename T>
+size_t stream_size_of (const vector<T>& v)
+{
+    typedef typename vector<T>::const_iterator viter_t;
+    size_t s = sizeof(size_t);
+    for (viter_t first = v.begin(); first < v.end(); ++ first)
+	s += stream_size_of(*first++);
+    return (Align (s));
 }
 
 } // namespace ustl

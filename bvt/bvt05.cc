@@ -138,6 +138,20 @@ int main (void)
     PrintVector (v);
     v.assign (first, last);
 
+    cout << "remove (elements 3, 4, 6, 15, and 45)" << endl;
+    vector<uoff_t> toRemove;
+    toRemove.push_back (3);
+    toRemove.push_back (4);
+    toRemove.push_back (6);
+    toRemove.push_back (15);
+    toRemove.push_back (45);
+    typedef index_iterate<vector<int>::iterator, vector<uoff_t>::iterator> riiter_t;
+    riiter_t rfirst = index_iterator (v.begin(), toRemove.begin());
+    riiter_t rlast = index_iterator (v.begin(), toRemove.end());
+    remove (v, rfirst, rlast);
+    PrintVector (v);
+    v.assign (first, last);
+
     cout << "unique" << endl;
     unique (v);
     PrintVector (v);

@@ -85,7 +85,7 @@ public:
     inline reverse_iterator	operator+ (size_t n) const { return (reverse_iterator (m_i - n)); }
     inline reverse_iterator	operator- (size_t n) const { return (reverse_iterator (m_i + n)); }
     inline reference		operator[] (uoff_t n) const { return (*(*this + n)); }
-    inline difference_type	operator- (const reverse_iterator& i) const { return (i.m_i - m_i); }
+    inline difference_type	operator- (const reverse_iterator& i) const { return (distance (m_i, i.m_i)); }
 protected:
     Iterator		m_i;
 };
@@ -116,6 +116,51 @@ template <class Container>
 inline back_insert_iterator<Container> back_inserter (Container& ctr)
 {
     return (back_insert_iterator<Container> (ctr));
+}
+
+//----------------------------------------------------------------------
+
+/// Converts an iterator into a container of uoff_t indexes to an
+/// iterator of iterators into another container.
+template <class RandomAccessIterator, typename IndexIterator>
+class index_iterate {
+public:
+    typedef RandomAccessIterator	value_type;
+    typedef ptrdiff_t			difference_type;
+    typedef RandomAccessIterator*	pointer;
+    typedef RandomAccessIterator	reference;
+public:
+    				index_iterate (void) : m_Base(), m_i() {}
+				index_iterate (RandomAccessIterator ibase, IndexIterator iindex) : m_Base (ibase), m_i (iindex) {}
+				index_iterate (const index_iterate& v) : m_Base (v.m_Base), m_i (v.m_i) {}
+    index_iterate&		operator= (const index_iterate& i) { m_Base = i.m_Base; m_i = i.m_i; return (*this); }
+    inline bool			operator== (const index_iterate& i) const { return (m_i == i.m_i); }
+    inline bool			operator< (const index_iterate& i) const { return (m_i < i.m_i); }
+    inline bool			operator== (const RandomAccessIterator& i) const { return (m_Base == i); }
+    inline bool			operator< (const RandomAccessIterator& i) const { return (m_Base < i); }
+    inline IndexIterator	base (void) const { return (m_i); }
+    inline reference		operator* (void) const { return (advance(m_Base, *m_i)); }
+    inline pointer		operator-> (void) const { return (&(operator*())); }
+    inline index_iterate&	operator++ (void) { ++ m_i; return (*this); }
+    inline index_iterate&	operator-- (void) { -- m_i; return (*this); }
+    inline index_iterate	operator++ (int) { index_iterate prev (*this); ++ m_i; return (prev); }
+    inline index_iterate	operator-- (int) { index_iterate prev (*this); -- m_i; return (prev); }
+    inline index_iterate&	operator+= (size_t n) { m_i += n; return (*this); }
+    inline index_iterate&	operator-= (size_t n) { m_i -= n; return (*this); }
+    inline index_iterate	operator+ (size_t n) const { return (index_iterate (m_Base, m_i + n)); }
+    inline index_iterate	operator- (size_t n) const { return (index_iterate (m_Base, m_i - n)); }
+    inline reference		operator[] (uoff_t n) const { return (*(*this + n)); }
+    inline difference_type	operator- (const index_iterate& i) const { return (distance (m_i, i.m_i)); }
+private:
+    RandomAccessIterator	m_Base;
+    IndexIterator		m_i;
+};
+
+/// Returns an index_iterate for \p ibase over \p iindex.
+template <class RandomAccessIterator, typename IndexIterator>
+inline index_iterate<RandomAccessIterator, IndexIterator> index_iterator (RandomAccessIterator ibase, IndexIterator iindex)
+{
+    return (index_iterate<RandomAccessIterator, IndexIterator> (ibase, iindex));
 }
 
 //----------------------------------------------------------------------

@@ -25,6 +25,7 @@
 #include "memblock.h"
 #include "uiterator.h"
 #include "ulimits.h"
+#include "strmsize.h"
 
 namespace ustl {
 
@@ -140,9 +141,9 @@ public:
     const_iterator		find_last_of (const string& s, const_iterator pos = NULL) const;
     const_iterator		find_last_not_of (const string& s, const_iterator pos = NULL) const;
     int				format (const char* fmt, ...) __attribute__((__format__(__printf__, 2, 3)));
-    virtual void		read (istream&);
-    virtual void		write (ostream& os) const;
-    virtual size_t		stream_size (void) const;
+    void			read (istream&);
+    void			write (ostream& os) const;
+    size_t			stream_size (void) const;
 };
 
 /// Returns the number of characters in the string, not including the terminator.
@@ -404,6 +405,8 @@ inline void string::replace (iterator first, iterator last, const_reference c, s
 }
 
 } // namespace ustl
+
+STD_STREAMABLE(ustl::string)
 
 #endif
 
