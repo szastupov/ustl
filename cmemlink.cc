@@ -55,18 +55,24 @@ cmemlink::cmemlink (const cmemlink& l)
     assert (size() % elementSize() == 0 && "You are trying to link to a block of different element type.");
 }
 
-/// Attaches the object to pointer \p p of size \p n.
+/// \brief Attaches the object to pointer \p p of size \p n.
+///
+/// If \p p is NULL and \p n is non-zero, bad_alloc is thrown and current
+/// state remains unchanged.
+///
 void cmemlink::link (const void* p, size_type n)
 {
-    unlink();
-    assert (p || !n);
     assert (n % elementSize() == 0 && "You are trying to link to a block of different element type.");
+    if (!p && n)
+	throw bad_alloc (n);
+    unlink();
     m_CData = reinterpret_cast<const_pointer>(p);
     m_Size = n;
 }
 
-/// Resets all to 0.
-/// Do NOT override this function. It is virtual only for
+/// \brief Resets all to 0.
+///
+/// \warning Do NOT override this function. It is virtual only for
 /// memlink, memblock, and the streams; there is no way to
 /// "unvirtualize" a function, hence the documentation.
 ///

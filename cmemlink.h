@@ -164,6 +164,11 @@ inline void cmemlink::read (istream&)
 // Specialization for stream alignment
 template <> inline size_t alignof (cmemlink) { return (alignof (size_t())); }
 
+/// Use with cmemlink-derived classes to link to a static array
+#define static_link(v)	link (v, VectorSize(v))
+/// Use with memlink-derived classes to allocate and link to stack space.
+#define alloca_link(n)	link (alloca(n), n)
+
 } // namespace ustl
 
 #endif
