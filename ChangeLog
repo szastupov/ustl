@@ -1,4 +1,7 @@
-Release 0.4-3
+Release 0.4-4
+	* configure will now properly enable mmx compiler flags.
+
+2004-07-28 Release 0.4-3
 	* A ChangeLog! After all these years...
 	* SIMD instruction support for fill and copy
 	* matrix template (on top of tuple)
@@ -29,7 +32,7 @@ Release 0.4-3
 	* More functions implemented in bitset.
 	* Added --with-static and --without-shared flags to configure.
 
-Release 0.4-2
+2004-05-22 Release 0.4-2
 	* ostringstreams will now correctly resize the buffer as needed.
 	* Fixed floating point output
 		(well, not really, just switched to using snprintf)
