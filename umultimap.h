@@ -27,7 +27,11 @@
 
 namespace ustl {
 
-/// A sorted associative container that may container multiple entries for each key.
+/// \class multimap umultimap.h ustl.h
+/// \ingroup AssociativeContainers
+///
+/// \brief A sorted associative container that may container multiple entries for each key.
+///
 template <typename K, typename V>
 class multimap : public vector<pair<K,V> > {
 public:

@@ -21,8 +21,8 @@
 // Types used by this library.
 //
 
-#ifndef UTYPES_H
-#define UTYPES_H
+#ifndef UTYPES_H_118BBB3B50B7DBF22F5460C52E515C83
+#define UTYPES_H_118BBB3B50B7DBF22F5460C52E515C83
 
 #include "config.h"
 #define __STDC_LIMIT_MACROS	// For WCHAR_MIN and WCHAR_MAX in stdint.

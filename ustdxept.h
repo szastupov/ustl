@@ -30,7 +30,11 @@ namespace ustl {
 static const xfmt_t	xfmt_LogicError		= 2;
 static const xfmt_t	xfmt_RuntimeError	= 3;
 
-/// Logic errors represent problems in the internal logic of the program.
+/// \class logic_error ustdxept.h ustl.h
+/// \ingroup Exceptions
+///
+/// \brief Logic errors represent problems in the internal logic of the program.
+///
 class logic_error : public exception {
 public:
     explicit		logic_error (const string& arg);
@@ -44,35 +48,55 @@ protected:
     string		m_Arg;
 };
 
-/// Reports domain errors ("domain" is in the mathematical sense)
+/// \class domain_error ustdxept.h ustl.h
+/// \ingroup Exceptions
+///
+/// \brief Reports domain errors ("domain" is in the mathematical sense)
+///
 class domain_error : public logic_error {
 public:
     explicit		domain_error (const string& arg);
     virtual const char*	what (void) const;
 };
 
-/// Reports an invalid argument to a function.
+/// \class invalid_argument ustdxept.h ustl.h
+/// \ingroup Exceptions
+///
+/// \brief Reports an invalid argument to a function.
+///
 class invalid_argument : public logic_error {
 public:
     explicit		invalid_argument (const string& arg);
     virtual const char*	what (void) const;
 };
 
-/// Reports when an object exceeds its allowed size.
+/// \class length_error ustdxept.h ustl.h
+/// \ingroup Exceptions
+///
+/// \brief Reports when an object exceeds its allowed size.
+///
 class length_error : public logic_error {
 public:
     explicit		length_error (const string& arg);
     virtual const char*	what (void) const;
 };
 
-/// Reports arguments with values out of allowed range.
+/// \class out_of_range ustdxept.h ustl.h
+/// \ingroup Exceptions
+///
+/// \brief Reports arguments with values out of allowed range.
+///
 class out_of_range : public logic_error {
 public:
     explicit		out_of_range (const string& arg);
     virtual const char*	what (void) const;
 };
 
-/// Reports errors that are dependent on the data being processed.
+/// \class runtime_error ustdxept.h ustl.h
+/// \ingroup Exceptions
+///
+/// \brief Reports errors that are dependent on the data being processed.
+///
 class runtime_error : public exception {
 public:
     explicit		runtime_error (const string& arg);
@@ -86,21 +110,33 @@ protected:
     string		m_Arg;
 };
 
-/// Reports data that does not fall within the permitted range.
+/// \class range_error ustdxept.h ustl.h
+/// \ingroup Exceptions
+///
+/// \brief Reports data that does not fall within the permitted range.
+///
 class range_error : public runtime_error {
 public:
     explicit		range_error (const string& arg);
     virtual const char*	what (void) const;
 };
 
-/// Reports arithmetic overflow.
+/// \class overflow_error ustdxept.h ustl.h
+/// \ingroup Exceptions
+///
+/// \brief Reports arithmetic overflow.
+///
 class overflow_error : public runtime_error {
 public:
     explicit		overflow_error (const string& arg);
     virtual const char*	what (void) const;
 };
 
-/// Reports arithmetic underflow.
+/// \class underflow_error ustdxept.h ustl.h
+/// \ingroup Exceptions
+///
+/// \brief Reports arithmetic underflow.
+///
 class underflow_error : public runtime_error {
 public:
     explicit		underflow_error (const string& arg);

@@ -26,7 +26,11 @@
 
 namespace ustl {
 
-/// A fixed-size array of \p N \p Ts.
+/// \class tuple utuple.h ustl.h
+/// \ingroup Sequences
+///
+/// \brief A fixed-size array of \p N \p Ts.
+///
 template <size_t N, typename T>
 class tuple {
 public:

@@ -19,12 +19,16 @@
 // ustack.h
 //
 
-#ifndef USTACK_H
-#define USTACK_H
+#ifndef USTACK_H_5242F5635322B2EC44A9AEE73022C6E9
+#define USTACK_H_5242F5635322B2EC44A9AEE73022C6E9
 
 namespace ustl {
 
-/// Stack adapter to uSTL containers.
+/// \class stack ustack.h ustl.h
+/// \ingroup Sequences
+///
+/// \brief Stack adapter to uSTL containers.
+///
 template <class Sequence>
 class stack {
 public:

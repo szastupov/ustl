@@ -19,8 +19,8 @@
 // uvector.h
 //
 
-#ifndef UVECTOR_H
-#define UVECTOR_H
+#ifndef UVECTOR_H_00BB13AF082BEB7829C031B265518169
+#define UVECTOR_H_00BB13AF082BEB7829C031B265518169
 
 #include "memblock.h"
 #include "uiterator.h"
@@ -28,6 +28,8 @@
 
 namespace ustl {
 
+/// \class vector uvector.h ustl.h
+/// \ingroup Sequences
 ///
 /// \brief STL vector equivalent.
 ///
@@ -372,7 +374,7 @@ inline void vector<T>::pop_back (void)
     erase (end() - 1);
 }
 
-/// Calls T() for every element.
+/// \brief Calls T() for every element.
 /// Because storage is allocated by malloc() in memblock::Reserve(),
 /// the constructors must be explicitly called here.
 ///
@@ -385,7 +387,7 @@ void vector<T>::constructBlock (void* p, size_t s) const
     construct (pt, pt + s / sizeof(T));
 }
 
-/// Calls ~T() for every element.
+/// \brief Calls ~T() for every element.
 /// Because storage is deallocated by free() in memblock::Link(),
 /// the destructors must be explicitly called here. This function must
 /// also be called from the destructor of this class because it is virtual
@@ -400,6 +402,7 @@ void vector<T>::destructBlock (void* p, size_t s) const
     memblock::destructBlock (p, s);
 }
 
+/// Returns the size of each element in the container.
 template <typename T>
 inline size_t vector<T>::elementSize (void) const
 {

@@ -18,12 +18,14 @@
 //
 // mistream.h
 //
-#ifndef MISTREAM_H
-#define MISTREAM_H
+#ifndef MISTREAM_H_103AEF1F266C04AA1A817D38705983DA
+#define MISTREAM_H_103AEF1F266C04AA1A817D38705983DA
 
 #include "cmemlink.h"
 #include "uexception.h"
-#include <typeinfo>
+#ifdef WANT_STREAM_BOUNDS_CHECKING
+    #include <typeinfo>
+#endif
 
 namespace ustl {
 
@@ -31,6 +33,8 @@ class ostream;
 class memlink;
 class string;
 
+/// \class istream mistream.h ustl.h
+/// \ingroup BinaryStreams
 ///
 /// \brief Helper class to read packed binary streams.
 /// 
@@ -57,10 +61,10 @@ class string;
 /// 
 /// Example code:
 /// \code
-///	CMemoryBlock b;
+///	memblock b;
 ///	int br = read (fd, b, b.size());
 ///	b.SetSize (br);
-///	COStream is (b);
+///	ostream is (b);
 ///	is >> boolVar;
 ///	is.align (sizeof(int));
 ///	is >> intVar >> floatVar;
@@ -101,7 +105,11 @@ private:
 
 //----------------------------------------------------------------------
 
-/// An iterator over an istream to use with uSTL algorithms.
+/// \class istream_iterator
+/// \ingroup BinaryStreamIterators
+///
+/// \brief An iterator over an istream to use with uSTL algorithms.
+///
 template <class T>
 class istream_iterator {
 public:
@@ -133,9 +141,9 @@ public:
     inline bool			operator< (const istream_iterator& i) const
 				    { return (m_Is.pos() < i.m_Is.pos()); }
 private:
-    istream&	m_Is;
-    T		m_v;
-    uoff_t	m_vPos;
+    istream&	m_Is;		///< The host stream.
+    T		m_v;		///< Last read value; cached to be returnable as a const reference.
+    uoff_t	m_vPos;		///< Current position.
 };
 
 //----------------------------------------------------------------------

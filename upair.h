@@ -19,12 +19,16 @@
 /// \file upair.h
 //
 
-#ifndef UPAIR_H
-#define UPAIR_H
+#ifndef UPAIR_H_7DC08F1B7FECF8AE6856D84C3B617A75
+#define UPAIR_H_7DC08F1B7FECF8AE6856D84C3B617A75
 
 namespace ustl {
 
-/// Container for two values.
+/// \class pair upair.h ustl.h
+/// \ingroup AssociativeContainers
+///
+/// \brief Container for two values.
+///
 template <typename T1, typename T2>
 class pair {
 public:

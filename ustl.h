@@ -73,7 +73,102 @@
 /// \c ustl.h and link to \c -lustl . Tutorials on using STL are numerous on the
 /// web and the information in there mostly applies, except for iostream usage,
 /// which is not supported in uSTL for philosophical reasons.
-///
+//
+/// \defgroup Containers Containers
+/// Here you'll find all the containers for your objects and data.
+//
+///	\defgroup MemoryManagement Memory Management
+///	\ingroup Containers
+///	Classes that implement low-level memory management and form the base for
+///	all containers in the library. Almost all functionality in the containers
+///	is reduced to calls to these base classes through a great deal of inline
+///	crunching by the compiler, and thus you end up storing all your data in
+///	ustl::memblock objects with the container templates as mere syntactic sugar.
+//
+///	\defgroup Sequences Sequence Containers
+///	\ingroup Containers
+///	Containers containing sequences of objects.
+//
+///	\defgroup AssociativeContainers Associative Containers
+///	\ingroup Containers
+///	Containers containing associations of objects.
+//
+/// \defgroup Streams Streams
+/// Streams convert objects into flat data.
+//
+/// 	\defgroup BinaryStreams Binary Streams
+///	\ingroup Streams
+///	Unlike the C++ standard library,
+///	the default behaviour is very strongly biased toward binary streams. I
+///	believe that text formats should be used very sparingly due to numerous
+///	problems they cause, such as total lack of structure, buffer overflows,
+///	the great multitude of formats and encodings for even the most
+///	trivial of things like integers, and the utter lack of readability
+///	despite ardent claims to the contrary. Binary formats are well-structured,
+///	are simpler to define exhaustively, are aggregates of basic types which
+///	are universal to all architectures (with the exception of two types of
+///	byte ordering, which I hope to be an issue that will go away soon), and
+///	are much more readable (through an appropriate formatting tool equipped
+///	to read binary format specifications).
+//
+///		\defgroup BinaryStreamIterators Binary Stream Iterators
+///		\ingroup BinaryStreams
+///		\ingroup Iterators
+///		Iterators for using STL algorithms with binary streams.
+//
+///	\defgroup TextStreams TextStreams
+///	\ingroup Streams
+///	Streams converting objects into streams of text.
+//
+///		\defgroup DeviceStreams Device Streams
+///		\ingroup Streams
+///		Standard cout, cerr, and cin implementations for reading
+///		and writing text through standard file descriptors.
+//
+/// \defgroup Iterators Iterators
+/// Generalizations of the pointer concept, allowing algorithms to treat
+/// all containers in a unified fashion.
+//
+///	\defgroup IteratorAdaptors Iterator Adaptors
+///	\ingroup Iterators
+///	Iterators made out of other iterators.
+//
+/// \defgroup Algorithms Algorithms
+/// STL algorithms are the heart of generic programming. The idea is to
+/// separate algorithms from containers to take advantage of the fact that
+/// there are fewer distinct algorithms than typed containers. This is
+/// diametrically opposed to object oriented programming, where each object
+/// must contain all functionality related to its internal data. You will
+/// find, I think, that in practice, generic programming is not terribly
+/// convenient because it prevents you from encapsulating all your data.
+/// The best approach is to compromise and have raw data classes that will
+/// be manipulated by algorithms and to treat the rest of the objects as
+/// stateful data transformers.
+//
+///	\defgroup MutatingAlgorithms Mutating Algorithms
+///	\ingroup Algorithms
+///	Algorithms for modifying your data in some way.
+//
+///		\defgroup SortingAlgorithms Sorting Algorithms
+///		\ingroup MutatingAlgorithms
+///		Algorithms for sorting containers.
+//
+///		\defgroup GeneratorAlgorithms Generator Algorithms
+///		\ingroup MutatingAlgorithms
+///		Algorithms for generating data.
+//
+///		\defgroup SwapAlgorithms Swap Algorithms
+///		\ingroup MutatingAlgorithms
+///		Algorithms for swapping elements.
+//
+///	\defgroup SearchingAlgorithms Searching Algorithms
+///	\ingroup Algorithms
+///	Algorithms for searching through containers.
+//
+///	\defgroup RawStorageAlgorithms Raw Storage Algorithms
+///	\ingroup Algorithms
+///	Algorithms for manipulating unstructured memory.
+//
 
 #ifndef USTL_H_99881273
 #define USTL_H_99881273

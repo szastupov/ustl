@@ -18,6 +18,8 @@
 //
 // ubitset.h
 //
+#ifndef UBITSET_H_7B6450EC1400CBA45DCE0127739F82EE
+#define UBITSET_H_7B6450EC1400CBA45DCE0127739F82EE
 
 #include "ustring.h"
 #include "ufunction.h"
@@ -34,8 +36,11 @@ template <class T> struct bitwise_xor	: public binary_function<T,T,T> { inline T
 template <class T> struct bitwise_not	: public unary_function<T,T>    { inline T operator()(const T& a) const { return (~a); } };
 #endif
 
+/// \class bitset ubitset.h ustl.h
+/// \ingroup Sequences
 ///
-/// bitset is a fixed-size block of memory with addressable bits.
+/// \brief bitset is a fixed-size block of memory with addressable bits.
+///
 /// Normally used for state flags; allows setting and unsetting of individual
 /// bits as well as bitwise operations on the entire set. The interface is
 /// most like that of unsigned integers, and is intended to be used as such.
@@ -104,4 +109,6 @@ private:
 };
 
 }; // namespace ustl
+
+#endif
 

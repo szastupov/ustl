@@ -19,8 +19,8 @@
 // sistream.h
 //
 
-#ifndef SISTREAM_H
-#define SISTREAM_H
+#ifndef SISTREAM_H_0CCA102229A49F5D65EE852E62B27CE2
+#define SISTREAM_H_0CCA102229A49F5D65EE852E62B27CE2
 
 #include "mistream.h"
 #include "ufacets.h"
@@ -28,7 +28,12 @@
 namespace ustl {
 
 class string;
-/// A stream that reads textual data from a memory block.
+
+/// \class istringstream sistream.h ustl.h
+/// \ingroup TextStreams
+///
+/// \brief A stream that reads textual data from a memory block.
+///
 class istringstream : public istream {
 public:
     static const size_t c_MaxDelimiters = 16;	///< Maximum number of word delimiters.
@@ -154,6 +159,7 @@ inline istringstream& istringstream::operator>> (float& v)
     double vl; operator>> (vl); v = static_cast<float>(vl); return (*this);
 }
 
+/// Reads a null-terminated character stream. This is not allowed in this class.
 inline void istringstream::read_strz (string& str)
 {
     assert (false && "Reading nul characters is not allowed from text streams");

@@ -30,7 +30,9 @@ namespace ustl {
 
 class string;
 
-/// A string stream that writes to an fd. Implements cout and cerr.
+/// \class fdostringstream fdostream.h ustl.h
+/// \ingroup DeviceStreams
+/// \brief A string stream that writes to an fd. Implements cout and cerr.
 class fdostringstream : public ostringstream {
 public:
     explicit			fdostringstream (int fd);
@@ -44,7 +46,9 @@ private:
     int				m_Fd;
 };
 
-/// A string stream that reads from an fd. Implements cin.
+/// \class fdistringstream fdostream.h ustl.h
+/// \ingroup DeviceStreams
+/// \brief A string stream that reads from an fd. Implements cin.
 ///
 /// I would discourage the use of cin in general. As a quick-n-dirty
 /// hack to read a configuration file it is ok, but if you want to

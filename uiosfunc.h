@@ -26,6 +26,8 @@
 
 namespace ustl {
 namespace ios {
+    /// \class align uiosfunc.h ustl.h
+    /// \ingroup StreamFunctors
     /// Stream functor to allow inline align() calls. os << ios::align(sizeof(u_short));
     class align {
     public:
@@ -37,6 +39,8 @@ namespace ios {
 	size_t			m_Grain;
     };
 
+    /// \class skip uiosfunc.h ustl.h
+    /// \ingroup StreamFunctors
     /// Stream functor to allow inline skip() calls. os << ios::skip(sizeof(u_short));
     class skip {
     public:
@@ -48,6 +52,8 @@ namespace ios {
 	size_t			m_nBytes;
     };
 
+    /// \class width uiosfunc.h ustl.h
+    /// \ingroup StreamFunctors
     /// Stream functor to allow inline set_width() calls. os << ios::width(15);
     class width {
     public:
@@ -57,6 +63,8 @@ namespace ios {
 	size_t			m_nBytes;
     };
 
+    /// \class base uiosfunc.h ustl.h
+    /// \ingroup StreamFunctors
     /// Stream functor to allow inline set_base() calls. os << ios::base(15);
     class base {
     public:

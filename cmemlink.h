@@ -19,8 +19,8 @@
 // cmemlink.h
 //
 
-#ifndef CMEMLINK_H
-#define CMEMLINK_H
+#ifndef CMEMLINK_H_7CFAB32C5C6732ED29B34EF00EA40A12
+#define CMEMLINK_H_7CFAB32C5C6732ED29B34EF00EA40A12
 
 #include "ualgobase.h"
 
@@ -30,6 +30,8 @@ namespace ustl {
 class istream;
 class ostream;
 
+/// \class cmemlink cmemlink.h ustl.h
+/// \ingroup MemoryManagement
 ///
 /// \brief A read-only pointer to a sized block of memory.
 ///

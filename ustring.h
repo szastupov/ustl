@@ -27,6 +27,8 @@
 
 namespace ustl {
 
+/// \class string ustring.h ustl.h
+/// \ingroup Sequences
 ///
 /// \brief STL basic_string equivalent.
 ///

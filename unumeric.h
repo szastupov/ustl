@@ -27,6 +27,8 @@
 namespace ustl {
 
 /// Returns the sum of all elements in [first, last) added to \p init.
+/// \ingroup NumericAlgorithms
+///
 template <typename InputIterator, typename T>
 inline T accumulate (InputIterator first, InputIterator last, T init)
 {
@@ -36,6 +38,8 @@ inline T accumulate (InputIterator first, InputIterator last, T init)
 }
 
 /// Returns the sum of all elements in [first, last) via \p op, added to \p init.
+/// \ingroup NumericAlgorithms
+///
 template <typename InputIterator, typename T, typename BinaryFunction>
 inline T accumulate (InputIterator first, InputIterator last, T init, BinaryFunction binary_op)
 {
@@ -45,6 +49,8 @@ inline T accumulate (InputIterator first, InputIterator last, T init, BinaryFunc
 }
 
 /// Assigns range [value, value + (last - first)) to [first, last)
+/// \ingroup NumericAlgorithms
+///
 template <typename ForwardIterator, typename T>
 inline void iota (ForwardIterator first, ForwardIterator last, T value)
 {
@@ -53,6 +59,8 @@ inline void iota (ForwardIterator first, ForwardIterator last, T value)
 }
 
 /// Returns the sum of products of respective elements in the given ranges.
+/// \ingroup NumericAlgorithms
+///
 template <typename InputIterator1, typename InputIterator2, typename T>
 inline T inner_product (InputIterator1 first1, InputIterator1 last1, InputIterator2 first2, T init)
 {
@@ -62,6 +70,8 @@ inline T inner_product (InputIterator1 first1, InputIterator1 last1, InputIterat
 }
 
 /// Returns the sum of products of respective elements in the given ranges.
+/// \ingroup NumericAlgorithms
+///
 template <typename InputIterator1, typename InputIterator2, typename T,
     	  typename BinaryOperation1, typename BinaryOperation2>
 inline T inner_product
@@ -74,6 +84,8 @@ inline T inner_product
 }
 
 /// Writes result such that result[i] = sum (first...first+i)
+/// \ingroup NumericAlgorithms
+///
 template <typename InputIterator, typename OutputIterator>
 inline OutputIterator partial_sum (InputIterator first, InputIterator last, OutputIterator result)
 {
@@ -85,6 +97,8 @@ inline OutputIterator partial_sum (InputIterator first, InputIterator last, Outp
 }
 
 /// Writes result such that result[i] = sumOp (first...first+i)
+/// \ingroup NumericAlgorithms
+///
 template <typename InputIterator, typename OutputIterator, typename BinaryOperation>
 inline OutputIterator partial_sum (InputIterator first, InputIterator last, OutputIterator result, BinaryOperation sumOp)
 {
@@ -96,6 +110,8 @@ inline OutputIterator partial_sum (InputIterator first, InputIterator last, Outp
 }
 
 /// Writes result such that result[i] = first[i] - first[i - 1]
+/// \ingroup NumericAlgorithms
+///
 template <typename InputIterator, typename OutputIterator>
 inline OutputIterator adjacent_difference (InputIterator first, InputIterator last, OutputIterator result)
 {
@@ -107,6 +123,8 @@ inline OutputIterator adjacent_difference (InputIterator first, InputIterator la
 }
 
 /// Writes result such that result[i] = differenceOp (first[i], first[i - 1])
+/// \ingroup NumericAlgorithms
+///
 template <typename InputIterator, typename OutputIterator, typename BinaryOperation>
 inline OutputIterator adjacent_difference (InputIterator first, InputIterator last, OutputIterator result, BinaryOperation differenceOp)
 {
@@ -117,8 +135,10 @@ inline OutputIterator adjacent_difference (InputIterator first, InputIterator la
     return (result);
 }
 
-/// Returns x^n.
+/// \brief Returns x^n.
 /// Donald Knuth's Russian Peasant algorithm.
+/// \ingroup NumericAlgorithms
+///
 template <typename T>
 inline T power (T x, unsigned n)
 {
@@ -131,8 +151,10 @@ inline T power (T x, unsigned n)
     return (result);
 }
 
-/// Returns x^n, using \p op instead of multiplication.
+/// \brief Returns x^n, using \p op instead of multiplication.
 /// Donald Knuth's Russian Peasant algorithm.
+/// \ingroup NumericAlgorithms
+///
 template <typename T, typename BinaryOperation>
 inline T power (T x, unsigned n, BinaryOperation op)
 {

@@ -74,7 +74,10 @@ inline size_t Utf8SequenceBytes (u_char c)
 
 //----------------------------------------------------------------------
 
-/// An iterator adaptor to character containers for reading UTF-8 encoded text.
+/// \class utf8in_iterator utf8.h ustl.h
+/// \ingroup IteratorAdaptors
+///
+/// \brief An iterator adaptor to character containers for reading UTF-8 encoded text.
 ///
 /// For example, you can copy from ustl::string to ustl::vector<wchar_t> with
 /// copy (utf8in (str.begin()), utf8in (str.end()), back_inserter(wvect));
@@ -152,7 +155,11 @@ utf8in_iterator<Iterator,WChar>::operator- (const utf8in_iterator<Iterator,WChar
 
 //----------------------------------------------------------------------
 
-/// An iterator adaptor to character containers for writing UTF-8 encoded text.
+/// \class utf8out_iterator utf8.h ustl.h
+/// \ingroup IteratorAdaptors
+///
+/// \brief An iterator adaptor to character containers for writing UTF-8 encoded text.
+///
 template <typename Iterator, typename WChar = wchar_t>
 class utf8out_iterator {
 public:

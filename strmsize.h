@@ -22,8 +22,8 @@
 /// read from a stream.
 //
 
-#ifndef STRMSIZE_H
-#define STRMSIZE_H
+#ifndef STRMSIZE_H_052FF16B2D8A608761BF10333D065073
+#define STRMSIZE_H_052FF16B2D8A608761BF10333D065073
 
 namespace ustl {
 

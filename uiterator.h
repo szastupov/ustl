@@ -19,8 +19,8 @@
 /// \file uiterator.h
 //
 
-#ifndef UITERATOR_H
-#define UITERATOR_H
+#ifndef UITERATOR_H_5BCA176C7214A30F2069E2614D2DC226
+#define UITERATOR_H_5BCA176C7214A30F2069E2614D2DC226
 
 namespace ustl {
 
@@ -56,7 +56,10 @@ struct iterator_traits<const T*> {
 
 //----------------------------------------------------------------------
 
-/// Wraps \p Iterator to behave in an exactly opposite manner.
+/// \class reverse_iterator uiterator.h ustl.h
+/// \ingroup IteratorAdaptors
+/// \brief Wraps \p Iterator to behave in an exactly opposite manner.
+///
 template <class Iterator>
 class reverse_iterator {
 public:
@@ -88,7 +91,10 @@ protected:
 
 //----------------------------------------------------------------------
 
-/// Calls insert on bound container for each assignment.
+/// \class insert_iterator uiterator.h ustl.h
+/// \ingroup IteratorAdaptors
+/// \brief Calls insert on bound container for each assignment.
+///
 template <class Container>
 class insert_iterator {
 public:
@@ -118,7 +124,10 @@ inline insert_iterator<Container> inserter (Container& ctr, typename Container::
 
 //----------------------------------------------------------------------
 
-/// Calls push_back on bound container for each assignment.
+/// \class back_insert_iterator uiterator.h ustl.h
+/// \ingroup IteratorAdaptors
+/// \brief Calls push_back on bound container for each assignment.
+///
 template <class Container>
 class back_insert_iterator {
 public:
@@ -146,8 +155,14 @@ inline back_insert_iterator<Container> back_inserter (Container& ctr)
 
 //----------------------------------------------------------------------
 
+/// \class index_iterate uiterator.h ustl.h
+/// \ingroup IteratorAdaptors
+///
+/// \brief Allows iteration through an index container.
+///
 /// Converts an iterator into a container of uoff_t indexes to an
 /// iterator of iterators into another container.
+///
 template <typename RandomAccessIterator, typename IndexIterator>
 class index_iterate {
 public:

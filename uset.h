@@ -26,7 +26,11 @@
 
 namespace ustl {
 
-/// Unique sorted container. Sorted vector with all values unique.
+/// \class set uset.h ustl.h
+/// \ingroup Sequences
+///
+/// \brief Unique sorted container. Sorted vector with all values unique.
+///
 template <typename T>
 class set : public vector<T> {
 public:

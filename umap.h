@@ -27,7 +27,11 @@
 
 namespace ustl {
 
-/// A sorted associative container of pair<K,V>
+/// \class map umap.h ustl.h
+/// \ingroup AssociativeContainers
+///
+/// \brief A sorted associative container of pair<K,V>
+///
 template <typename K, typename V>
 class map : public vector<pair<K,V> > {
 public:

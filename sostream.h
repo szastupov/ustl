@@ -19,8 +19,8 @@
 // sostream.h
 //
 
-#ifndef SOSTREAM_H
-#define SOSTREAM_H
+#ifndef SOSTREAM_H_5323DC8C26E181D43278F2F53FDCF19F
+#define SOSTREAM_H_5323DC8C26E181D43278F2F53FDCF19F
 
 #include "mostream.h"
 #include "ufacets.h"
@@ -29,7 +29,12 @@
 namespace ustl {
 
 class string;
-/// This stream writes textual data into a memory block.
+
+/// \class ostringstream sostream.h ustl.h
+/// \ingroup TextStreams
+///
+/// \brief This stream writes textual data into a memory block.
+///
 class ostringstream : public ostream {
 public:
     				ostringstream (void);

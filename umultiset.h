@@ -27,7 +27,12 @@
 
 namespace ustl {
 
-/// Multiple sorted container. Unlike set, it may contain multiple copies of each element.
+/// \class multiset umultiset.h ustl.h
+/// \ingroup AssociativeContainers
+///
+/// \brief Multiple sorted container.
+/// Unlike set, it may contain multiple copies of each element.
+///
 template <typename T>
 class multiset : public vector<T> {
 public:

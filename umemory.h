@@ -26,6 +26,9 @@
 
 namespace ustl {
 
+/// \class auto_ptr umemory.h ustl.h
+/// \ingroup MemoryManagement
+///
 /// \brief A smart pointer.
 ///
 /// Calls delete in the destructor; assignment transfers ownership.
@@ -65,6 +68,8 @@ private:
 };
 
 /// Calls the placement new on \p p.
+/// \ingroup RawStorageAlgorithms
+///
 template <typename T>
 inline void construct (T* p)
 {
@@ -72,6 +77,8 @@ inline void construct (T* p)
 }
 
 /// Calls the placement new on \p p.
+/// \ingroup RawStorageAlgorithms
+///
 template <typename ForwardIterator>
 void construct (ForwardIterator first, ForwardIterator last)
 {
@@ -82,6 +89,8 @@ void construct (ForwardIterator first, ForwardIterator last)
 }
 
 /// Calls the placement new on \p p.
+/// \ingroup RawStorageAlgorithms
+///
 template <typename T>
 inline void construct (T* p, const T& value)
 {
@@ -89,6 +98,8 @@ inline void construct (T* p, const T& value)
 }
 
 /// Calls the destructor of \p p without calling delete.
+/// \ingroup RawStorageAlgorithms
+///
 template <typename T>
 inline void destroy (T* p)
 {
@@ -96,6 +107,8 @@ inline void destroy (T* p)
 }
 
 /// Calls the destructor on elements in range [first, last) without calling delete.
+/// \ingroup RawStorageAlgorithms
+///
 template <typename ForwardIterator>
 void destroy (ForwardIterator first, ForwardIterator last)
 {
@@ -106,6 +119,8 @@ void destroy (ForwardIterator first, ForwardIterator last)
 }
 
 /// Copies [first, last) into result by calling copy constructors in result.
+/// \ingroup RawStorageAlgorithms
+///
 template <typename InputIterator, typename ForwardIterator>
 ForwardIterator uninitialized_copy (InputIterator first, InputIterator last, ForwardIterator result)
 {
@@ -118,6 +133,8 @@ ForwardIterator uninitialized_copy (InputIterator first, InputIterator last, For
 }
 
 /// Copies [first, first + n) into result by calling copy constructors in result.
+/// \ingroup RawStorageAlgorithms
+///
 template <typename InputIterator, typename ForwardIterator>
 ForwardIterator uninitialized_copy_n (InputIterator first, size_t n, ForwardIterator result)
 {
@@ -130,6 +147,8 @@ ForwardIterator uninitialized_copy_n (InputIterator first, size_t n, ForwardIter
 }
 
 /// Calls construct on all elements in [first, last) with value \p v.
+/// \ingroup RawStorageAlgorithms
+///
 template <typename ForwardIterator, typename T>
 void uninitialized_fill (ForwardIterator first, ForwardIterator last, const T& v)
 {
@@ -140,6 +159,8 @@ void uninitialized_fill (ForwardIterator first, ForwardIterator last, const T& v
 }
 
 /// Calls construct on all elements in [first, first + n) with value \p v.
+/// \ingroup RawStorageAlgorithms
+///
 template <typename ForwardIterator, typename T>
 ForwardIterator uninitialized_fill_n (ForwardIterator first, size_t n, const T& v)
 {

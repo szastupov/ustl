@@ -16,7 +16,7 @@
 // Free Software Foundation, Inc., 59 Temple Place - Suite 330, 
 // Boston, MA  02111-1307  USA.
 //
-// uctralgo.h
+// \file uctralgo.h
 //
 // \brief Implementation of STL algorithms with container shortcuts.
 //
@@ -25,12 +25,11 @@
 // their use. The code is NOT the same, though the functionality usually is.
 //
 
-#ifndef UCTRALGO_H
-#define UCTRALGO_H
+#ifndef UCTRALGO_H_0D1AEDFA74B09791489FE25B1EC644B0
+#define UCTRALGO_H_0D1AEDFA74B09791489FE25B1EC644B0
 
 namespace ustl {
 
-///
 /// Copy copies elements from the range [first, last) to the range
 /// [result, result + (last - first)). That is, it performs the assignments
 /// *result = *first, *(result + 1) = *(first + 1), and so on. [1] Generally,
@@ -44,7 +43,6 @@ inline OutputIterator copy (const Container& ctr, OutputIterator result)
     return (copy (ctr.begin(), ctr.end(), result));
 }
 
-///
 /// Copy_if copies elements from the range [first, last) to the range
 /// [result, result + (last - first)) if pred(*i) returns true.
 ///
@@ -54,7 +52,6 @@ inline OutputIterator copy_if (Container& ctr, OutputIterator result, Predicate 
     return (copy_if (ctr.begin(), ctr.end(), result, pred));
 }
 
-///
 /// For_each applies the function object f to each element in the range
 /// [first, last); f's return value, if any, is ignored. Applications are
 /// performed in forward order, i.e. from first to last. For_each returns
@@ -66,7 +63,6 @@ inline UnaryFunction for_each (Container& ctr, UnaryFunction f)
     return (for_each (ctr.begin(), ctr.end(), f));
 }
 
-///
 /// For_each applies the function object f to each element in the range
 /// [first, last); f's return value, if any, is ignored. Applications are
 /// performed in forward order, i.e. from first to last. For_each returns
@@ -78,7 +74,6 @@ inline UnaryFunction for_each (const Container& ctr, UnaryFunction f)
     return (for_each (ctr.begin(), ctr.end(), f));
 }
 
-///
 /// Returns the first iterator i in the range [first, last) such that
 /// *i == value. Returns last if no such iterator exists. 
 ///
@@ -93,7 +88,6 @@ inline typename Container::iterator find (Container& ctr, const EqualityComparab
     return (find (ctr.begin(), ctr.end(), value));
 }
 
-///
 /// Returns the first iterator i in the range [first, last) such that
 /// pred(*i) is true. Returns last if no such iterator exists.
 ///
@@ -108,7 +102,6 @@ inline typename Container::iterator find_if (Container& ctr, Predicate pred)
     return (find_if (ctr.begin(), ctr.end(), pred));
 }
 
-///
 /// Count finds the number of elements in [first, last) that are equal
 /// to value. More precisely, the first version of count returns the
 /// number of iterators i in [first, last) such that *i == value.
@@ -119,7 +112,6 @@ inline size_t count (const Container& ctr, const EqualityComparable& value)
     return (count (ctr.begin(), ctr.end(), value));
 }
 
-///
 /// Count_if finds the number of elements in [first, last) that satisfy the
 /// predicate pred. More precisely, the first version of count_if returns the
 /// number of iterators i in [first, last) such that pred(*i) is true.
@@ -130,7 +122,6 @@ inline size_t count_if (const Container& ctr, Predicate pred)
     return (count_if (ctr.begin(), ctr.end(), pred));
 }
 
-///
 /// The first version of transform performs the operation op(*i) for each
 /// iterator i in the range [first, last), and assigns the result of that
 /// operation to *o, where o is the corresponding output iterator. That is,
@@ -144,7 +135,6 @@ inline void transform (Container& ctr, UnaryFunction op)
     transform (ctr.begin(), ctr.end(), ctr.begin(), op);
 }
 
-///
 /// The first version of transform performs the operation op(*i) for each
 /// iterator i in the range [first, last), and assigns the result of that
 /// operation to *o, where o is the corresponding output iterator. That is,
@@ -158,7 +148,6 @@ inline OutputIterator transform (Container& ctr, OutputIterator result, UnaryFun
     return (transform (ctr.begin(), ctr.end(), result, op));
 }
 
-///
 /// The second version of transform is very similar, except that it uses a
 /// Binary Function instead of a Unary Function: it performs the operation
 /// op(*i1, *i2) for each iterator i1 in the range [first1, last1) and assigns
@@ -174,7 +163,6 @@ inline OutputIterator transform (Container& ctr, InputIterator first, OutputIter
     return (transform (ctr.begin(), ctr.end(), first, result, op));
 }
 
-///
 /// Replace replaces every element in the range [first, last) equal to
 /// old_value with new_value. That is: for every iterator i,
 /// if *i == old_value then it performs the assignment *i = new_value.
@@ -185,7 +173,6 @@ inline void replace (Container& ctr, const T& old_value, const T& new_value)
     replace (ctr.begin(), ctr.end(), old_value, new_value);
 }
 
-///
 /// Replace_if replaces every element in the range [first, last) for which
 /// pred returns true with new_value. That is: for every iterator i, if
 /// pred(*i) is true then it performs the assignment *i = new_value.
@@ -196,7 +183,6 @@ inline void replace_if (Container& ctr, Predicate pred, const T& new_value)
     replace_if (ctr.begin(), ctr.end(), pred, new_value);
 }
 
-///
 /// Replace_copy copies elements from the range [first, last) to the range
 /// [result, result + (last-first)), except that any element equal to old_value
 /// is not copied; new_value is copied instead. More precisely, for every
@@ -210,7 +196,6 @@ inline OutputIterator replace_copy (const Container& ctr, OutputIterator result,
     return (replace_copy (ctr.begin(), ctr.end(), result, old_value, new_value));
 }
 
-///
 /// Replace_copy_if copies elements from the range [first, last) to the range
 /// [result, result + (last-first)), except that any element for which pred is
 /// true is not copied; new_value is copied instead. More precisely, for every
@@ -224,7 +209,6 @@ inline OutputIterator replace_copy_if (const Container& ctr, OutputIterator resu
     return (replace_copy_if (ctr.begin(), ctr.end(), result, pred, new_value));
 }
 
-///
 /// Fill assigns the value value to every element in the range [first, last).
 /// That is, for every iterator i in [first, last),
 /// it performs the assignment *i = value.
@@ -235,7 +219,6 @@ inline void fill (Container& ctr, const T& value)
     fill (ctr.begin(), ctr.end(), value);
 }
 
-///
 /// Generate assigns the result of invoking gen, a function object that
 /// takes no arguments, to each element in the range [first, last).
 ///
@@ -245,7 +228,6 @@ inline void generate (Container& ctr, Generator gen)
     generate (ctr.begin(), ctr.end(), gen);
 }
 
-///
 /// Remove_copy copies elements that are not equal to value from the range
 /// [first, last) to a range beginning at result. The return value is the
 /// end of the resulting range. This operation is stable, meaning that the
@@ -258,7 +240,6 @@ inline OutputIterator remove_copy (const Container& ctr, OutputIterator result, 
     return (remove_copy (ctr.begin(), ctr.end(), result, value));
 }
 
-///
 /// Remove_copy_if copies elements from the range [first, last) to a range
 /// beginning at result, except that elements for which pred is true are not
 /// copied. The return value is the end of the resulting range. This operation
@@ -271,7 +252,6 @@ inline OutputIterator remove_copy_if (const Container& ctr, OutputIterator resul
     return (remove_copy_if (ctr.begin(), ctr.end(), result, pred));
 }
 
-///
 /// Remove removes from the range [first, last) all elements that are equal to
 /// value. That is, remove returns an iterator new_last such that the range
 /// [first, new_last) contains no elements equal to value. Remove is stable,
@@ -284,7 +264,6 @@ inline void remove (Container& ctr, const T& value)
     ctr.erase (remove_copy (ctr.begin(), ctr.end(), ctr.begin(), value), ctr.end());
 }
 
-///
 /// Remove removes from the range [first, last) all elements that have an iterator
 /// in range [rfirst, rlast). The range is assumed to be sorted. That is, remove
 /// returns an iterator new_last such that the range [first, new_last) contains
@@ -298,7 +277,6 @@ inline void remove (Container& ctr, ForwardIterator rfirst, ForwardIterator rlas
     ctr.erase (remove_copy (ctr.begin(), ctr.end(), ctr.begin(), rfirst, rlast), ctr.end());
 }
 
-///
 /// Remove_if removes from the range [first, last) every element x such that
 /// pred(x) is true. That is, remove_if returns an iterator new_last such that
 /// the range [first, new_last) contains no elements for which pred is true.
@@ -313,7 +291,6 @@ inline void remove_if (Container& ctr, Predicate pred)
     ctr.erase (remove_copy_if (ctr.begin(), ctr.end(), ctr.begin(), pred), ctr.end());
 }
 
-///
 /// Unique_copy copies elements from the range [first, last) to a range
 /// beginning with result, except that in a consecutive group of duplicate
 /// elements only the first one is copied. The return value is the end of
@@ -326,7 +303,6 @@ inline OutputIterator unique_copy (const Container& ctr, OutputIterator result)
     return (unique_copy (ctr.begin(), ctr.end(), result));
 }
 
-///
 /// Every time a consecutive group of duplicate elements appears in the range
 /// [first, last), the algorithm unique removes all but the first element.
 /// That is, unique returns an iterator new_last such that the range [first,
@@ -342,7 +318,6 @@ inline void unique (Container& ctr)
     ctr.erase (unique_copy (ctr.begin(), ctr.end(), ctr.begin()), ctr.end());
 }
 
-///
 /// Every time a consecutive group of duplicate elements appears in the range
 /// [first, last), the algorithm unique removes all but the first element.
 /// That is, unique returns an iterator new_last such that the range [first,
@@ -358,7 +333,6 @@ inline void unique (Container& ctr, BinaryPredicate binary_pred)
     ctr.erase (unique_copy (ctr.begin(), ctr.end(), ctr.begin(), binary_pred), ctr.end());
 }
 
-///
 /// Reverse reverses a range.
 /// That is: for every i such that 0 <= i <= (last - first) / 2),
 /// it exchanges *(first + i) and *(last - (i + 1)).
@@ -369,7 +343,6 @@ inline void reverse (Container& ctr)
     reverse (ctr.begin(), ctr.end());
 }
 
-///
 /// Exchanges ranges [first, middle) and [middle, last)
 ///
 template <class Container>
@@ -382,7 +355,6 @@ inline void rotate (Container& ctr, off_t offset)
 	rotate (ctr.begin(), ctr.begin() - offset, ctr.end());
 }
 
-///
 /// Returns the furthermost iterator i in [first, last) such that,
 /// for every iterator j in [first, i), *j < value
 /// Assumes the range is sorted.
@@ -398,7 +370,6 @@ inline typename Container::iterator lower_bound (Container& ctr, const LessThanC
     return (lower_bound (ctr.begin(), ctr.end(), value));
 }
 
-///
 /// Returns the furthermost iterator i in [first,last) such that for
 /// every iterator j in [first,i), value < *j is false.
 ///
@@ -413,7 +384,6 @@ inline typename Container::iterator upper_bound (Container& ctr, const LessThanC
     return (upper_bound (ctr.begin(), ctr.end(), value));
 }
 
-///
 /// Performs a binary search for \p value.
 /// Assumes the range is sorted.
 ///
@@ -428,7 +398,6 @@ inline typename Container::iterator binary_search (Container& ctr, const typenam
     return (binary_search (ctr.begin(), ctr.end(), value));
 }
 
-///
 /// Returns pair<lower_bound,upper_bound>
 ///
 template <class Container, class LessThanComparable>
@@ -442,7 +411,6 @@ inline pair<typename Container::iterator,typename Container::iterator> equal_ran
     return (equal_range (ctr.begin(), ctr.end(), value));
 }
 
-///
 /// Sorts the container
 ///
 template <class Container>
@@ -451,7 +419,6 @@ inline void sort (Container& ctr)
     sort (ctr.begin(), ctr.end());
 }
 
-///
 /// Sorts the container
 ///
 template <class Container, class Compare>
@@ -460,7 +427,6 @@ inline void sort (Container& ctr, Compare comp)
     sort (ctr.begin(), ctr.end(), comp);
 }
 
-///
 /// Sorts the container
 ///
 template <class Container>
@@ -469,7 +435,6 @@ inline void stable_sort (Container& ctr)
     stable_sort (ctr.begin(), ctr.end());
 }
 
-///
 /// Sorts the container
 ///
 template <class Container, class Compare>
@@ -479,6 +444,7 @@ inline void stable_sort (Container& ctr, Compare comp)
 }
 
 /// Converts the given const_iterator into an iterator.
+///
 template <class Container>
 inline typename Container::iterator unconst (typename Container::const_iterator i, Container& ctr)
 {

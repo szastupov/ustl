@@ -24,7 +24,10 @@
 
 namespace ustl {
 
-/// Queue adapter to uSTL containers.
+/// \class queue uqueue.h ustl.h
+/// \ingroup Sequences
+///
+/// \brief Queue adapter to uSTL containers.
 ///
 /// The most efficient way to use this implementation is to fill the queue
 /// and the completely empty it before filling again.

@@ -18,18 +18,22 @@
 //
 // mostream.h
 
-#ifndef MOSTREAM_H
-#define MOSTREAM_H
+#ifndef MOSTREAM_H_24A8C5397E0848216573E5670930FC9A
+#define MOSTREAM_H_24A8C5397E0848216573E5670930FC9A
 
 #include "memlink.h"
 #include "uexception.h"
-#include <typeinfo>
+#ifdef WANT_STREAM_BOUNDS_CHECKING
+    #include <typeinfo>
+#endif
 
 namespace ustl {
 
 class istream;
 class string;
 
+/// \class ostream mostream.h ustl.h
+/// \ingroup BinaryStreams
 ///
 /// \brief Helper class to write packed binary streams.
 ///
@@ -91,7 +95,11 @@ private:
 
 //----------------------------------------------------------------------
 
-/// An iterator over an ostream to use with uSTL algorithms.
+/// \class ostream_iterator mostream.h ustl.h
+/// \ingroup BinaryStreamIterators
+///
+/// \brief An iterator over an ostream to use with uSTL algorithms.
+///
 template <class T>
 class ostream_iterator {
 public:

@@ -24,6 +24,7 @@
 
 namespace ustl {
 
+/// \class numeric_limits ulimits.h ustl.h
 /// Defines numeric limits for a type.
 template <typename T> 
 struct numeric_limits {

@@ -23,8 +23,8 @@
 // to completely replace all C++ standard library functions.
 //
 
-#ifndef UEXCEPTION
-#define UEXCEPTION
+#ifndef UEXCEPTION_H_18DE3EF55C4F00673268F0D66546AF5D
+#define UEXCEPTION_H_18DE3EF55C4F00673268F0D66546AF5D
 
 #include "utypes.h"
 
@@ -45,7 +45,11 @@ static const xfmt_t	xfmt_FileException		= 13;
 static const xfmt_t	xfmt_StreamBoundsException	= 14;
 #endif
 
-/// Base class for exceptions, equivalent to std::exception.
+/// \class exception uexception.h ustl.h
+/// \ingroup Exceptions
+///
+/// \brief Base class for exceptions, equivalent to std::exception.
+///
 class exception {
 public:
     			exception (void);
@@ -66,14 +70,22 @@ private:
     xfmt_t		m_Format;	///< Format of the exception's data.
 };
 
-/// Thrown to indicate a bad dynamic_cast usage.
+/// \class bad_cast uexception.h ustl.h
+/// \ingroup Exceptions
+///
+/// \brief Thrown to indicate a bad dynamic_cast usage.
+///
 class bad_cast : public exception {
 public:
     explicit		bad_cast (void);
     virtual const char*	what (void) const;
 };
 
-/// Exception thrown on memory allocation failure by memblock::reserve.
+/// \class bad_alloc uexception.h ustl.h
+/// \ingroup Exceptions
+///
+/// \brief Exception thrown on memory allocation failure by memblock::reserve.
+///
 class bad_alloc : public exception {
 public:
     explicit		bad_alloc (size_t nBytes);
@@ -86,7 +98,13 @@ protected:
     size_t		m_nBytesRequested;	///< Number of bytes requested by the failed allocation.
 };
 
-/// Thrown when a libc function returns an error. Contains an errno and description.
+/// \class libc_exception uexception.h ustl.h
+/// \ingroup Exceptions
+///
+/// \brief Thrown when a libc function returns an error.
+///
+/// Contains an errno and description. This is a uSTL extension.
+///
 class libc_exception : public exception {
 public:
     explicit		libc_exception (const char* operation);
@@ -102,7 +120,13 @@ protected:
     const char*		m_Operation;		///< Name of the failed operation.
 };
 
-/// File-related exceptions. Contains the file name.
+/// \class file_exception uexception.h ustl.h
+/// \ingroup Exceptions
+///
+/// \brief File-related exceptions.
+///
+/// Contains the file name. This is a uSTL extension.
+///
 class file_exception : public libc_exception {
 public:
 			file_exception (const char* operation, const char* filename);
@@ -116,8 +140,13 @@ protected:
 };
 
 #ifdef WANT_STREAM_BOUNDS_CHECKING
-/// Stream bounds checking.
+/// \class stream_bounds_exception uexception.h ustl.h
+/// \ingroup Exceptions
+///
+/// \brief Stream bounds checking.
+///
 /// Only thrown in debug builds unless you say otherwise in config.h
+/// This is a uSTL extension.
 ///
 class stream_bounds_exception : public libc_exception {
 public:

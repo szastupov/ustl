@@ -25,17 +25,17 @@
 // their use. The code is NOT the same, though the functionality usually is.
 //
 
-#ifndef UALGOBASE_H
-#define UALGOBASE_H
+#ifndef UALGOBASE_H_683A0BE77546133C4CE0E3622CFAA2EB
+#define UALGOBASE_H_683A0BE77546133C4CE0E3622CFAA2EB
 
-#include <string.h>
 #include "uutility.h"
+#include <string.h>
 
 namespace ustl {
 
-///
 /// Assigns the contents of a to b and the contents of b to a.
 /// This is used as a primitive operation by many other algorithms. 
+/// \ingroup SwapAlgorithms
 ///
 template <typename Assignable> 
 inline void swap (Assignable& a, Assignable& b)
@@ -46,19 +46,21 @@ inline void swap (Assignable& a, Assignable& b)
 }
 
 /// Equivalent to swap (*a, *b)
+/// \ingroup SwapAlgorithms
+///
 template <typename Iterator> 
 inline void iterator_swap (Iterator& a, Iterator& b)
 {
     swap (*a, *b);
 }
 
-///
 /// Copy copies elements from the range [first, last) to the range
 /// [result, result + (last - first)). That is, it performs the assignments
 /// *result = *first, *(result + 1) = *(first + 1), and so on. [1] Generally,
 /// for every integer n from 0 to last - first, copy performs the assignment
 /// *(result + n) = *(first + n). Assignments are performed in forward order,
 /// i.e. in order of increasing n. 
+/// \ingroup MutatingAlgorithms
 ///
 template <typename InputIterator, typename OutputIterator>
 inline OutputIterator copy (InputIterator first, InputIterator last, OutputIterator result)
@@ -68,13 +70,13 @@ inline OutputIterator copy (InputIterator first, InputIterator last, OutputItera
     return (result);
 }
 
-///
 /// Copy_n copies elements from the range [first, first + n) to the range
 /// [result, result + n). That is, it performs the assignments
 /// *result = *first, *(result + 1) = *(first + 1), and so on. Generally,
 /// for every integer i from 0 up to (but not including) n, copy_n performs
 /// the assignment *(result + i) = *(first + i). Assignments are performed
 /// in forward order, i.e. in order of increasing n.
+/// \ingroup MutatingAlgorithms
 ///
 template <typename InputIterator, typename OutputIterator>
 inline OutputIterator copy_n (InputIterator first, size_t count, OutputIterator result)
@@ -84,11 +86,11 @@ inline OutputIterator copy_n (InputIterator first, size_t count, OutputIterator 
     return (result);
 }
 
-///
 /// For_each applies the function object f to each element in the range
 /// [first, last); f's return value, if any, is ignored. Applications are
 /// performed in forward order, i.e. from first to last. For_each returns
 /// the function object after it has been applied to each element.
+/// \ingroup MutatingAlgorithms
 ///
 template <typename InputIterator, typename UnaryFunction>
 inline UnaryFunction for_each (InputIterator first, InputIterator last, UnaryFunction f)
@@ -98,10 +100,10 @@ inline UnaryFunction for_each (InputIterator first, InputIterator last, UnaryFun
     return (f);
 }
 
-///
 /// Fill assigns the value value to every element in the range [first, last).
 /// That is, for every iterator i in [first, last),
 /// it performs the assignment *i = value.
+/// \ingroup GeneratorAlgorithms
 ///
 template <typename ForwardIterator, typename T>
 inline void fill (ForwardIterator first, ForwardIterator last, const T& value)
@@ -110,10 +112,10 @@ inline void fill (ForwardIterator first, ForwardIterator last, const T& value)
 	*first = value;
 }
 
-///
 /// Fill_n assigns the value value to every element in the range
 /// [first, first+n). That is, for every iterator i in [first, first+n),
 /// it performs the assignment *i = value. The return value is first + n.
+/// \ingroup GeneratorAlgorithms
 ///
 template <typename OutputIterator, typename T>
 inline OutputIterator fill_n (OutputIterator first, size_t n, const T& value)

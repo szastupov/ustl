@@ -19,22 +19,22 @@
 // memblock.h
 //
 
-#ifndef MEMBLOCK_H
-#define MEMBLOCK_H
+#ifndef MEMBLOCK_H_7ED63A891164CC43578E63664D52A196
+#define MEMBLOCK_H_7ED63A891164CC43578E63664D52A196
 
 #include "memlink.h"
 
 namespace ustl {
 
-//
+/// \class memblock memblock.h ustl.h
+/// \ingroup MemoryManagement
+///
 /// \brief Allocated memory block.
-//
+///
 /// Adds memory management capabilities to memlink. Uses malloc and realloc to
 /// maintain the internal pointer, but only if allocated using members of this class,
 /// or if linked to using the Manage() member function. Managed memory is automatically
 /// freed in the destructor.
-///
-/// \see memlink
 ///
 class memblock : public memlink {
 public:

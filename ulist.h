@@ -19,15 +19,18 @@
 // ulist.h
 //
 
-#ifndef ULIST_h
-#define ULIST_h
+#ifndef ULIST_H_54E3B510498982C87A0A1E1932E6729D
+#define ULIST_H_54E3B510498982C87A0A1E1932E6729D
 
 #include "uvector.h"
 #include "uctralgo.h"
 
 namespace ustl {
 
-/// Linked list emulator.
+/// \class list ulist.h ustl.h
+/// \ingroup Sequences
+///
+/// \brief Linked list emulator.
 ///
 /// The list template is aliased to vector for philosophical reasons.
 /// I believe the use of linked lists of any kind to be an indicator

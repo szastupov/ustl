@@ -18,13 +18,15 @@
 //
 // memlink.h
 
-#ifndef MEMLINK_H
-#define MEMLINK_H
+#ifndef MEMLINK_H_798D25827C8E322D2D7E734B169FF5FC
+#define MEMLINK_H_798D25827C8E322D2D7E734B169FF5FC
 
 #include "cmemlink.h"
 
 namespace ustl {
 
+/// \class memlink memlink.h ustl.h
+/// \ingroup MemoryManagement
 ///
 /// \brief Wrapper for pointer to block with size.
 ///
