@@ -67,6 +67,8 @@ public:
 	typedef void		reference;
     public:
 				iterator (pointer p = NULL) : m_p (p) {}
+				iterator (const iterator& v) : m_p (v.m_p) {}
+	inline const iterator&	operator= (const iterator& v) { m_p = v.m_p; return (*this); }
 	inline 			operator const void* (void) const { return (m_p); }
 	inline pointer		base (void) const { return (m_p); }
 	inline const iterator&	operator++ (void) { m_p = advance (m_p, 1); return (*this); }

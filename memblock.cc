@@ -198,8 +198,8 @@ void memblock::resize (size_t newSize, bool bExact)
 /// Shifts the data in the linked block from \p start to \p start + \p n.
 memblock::iterator memblock::insert (iterator start, size_t n)
 {
-    assert (start >= begin() && start <= end());
     const uoff_t ip = start - begin();
+    assert (ip <= size());
     if (!is_linked())
 	resize (size() + n, false);
     memlink::insert (begin() + ip, n);
@@ -209,8 +209,8 @@ memblock::iterator memblock::insert (iterator start, size_t n)
 /// Shifts the data in the linked block from \p start + \p n to \p start.
 memblock::iterator memblock::erase (iterator start, size_t n)
 {
-    assert (start >= begin() && start + n <= end());
     const uoff_t ep = start - begin();
+    assert (ep + n <= size());
     memlink::erase (begin() + ep, n);
     if (!is_linked())
 	resize (size() - n, false);

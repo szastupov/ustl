@@ -99,7 +99,7 @@ public:
     typedef typename Container::pointer		pointer;
     typedef typename Container::reference	reference;
 public:
-    					back_insert_iterator (Container& ctr) : m_rCtr (ctr) {}
+    explicit				back_insert_iterator (Container& ctr) : m_rCtr (ctr) {}
     inline back_insert_iterator&	operator= (typename Container::const_reference v)
     					    { m_rCtr.push_back (v); return (*this); }
     inline back_insert_iterator&	operator* (void)  { return (*this); }
