@@ -49,20 +49,22 @@ inline T Align (T n, T grain = c_DefaultAlignment)
 
 /// Offsets an iterator
 template <typename T>
-inline T advance (const T& i, off_t offset)
+inline T advance (T i, int offset)
 {
     return (i + offset);
 }
 
 /// Offsets a void pointer
-inline const void* advance (const void* p, off_t offset)
+template <>
+inline const void* advance (const void* p, int offset)
 {
     assert (p || !offset);
     return (reinterpret_cast<const u_char*>(p) + offset);
 }
 
 /// Offsets a void pointer
-inline void* advance (void* p, off_t offset)
+template <>
+inline void* advance (void* p, int offset)
 {
     assert (p || !offset);
     return (reinterpret_cast<u_char*>(p) + offset);
@@ -70,18 +72,20 @@ inline void* advance (void* p, off_t offset)
 
 /// Returns the difference \p p1 - \p p2
 template <typename T>
-inline size_t distance (const T& i1, const T& i2)
+inline size_t distance (T i1, T i2)
 {
     return (i2 - i1);
 }
 
 /// Returns the difference \p p1 - \p p2
+template <>
 inline size_t distance (void* p1, void* p2)
 {
     return (reinterpret_cast<u_char*>(p2) - reinterpret_cast<u_char*>(p1));
 }
 
 /// Returns the difference \p p1 - \p p2
+template <>
 inline size_t distance (const void* p1, const void* p2)
 {
     return (reinterpret_cast<const u_char*>(p2) -
