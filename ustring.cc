@@ -485,5 +485,14 @@ void string::write (ostream& os) const
     os.write (cdata(), size());
 }
 
+/// Writes the data to file \p "filename".
+void string::write_file (const char* filename, int mode) const
+{
+    // Kinda ugly, but the size really is preserved.
+    const_cast<string&>(*this).cmemlink::resize (size());
+    memblock::write_file (filename, mode);
+    const_cast<string&>(*this).cmemlink::resize (cmemlink::size() + size_Terminator);
+}
+
 }; // namespace ustl
 

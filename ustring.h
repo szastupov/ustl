@@ -159,6 +159,7 @@ public:
     void			read (istream&);
     void			write (ostream& os) const;
     size_t			stream_size (void) const;
+    void			write_file (const char* filename, int mode = 0644) const;
 };
 
 /// Returns the number of characters in the string, not including the terminator.
