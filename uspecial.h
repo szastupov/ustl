@@ -243,6 +243,40 @@ ostringstream& operator<< (ostringstream& os, const tuple<N,T>& v)
     return (os);
 }
 
+template <size_t N>
+ostringstream& operator<< (ostringstream& os, const tuple<N,uint8_t>& v)
+{
+    typename tuple<N,uint8_t>::const_iterator i = v.begin();
+    os << '(';
+    while (i < v.end()) {
+	if (isprint(*i))
+	    os << '\'' << *i << '\'';
+	else
+	    os << (unsigned int)(*i);
+	if (++i < v.end())
+	    os << ',';
+    }
+    os << ')';
+    return (os);
+}
+
+template <size_t N>
+ostringstream& operator<< (ostringstream& os, const tuple<N,int8_t>& v)
+{
+    typename tuple<N,int8_t>::const_iterator i = v.begin();
+    os << '(';
+    while (i < v.end()) {
+	if (isprint(*i))
+	    os << '\'' << *i << '\'';
+	else
+	    os << (int)(*i);
+	if (++i < v.end())
+	    os << ',';
+    }
+    os << ')';
+    return (os);
+}
+
 /// Returns the number of bytes necessary to write this object to a stream
 template <size_t N, typename T>
 inline size_t stream_size_of (const tuple<N,T>& v)
