@@ -15,7 +15,7 @@ INCS	= cmemlink.h memblock.h memlink.h mistream.h mostream.h \
 	ualgobase.h uctralgo.h ufunction.h upair.h uiterator.h ustack.h \
 	uexception.h strmsize.h sistream.h sostream.h ulimits.h uset.h \
 	umultiset.h uspecial.h uios.h fdostream.h unew.h umap.h umultimap.h \
-	umemory.h uiosfunc.h utf8.h config.h ubitset.h
+	umemory.h uiosfunc.h utf8.h config.h ubitset.h unumeric.h
 DOCT	= ustldoc.in
 TOCLEAN	= install config.status config.log
 

@@ -21,7 +21,7 @@ void WriteCML (const cmemlink& l)
 void TestCML (void)
 {
     const size_t strTestLen = 13;
-    const char strTest[strTestLen] = "Hello world!";
+    const cmemlink::value_type strTest[strTestLen] = "Hello world!";
 
     cmemlink a, b;
     a.link (strTest, strTestLen);

@@ -19,9 +19,9 @@ void WriteCML (const cmemlink& l)
 
 void TestML (void)
 {
-    char strTest[] = "abcdefghijklmnopqrstuvwzyz";
-    const size_t strTestLen = strlen(strTest);
-    const char* cstrTest = strTest;
+    memlink::value_type strTest[] = "abcdefghijklmnopqrstuvwzyz";
+    const size_t strTestLen = strlen((const char*) strTest);
+    memlink::const_pointer cstrTest = strTest;
 
     memlink a, b;
     a.link (strTest, strTestLen);

@@ -26,6 +26,7 @@
 #include "mistream.h"
 #include "mostream.h"
 #include "utf8.h"
+#include "ualgo.h"
 #include <stdarg.h>	// for va_list, va_start, and va_end (in string::format)
 #include <stdio.h>	// for vsnprintf (in string::format)
 
@@ -235,7 +236,7 @@ string::const_iterator string::find (const_reference c, const_iterator pos) cons
 {
     if (!pos) pos = begin();
     assert (pos >= begin() && pos <= end());
-    const_iterator found = reinterpret_cast<const_iterator>(memchr (pos, c, end() - pos));
+    const_iterator found = ::ustl::find (pos, end(), c);
     return (found ? found : end());
 }
 
@@ -253,7 +254,7 @@ string::const_iterator string::find (const string& s, const_iterator pos) const
     const size_t skip = endi - lastPos;
     const_iterator i = pos + s.size() - 1;
     while (i < end()) {
-	i = reinterpret_cast<const_iterator>(memchr (i, endchar, distance(i, end())));
+	i = ::ustl::find (i, end(), endchar);
 	if (!i)
 	    break;
 	if (memcmp (i - endi, s, s.size()) == 0)
@@ -268,6 +269,7 @@ string::const_iterator string::rfind (const_reference c, const_iterator pos) con
 {
     if (!pos) pos = end() - 1;
     assert (pos >= begin() && pos <= end());
+    /// \bug This assumes that the string is 0-terminated.
     const_pointer found = strrchr (pos, c);
     return (found ? found : begin());
 }
@@ -296,7 +298,7 @@ string::const_iterator string::find_first_of (const string& s, const_iterator po
     if (!pos) pos = begin();
     assert (pos >= begin() && pos <= end());
     while (pos < end())
-	if (memchr(s, *pos++, s.length()))
+	if (s.find (*pos++) != s.end())
 	    return (--pos);
     return (end());
 }
@@ -307,7 +309,7 @@ string::const_iterator string::find_first_not_of (const string& s, const_iterato
     if (!pos) pos = begin();
     assert (pos >= begin() && pos <= end());
     while (pos < end())
-	if (!memchr(s, *pos++, s.length()))
+	if (s.find (*pos++) == s.end())
 	    return (--pos);
     return (end());
 }
@@ -318,7 +320,7 @@ string::const_iterator string::find_last_of (const string& s, const_iterator pos
     if (!pos) pos = end();
     assert (pos >= begin() && pos <= end());
     while (--pos < end())
-	if (memchr(s, *pos, s.length()))
+	if (s.find (*pos) != s.end())
 	    return (pos);
     return (end());
 }
@@ -329,7 +331,7 @@ string::const_iterator string::find_last_not_of (const string& s, const_iterator
     if (!pos) pos = end();
     assert (pos >= begin() && pos <= end());
     while (--pos < end())
-	if (!memchr(s, *pos, s.length()))
+	if (s.find (*pos) == s.end())
 	    return (pos);
     return (end());
 }

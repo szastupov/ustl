@@ -37,12 +37,19 @@ namespace ustl {
 /// Assigns the contents of a to b and the contents of b to a.
 /// This is used as a primitive operation by many other algorithms. 
 ///
-template <class Assignable> 
+template <typename Assignable> 
 inline void swap (Assignable& a, Assignable& b)
 {
     Assignable tmp = a;
     a = b;
     b = tmp;
+}
+
+/// Equivalent to swap (*a, *b)
+template <typename Iterator> 
+inline void iterator_swap (Iterator& a, Iterator& b)
+{
+    swap (*a, *b);
 }
 
 ///
@@ -53,11 +60,11 @@ inline void swap (Assignable& a, Assignable& b)
 /// *(result + n) = *(first + n). Assignments are performed in forward order,
 /// i.e. in order of increasing n. 
 ///
-template <class InputIterator, class OutputIterator>
+template <typename InputIterator, typename OutputIterator>
 inline OutputIterator copy (InputIterator first, InputIterator last, OutputIterator result)
 {
-    while (first < last)
-	*result++ = *first++;
+    for (; first < last; ++result, ++first)
+	*result = *first;
     return (result);
 }
 
@@ -69,11 +76,11 @@ inline OutputIterator copy (InputIterator first, InputIterator last, OutputItera
 /// the assignment *(result + i) = *(first + i). Assignments are performed
 /// in forward order, i.e. in order of increasing n.
 ///
-template <class InputIterator, class OutputIterator>
+template <typename InputIterator, typename OutputIterator>
 inline OutputIterator copy_n (InputIterator first, size_t count, OutputIterator result)
 {
-    while (count--)
-	*result++ = *first++;
+    for (size_t i = 0; i < count; ++i, ++result, ++first)
+	*result = *first;
     return (result);
 }
 
@@ -83,11 +90,11 @@ inline OutputIterator copy_n (InputIterator first, size_t count, OutputIterator 
 /// performed in forward order, i.e. from first to last. For_each returns
 /// the function object after it has been applied to each element.
 ///
-template <class InputIterator, class UnaryFunction>
+template <typename InputIterator, typename UnaryFunction>
 inline UnaryFunction for_each (InputIterator first, InputIterator last, UnaryFunction f)
 {
-    while (first < last)
-	f (*first++);
+    for (; first < last; ++first)
+	f (*first);
     return (f);
 }
 
@@ -96,11 +103,11 @@ inline UnaryFunction for_each (InputIterator first, InputIterator last, UnaryFun
 /// That is, for every iterator i in [first, last),
 /// it performs the assignment *i = value.
 ///
-template <class ForwardIterator, class T>
+template <typename ForwardIterator, typename T>
 inline void fill (ForwardIterator first, ForwardIterator last, const T& value)
 {
-    while (first < last)
-	*first++ = value;
+    for (; first < last; ++first)
+	*first = value;
 }
 
 ///
@@ -108,11 +115,11 @@ inline void fill (ForwardIterator first, ForwardIterator last, const T& value)
 /// [first, first+n). That is, for every iterator i in [first, first+n),
 /// it performs the assignment *i = value. The return value is first + n.
 ///
-template <class OutputIterator, class T>
+template <typename OutputIterator, typename T>
 inline OutputIterator fill_n (OutputIterator first, size_t n, const T& value)
 {
-    for (size_t i = 0; i < n; ++ i)
-	first[i] = value;
+    for (size_t i = 0; i < n; ++i, ++first)
+	*first = value;
     return (first);
 }
 
