@@ -33,6 +33,16 @@ namespace ustl {
 
 const char string::empty_string[string::c_TerminatorSize] = "";
 
+/// Assigns itself the value of string \p s
+string::string (const string& s)
+: memblock()
+{
+    if (s.is_linked())
+	link (s.c_str(), s.length() + c_TerminatorSize);
+    else
+	operator= (s);
+}
+
 /// Links to \p s
 string::string (const_pointer s)
 : memblock ()

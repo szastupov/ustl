@@ -71,7 +71,7 @@ public:
     static const char empty_string [c_TerminatorSize];		///< An empty string.
 public:
     inline			string (void);
-    inline			string (const string& s);
+				string (const string& s);
     inline explicit		string (const cmemlink& l);
 				string (const_pointer s);
 				string (const_pointer s, size_t len);
@@ -150,12 +150,6 @@ inline string::string (void)
 : memblock ()
 {
     link (empty_string, sizeof(empty_string));
-}
-
-/// Assigns itself the value of string \p s
-inline string::string (const string& s)
-: memblock (s)
-{
 }
 
 /// Assigns itself the value of string \p s
