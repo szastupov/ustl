@@ -163,6 +163,30 @@
 #undef SIZE_OF_LONG 
 #undef SIZE_OF_LONG_LONG
 
+/* Extended CPU capabilities */
+#undef CPU_HAS_FPU
+#undef CPU_HAS_EXT_DEBUG
+#undef CPU_HAS_TIMESTAMPC
+#undef CPU_HAS_MSR
+#undef CPU_HAS_CMPXCHG8
+#undef CPU_HAS_APIC
+#undef CPU_HAS_SYSCALL
+#undef CPU_HAS_MTRR
+#undef CPU_HAS_CMOV
+#undef CPU_HAS_FCMOV
+#undef CPU_HAS_MMX
+#undef CPU_HAS_FXSAVE
+#undef CPU_HAS_SSE 
+#undef CPU_HAS_SSE2
+#undef CPU_HAS_SSE3
+#undef CPU_HAS_EXT_3DNOW
+#undef CPU_HAS_3DNOW
+
+/* GCC vector extensions */
+#if defined(CPU_HAS_MMX) || defined(CPU_HAS_SSE)
+#undef HAVE_VECTOR_EXTENSIONS
+#endif
+
 /* Define to empty if `const' does not conform to ANSI C. */
 #undef const
 
