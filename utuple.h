@@ -96,19 +96,19 @@ private:
 
 template <size_t N, typename T>
 inline tuple<N,T>::tuple (const_reference v0)
-{ m_v[0] = v0; }
+{ m_v[0] = v0; fill_n (m_v + 1, N - 1, T()); }
 
 template <size_t N, typename T>
 inline tuple<N,T>::tuple (const_reference v0, const_reference v1)
-{ m_v[0] = v0; m_v[1] = v1; }
+{ m_v[0] = v0; m_v[1] = v1; fill_n (m_v + 2, N - 2, T()); }
 
 template <size_t N, typename T>
 inline tuple<N,T>::tuple (const_reference v0, const_reference v1, const_reference v2)
-{ m_v[0] = v0; m_v[1] = v1; m_v[2] = v2; }
+{ m_v[0] = v0; m_v[1] = v1; m_v[2] = v2; fill_n (m_v + 3, N - 3, T()); }
 
 template <size_t N, typename T>
 inline tuple<N,T>::tuple (const_reference v0, const_reference v1, const_reference v2, const_reference v3)
-{ m_v[0] = v0; m_v[1] = v1; m_v[2] = v2; m_v[3] = v3; }
+{ m_v[0] = v0; m_v[1] = v1; m_v[2] = v2; m_v[3] = v3; fill_n (m_v + 4, N - 4, T()); }
 
 template <size_t N, typename T1, typename T2>
 inline bool operator== (const tuple<N,T1>& t1, const tuple<N,T2>& t2)
