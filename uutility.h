@@ -110,7 +110,7 @@ UNVOID_DISTANCE(const,)
 /// Returns the number of bits in the given type
 #define BitsInType(t)	(sizeof(t) * CHAR_BIT)
 
-/// Returns the mask of type \p t with the first \p n bits set.
+/// Returns the mask of type \p t with the lowest \p n bits set.
 #define BitMask(t,n)	(t(~t(0)) >> ((sizeof(t) * CHAR_BIT) - n))
 
 /// Argument that is used only in debug builds (as in an assert)
@@ -121,7 +121,7 @@ UNVOID_DISTANCE(const,)
 #endif
 
 /// Shorthand for container iteration.
-#define foreach(type,i,ctr)	for (type i = ctr.begin(); i < ctr.end(); ++ i)
+#define foreach(type,i,ctr)	for (type i = ctr.begin(); i != ctr.end(); ++ i)
 
 #ifdef HAVE_BYTESWAP_H
 
@@ -132,7 +132,7 @@ inline T bswap (const T& v)
 	default:	return (v);
 	case 16:	return (T (bswap_16 (uint16_t (v))));
 	case 32:	return (T (bswap_32 (uint32_t (v))));
-#ifdef bswap_64
+#if defined(bswap_64) && defined(HAVE_INT64_T)
 	case 64:	return (T (bswap_64 (uint64_t (v))));
 #endif
     };
