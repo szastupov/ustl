@@ -38,26 +38,32 @@ template <size_t N, typename T> inline void swap (tuple<N,T>& a, tuple<N,T>& b)	
 // Streamable definitions. Not used in the library and require streams.
 //----------------------------------------------------------------------
 
+/// Computes the stream size of a standard container.
+template <typename Container>
+size_t container_stream_size (const Container& v)
+{
+    typedef typename Container::const_iterator viter_t;
+    typedef typename iterator_traits<viter_t>::value_type value_type;
+    size_t s = 0;
+    if (numeric_limits<value_type>::is_integral)
+	s += v.size() * stream_size_of(value_type());
+    else {
+	foreach (viter_t, i, v)
+	    s += stream_size_of(*i);
+    }
+    return (Align (s));
+}
+
 //----{ pair }----------------------------------------------------------
-///
+
 /// \brief Reads pair \p p from stream \p is.
-///
-/// To allow compile-time resolution of these conditionals, sizeof is
-/// used instead of stream_size_of. This is ok as long as you don't create
-/// some strange class that writes only a short. If you do that you'll
-/// have to resolve the alignment issues yourself. It is not efficient to
-/// do it here as a general case since stream_size methods are not always
-/// constant.
-///
 template <typename T1, typename T2>
 istream& operator>> (istream& is, pair<T1,T2>& p)
 {
     is >> p.first;
-    if (sizeof(T1) < sizeof(T2) && sizeof(T1) % c_DefaultAlignment)
-	is.align (min (sizeof(T2), c_DefaultAlignment));
+    is.align (__alignof__(T2));
     is >> p.second;
-    if (sizeof(T2) < sizeof(T1) && sizeof(T2) % c_DefaultAlignment)
-	is.align (min (sizeof(T1), c_DefaultAlignment));
+    is.align (__alignof__(T1));
     return (is);
 }
 
@@ -66,11 +72,9 @@ template <typename T1, typename T2>
 ostream& operator<< (ostream& os, const pair<T1,T2>& p)
 {
     os << p.first;
-    if (sizeof(T1) < sizeof(T2) && sizeof(T1) % c_DefaultAlignment)
-	os.align (min (sizeof(T2), c_DefaultAlignment));
+    os.align (__alignof__(T2));
     os << p.second;
-    if (sizeof(T2) < sizeof(T1) && sizeof(T2) % c_DefaultAlignment)
-	os.align (min (sizeof(T1), c_DefaultAlignment));
+    os.align (__alignof__(T1));
     return (os);
 }
 
@@ -84,9 +88,10 @@ ostringstream& operator<< (ostringstream& os, const pair<T1,T2>& p)
 
 /// Returns the written size of the object.
 template <typename T1, typename T2>
-inline size_t stream_size_of (const pair<T1,T2>&)
+inline size_t stream_size_of (const pair<T1,T2>& v)
 {
-    return (2 * max(sizeof(T1), sizeof(T2)));
+    return (Align (stream_size_of(v.first), __alignof__(T2)) +
+	    Align (stream_size_of(v.second), __alignof__(T1)));
 }
 
 /// \brief Takes a pair and returns pair.first
@@ -163,13 +168,9 @@ ostringstream& operator<< (ostringstream& os, const vector<T>& v)
 
 /// Returns the number of bytes necessary to write this object to a stream
 template <typename T>
-size_t stream_size_of (const vector<T>& v)
+inline size_t stream_size_of (const vector<T>& v)
 {
-    typedef typename vector<T>::const_iterator viter_t;
-    size_t s = sizeof(size_t);
-    foreach (viter_t, first, v)
-	s += stream_size_of(*first);
-    return (Align (s));
+    return (stream_size_of(v.size()) + container_stream_size (v));
 }
 
 //----{ bitset }--------------------------------------------------------
@@ -282,7 +283,7 @@ ostringstream& operator<< (ostringstream& os, const tuple<N,int8_t>& v)
 template <size_t N, typename T>
 inline size_t stream_size_of (const tuple<N,T>& v)
 {
-    return (Align (v.size() * stream_size_of(T())));
+    return (container_stream_size (v));
 }
 
 //----{ matrix }--------------------------------------------------------

@@ -1,4 +1,4 @@
-Release 0.4-4
+Release 0.5
 	* configure will now properly enable mmx compiler flags.
 	* configure has a --with-profile option.
 	* Fixed a bug in ostringstream format inserting extra '\0'
@@ -15,6 +15,10 @@ Release 0.4-4
 	* Fixed iterator_swap to take iterators by value (reference& swap bad)
 	* Container random_shuffle.
 	* vformat method for string to allow implementation of custom printfs.
+	* TestAndSet inline utility function with the cmpxchg instruction.
+	* Fixed tuple stream_size_of to add up the elements if nonintegral.
+	* Added is_integral member to numeric_limits for specialization aid.
+	* Changed limits is_signed from a function to a bool like SGI does it.
 
 2004-07-28 Release 0.4-3
 	* A ChangeLog! After all these years...
