@@ -73,7 +73,89 @@ void transpose (matrix<N,N,T>& m)
 
 #if WANT_UNROLLED_COPY
 
-#if CPU_HAS_3DNOW
+#if CPU_HAS_SSE
+
+template <>
+inline void load_identity (matrix<4,4,float>& m)
+{
+    static const float one (1.0);
+    asm volatile (
+	"movups %1, (%0)		\n\t"	// 1 0 0 0
+	"movaps %1, %%xmm1		\n\t"	// 1 0 0 0
+	"shufps $0xB1,%%xmm1,%%xmm1	\n\t"	// 0 1 0 0
+	"movups %%xmm1, 16(%0)		\n\t"	// 0 1 0 0
+	"shufps $0x4F,%1,%%xmm1		\n\t"	// 0 0 1 0
+	"shufps $0x1B,%1,%1		\n\t"	// 0 0 0 1
+	"movups %%xmm1, 32(%0)		\n\t"	// 0 0 1 0
+	"movups %1, 48(%0)"			// 0 0 0 1
+	:
+	: "r"(m.begin()), "x"(one)
+	: "xmm0", "xmm1", "memory"
+    );
+}
+
+inline void _sse_load_matrix (const float* m)
+{
+    asm volatile (
+	"movups (%0), %%xmm4		\n\t" // xmm4 = m[1 2 3 4]
+	"movups 16(%0), %%xmm5		\n\t" // xmm5 = m[1 2 3 4]
+	"movups 32(%0), %%xmm6		\n\t" // xmm6 = m[1 2 3 4]
+	"movups 48(%0), %%xmm7		\n\t" // xmm7 = m[1 2 3 4]
+	: : "r"(m) : "xmm4", "xmm5", "xmm6", "xmm7"
+    );
+}
+
+inline void _sse_transform_to_vector (float* result)
+{
+    asm volatile (
+	"movaps %%xmm0, %%xmm1		\n\t" // xmm1 = t[0 1 2 3]
+	"movaps %%xmm0, %%xmm2		\n\t" // xmm1 = t[0 1 2 3]
+	"movaps %%xmm0, %%xmm3		\n\t" // xmm1 = t[0 1 2 3]
+	"shufps $0x00, %%xmm0, %%xmm0	\n\t" // xmm0 = t[0 0 0 0]
+	"shufps $0x66, %%xmm1, %%xmm1	\n\t" // xmm1 = t[1 1 1 1]
+	"shufps $0xAA, %%xmm2, %%xmm2	\n\t" // xmm2 = t[2 2 2 2]
+	"shufps $0xFF, %%xmm3, %%xmm3	\n\t" // xmm3 = t[3 3 3 3]
+	"mulps  %%xmm4, %%xmm0		\n\t" // xmm0 = t[0 0 0 0] * m[0 1 2 3]
+	"mulps  %%xmm5, %%xmm1		\n\t" // xmm1 = t[1 1 1 1] * m[0 1 2 3]
+	"addps  %%xmm1, %%xmm0		\n\t" // xmm0 = xmm0 + xmm1
+	"mulps  %%xmm6, %%xmm2		\n\t" // xmm2 = t[2 2 2 2] * m[0 1 2 3]
+	"mulps  %%xmm7, %%xmm3		\n\t" // xmm3 = t[3 3 3 3] * m[0 1 2 3]
+	"addps  %%xmm3, %%xmm2		\n\t" // xmm2 = xmm2 + xmm3
+	"addps  %%xmm2, %%xmm0		\n\t" // xmm0 = result
+	"movups %%xmm0, (%0)"
+	:
+	: "r"(result)
+	: "xmm0", "xmm1", "xmm2", "xmm3", "xmm4", "xmm5", "xmm6", "xmm7", "memory"
+    );
+}
+
+template <>
+inline tuple<4,float> operator* (const tuple<4,float>& t, const matrix<4,4,float>& m)
+{
+    tuple<4,float> result;
+    _sse_load_matrix (m.begin());
+    asm volatile ("movups (%0), %%xmm0	\n\t" : : "p"(&t[0]) : "xmm0");
+    _sse_transform_to_vector (result.begin());
+    return (result);
+}
+
+template <>
+inline matrix<4,4,float> operator* (const matrix<4,4,float>& m1, const matrix<4,4,float>& m2)
+{
+    matrix<4,4,float> result;
+    _sse_load_matrix (m2.begin());
+    asm volatile ("movups (%0), %%xmm0	\n\t" : : "p"(m1.begin()) : "xmm0");
+    _sse_transform_to_vector (result[0]);
+    asm volatile ("movups 16(%0), %%xmm0\n\t" : : "p"(m1.begin()) : "xmm0");
+    _sse_transform_to_vector (result[1]);
+    asm volatile ("movups 32(%0), %%xmm0\n\t" : : "p"(m1.begin()) : "xmm0");
+    _sse_transform_to_vector (result[2]);
+    asm volatile ("movups 48(%0), %%xmm0\n\t" : : "p"(m1.begin()) : "xmm0");
+    _sse_transform_to_vector (result[3]);
+    return (result);
+}
+
+#elif CPU_HAS_3DNOW
 
 /// Specialization for 4-component vector transform, the slow part of 3D graphics.
 template <>
