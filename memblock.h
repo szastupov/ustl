@@ -49,7 +49,7 @@ public:
     inline bool			is_linked (void) const		{ return (!m_Capacity && cdata()); }
     inline size_type		capacity (void) const		{ return (m_Capacity); }
     inline void			manage (memlink& l)		{ manage (l.begin(), l.size()); }
-    void			deallocate (void);
+    void			deallocate (void) throw();
     void			manage (void* p, size_type n);
     virtual void		unlink (void);
     void			read (istream& is);

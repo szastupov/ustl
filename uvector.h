@@ -44,7 +44,7 @@ public:
 				vector (size_type n, const T& v);
 				vector (const vector<T>& v);
 				vector (const_iterator i1, const_iterator i2);
-    inline		       ~vector (void);
+    inline		       ~vector (void) throw();
     inline const vector<T>&	operator= (const vector<T>& v);
     inline bool			operator== (const vector<T>& v)	{ return (m_Data == v.m_Data); }
     inline void			reserve (size_type n, bool bExact = true);
@@ -72,7 +72,7 @@ public:
     inline void			push_back (const T& v = T());
     inline void			pop_back (void)			{ m_Data.memlink::resize (m_Data.size() - sizeof(T)); }
     inline void			clear (void)			{ m_Data.clear(); }
-    void			deallocate (void);
+    void			deallocate (void) throw();
     inline void			assign (const_iterator i1, const_iterator i2);
     inline void			assign (size_type n, const T& v);
     inline void			swap (vector<T>& v)		{ m_Data.swap (v.m_Data); }
@@ -120,7 +120,7 @@ inline void vector<T>::resize (size_type n, bool bExact)
 
 /// Calls element destructors and frees storage.
 template <typename T>
-void vector<T>::deallocate (void)
+void vector<T>::deallocate (void) throw()
 {
     if (capacity())
 	destroy (begin(), begin() + capacity());
@@ -171,7 +171,7 @@ vector<T>::vector (const_iterator i1, const_iterator i2)
 
 /// Destructor
 template <typename T>
-inline vector<T>::~vector (void)
+inline vector<T>::~vector (void) throw()
 {
     deallocate();
 }

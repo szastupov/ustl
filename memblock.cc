@@ -87,7 +87,7 @@ void memblock::resize (size_type newSize, bool bExact)
 }
 
 /// Frees internal data.
-void memblock::deallocate (void)
+void memblock::deallocate (void) throw()
 {
     if (m_Capacity) {
 	assert (cdata() && "Internal error: space allocated, but the pointer is NULL");
