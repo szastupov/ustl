@@ -62,9 +62,9 @@ template <typename T1, typename T2>
 istream& operator>> (istream& is, pair<T1,T2>& p)
 {
     is >> p.first;
-    is.align (__alignof__(T2));
+    is.align (alignof(T2()));
     is >> p.second;
-    is.align (__alignof__(T1));
+    is.align (alignof(T1()));
     return (is);
 }
 
@@ -73,9 +73,9 @@ template <typename T1, typename T2>
 ostream& operator<< (ostream& os, const pair<T1,T2>& p)
 {
     os << p.first;
-    os.align (__alignof__(T2));
+    os.align (alignof(T2()));
     os << p.second;
-    os.align (__alignof__(T1));
+    os.align (alignof(T1()));
     return (os);
 }
 
@@ -91,8 +91,8 @@ ostringstream& operator<< (ostringstream& os, const pair<T1,T2>& p)
 template <typename T1, typename T2>
 inline size_t stream_size_of (const pair<T1,T2>& v)
 {
-    return (Align (stream_size_of(v.first), __alignof__(T2)) +
-	    Align (stream_size_of(v.second), __alignof__(T1)));
+    return (Align (stream_size_of(v.first), alignof(T2())) +
+	    Align (stream_size_of(v.second), alignof(T1())));
 }
 
 /// \brief Takes a pair and returns pair.first
