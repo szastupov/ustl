@@ -31,14 +31,14 @@
 
 namespace ustl {
 
-const char string::empty_string[string::c_TerminatorSize] = "";
+const char string::empty_string[string::size_Terminator] = "";
 
 /// Assigns itself the value of string \p s
 string::string (const string& s)
 : memblock()
 {
     if (s.is_linked())
-	link (s.c_str(), s.length() + c_TerminatorSize);
+	link (s.c_str(), s.length() + size_Terminator);
     else
 	operator= (s);
 }
@@ -49,7 +49,7 @@ string::string (const_pointer s)
 {
     if (!s)
 	s = empty_string;
-    link (s, strlen(s) + c_TerminatorSize);
+    link (s, strlen(s) + size_Terminator);
 }
 
 /// Copies the value of \p s of length \p len into itself.
@@ -70,7 +70,7 @@ string::string (const_pointer s1, const_pointer s2)
 /// Resize the string to \p n characters. New space contents is undefined.
 void string::resize (size_t n)
 {
-    memblock::resize (n + c_TerminatorSize);
+    memblock::resize (n + size_Terminator);
     at(n) = c_Terminator;
 }
 
@@ -121,10 +121,10 @@ size_t string::copyto (pointer p, size_t n, const_iterator start) const
     assert (p && n);
     if (!start)
 	start = begin();
-    const size_t btc = min(n - c_TerminatorSize, length());
+    const size_t btc = min(n - size_Terminator, length());
     copy_n (start, btc, p);
     p[btc] = c_Terminator;
-    return (btc + c_TerminatorSize);
+    return (btc + size_Terminator);
 }
 
 /// Returns comparison value regarding string \p s.
@@ -319,7 +319,8 @@ int string::format (const char* fmt, ...)
 {
     va_list args;
     va_start (args, fmt);
-    int rv = vsnprintf (data(), memblock::capacity(), fmt, args);
+    char nullbuf [size_Terminator] = ""; // On SunOS and Darwin vsnprintf can't handle NULL pointers, and this is faster than calling malloc.
+    int rv = vsnprintf (capacity() ? data() : nullbuf, capacity() + size_Terminator, fmt, args);
     //
     // glibc 2.0.6 or later required for reallocation to work.
     // 		earlier versions will require the string to already
@@ -328,15 +329,12 @@ int string::format (const char* fmt, ...)
     // 		would have been written without truncation, as per C99 spec.
     // 		See vsnprintf man page for additional information.
     //
-    if (rv < 0)
-	resize (capacity());
-    else {
+    if (rv >= 0) {
 	if (rv > int(capacity())) {
 	    reserve (rv);
 	    rv = vsnprintf (data(), memblock::capacity(), fmt, args);
 	}
-	if (rv >= 0)
-	    resize (rv);
+	resize (rv);
     }
     va_end (args);
     return (rv);

@@ -28,7 +28,7 @@ non-template base class.
 %setup -q
 
 %build
-./configure --prefix=%{buildroot}%{_prefix}
+CXXFLAGS=${RPM_OPT_FLAGS}; ./configure --prefix=%{buildroot}%{_prefix}
 make
 
 %install

@@ -66,9 +66,9 @@ public:
     typedef ::ustl::reverse_iterator<const_iterator>	const_reverse_iterator;
 public:
     static const uoff_t npos = static_cast<uoff_t>(-1);		///< Value that means the end of string.
-    static const size_t c_TerminatorSize = sizeof(value_type);	///< Most systems terminate strings with '\\0'
+    static const size_t size_Terminator = sizeof(value_type);	///< Most systems terminate strings with '\\0'
     static const value_type c_Terminator = 0;			///< String terminator
-    static const char empty_string [c_TerminatorSize];		///< An empty string.
+    static const char empty_string [size_Terminator];		///< An empty string.
 public:
     inline			string (void);
 				string (const string& s);
@@ -161,7 +161,7 @@ inline string::string (const cmemlink& s)
 /// Returns the number of characters in the string, not including the terminator.
 inline size_t string::size (void) const
 {
-    return (memblock::size() - c_TerminatorSize);
+    return (memblock::size() - size_Terminator);
 }
 
 /// Returns the number of characters in the string, not including the terminator.
@@ -185,7 +185,7 @@ inline string::const_pointer string::c_str (void) const
 /// Returns the maximum size of the string. On most systems it is max size_t.
 inline size_t string::max_size (void) const
 {
-    return (memblock::max_size() / sizeof(value_type) - c_TerminatorSize);
+    return (memblock::max_size() / sizeof(value_type) - size_Terminator);
 }
 
 /// Returns \c true for strings with zero characters.
@@ -202,13 +202,14 @@ inline bool string::empty (void) const
 ///
 inline size_t string::capacity (void) const
 {
-    return (memblock::capacity() / sizeof(value_type) - c_TerminatorSize);
+    const size_t n = memblock::capacity() / sizeof(value_type);
+    return (n ? n - size_Terminator : 0);
 }
 
 /// Allocate enough storage to hold \p n characters.
 inline void string::reserve (size_t n)
 {
-    memblock::reserve (n + c_TerminatorSize);
+    memblock::reserve (n + size_Terminator);
 }
 
 /// Returns the pointer to the first character.

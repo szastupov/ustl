@@ -22,7 +22,6 @@
 //
 
 #include "cmemlink.h"
-#include <memory.h>
 #include "mostream.h"
 #include "strmsize.h"
 #include "ualgo.h"

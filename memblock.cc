@@ -127,7 +127,7 @@ void memblock::reserve (size_t newSize, bool bExact)
 	throw bad_alloc(newSize);
     constructBlock (advance (newBlock, m_AllocatedSize), newSize - m_AllocatedSize);
     if (!oldBlock && cdata())
-	copy_n (cdata(), size(), newBlock);
+	copy_n (cdata(), min (size(), newSize), newBlock);
     link (newBlock, size());
     m_AllocatedSize = newSize;
 }

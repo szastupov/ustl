@@ -31,7 +31,7 @@ class istream;
 class ostream;
 
 ///
-/// A read-only pointer to a sized block of memory.
+/// \brief A read-only pointer to a sized block of memory.
 ///
 /// Use this class the way you would a const pointer to an allocated unstructured block.
 /// The pointer and block size are available through member functions and cast operator.

@@ -27,24 +27,24 @@
 namespace ustl {
 
 /// Multiple sorted container. Unlike set, it may contain multiple copies of each element.
-template <typename K>
-class multiset : public vector<K> {
+template <typename T>
+class multiset : public vector<T> {
 public:
-    typedef typename vector<K>::value_type	value_type;
-    typedef typename vector<K>::pointer		pointer;
-    typedef typename vector<K>::const_pointer	const_pointer;
-    typedef typename vector<K>::reference	reference;
-    typedef typename vector<K>::const_reference	const_reference;
-    typedef typename vector<K>::const_iterator	const_iterator;
-    typedef typename vector<K>::iterator	iterator;
-    typedef typename vector<K>::reverse_iterator	reverse_iterator;
-    typedef typename vector<K>::const_reverse_iterator	const_reverse_iterator;
+    typedef typename vector<T>::value_type	value_type;
+    typedef typename vector<T>::pointer		pointer;
+    typedef typename vector<T>::const_pointer	const_pointer;
+    typedef typename vector<T>::reference	reference;
+    typedef typename vector<T>::const_reference	const_reference;
+    typedef typename vector<T>::const_iterator	const_iterator;
+    typedef typename vector<T>::iterator	iterator;
+    typedef typename vector<T>::reverse_iterator	reverse_iterator;
+    typedef typename vector<T>::const_reverse_iterator	const_reverse_iterator;
 public:
     			multiset (void);
     explicit		multiset (size_t n);
-    			multiset (const multiset<K>& v);
+    			multiset (const multiset<T>& v);
 			multiset (const_iterator i1, const_iterator i2);
-    inline const multiset<K>&	operator= (const multiset<K>& v);
+    inline const multiset<T>&	operator= (const multiset<T>& v);
     inline void		assign (const_iterator i1, const_iterator i2);
     size_t		count (const_reference v) const;
     inline void		push_back (const_reference v);
@@ -56,102 +56,102 @@ public:
 };
 
 /// Default constructor.
-template <typename K>
-multiset<K>::multiset (void)
-: vector<K> ()
+template <typename T>
+multiset<T>::multiset (void)
+: vector<T> ()
 {
 }
 
 /// Creates the container with space enough to hold \p n elements.
-template <typename K>
-multiset<K>::multiset (size_t n)
-: vector<K> (n)
+template <typename T>
+multiset<T>::multiset (size_t n)
+: vector<T> (n)
 {
 }
 
 /// Creates a copy of \p v.
-template <typename K>
-multiset<K>::multiset (const multiset<K>& v)
-: vector<K> (v)
+template <typename T>
+multiset<T>::multiset (const multiset<T>& v)
+: vector<T> (v)
 {
 }
 
 /// Copies range [i1,i2)
-template <typename K>
-multiset<K>::multiset (const_iterator i1, const_iterator i2)
-: vector<K> ()
+template <typename T>
+multiset<T>::multiset (const_iterator i1, const_iterator i2)
+: vector<T> ()
 {
     insert (i1, i2);
 }
 
 /// Copies contents of \p v.
-template <typename K>
-inline const multiset<K>& multiset<K>::operator= (const multiset<K>& v)
+template <typename T>
+inline const multiset<T>& multiset<T>::operator= (const multiset<T>& v)
 {
-    vector<K>::operator= (v);
+    vector<T>::operator= (v);
     return (*this);
 }
 
 /// Copies contents of range [i1,i2)
-template <typename K>
-inline void multiset<K>::assign (const_iterator i1, const_iterator i2)
+template <typename T>
+inline void multiset<T>::assign (const_iterator i1, const_iterator i2)
 {
     clear();
     insert (i1, i2);
 }
 
 /// Returns the number of elements of value \p v.
-template <typename K>
-size_t multiset<K>::count (const_reference v) const
+template <typename T>
+size_t multiset<T>::count (const_reference v) const
 {
     const pair<const_iterator,const_iterator> fr = equal_range (begin(), end(), v);
     return (distance (fr.first, fr.second));
 }
 
 /// Inserts \p v.
-template <typename K>
-inline void multiset<K>::push_back (const_reference v)
+template <typename T>
+inline void multiset<T>::push_back (const_reference v)
 {
     insert (v);
 }
 
 /// Inserts \p v.
-template <typename K>
-typename multiset<K>::iterator multiset<K>::insert (const_reference v)
+template <typename T>
+typename multiset<T>::iterator multiset<T>::insert (const_reference v)
 {
     iterator ip = lower_bound (begin(), end(), v);
-    return (vector<K>::insert (ip, v));
+    return (vector<T>::insert (ip, v));
 }
 
 /// Inserts all elements from range [i1,i2).
-template <typename K>
-inline void multiset<K>::insert (const_iterator i1, const_iterator i2)
+template <typename T>
+inline void multiset<T>::insert (const_iterator i1, const_iterator i2)
 {
     assert (i1 <= i2);
     reserve (size() + distance (i1, i2));
-    for_each (i1, i2, mem_fun (this, &multiset<K>::push_back));
+    for_each (i1, i2, mem_fun (this, &multiset<T>::push_back));
 }
 
 /// Erases all elements with value \p v.
-template <typename K>
-void multiset<K>::erase (const_reference v)
+template <typename T>
+void multiset<T>::erase (const_reference v)
 {
     pair<iterator,iterator> epr = equal_range (begin(), end(), v);
     erase (epr.first, epr.second);
 }
 
 /// Erases the element at \p ep.
-template <typename K>
-inline typename multiset<K>::iterator multiset<K>::erase (iterator ep)
+template <typename T>
+inline typename multiset<T>::iterator multiset<T>::erase (iterator ep)
 {
-    return (vector<K>::erase (ep));
+    return (vector<T>::erase (ep));
 }
 
 /// Erases range [ep1,ep2).
-template <typename K>
-inline typename multiset<K>::iterator multiset<K>::erase (iterator ep1, iterator ep2)
+template <typename T>
+inline typename multiset<T>::iterator multiset<T>::erase (iterator ep1, iterator ep2)
 {
-    return (vector<K>::erase (ep1, ep2));
+    return (vector<T>::erase (ep1, ep2));
 }
 
 }; // namespace ustl

@@ -78,18 +78,6 @@ inline memblock::memblock (void)
 {
 }
 
-/// Frees internal data, if appropriate
-/// Only if the block was allocated using resize, or linked to using Manage,
-/// will it be freed. Also, Derived classes should call DestructBlock from
-/// their destructor, because upstream virtual functions are unavailable at
-/// this point and will not be called automatically.
-///
-inline memblock::~memblock (void)
-{
-    if (!is_linked())
-	deallocate();
-}
-
 /// Copies data from \p l.
 inline void memblock::assign (const cmemlink& l)
 {
@@ -135,12 +123,6 @@ inline size_t memblock::max_size (void) const
     return (numeric_limits<size_t>::max() / elementSize());
 }
 
-/// Resizes the block to 0
-inline void memblock::clear (void)
-{
-    resize (0);
-}
-
 /// Returns true if the storage is linked, false if allocated.
 inline bool memblock::is_linked (void) const
 {
@@ -168,11 +150,29 @@ inline void memblock::resize (size_t newSize, bool bExact)
     memlink::resize (newSize);
 }
 
+/// Resizes the block to 0
+inline void memblock::clear (void)
+{
+    resize (0);
+}
+
 /// Reads object \p l from stream \p is
 inline istream& operator>> (istream& is, memblock& l)
 {
     l.read (is);
     return (is);
+}
+
+/// Frees internal data, if appropriate
+/// Only if the block was allocated using resize, or linked to using Manage,
+/// will it be freed. Also, Derived classes should call DestructBlock from
+/// their destructor, because upstream virtual functions are unavailable at
+/// this point and will not be called automatically.
+///
+inline memblock::~memblock (void)
+{
+    if (!is_linked())
+	deallocate();
 }
 
 }; // namespace ustl

@@ -27,6 +27,7 @@
 namespace ustl {
 
 /// \brief A smart pointer.
+///
 /// Calls delete in the destructor; assignment transfers ownership.
 /// This class does not work with void pointers due to the presence
 /// of the required dereference operator.

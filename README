@@ -57,6 +57,8 @@ COMPILATION:
 
 On Solaris, remove the -Wredunant-decls flag due to errors in system files.
 On Darwin, add the -Wno-long-double to remove the braindead warning.
+	I haven't figured out a way to get configure to do this yet. Sorry.
+
 Clean builds have been thus obtained on (SourceForge compile farm):
 	*  x86 architecture (dual-processor SMP Intel Pentium III) - Linux OS kernel version 2.2 (Debian GNU/Linux 2.2)
 	* PowerPC architecture (Apple Mac G4 systems) - MacOS X (version 10.1)
