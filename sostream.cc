@@ -289,6 +289,7 @@ ostringstream::size_type ostringstream::overflow (size_type n)
     assert (n > remaining() && "Don't call overflow if you don't need to");
     if (m_pResizable) {
 	const uoff_t oldPos (pos());
+	m_pResizable->reserve (oldPos + n, false);
 	m_pResizable->resize (oldPos + n);
 	link (*m_pResizable);
 	seek (oldPos);
