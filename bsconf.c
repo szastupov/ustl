@@ -494,6 +494,10 @@ static void SubstituteCFlags (void)
 	#endif
     #endif
     Substitute ("@INLINE_OPTS@", buf);
+
+    #ifdef __i386__
+	Substitute ("-fPIC", "");
+    #endif
 }
 
 static void SubstituteEnvironment (int bForce)

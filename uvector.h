@@ -287,7 +287,8 @@ inline typename vector<T>::iterator vector<T>::erase (iterator ep1, iterator ep2
 template <typename T>
 inline void vector<T>::push_back (const T& v)
 {
-    insert (end(), v);
+    memblock::resize (elementBytes (size() + 1), false);
+    *(end() - 1) = v;
 }
 
 /// \brief Calls T() for every element.
@@ -297,7 +298,6 @@ inline void vector<T>::push_back (const T& v)
 template <typename T>
 void vector<T>::constructBlock (void* p, size_type s) const
 {
-    memblock::constructBlock (p, s);
     assert (s % sizeof(T) == 0);
     T* pt = reinterpret_cast<T*>(p);
     construct (pt, pt + s / sizeof(T));
@@ -315,7 +315,9 @@ void vector<T>::destructBlock (void* p, size_type s) const
     assert (s % sizeof(T) == 0);
     T* pt = reinterpret_cast<T*>(p);
     destroy (pt, pt + s / sizeof(T));
-    memblock::destructBlock (p, s);
+    #ifndef NDEBUG
+	memblock::destructBlock (p, s);
+    #endif
 }
 
 } // namespace ustl

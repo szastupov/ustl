@@ -164,25 +164,20 @@ void memlink::erase (iterator start, size_type n)
 }
 
 /// Override to initialize malloc'ed space, like calling constructors, for example.
-void memlink::constructBlock (void* p, size_type n) const
+void memlink::constructBlock (void*, size_type DebugArg(n)) const
 {
     assert (elementSize() && "You can't create an array of empty types");
     assert (n % elementSize() == 0 && "You are trying to write an incompatible element type");
-    fill_n (p, n, uint8_t(0));
 }
 
-#ifndef NDEBUG
 /// Override to deinitialize malloc'ed space, like calling destructors, for example.
-void memlink::destructBlock (void* p, size_type n) const
+void memlink::destructBlock (void* DebugArg(p), size_type DebugArg(n)) const
 {
     assert (n % elementSize() == 0 && "You are trying to write an incompatible element type");
+#ifndef NDEBUG
     fill_n (p, n, uint8_t(0xCD));
-}
-#else
-void memlink::destructBlock (void*, size_type) const
-{
-}
 #endif
+}
 
 } // namespace ustl
 
