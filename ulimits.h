@@ -159,7 +159,7 @@ struct numeric_limits<unsigned long long> {
 #endif
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 
-} // namespace ustl
+}; // namespace ustl
 
 #endif
 

@@ -179,7 +179,7 @@ inline ostringstream& ostringstream::operator<< (void* s)
     return (operator<< (const_cast<const void*>(s)));
 }
 
-} // namespace ustl
+}; // namespace ustl
 
 #endif
 

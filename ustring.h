@@ -423,7 +423,7 @@ inline void string::replace (iterator first, iterator last, const_reference c, s
     replace (first, last, &c, &c + 1, n);
 }
 
-} // namespace ustl
+}; // namespace ustl
 
 STD_STREAMABLE(ustl::string)
 

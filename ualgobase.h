@@ -192,7 +192,7 @@ inline u_char* fill_n (u_char* first, size_t n, u_char value)
     return (advance (first, n));
 }
 
-} // namespace ustl
+}; // namespace ustl
 
 #endif
 

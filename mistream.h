@@ -223,7 +223,7 @@ inline istream&	istream::operator>> (double& v)		{ iread(v); return (*this); }
 inline istream&	istream::operator>> (bool& v)		{ iread(v); return (*this); }
 inline istream&	istream::operator>> (wchar_t& v)	{ iread(v); return (*this); }
 
-} // namespace ustl
+}; // namespace ustl
 
 #endif
 

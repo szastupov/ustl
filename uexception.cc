@@ -249,5 +249,5 @@ size_t file_exception::stream_size (void) const
 
 //----------------------------------------------------------------------
 
-} // namespace ustl
+}; // namespace ustl
 

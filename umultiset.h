@@ -154,7 +154,7 @@ inline typename multiset<K>::iterator multiset<K>::erase (iterator ep1, iterator
     return (vector<K>::erase (ep1, ep2));
 }
 
-} // namespace ustl
+}; // namespace ustl
 
 #endif
 

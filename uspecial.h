@@ -114,14 +114,14 @@ template <typename Pair> struct select2nd : public unary_function<Pair,typename 
     inline result_type&		operator()(Pair& a) const { return (a.second); }
 };
 
-} // namespace ustl
+}; // namespace ustl
 
 // This is here because there really is no other place to put it.
-STD_STREAMABLE(ustl::cmemlink)
-STD_STREAMABLE(ustl::istream)
-STD_STREAMABLE(ustl::ostream)
-STD_STREAMABLE(ustl::exception)
-TEXT_STREAMABLE(ustl::exception)
+STD_STREAMABLE(ustl::cmemlink);
+STD_STREAMABLE(ustl::istream);
+STD_STREAMABLE(ustl::ostream);
+STD_STREAMABLE(ustl::exception);
+TEXT_STREAMABLE(ustl::exception);
 
 #endif
 

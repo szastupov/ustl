@@ -200,7 +200,7 @@ inline void cmemlink::read (istream&)
     assert (false && "ustl::cmemlink is a read-only object.");
 }
 
-} // namespace ustl
+}; // namespace ustl
 
 #endif
 

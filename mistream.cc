@@ -165,5 +165,5 @@ void ostream::swap (ostream& os)
 
 //--------------------------------------------------------------------
 
-} // namespace ustl
+}; // namespace ustl
 

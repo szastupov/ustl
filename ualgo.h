@@ -624,7 +624,7 @@ inline void stable_sort (RandomAccessIterator first, RandomAccessIterator last, 
     sort (first, last, comp);
 }
 
-} // namespace ustl
+}; // namespace ustl
 
 #endif
 

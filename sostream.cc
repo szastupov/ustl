@@ -206,6 +206,6 @@ ostringstream& ostringstream::operator<< (ios::fmtflags f)
     return (*this);
 }
 
-} // namespace ustl
+}; // namespace ustl
 
 

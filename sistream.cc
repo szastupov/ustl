@@ -212,5 +212,5 @@ istringstream& istringstream::operator>> (string& v)
     return (*this);
 }
 
-} // namespace ustl
+}; // namespace ustl
 

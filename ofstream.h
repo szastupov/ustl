@@ -98,7 +98,7 @@ inline fdostringstream& fdostringstream::operator<< (ios::fmtflags f)	{ ostrings
 
 extern fdostringstream cout, cerr;
 
-} // namespace ustl
+}; // namespace ustl
 
 #endif
 

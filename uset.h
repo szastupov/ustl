@@ -169,7 +169,7 @@ inline typename set<T>::iterator set<T>::erase (iterator ep1, iterator ep2)
     return (vector<T>::erase (ep1, ep2));
 }
 
-} // namespace ustl
+}; // namespace ustl
 
 #endif
 

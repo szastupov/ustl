@@ -205,7 +205,7 @@ inline ostream&	ostream::operator<< (double v)	{ iwrite(v); return (*this); }
 inline ostream&	ostream::operator<< (bool v)	{ iwrite(v); return (*this); }
 inline ostream&	ostream::operator<< (wchar_t v)	{ iwrite(v); return (*this); }
 
-} // namespace ustl
+}; // namespace ustl
 
 #endif
 

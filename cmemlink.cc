@@ -112,5 +112,5 @@ size_t cmemlink::elementSize (void) const
     return (1);
 }
 
-} // namespace ustl
+}; // namespace ustl
 

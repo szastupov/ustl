@@ -104,5 +104,5 @@ int fdostringstream::format (const char* fmt, ...)
     return (rv);
 }
 
-} // namespace ustl
+}; // namespace ustl
 

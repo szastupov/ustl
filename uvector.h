@@ -444,7 +444,7 @@ size_t stream_size_of (const vector<T>& v)
     return (Align (s));
 }
 
-} // namespace ustl
+}; // namespace ustl
 
 #endif
 

@@ -107,7 +107,7 @@ protected:
     char		m_Filename [PATH_MAX];	///< Name of the file causing the error.
 };
 
-} // namespace ustl
+}; // namespace ustl
 
 #endif
 

@@ -377,7 +377,7 @@ DEREFERENCER_T(const_deref2_t,	const T, 	FUNCTOR_BINARY_BASE(const T*),	DEREF_BI
 #undef DEREF_UNARY_ARGS
 #undef DEREF_BINARY_ARGS
 
-} // namespace ustl
+}; // namespace ustl
 
 #endif
 

@@ -352,5 +352,5 @@ void string::write (ostream& os) const
     os.write (cdata(), length());
 }
 
-} // namespace ustl
+}; // namespace ustl
 

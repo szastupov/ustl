@@ -502,7 +502,7 @@ IBYI(iterator, iterator, Container1, Container2)
 IBYI(const_iterator, iterator, const Container1, Container2)
 IBYI(iterator, const_iterator, Container1, const Container2)
 
-} // namespace ustl
+}; // namespace ustl
 
 #endif
 

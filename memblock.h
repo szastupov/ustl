@@ -175,7 +175,7 @@ inline istream& operator>> (istream& is, memblock& l)
     return (is);
 }
 
-} // namespace ustl
+}; // namespace ustl
 
 #endif
 

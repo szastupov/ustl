@@ -191,7 +191,7 @@ inline typename multimap<K,V>::iterator multimap<K,V>::erase (iterator ep1, iter
     return (vector<pair<K,V> >::erase (ep1, ep2));
 }
 
-} // namespace ustl
+}; // namespace ustl
 
 #endif
 

@@ -127,7 +127,7 @@ inline istringstream& istringstream::operator>> (float& v)
     double vl; operator>> (vl); v = static_cast<float>(vl); return (*this);
 }
 
-} // namespace ustl
+}; // namespace ustl
 
 #endif
 

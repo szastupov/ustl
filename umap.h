@@ -210,7 +210,7 @@ inline typename map<K,V>::iterator map<K,V>::erase (iterator ep1, iterator ep2)
     return (vector<pair<K,V> >::erase (ep1, ep2));
 }
 
-} // namespace ustl
+}; // namespace ustl
 
 #endif
 

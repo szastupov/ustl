@@ -122,5 +122,5 @@ void memlink::destructBlock (void*, size_t) const
 }
 #endif
 
-} // namespace ustl
+}; // namespace ustl
 
