@@ -25,7 +25,6 @@
 #define UUTILITY_H
 
 #include "utypes.h"
-#include <stdlib.h>
 #include <assert.h>
 
 namespace ustl {
@@ -33,9 +32,16 @@ namespace ustl {
 /// The alignment performed by default.
 const size_t c_DefaultAlignment = sizeof(u_long);
 
+/// Divides \p n1 by \p n2 and rounds the result up (regular division rounds down).
+template <class T>
+inline T DivRU (T n1, T n2)
+{
+    return (n1 / n2 + (n1 % n2 != 0));
+}
+
 /// Rounds \p n up to be divisible by \p grain
 template <class T>
-inline T Align (T n, size_t grain = c_DefaultAlignment)
+inline T Align (T n, T grain = c_DefaultAlignment)
 {
     const T remainder = n % grain;
     return (remainder ? n + (grain - remainder) : n);
@@ -106,14 +112,22 @@ inline void DeleteVector (T* p)
 template <typename T>
 inline const T& min (const T& a, const T& b)
 {
+#ifdef __GNUC__
+    return (a <? b);
+#else
     return (a < b ? a : b);
+#endif
 }
 
 /// Returns the maximum of \p a and \p b
 template <typename T>
 inline const T& max (const T& a, const T& b)
 {
+#ifdef __GNUC__
+    return (a >? b);
+#else
     return (b < a ? a : b);
+#endif
 }
 
 /// Template of making != from ! and ==
