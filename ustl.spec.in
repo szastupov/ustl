@@ -9,7 +9,7 @@ Version:	%{version}
 Release:	%{release}
 Source0:	%{name}-%{version}-%{release}.tar.bz2
 URL:		http://sourceforge.net/projects/ustl
-License:	LGPL
+License:	MIT
 Group:		Development/Libraries
 Prefix:		%{_prefix}
 BuildRoot:	%{buildroot}

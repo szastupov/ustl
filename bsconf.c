@@ -1,36 +1,10 @@
 /* This file is part of bsconf - a configure replacement.
- * Copyright (c) 2003 by Mike Sharov <msharov@talentg.com>
  *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Library General Public
- * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
+ * Copyright (C) 2005 by Mike Sharov <msharov@talentg.com>
+ * This file is free software, distributed under the MIT License.
  *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Library General Public License for more details.
- *
- * You should have received a copy of the GNU Library General Public
- * License along with this library; if not, write to the 
- * Free Software Foundation, Inc., 59 Temple Place - Suite 330, 
- * Boston, MA  02111-1307  USA.
- *
- * Special licensing note: it is a common misconception that using an LGPL
- * file in your project necessarily forces the project to adopt LGPL too.
- * You can, by all means, include bsconf.c and all its supporting files,
- * with any commercial project. If you do not modify bsconf.c you have
- * no obligations to release it. If you modify it, but distribute your
- * application only in binary form, you have no obligations because bsconf
- * is not run by your customers, but only by you in order to build your
- * application, making you the end user. Having it in your source tree
- * is entirely irrelevant. However, if you modify bsconf.c and are selling
- * your source code, you have to include the modified bsconf.c with it at
- * no additional cost to the customer. That's it.
-*/
-/*
- * This file was written to replace the autoconf-made configure script,
- * which by its prohibitively large size has fallen out of favor with
+ * bsconf was written to replace autoconf-made configure scripts, which
+ * through their prohibitively large size have fallen out of favor with
  * many developers. The configure script performs many time-consuming
  * tests, the results of which are usually unused because no progammer
  * likes to pollute his code with ifdefs. This program performs the

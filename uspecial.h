@@ -1,3 +1,8 @@
+// This file is part of the ustl library, an STL implementation.
+//
+// Copyright (C) 2005 by Mike Sharov <msharov@talentg.com>
+// This file is free software, distributed under the MIT License.
+//
 // uspecial.h
 //
 // Template specializations for uSTL classes.
