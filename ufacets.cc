@@ -584,6 +584,6 @@ void messages::close (catalog)
 
 //----------------------------------------------------------------------
 
-}; // namespace ustl
+} // namespace ustl
 
 

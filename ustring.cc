@@ -494,5 +494,5 @@ void string::write_file (const char* filename, int mode) const
     const_cast<string&>(*this).cmemlink::resize (cmemlink::size() + size_Terminator);
 }
 
-}; // namespace ustl
+} // namespace ustl
 

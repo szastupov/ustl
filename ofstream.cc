@@ -140,6 +140,6 @@ size_t fdistringstream::underflow (size_t n)
 
 //----------------------------------------------------------------------
 
-}; // namespace ustl
+} // namespace ustl
 #endif // WITHOUT_CIN_COUT_CERR
 

@@ -97,7 +97,7 @@ inline void push_heap (RandomAccessIterator first, RandomAccessIterator last, Co
     push_heap (first, last, less<value_type>());
 }
 
-}; // namespace ustl
+} // namespace ustl
 
 #endif
 

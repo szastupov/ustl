@@ -318,5 +318,5 @@ size_t stream_bounds_exception::stream_size (void) const
 
 #endif
 
-}; // namespace ustl
+} // namespace ustl
 

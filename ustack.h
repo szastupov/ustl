@@ -123,7 +123,7 @@ inline bool stack<Sequence>::operator< (const stack& s)
     return (m_Storage.size() < s.m_Storage.size());
 }
 
-}; // namespace ustl
+} // namespace ustl)
 
 #endif
 

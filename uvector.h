@@ -60,7 +60,6 @@ public:
     inline void			resize (size_t n);
     inline size_t		capacity (void) const;
     inline size_t		size (void) const;
-    inline size_t		stream_size (void) const;
     inline iterator		begin (void);
     inline const_iterator	begin (void) const;
     inline iterator		end (void);
@@ -409,7 +408,7 @@ inline size_t vector<T>::elementSize (void) const
     return (sizeof(T));
 }
 
-}; // namespace ustl
+} // namespace ustl
 
 #endif
 

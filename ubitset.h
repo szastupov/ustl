@@ -108,7 +108,7 @@ private:
     value_type		m_Bits [s_nHosts];
 };
 
-}; // namespace ustl
+} // namespace ustl
 
 #endif
 

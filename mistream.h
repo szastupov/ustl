@@ -250,7 +250,7 @@ inline istream&	operator>> (istream& is, long long& v)	{ is.iread(v); return (is
 inline istream&	operator>> (istream& is, unsigned long long& v)	{ is.iread(v); return (is); }
 #endif
 
-}; // namespace ustl
+} // namespace ustl
 
 #endif
 

@@ -147,7 +147,7 @@ OSTRSTREAM_OPERATOR (unsigned long long, unsigned long long)
 #endif
 #undef OSTRSTREAM_OPERATOR
 
-}; // namespace ustl
+} // namespace ustl
 
 #endif
 

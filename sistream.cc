@@ -276,5 +276,5 @@ void istringstream::read (memlink& buf)
     istream::read (buf);
 }
 
-}; // namespace ustl
+} // namespace ustl
 

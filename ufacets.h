@@ -265,7 +265,7 @@ inline wchar_t tolower (wchar_t c, const locale& loc = locale::global)
 
 //----------------------------------------------------------------------
 
-}; // namespace ustl
+} // namespace ustl
 
 #endif
 

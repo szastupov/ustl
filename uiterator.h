@@ -212,7 +212,7 @@ inline void indexv_to_iteratorv (typename IteratorContainer::value_type ibase, c
 
 //----------------------------------------------------------------------
 
-}; // namespace ustl
+} // namespace ustl
 
 #endif
 

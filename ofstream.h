@@ -85,7 +85,7 @@ private:
 extern fdostringstream cout, cerr;
 extern fdistringstream cin;
 
-}; // namespace ustl
+} // namespace ustl
 
 #endif
 #endif

@@ -176,7 +176,7 @@ protected:
 };
 #endif
 
-}; // namespace ustl
+} // namespace ustl
 
 #endif
 

@@ -302,6 +302,6 @@ size_t ostringstream::overflow (size_t n)
     return (remaining());
 }
 
-}; // namespace ustl
+} // namespace ustl
 
 

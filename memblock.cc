@@ -210,5 +210,5 @@ void memblock::read_file (const char* filename)
     close (fd);
 }
 
-}; // namespace ustl
+} // namespace ustl
 

@@ -15,6 +15,7 @@
 #include "ufunction.h"
 #include "mistream.h"
 #include "mostream.h"
+#include "sostream.h"
 #include "strmsize.h"
 
 namespace ustl {
@@ -272,15 +273,15 @@ inline hashvalue_t hash_value (const string::const_pointer& v)
 
 //----------------------------------------------------------------------
 
-}; // namespace ustl
+} // namespace ustl
 
 // This is here because there really is no other place to put it.
-STD_STREAMABLE(ustl::cmemlink);
-STD_STREAMABLE(ustl::istream);
-STD_STREAMABLE(ustl::ostream);
+STD_STREAMABLE(ustl::cmemlink)
+STD_STREAMABLE(ustl::istream)
+STD_STREAMABLE(ustl::ostream)
 STD_STREAMABLE(ustl::string)
-STD_STREAMABLE(ustl::exception);
-TEXT_STREAMABLE(ustl::exception);
+STD_STREAMABLE(ustl::exception)
+TEXT_STREAMABLE(ustl::exception)
 
 #endif
 

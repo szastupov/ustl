@@ -45,7 +45,7 @@ public:
     explicit		memblock (size_t n);
     explicit		memblock (const cmemlink& b);
     explicit		memblock (const memlink& b);
-    explicit		memblock (const memblock& b);
+			memblock (const memblock& b);
     virtual	       ~memblock (void);
  inline const memblock&	operator= (const cmemlink& b);
  inline const memblock&	operator= (const memlink& b);
@@ -149,7 +149,7 @@ inline istream& operator>> (istream& is, memblock& l)
     return (is);
 }
 
-}; // namespace ustl
+} // namespace ustl
 
 #endif
 

@@ -196,6 +196,6 @@ const char* underflow_error::what (void) const throw()
 
 //----------------------------------------------------------------------
 
-}; // namespace ustl
+} // namespace ustl
 
 

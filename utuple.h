@@ -140,7 +140,7 @@ inline const tuple<N,T1> operator- (const tuple<N,T1>& t1, const tuple<N,T2>& t2
     return (result);
 }
 
-}; // namespace ustl
+} // namespace ustl
 
 #endif
 

@@ -46,20 +46,26 @@ public:
     typedef typename vector<T>::reverse_iterator	reverse_iterator;
     typedef typename vector<T>::const_reverse_iterator	const_reverse_iterator;
 public:
-    			set (void);
-    explicit		set (size_t n);
-    			set (const set<T>& v);
-			set (const_iterator i1, const_iterator i2);
-   inline const set<T>&	operator= (const set<T>& v);
-    inline void		assign (const_iterator i1, const_iterator i2);
-    inline void		push_back (const_reference v);
-    const_iterator	find (const_reference v) const;
-    iterator		find (const_reference v);
-    iterator		insert (const_reference v);
-    inline void		insert (const_iterator i1, const_iterator i2);
-    void		erase (const_reference v);
-    inline iterator	erase (iterator ep);
-    inline iterator	erase (iterator ep1, iterator ep2);
+    				set (void);
+    explicit			set (size_t n);
+    				set (const set<T>& v);
+				set (const_iterator i1, const_iterator i2);
+    inline const set<T>&	operator= (const set<T>& v);
+    inline void			assign (const_iterator i1, const_iterator i2);
+    inline void			push_back (const_reference v);
+    const_iterator		find (const_reference v) const;
+    iterator			find (const_reference v);
+    iterator			insert (const_reference v);
+    inline void			insert (const_iterator i1, const_iterator i2);
+    void			erase (const_reference v);
+    inline iterator		erase (iterator ep);
+    inline iterator		erase (iterator ep1, iterator ep2);
+    inline void			clear (void)		{ vector<T>::clear(); }
+    inline size_t		size (void) const	{ return (vector<T>::size()); }
+    inline iterator		begin (void)		{ return (vector<T>::begin()); }
+    inline const_iterator	begin (void) const	{ return (vector<T>::begin()); }
+    inline iterator		end (void)		{ return (vector<T>::end()); }
+    inline const_iterator	end (void) const	{ return (vector<T>::end()); }
 };
 
 /// Default constructor.
@@ -173,7 +179,7 @@ inline typename set<T>::iterator set<T>::erase (iterator ep1, iterator ep2)
     return (vector<T>::erase (ep1, ep2));
 }
 
-}; // namespace ustl
+} // namespace ustl
 
 #endif
 

@@ -33,6 +33,7 @@
 #include "uiterator.h"
 #include "ufunction.h"
 #include "upredalgo.h"
+#include <stdlib.h>	// for rand()
 
 namespace ustl {
 
@@ -348,29 +349,6 @@ OutputIterator unique_copy (InputIterator first, InputIterator last, OutputItera
     return (result);
 }
 
-/// The reason there are two different versions of unique_copy is that there
-/// are two different definitions of what it means for a consecutive group of
-/// elements to be duplicates. In the first version, the test is simple
-/// equality: the elements in a range [f, l) are duplicates if, for every
-/// iterator i in the range, either i == f or else *i == *(i-1). In the second,
-/// the test is an arbitrary Binary Predicate binary_pred: the elements in
-/// [f, l) are duplicates if, for every iterator i in the range, either
-/// i == f or else binary_pred(*i, *(i-1)) is true.
-/// \ingroup MutatingAlgorithms
-///
-template <typename InputIterator, typename OutputIterator, typename BinaryPredicate>
-OutputIterator unique_copy (InputIterator first, InputIterator last, OutputIterator result, BinaryPredicate binary_pred)
-{
-    if (first != last) {
-	*result = *first;
-	while (++first != last)
-	    if (binary_pred (*first, prev_value))
-		*++result = *first;
-	++ result;
-    }
-    return (result);
-}
-
 /// Every time a consecutive group of duplicate elements appears in the range
 /// [first, last), the algorithm unique removes all but the first element.
 /// That is, unique returns an iterator new_last such that the range [first,
@@ -385,22 +363,6 @@ template <typename ForwardIterator>
 inline ForwardIterator unique (ForwardIterator first, ForwardIterator last)
 {
     return (unique_copy (first, last, first));
-}
-
-/// Every time a consecutive group of duplicate elements appears in the range
-/// [first, last), the algorithm unique removes all but the first element.
-/// That is, unique returns an iterator new_last such that the range [first,
-/// new_last) contains no two consecutive elements that are duplicates.
-/// The iterators in the range [new_last, last) are all still dereferenceable,
-/// but the elements that they point to are unspecified. Unique is stable,
-/// meaning that the relative order of elements that are not removed is
-/// unchanged.
-/// \ingroup MutatingAlgorithms
-///
-template <typename ForwardIterator, typename BinaryPredicate>
-inline ForwardIterator unique (ForwardIterator first, ForwardIterator last, BinaryPredicate binary_pred)
-{
-    return (unique_copy (first, last, first, binary_pred));
 }
 
 /// Returns the furthermost iterator i in [first, last) such that,
@@ -541,7 +503,7 @@ inline void nth_element (RandomAccessIterator first, RandomAccessIterator nth, R
     partial_sort (first, nth, last);
 }
 
-}; // namespace ustl
+} // namespace ustl
 
 #endif
 

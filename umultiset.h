@@ -46,19 +46,25 @@ public:
     typedef typename vector<T>::reverse_iterator	reverse_iterator;
     typedef typename vector<T>::const_reverse_iterator	const_reverse_iterator;
 public:
-    			multiset (void);
-    explicit		multiset (size_t n);
-    			multiset (const multiset<T>& v);
-			multiset (const_iterator i1, const_iterator i2);
+    				multiset (void);
+    explicit			multiset (size_t n);
+    				multiset (const multiset<T>& v);
+				multiset (const_iterator i1, const_iterator i2);
     inline const multiset<T>&	operator= (const multiset<T>& v);
-    inline void		assign (const_iterator i1, const_iterator i2);
-    size_t		count (const_reference v) const;
-    inline void		push_back (const_reference v);
-    iterator		insert (const_reference v);
-    inline void		insert (const_iterator i1, const_iterator i2);
-    void		erase (const_reference v);
-    inline iterator	erase (iterator ep);
-    inline iterator	erase (iterator ep1, iterator ep2);
+    inline void			assign (const_iterator i1, const_iterator i2);
+    size_t			count (const_reference v) const;
+    inline void			push_back (const_reference v);
+    iterator			insert (const_reference v);
+    inline void			insert (const_iterator i1, const_iterator i2);
+    void			erase (const_reference v);
+    inline iterator		erase (iterator ep);
+    inline iterator		erase (iterator ep1, iterator ep2);
+    inline void			clear (void)		{ vector<T>::clear(); }
+    inline size_t		size (void) const	{ return (vector<T>::size()); }
+    inline iterator		begin (void)		{ return (vector<T>::begin()); }
+    inline const_iterator	begin (void) const	{ return (vector<T>::begin()); }
+    inline iterator		end (void)		{ return (vector<T>::end()); }
+    inline const_iterator	end (void) const	{ return (vector<T>::end()); }
 };
 
 /// Default constructor.
@@ -102,7 +108,7 @@ inline const multiset<T>& multiset<T>::operator= (const multiset<T>& v)
 template <typename T>
 inline void multiset<T>::assign (const_iterator i1, const_iterator i2)
 {
-    clear();
+    multiset<T>::clear();
     insert (i1, i2);
 }
 
@@ -161,7 +167,7 @@ inline typename multiset<T>::iterator multiset<T>::erase (iterator ep1, iterator
     return (vector<T>::erase (ep1, ep2));
 }
 
-}; // namespace ustl
+} // namespace ustl
 
 #endif
 

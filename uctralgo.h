@@ -477,7 +477,7 @@ inline typename Container2::iterator ibyi (typename Container1::iterator idx, Co
 
 #endif // DOXYGEN
 
-}; // namespace ustl
+} // namespace ustl
 
 #endif
 

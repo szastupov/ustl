@@ -105,5 +105,5 @@ locale::facet::~facet (void)
 
 //----------------------------------------------------------------------
 
-}; // namespace ustl
+} // namespace ustl
 

@@ -143,7 +143,7 @@ public:
     virtual const char*	what (void) const throw();
 };
 
-}; // namespace ustl
+} // namespace ustl
 
 #endif
 

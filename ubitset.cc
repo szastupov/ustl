@@ -47,5 +47,5 @@ void convert_from_bitstring (const string& buf, u_int* v, size_t n)
     }
 }
 
-}; // namespace ustl
+} // namespace ustl
 

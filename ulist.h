@@ -51,6 +51,11 @@ public:
     inline			list (size_t n, const T& v)	: vector<T> (n, v) {}
     inline			list (const list<T>& v)		: vector<T> (v) {}
     inline			list (const_iterator i1, const_iterator i2)	: vector<T> (i1, i2) {}
+    inline size_t		size (void) const		{ return (vector<T>::size()); }
+    inline iterator		begin (void)			{ return (vector<T>::begin()); }
+    inline const_iterator	begin (void) const		{ return (vector<T>::begin()); }
+    inline iterator		end (void)			{ return (vector<T>::end()); }
+    inline const_iterator	end (void) const		{ return (vector<T>::end()); }
     inline void			push_front (const T& v)		{ insert (begin(), v); }
     inline void			pop_front (void)		{ erase (begin()); }
     inline const_reference	front (void) const		{ return (*begin()); }
@@ -83,7 +88,7 @@ void list<T>::splice (iterator ip, list<T>& l, iterator first, iterator last)
     l.erase (first, last);
 }
 
-}; // namespace ustl
+} // namespace ustl
 
 #endif
 

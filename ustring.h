@@ -476,7 +476,7 @@ inline bool operator>= (const char* s1, const string& s2)
     return (s2 <= s1);
 }
 
-}; // namespace ustl
+} // namespace ustl
 
 #endif
 

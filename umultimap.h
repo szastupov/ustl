@@ -68,6 +68,12 @@ public:
     void			erase (const_key_ref k);
     inline iterator		erase (iterator ep);
     inline iterator		erase (iterator ep1, iterator ep2);
+    inline void			clear (void)		{ vector<pair<K,V> >::clear(); }
+    inline size_t		size (void) const	{ return (vector<pair<K,V> >::size()); }
+    inline iterator		begin (void)		{ return (vector<pair<K,V> >::begin()); }
+    inline const_iterator	begin (void) const	{ return (vector<pair<K,V> >::begin()); }
+    inline iterator		end (void)		{ return (vector<pair<K,V> >::end()); }
+    inline const_iterator	end (void) const	{ return (vector<pair<K,V> >::end()); }
 };
 
 /// Default constructor.
@@ -174,7 +180,7 @@ inline void multimap<K,V>::insert (const_iterator i1, const_iterator i2)
 {
     assert (i1 <= i2);
     reserve (size() + distance (i1, i2));
-    for_each (i1, i2, mem_fun (this, &multimap<K,V>::push_back));
+    for_each (i1, i2, mem_fun (this, &multimap::push_back));
 }
 
 /// Erases all elements with key value \p k.
@@ -199,7 +205,7 @@ inline typename multimap<K,V>::iterator multimap<K,V>::erase (iterator ep1, iter
     return (vector<pair<K,V> >::erase (ep1, ep2));
 }
 
-}; // namespace ustl
+} // namespace ustl
 
 #endif
 

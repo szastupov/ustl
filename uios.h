@@ -70,8 +70,8 @@ namespace ios {
 
     /// Default word delimiters for stringstreams.
     extern const char* c_DefaultDelimiters;
-} // namespace ios (no semicolon to support dumb compilers)
-}; // namespace ustl
+} // namespace ios
+} // namespace ustl
 
 #endif
 

@@ -175,7 +175,7 @@ ForwardIterator uninitialized_fill_n (ForwardIterator first, size_t n, const T& 
     return (first);
 }
     
-}; // namespace ustl
+} // namespace ustl
 
 #endif
 

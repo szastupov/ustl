@@ -131,7 +131,7 @@ ISTRSTREAM_CAST_OPERATOR (unsigned long long, long long)
 #endif
 #undef ISTRSTREAM_CAST_OPERATOR
 
-}; // namespace ustl
+} // namespace ustl
 
 #endif
 

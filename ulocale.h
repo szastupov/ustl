@@ -107,7 +107,7 @@ bool has_facet (const locale& l)
 
 //----------------------------------------------------------------------
 
-}; // namespace ustl
+} // namespace ustl
 
 #endif
 

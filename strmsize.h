@@ -47,7 +47,7 @@ inline size_t stream_size_of (bool)	{ return (sizeof(bool));	}
 inline size_t stream_size_of (wchar_t)	{ return (sizeof(wchar_t));	}
 #endif // DOXYGEN_SHOULD_IGNORE_THIS
 
-}; // namespace ustl
+} // namespace ustl
 
 /// Declares that T is not written to istream/ostream.
 #define NOT_STREAMABLE(T)	\

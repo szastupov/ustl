@@ -167,7 +167,7 @@ inline T power (T x, unsigned n, BinaryOperation op)
     return (result);
 }
 
-};
+} // namespace ustl
 
 #endif
 

@@ -150,7 +150,7 @@ inline bool queue<Sequence>::operator< (const queue& s)
     return (size() < s.size());
 }
 
-}; // namespace ustl
+} // namespace ustl
 
 #endif
 

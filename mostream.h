@@ -241,7 +241,7 @@ inline ostream&	operator<< (ostream& os, long long v)	{ os.iwrite(v); return (os
 inline ostream&	operator<< (ostream& os, unsigned long long v)	{ os.iwrite(v); return (os); }
 #endif
 
-}; // namespace ustl
+} // namespace ustl
 
 #endif
 

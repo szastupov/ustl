@@ -83,7 +83,7 @@ namespace ios {
 	size_t			m_Base;
     };
 
-} // namespace ios (no semicolon to support dumb compilers)
+} // namespace ios
 
 inline istream& operator>> (istream& is, const ios::skip& op)	{ return (op.apply (is)); }
 inline ostream& operator<< (ostream& os, const ios::skip& op)	{ return (op.apply (os)); }
@@ -94,7 +94,7 @@ inline size_t stream_size_of (const ios::align& op)		{ return (op.stream_size())
 inline ostringstream& operator<< (ostringstream& os, const ios::width& op)	{ return (op.apply (os)); }
 inline ostringstream& operator<< (ostringstream& os, const ios::base& op)	{ return (op.apply (os)); }
 
-}; // namespace ustl
+} // namespace ustl
 
 CAST_STREAMABLE(ustl::ios::fmtflags, u_int)
 CAST_STREAMABLE(ustl::ios::openmode, u_int)
