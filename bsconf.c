@@ -704,9 +704,10 @@ static void SubstituteLibs (void)
 {
     unsigned int i, k, ok;
     cpchar_t pi;
-    char defaultPath [4096] = "/lib:/usr/lib:/usr/local/lib";
+    char defaultPath [4096];
     strbuf_t match;
 
+    copy ("/lib:/usr/lib:/usr/local/lib", defaultPath);
     pi = getenv ("LD_LIBRARY_PATH");
     if (pi)
 	append (pi, defaultPath);
