@@ -239,6 +239,10 @@ inline istream&	operator>> (istream& is, float& v)	{ is.iread(v); return (is); }
 inline istream&	operator>> (istream& is, double& v)	{ is.iread(v); return (is); }
 inline istream&	operator>> (istream& is, bool& v)	{ is.iread(v); return (is); }
 inline istream&	operator>> (istream& is, wchar_t& v)	{ is.iread(v); return (is); }
+#ifdef __GNUC__
+inline istream&	operator>> (istream& is, long long& v)	{ is.iread(v); return (is); }
+inline istream&	operator>> (istream& is, unsigned long long& v)	{ is.iread(v); return (is); }
+#endif
 
 }; // namespace ustl
 

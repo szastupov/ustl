@@ -137,6 +137,46 @@ ostringstream& ostringstream::operator<< (u_long v)
     return (*this);
 }
 
+#ifdef __GNUC__
+/// Writes number \p v into the stream as text.
+ostringstream& ostringstream::operator<< (long long sv)
+{
+    assert (m_Base < VectorSize(c_Digits));
+    const bool negative = (sv < 0);
+    u_long v (negative ? -sv : sv);
+    const size_t c_BufSize = BitsInType(v) + 1;
+    char buffer [c_BufSize];
+    uoff_t i = c_BufSize - 1;
+    buffer [i--] = 0;
+    do {
+	buffer[i--] = c_Digits[v % m_Base];
+	v /= m_Base;
+    } while (v);
+    if (negative)
+	buffer[i--] = '-';
+    ++ i;
+    write_buffer (buffer + i, c_BufSize - i - 1);
+    return (*this);
+}
+
+/// Writes number \p v into the stream as text.
+ostringstream& ostringstream::operator<< (unsigned long long v)
+{
+    assert (m_Base < VectorSize(c_Digits));
+    const size_t c_BufSize = BitsInType(v) + 1;
+    char buffer [c_BufSize];
+    uoff_t i = c_BufSize - 1;
+    buffer [i--] = 0;
+    do {
+	buffer[i--] = c_Digits[v % m_Base];
+	v /= m_Base;
+    } while (v);
+    ++ i;
+    write_buffer (buffer + i, c_BufSize - i - 1);
+    return (*this);
+}
+#endif
+
 /// Writes number \p iv into the stream as text.
 ostringstream& ostringstream::operator<< (double iv)
 {

@@ -121,6 +121,49 @@ istringstream& istringstream::operator>> (long& v)
     return (*this);
 }
 
+#ifdef __GNUC__
+istringstream& istringstream::operator>> (long long& v)
+{
+    long long base = m_Base;
+    v = 0;
+    char c = skip_delimiters();
+    bool negative = (c == '-');
+    if (negative && (remaining() || underflow()))
+	iread (c);
+    if (c == '0') {
+	base = 8;
+	iread (c);
+	if (c == 'x') {
+	    base = 16;
+	    iread (c);
+	}
+    }
+    while (true) {
+	long long digit;
+	if (c >= '0' && c <= '9')
+	    digit = c - '0';
+	else if (c >= 'a' && c <= 'z' && c < base - 10 + 'a')
+	    digit = c - 'a' + 10;
+	else if (c >= 'A' && c <= 'Z' && c < base - 10 + 'a')
+	    digit = c - 'A' + 10;
+	else if (c == m_ThousandSeparator) {
+	    iread (c);
+	    continue;
+	} else
+	    break;
+	v *= base;
+	v += digit;
+	if (!remaining() && !underflow())
+	    break;
+	iread (c);
+    }
+    ungetc();
+    if (negative)
+	v = -v;
+    return (*this);
+}
+#endif
+
 istringstream& istringstream::operator>> (double& v)
 {
     register long base = m_Base;

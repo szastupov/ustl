@@ -45,6 +45,10 @@ public:
     inline ostringstream&	operator<< (u_short v);
     inline ostringstream&	operator<< (u_int v);
     ostringstream&		operator<< (u_long v);
+#ifdef __GNUC__
+    ostringstream&		operator<< (long long v);
+    ostringstream&		operator<< (unsigned long long v);
+#endif
     inline ostringstream&	operator<< (float v);
     ostringstream&		operator<< (double v);
     ostringstream&		operator<< (bool v);

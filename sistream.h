@@ -50,6 +50,10 @@ public:
     istringstream&		operator>> (double& v);
     istringstream&		operator>> (bool& v);
     istringstream&		operator>> (string& v);
+#ifdef __GNUC__
+    istringstream&		operator>> (long long& v);
+    inline istringstream&	operator>> (unsigned long long& v);
+#endif
     void			set_delimiters (const char* delimiters);
     inline void			set_base (short base);
     inline void			set_decimal_separator (char s);
@@ -129,6 +133,14 @@ inline istringstream& istringstream::operator>> (u_long& v)
 {
     long vl; operator>> (vl); v = vl; return (*this);
 }
+
+#ifdef __GNUC__
+/// Reads a number into \p v.
+inline istringstream& istringstream::operator>> (unsigned long long& v)
+{
+    long long vl; operator>> (vl); v = vl; return (*this);
+}
+#endif
 
 /// Reads a number into \p v.
 inline istringstream& istringstream::operator>> (wchar_t& v)
