@@ -95,6 +95,7 @@ static string_t g_Components [] = {
     "fastcopy",		"#undef WANT_UNROLLED_COPY",		"#define WANT_UNROLLED_COPY 1 ",
 #if __i386__
     "mmx",		"#undef WANT_MMX",			"#define WANT_MMX 1 ",
+    "mmx",		"#MMXOPTS\t=",				"MMXOPTS\t\t= -mmmx -msse -m3dnow",
 #endif
     "libstdc++",	"#define WITHOUT_LIBSTDCPP 1",		"#undef WITHOUT_LIBSTDCPP",
     "libstdc++",	"STANDALONE\t= -nodefaultlibs ",	"#STANDALONE\t= -nodefaultlibs",

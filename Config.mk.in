@@ -27,22 +27,24 @@ INSTALLDATA	= ${INSTALL} -p -m 644
 CWARNOPTS	= -Werror -Wall -W -Winline -Wpointer-arith -Wno-cast-align \
 		-Wcast-qual -Wwrite-strings -Wshadow -Wredundant-decls @SYSWARNS@
 CXXWARNOPTS	= ${CWARNOPTS} -Wconversion -Wsign-promo -Wsynth -Woverloaded-virtual
+#MMXOPTS	=
 
 #BUILD_SHARED	= 1
 #BUILD_STATIC	= 1
-OPTIMIZE	= -DNDEBUG=1 -fomit-frame-pointer
 #DEBUG		= 1
 #STANDALONE	= -nodefaultlibs
 
 ifdef DEBUG
-    CFLAGS	= -ggdb3 ${CWARNOPTS} ${STANDALONE}
-    CXXFLAGS	= -ggdb3 ${CXXWARNOPTS} ${STANDALONE}
+    CFLAGS	= @CFLAGS@ -O0 -ggdb3
+    CXXFLAGS	= @CFLAGS@ -O0 -ggdb3
     LDFLAGS	= ${STANDALONE}
 else
-    CFLAGS	= @CFLAGS@ ${CWARNOPTS} ${OPTIMIZE} ${STANDALONE}
-    CXXFLAGS	= @CXXFLAGS@ ${CXXWARNOPTS} ${OPTIMIZE} ${STANDALONE}
+    CFLAGS	= -O3 -DNDEBUG=1 @CFLAGS@
+    CXXFLAGS	= -O3 -DNDEBUG=1 @CXXFLAGS@
     LDFLAGS	= -s ${STANDALONE}
 endif
+CFLAGS		+= ${MMXOPTS} ${CWARNOPTS} ${STANDALONE}
+CXXFLAGS	+= ${MMXOPTS} ${CWARNOPTS} ${STANDALONE}
 ifdef STANDALONE
     LIBS	+= @libsupc++@ @libgcc@ @libgcc_eh@ @libc@
 endif
