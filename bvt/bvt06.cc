@@ -6,7 +6,7 @@ using namespace ustl;
 
 void PrintBlock (const cmemlink& l)
 {
-    const int* numbers = reinterpret_cast<const int*>(l.begin().base());
+    const int* numbers = reinterpret_cast<const int*>(l.begin());
     const size_t nNumbers = l.size() / sizeof(int);
     for (size_t i = 0; i < nNumbers; ++ i)
 	cout << numbers[i] << ' ';

@@ -45,7 +45,7 @@ memlink::memlink (const void* p, size_t n)
 /// Initializes both links to point to \p p, \p n
 memlink::memlink (void* p, size_t n)
 : cmemlink (p, n),
-  m_Data (p)
+  m_Data (reinterpret_cast<pointer>(p))
 {
 }
 
@@ -103,7 +103,7 @@ void memlink::copy (iterator start, const void* p, size_t n)
     assert (start >= begin() && start + n <= end());
     assert (n % elementSize() == 0 && "You are trying to write an incompatible element type");
     if (p && n && p != m_Data)
-	copy_n (p, n, start.base());
+	copy_n (const_iterator(p), n, start);
 }
 
 /// Fills the linked block with the given pattern.
@@ -119,10 +119,10 @@ void memlink::fill (iterator start, const void* p, size_t elSize, size_t elCount
     assert (start >= begin() && start + elSize * elCount <= end());
     assert (elSize % elementSize() == 0 && "You are trying to write an incompatible element type");
     if (elSize == 1)
-	fill_n (start.base(), elCount, *reinterpret_cast<const u_char*>(p));
+	fill_n (start, elCount, *reinterpret_cast<const u_char*>(p));
     else {
 	while (elCount--)
-	    start = copy_n (p, elSize, start.base());
+	    start = copy_n (const_iterator(p), elSize, start);
     }
 }
 
@@ -135,10 +135,7 @@ void memlink::insert (iterator start, size_t n)
     assert (start >= begin() && start + n <= end());
     assert (n % elementSize() == 0 && "You are trying to write an incompatible element type");
     assert (distance(begin(), start) % elementSize() == 0 && "You are trying to write in the middle of an element");
-    u_char* first = reinterpret_cast<u_char*>(start.base());
-    u_char* last = reinterpret_cast<u_char*>(end().base());
-    u_char* middle = last - n;
-    rotate (first, middle, last);
+    rotate (start, end() - n, end());
 }
 
 /// Shifts the data in the linked block from \p start + \p n to \p start.
@@ -150,10 +147,7 @@ void memlink::erase (iterator start, size_t n)
     assert (start >= begin() && start + n <= end());
     assert (n % elementSize() == 0 && "You are trying to write an incompatible element type");
     assert (distance(begin(), start) % elementSize() == 0 && "You are trying to write in the middle of an element");
-    u_char* first = reinterpret_cast<u_char*>(start.base());
-    u_char* last = reinterpret_cast<u_char*>(end().base());
-    u_char* middle = first + n;
-    rotate (first, middle, last);
+    rotate (start, start + n, end());
 }
 
 /// Override to initialize malloc'ed space, like calling constructors, for example.

@@ -124,14 +124,14 @@ void string::append (const_pointer s, size_t len)
 {
     while (len && s[len - 1] == c_Terminator)
 	-- len;
-    memblock::insert (end(), len);
+    memblock::insert (memblock::iterator(end()), len);
     copy_n (s, len, end() - len);
 }
 
 /// Appends to itself \p n characters of value \p c.
 void string::append (size_t n, value_type c)
 {
-    memblock::insert (end(), n);
+    memblock::insert (memblock::iterator(end()), n);
     fill_n (end() - n, n, c);
 }
 
@@ -186,7 +186,7 @@ bool string::operator== (const_pointer s) const
 /// Inserts character \p c into this string at \p start.
 void string::insert (iterator start, const_reference c, size_t n)
 {
-    start = reinterpret_cast<iterator>(memblock::insert (start, n).base());
+    start = iterator (memblock::insert (memblock::iterator(start), n));
     fill_n (start, n, c);
 }
 
@@ -203,8 +203,8 @@ void string::insert (iterator start, const_pointer first, const_pointer last, si
 {
     assert (first <= last);
     assert (begin() <= start && end() >= start);
-    start = reinterpret_cast<iterator>(memblock::insert (start, distance(first, last) * n).base());
-    fill (start, first, distance(first, last), n);
+    start = iterator (memblock::insert (memblock::iterator(start), distance(first, last) * n));
+    fill (memblock::iterator(start), first, distance(first, last), n);
 }
 
 /// Replaces range [\p start, \p start + \p len] with string \p s.
@@ -224,10 +224,10 @@ void string::replace (iterator first, iterator last, const_pointer i1, const_poi
     const size_t bte = distance(first, last);
     const size_t bti = distance(i1, i2) * n;
     if (bti < bte)
-	first = reinterpret_cast<iterator>(memblock::erase (first, bte - bti).base());
+	first = iterator (memblock::erase (memblock::iterator(first), bte - bti));
     else if (bte < bti)
-	first = reinterpret_cast<iterator>(memblock::insert (first, bti - bte).base());
-    fill (first, i1, distance(i1, i2), n);
+	first = iterator (memblock::insert (memblock::iterator(first), bti - bte));
+    fill (memblock::iterator(first), i1, distance(i1, i2), n);
 }
 
 /// Returns the offset of the first occurence of \p c after \p pos.

@@ -25,7 +25,7 @@ void TestML (void)
 
     memlink a, b;
     a.link (strTest, strTestLen);
-    if (a.begin().base() != strTest)
+    if (a.begin() != strTest)
 	cout << "begin() failed on memlink" << endl;
     if (a.begin() + 5 != &strTest[5])
 	cout << "begin() + 5 failed on memlink" << endl;
@@ -33,9 +33,9 @@ void TestML (void)
 	cout << "memcmp failed on memlink" << endl;
     WriteCML (a);
     b.link (cstrTest, strTestLen);
-    if (b.begin().base() != NULL)
+    if (b.begin() != NULL)
 	cout << "begin() of const failed on cmemlink" << endl;
-    if (b.cmemlink::begin().base() != cstrTest)
+    if (b.cmemlink::begin() != cstrTest)
 	cout << "begin() failed on cmemlink" << endl;
     WriteCML (b);
     if (!(a == b))

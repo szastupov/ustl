@@ -201,13 +201,13 @@ inline void string::reserve (size_t n)
 /// Returns the pointer to the first character.
 inline string::const_iterator string::begin (void) const
 {
-    return (reinterpret_cast<const_iterator>(memblock::begin().base()));
+    return (const_iterator (memblock::begin()));
 }
 
 /// Returns the pointer to the first character.
 inline string::iterator string::begin (void)
 {
-    return (reinterpret_cast<iterator>(memblock::begin().base()));
+    return (iterator (memblock::begin()));
 }
 
 /// Returns the const reference to the \p pos character.

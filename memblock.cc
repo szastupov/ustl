@@ -141,7 +141,7 @@ void memblock::reserve (size_t newSize, bool bExact)
     if (!bExact)
 	newSize = Align (newSize, Align (c_PageSize, elementSize()));
     assert (newSize % elementSize() == 0 && "reserve can only allocate units of elementType.");
-    void* newBlock = realloc (oldBlock, newSize);
+    pointer newBlock = (pointer) realloc (oldBlock, newSize);
     if (!newBlock)
 	throw bad_alloc(newSize);
     constructBlock (advance (newBlock, m_AllocatedSize), newSize - m_AllocatedSize);

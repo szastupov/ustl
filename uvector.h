@@ -47,12 +47,12 @@ public:
     typedef ::ustl::reverse_iterator<iterator>	reverse_iterator;
     typedef ::ustl::reverse_iterator<const_iterator>	const_reverse_iterator;
 public:
-				vector (void);
-    explicit			vector (size_t n);
+    inline			vector (void);
+    inline explicit		vector (size_t n);
 				vector (size_t n, const T& v);
 				vector (const vector<T>& v);
 				vector (const_iterator i1, const_iterator i2);
-    virtual		       ~vector (void);
+    inline virtual	       ~vector (void);
     inline const vector<T>&	operator= (const vector<T>& v);
     inline void			reserve (size_t n);
     inline void			resize (size_t n);
@@ -88,19 +88,20 @@ protected:
     virtual void		constructBlock (void* p, size_t s) const;
     virtual void		destructBlock (void* p, size_t s) const;
     inline virtual size_t	elementSize (void) const;
+    inline size_t		elementBytes (size_t n) const { return (n * sizeof(T)); }
 };
 
 /// Initializes empty vector.
 template <typename T>
-vector<T>::vector (void)
-: memblock ()
+inline vector<T>::vector (void)
+: memblock()
 {
 }
 
 /// Initializes a vector of size \p n.
 template <typename T>
-vector<T>::vector (size_t n)
-: memblock ()
+inline vector<T>::vector (size_t n)
+: memblock()
 {
     resize (n);
 }
@@ -108,7 +109,7 @@ vector<T>::vector (size_t n)
 /// Copies \p n elements from \p v.
 template <typename T>
 vector<T>::vector (size_t n, const T& v)
-: memblock ()
+: memblock()
 {
     resize (n);
     ::ustl::fill (begin(), end(), v);
@@ -117,7 +118,7 @@ vector<T>::vector (size_t n, const T& v)
 /// Copies \p v.
 template <typename T>
 vector<T>::vector (const vector<T>& v)
-: memblock ()
+: memblock()
 {
     resize (v.size());
     ::ustl::copy (v.begin(), v.end(), begin());
@@ -126,10 +127,9 @@ vector<T>::vector (const vector<T>& v)
 /// Copies range [\p i1, \p i2]
 template <typename T>
 vector<T>::vector (const_iterator i1, const_iterator i2)
-: memblock ()
+: memblock()
 {
-    assert (i1 <= i2);
-    resize (i2 - i1);
+    resize (distance (i1, i2));
     ::ustl::copy (i1, i2, begin());
 }
 
@@ -139,7 +139,7 @@ vector<T>::vector (const_iterator i1, const_iterator i2)
 /// but by the time the code gets there, the destructBlock overload is gone.
 ///
 template <typename T>
-vector<T>::~vector (void)
+inline vector<T>::~vector (void)
 {
     deallocate();
 }
@@ -156,14 +156,14 @@ inline const vector<T>& vector<T>::operator= (const vector<T>& v)
 template <typename T>
 inline void vector<T>::reserve (size_t n)
 {
-    memblock::reserve (n * sizeof(T));
+    memblock::reserve (elementBytes(n));
 }
 
 /// Resizes the vector to contain \p n elements.
 template <typename T>
 inline void vector<T>::resize (size_t n)
 {
-    memblock::resize (n * sizeof(T));
+    memblock::resize (elementBytes(n));
 }
 
 /// Returns the number of elements for which space has been allocated.
@@ -184,28 +184,28 @@ inline size_t vector<T>::size (void) const
 template <typename T>
 inline typename vector<T>::iterator vector<T>::begin (void)
 {
-    return (reinterpret_cast<iterator>(memblock::begin().base()));
+    return (iterator (memblock::begin()));
 }
 
 /// Returns the pointer to the first element.
 template <typename T>
 inline typename vector<T>::const_iterator vector<T>::begin (void) const
 {
-    return (reinterpret_cast<const_iterator>(memblock::begin().base()));
+    return (const_iterator (memblock::begin()));
 }
 
 /// Returns the pointer to the last element.
 template <typename T>
 inline typename vector<T>::iterator vector<T>::end (void)
 {
-    return (reinterpret_cast<iterator>(memblock::end().base()));
+    return (iterator (memblock::end()));
 }
 
 /// Returns the pointer to the last element.
 template <typename T>
 inline typename vector<T>::const_iterator vector<T>::end (void) const
 {
-    return (reinterpret_cast<const_iterator>(memblock::end().base()));
+    return (const_iterator (memblock::end()));
 }
 
 /// Returns the reverse iterator to the last element.
@@ -319,7 +319,7 @@ inline void vector<T>::assign (size_t n, const T& v)
 template <typename T>
 inline typename vector<T>::iterator vector<T>::insert (iterator ip, size_t n, const T& v)
 {
-    ip = reinterpret_cast<iterator>(memblock::insert (ip, n * sizeof(T)).base());
+    ip = iterator (memblock::insert (memblock::iterator(ip), elementBytes(n)));
     ::ustl::fill (ip, ip + n, v);
     return (ip);
 }
@@ -328,7 +328,7 @@ inline typename vector<T>::iterator vector<T>::insert (iterator ip, size_t n, co
 template <typename T>
 inline typename vector<T>::iterator vector<T>::insert (iterator ip, const T& v)
 {
-    ip = reinterpret_cast<iterator>(memblock::insert (ip, sizeof(T)).base());
+    ip = iterator (memblock::insert (memblock::iterator(ip), sizeof(T)));
     *ip = v;
     return (ip);
 }
@@ -338,7 +338,7 @@ template <typename T>
 inline typename vector<T>::iterator vector<T>::insert (iterator ip, const_iterator i1, const_iterator i2)
 {
     assert (i1 <= i2);
-    ip = reinterpret_cast<iterator>(memblock::insert (ip, distance(i1, i2) * sizeof(T)).base());
+    ip = iterator (memblock::insert (memblock::iterator(ip), elementBytes(distance(i1, i2))));
     ::ustl::copy (i1, i2, ip);
     return (ip);
 }
@@ -347,7 +347,7 @@ inline typename vector<T>::iterator vector<T>::insert (iterator ip, const_iterat
 template <typename T>
 inline typename vector<T>::iterator vector<T>::erase (iterator ep, size_t n)
 {
-    return (reinterpret_cast<iterator>(memblock::erase (ep, n * sizeof(T)).base()));
+    return (iterator (memblock::erase (memblock::iterator(ep), elementBytes(n))));
 }
 
 /// Removes elements from \p ep1 to \p ep2.

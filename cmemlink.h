@@ -51,41 +51,15 @@ class ostream;
 ///
 class cmemlink {
 public:
-    typedef void		value_type;
+    typedef char		value_type;
     typedef const value_type*	pointer;
     typedef const value_type*	const_pointer;
     typedef value_type		reference;
     typedef value_type		const_reference;
     typedef size_t		size_type;
     typedef ptrdiff_t		difference_type;
-    /// A wrapper for void pointers to allow iterator functionality.
-    class iterator {
-    public:
-	typedef void		value_type;
-	typedef ptrdiff_t	difference_type;
-	typedef const void*	pointer;
-	typedef void		reference;
-    public:
-	inline			iterator (pointer p = NULL) : m_p (p) {}
-	inline			iterator (const iterator& v) : m_p (v.m_p) {}
-	inline const iterator&	operator= (const iterator& v) { m_p = v.m_p; return (*this); }
-	inline 			operator const void* (void) const { return (m_p); }
-	inline pointer		base (void) const { return (m_p); }
-	inline const iterator&	operator++ (void) { m_p = advance (m_p, 1); return (*this); }
-	inline const iterator&	operator-- (void) { m_p = advance (m_p, -1); return (*this); }
-	inline const iterator&	operator+= (off_t n) { m_p = advance (m_p, n); return (*this); }
-	inline const iterator&	operator-= (off_t n) { m_p = advance (m_p, -n); return (*this); }
-	inline iterator		operator++ (int) { iterator old (*this); m_p = advance (m_p, 1); return (old); }
-	inline iterator		operator-- (int) { iterator old (*this); m_p = advance (m_p, -1); return (old); }
-	inline iterator		operator+ (off_t n) const { return (iterator (advance (m_p, n))); }
-	inline iterator		operator- (off_t n) const { return (iterator (advance (m_p, -n))); }
-	inline difference_type	operator- (const iterator& i) const { return (distance (m_p, i.m_p)); }
-	inline bool		operator== (const iterator& i) const { return (m_p == i.m_p); }
-	inline bool		operator< (const iterator& i) const { return (m_p < i.m_p); }
-    private:
-	pointer			m_p;
-    };
-    typedef iterator		const_iterator;
+    typedef const_pointer	const_iterator;
+    typedef const_iterator	iterator;
 public:
 			cmemlink (void);
 			cmemlink (const void* p, size_t n);
@@ -98,7 +72,7 @@ public:
     const cmemlink&	operator= (const cmemlink& l);
     bool		operator== (const cmemlink& l) const;
     void		swap (cmemlink& l);
-    inline const void*	cdata (void) const;
+   inline const_pointer	cdata (void) const;
     inline iterator	begin (void) const;
     inline iterator	end (void) const;
     inline size_t	size (void) const;
@@ -112,12 +86,12 @@ public:
 protected:
     virtual size_t	elementSize (void) const;
 private:
-    const void*		m_CData;	///< Pointer to the data block (const)
+    const_pointer	m_CData;	///< Pointer to the data block (const)
     size_t		m_Size;		///< size of the data block
 };
 
 /// Returns the pointer to the internal data
-inline const void* cmemlink::cdata (void) const
+inline cmemlink::const_pointer cmemlink::cdata (void) const
 {
     return (m_CData);
 }

@@ -40,7 +40,7 @@ cmemlink::cmemlink (void)
 
 /// Attaches the object to pointer \p p of size \p n.
 cmemlink::cmemlink (const void* p, size_t n)
-: m_CData (p),
+: m_CData (reinterpret_cast<const_pointer>(p)),
   m_Size (n)
 {
     assert (p || !n);
@@ -61,7 +61,7 @@ void cmemlink::link (const void* p, size_t n)
     unlink();
     assert (p || !n);
     assert (n % elementSize() == 0 && "You are trying to link to a block of different element type.");
-    m_CData = p;
+    m_CData = reinterpret_cast<const_pointer>(p);
     m_Size = n;
 }
 

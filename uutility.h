@@ -93,10 +93,13 @@ inline size_t distance (const void* p1, const void* p2)
 }
 
 /// Returns the number of elements in the static vector
-#define VectorSize(v) (sizeof(v)/sizeof(*v))
+#define VectorSize(v)	(sizeof(v) / sizeof(*v))
 
 /// Returns the number of bits in the given type
-#define BitsInType(t) (sizeof(t) * CHAR_BIT)
+#define BitsInType(t)	(sizeof(t) * CHAR_BIT)
+
+/// Returns the mask of type \p t with the first \p n bits set.
+#define BitMask(t,n)	(t(-1) >> ((sizeof(t) * CHAR_BIT) - n))
 
 /// Argument that is used only in debug builds (as in an assert)
 #ifndef NDEBUG

@@ -25,7 +25,7 @@ void TestMB (void)
 
     memblock a, b;
     a.link (strTest, strTestLen);
-    if (a.begin().base() != strTest)
+    if (a.begin() != strTest)
 	cout << "begin() failed on memblock" << endl;
     if (a.begin() + 5 != &strTest[5])
 	cout << "begin() + 5 failed on memblock" << endl;
@@ -33,9 +33,9 @@ void TestMB (void)
 	cout << "memcmp failed on memblock" << endl;
     WriteCML (a);
     b.link (cstrTest, strTestLen);
-    if (b.begin().base() != NULL)
+    if (b.begin() != NULL)
 	cout << "begin() of const failed on memblock" << endl;
-    if (b.cmemlink::begin().base() != cstrTest)
+    if (b.cmemlink::begin() != cstrTest)
 	cout << "cmemlink::begin() failed on memblock" << endl;
     WriteCML (b);
     if (!(a == b))

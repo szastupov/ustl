@@ -56,33 +56,7 @@ public:
     typedef value_type*			pointer;
     typedef cmemlink::pointer		const_pointer;
     typedef cmemlink::const_iterator	const_iterator;
-    /// A wrapper for void pointers to allow iterator functionality.
-    class iterator {
-    public:
-	typedef void		value_type;
-	typedef ptrdiff_t	difference_type;
-	typedef void*		pointer;
-	typedef void		reference;
-    public:
-	inline			iterator (pointer p = NULL) : m_p (p) {}
-	inline			iterator (const iterator& v) : m_p (v.m_p) {}
-	inline const iterator&	operator= (const iterator& v) { m_p = v.m_p; return (*this); }
-	inline 			operator void* (void) const { return (m_p); }
-	inline pointer		base (void) const { return (m_p); }
-	inline const iterator&	operator++ (void) { m_p = advance (m_p, 1); return (*this); }
-	inline const iterator&	operator-- (void) { m_p = advance (m_p, -1); return (*this); }
-	inline const iterator&	operator+= (off_t n) { m_p = advance (m_p, n); return (*this); }
-	inline const iterator&	operator-= (off_t n) { m_p = advance (m_p, -n); return (*this); }
-	inline iterator		operator++ (int) { iterator old (*this); m_p = advance (m_p, 1); return (old); }
-	inline iterator		operator-- (int) { iterator old (*this); m_p = advance (m_p, -1); return (old); }
-	inline iterator		operator+ (off_t n) const { return (iterator (advance (m_p, n))); }
-	inline iterator		operator- (off_t n) const { return (iterator (advance (m_p, -n))); }
-	inline difference_type	operator- (const iterator& i) const { return (distance (i.m_p, m_p)); }
-	inline bool		operator== (const iterator& i) const { return (m_p == i.m_p); }
-	inline bool		operator< (const iterator& i) const { return (m_p < i.m_p); }
-    private:
-	pointer			m_p;
-    };
+    typedef pointer			iterator;
 public:
 			memlink (void);
 			memlink (void* p, size_t n);
@@ -97,7 +71,7 @@ public:
     inline void		copy (const cmemlink& l);
     inline void		copy (const void* p, size_t n);
     void		copy (iterator offset, const void* p, size_t n);
-    inline void*	data (void);
+    inline pointer	data (void);
     inline		operator void* (void) const;
     const memlink&	operator= (const cmemlink& l);
     const memlink&	operator= (const memlink& l);
@@ -114,7 +88,7 @@ protected:
     virtual void	constructBlock (void*, size_t) const;
     virtual void	destructBlock (void*, size_t) const;
 private:
-    void*		m_Data;	///< Pointer to the begin block (non-const)
+    pointer		m_Data;	///< Pointer to the begin block (non-const)
 };
 
 /// Exchanges the contents with \p l
@@ -128,7 +102,7 @@ inline void memlink::swap (memlink& l)
 inline void memlink::link (void* p, size_t n)
 {
     cmemlink::link (p, n);
-    m_Data = p;
+    m_Data = reinterpret_cast<pointer>(p);
 }
 
 /// Resets all members to 0
@@ -139,7 +113,7 @@ inline void memlink::unlink (void)
 }
 
 /// Returns a modifiable pointer to the block
-inline void* memlink::data (void)
+inline memlink::pointer memlink::data (void)
 {
     return (m_Data);
 }
@@ -204,7 +178,7 @@ inline void memlink::link (const cmemlink& l)
 inline void memlink::link (memlink& l)
 {
     cmemlink::link (l);
-    m_Data = l.begin();
+    m_Data = l.data();
 }
 
 /// Reads object \p l from stream \p is

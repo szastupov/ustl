@@ -27,7 +27,7 @@ void TestCML (void)
     a.link (strTest, strTestLen);
     if (a.begin() != strTest)
 	cout << "CData() failed on cmemlink" << endl;
-    if (*(const char*)(a.begin() + 5).base() != strTest[5])
+    if (*(const char*)(a.begin() + 5) != strTest[5])
 	cout << "CData() failed on cmemlink" << endl;
     if (0 != memcmp (a, strTest, strTestLen))
 	cout << "memcmp failed on cmemlink" << endl;

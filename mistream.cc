@@ -63,7 +63,7 @@ void istream::swap (istream& is)
 void istream::read (void* buffer, size_t n)
 {
     assert (remaining() >= n && "Reading past end of buffer. Make sure you are reading the right format.");
-    copy_n (advance (begin().base(), pos()), n, buffer);
+    copy_n (begin() + pos(), n, reinterpret_cast<value_type*>(buffer));
     skip (n);
 }
 
@@ -128,7 +128,7 @@ void ostream::unlink (void)
 void ostream::write (const void* buffer, size_t n)
 {
     assert (remaining() >= n && "Buffer overrun. Check your stream size calculations.");
-    copy_n (buffer, n, advance (begin().base(), pos()));
+    copy_n (const_iterator(buffer), n, begin() + pos());
     skip (n);
 }
 
