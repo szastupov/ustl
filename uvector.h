@@ -44,7 +44,7 @@ public:
 				vector (size_type n, const T& v);
 				vector (const vector<T>& v);
 				vector (const_iterator i1, const_iterator i2);
-    inline		       ~vector (void) throw();
+			       ~vector (void) throw();
     inline const vector<T>&	operator= (const vector<T>& v);
     inline bool			operator== (const vector<T>& v)	{ return (m_Data == v.m_Data); }
     inline void			reserve (size_type n, bool bExact = true);
@@ -111,7 +111,7 @@ void vector<T>::reserve (size_type n, bool bExact)
 
 /// Resizes the vector to contain \p n elements.
 template <typename T>
-inline void vector<T>::resize (size_type n, bool bExact)
+void vector<T>::resize (size_type n, bool bExact)
 {
     if (m_Data.capacity() < n * sizeof(T))
 	reserve (n, bExact);
@@ -171,7 +171,7 @@ vector<T>::vector (const_iterator i1, const_iterator i2)
 
 /// Destructor
 template <typename T>
-inline vector<T>::~vector (void) throw()
+vector<T>::~vector (void) throw()
 {
     deallocate();
 }
@@ -283,7 +283,7 @@ typename vector<T>::iterator vector<T>::insert (iterator ip, size_type n, const 
 
 /// Inserts value \p v at offset \p ip.
 template <typename T>
-inline typename vector<T>::iterator vector<T>::insert (iterator ip, const T& v)
+typename vector<T>::iterator vector<T>::insert (iterator ip, const T& v)
 {
     ip = insert_space (ip, 1);
     *ip = v;
@@ -317,7 +317,7 @@ inline typename vector<T>::iterator vector<T>::erase (iterator ep1, iterator ep2
 
 /// Inserts value \p v at the end of the vector.
 template <typename T>
-inline void vector<T>::push_back (const T& v)
+void vector<T>::push_back (const T& v)
 {
     resize (size() + 1, false);
     *(end() - 1) = v;
