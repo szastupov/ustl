@@ -91,8 +91,7 @@ public:
     inline const_pointer	c_str (void) const	{ return (string::const_pointer (memblock::cdata())); }
     inline size_type		max_size (void) const	{ return (memblock::max_size() - size_Terminator); }
     inline size_type		capacity (void) const	{ return (memblock::capacity() ? memblock::capacity() - size_Terminator : 0); }
-    inline void			reserve (size_type n)	{ memblock::reserve (n + size_Terminator); }
-    virtual void		resize (size_type n);
+    void			resize (size_type n);
     inline const_iterator	begin (void) const	{ return (const_iterator (memblock::begin())); }
     inline iterator		begin (void)		{ return (iterator (memblock::begin())); }
     inline const_iterator	end (void) const	{ return (const_iterator (memblock::end())); }
@@ -139,10 +138,12 @@ public:
     void			insert (iterator start, const_reference c, size_type n = 1);
     void			insert (iterator start, const_pointer s, size_type n = 1);
     void			insert (iterator start, const_pointer first, const_iterator last, size_type n = 1);
-    inline iterator		erase (iterator start, size_type size = 1);
+    iterator			erase (iterator start, size_type size = 1);
     void			erase (uoff_t start, size_type size = 1);
     inline void			push_back (const_reference c);
     inline void			push_back (wchar_t c);
+    inline void			pop_back (void);
+    inline void			clear (void);
     inline void			replace (iterator first, iterator last, const_reference c, size_type n = 1);
     void			replace (iterator first, iterator last, const_pointer s, size_type n = 1);
     void			replace (iterator first, iterator last, const_pointer i1, const_pointer i2, size_type n = 1);
@@ -158,6 +159,8 @@ public:
     void			read (istream&);
     void			write (ostream& os) const;
     size_t			stream_size (void) const;
+protected:
+    inline virtual size_type	minimumFreeCapacity (void) const { return (size_Terminator); }
 };
 
 /// Returns the const reference to the \p pos character.
@@ -179,12 +182,14 @@ inline string::reference string::at (uoff_t pos)
 /// Returns the pointer to the first character.
 inline string::operator const string::value_type* (void) const
 {
+    assert (*end() == c_Terminator && "This string is linked to data that is not 0-terminated. This may cause serious security problems. Please assign the data instead of linking.");
     return (begin());
 }
 
 /// Returns the pointer to the first character.
 inline string::operator string::value_type* (void)
 {
+    assert (*end() == c_Terminator && "This string is linked to data that is not 0-terminated. This may cause serious security problems. Please assign the data instead of linking.");
     assert ((begin() || !c_str()) && "Requesting non-const pointer to a const string. Don't do that.");
     return (begin());
 }
@@ -320,10 +325,16 @@ inline void string::push_back (wchar_t c)
     append (1, c);
 }
 
-/// Erases \p size bytes at \p start.
-inline string::iterator string::erase (iterator ep, size_type n)
+/// Erases one element at the end of the string
+inline void string::pop_back (void)
 {
-    return (string::iterator (memblock::erase (memblock::iterator(ep), n)));
+    resize (size() - 1);
+}
+
+/// Removes all characters from the string.
+inline void string::clear (void)
+{
+    resize (0);
 }
 
 /// Replaces range [\p start, \p start + \p len] with character \p c.

@@ -131,6 +131,7 @@ void memblock::assign (const void* p, size_type n)
 ///
 void memblock::reserve (size_type newSize, bool bExact)
 {
+    newSize += minimumFreeCapacity();
     if (m_AllocatedSize >= newSize)
 	return;
     void* oldBlock = is_linked() ? NULL : data();
@@ -147,20 +148,12 @@ void memblock::reserve (size_type newSize, bool bExact)
     m_AllocatedSize = newSize;
 }
 
-/// resizes the block to \p newSize bytes, reallocating if necessary.
-void memblock::resize (size_type newSize)
-{
-    reserve (newSize);
-    memlink::resize (newSize);
-}
-
 /// Shifts the data in the linked block from \p start to \p start + \p n.
 memblock::iterator memblock::insert (iterator start, size_type n)
 {
     const uoff_t ip = start - begin();
     assert (ip <= size());
-    reserve (size() + n, false);
-    memlink::resize (size() + n);
+    resize (size() + n, false);
     memlink::insert (begin() + ip, n);
     return (begin() + ip);
 }
@@ -171,7 +164,6 @@ memblock::iterator memblock::erase (iterator start, size_type n)
     const uoff_t ep = start - begin();
     assert (ep + n <= size());
     memlink::erase (begin() + ep, n);
-    reserve (size() - n, false);
     memlink::resize (size() - n);
     return (begin() + ep);
 }

@@ -1,7 +1,11 @@
 #include <ustl.h>
 using namespace ustl;
 
-void movsb (const char* src, size_t nBytes, char* dest)
+//----------------------------------------------------------------------
+// Copy functions
+//----------------------------------------------------------------------
+
+void movsb_copy (const char* src, size_t nBytes, char* dest)
 {
     asm volatile (
 	"cld		\n\t"
@@ -11,7 +15,7 @@ void movsb (const char* src, size_t nBytes, char* dest)
 	: "memory");
 }
 
-void movsd (const char* src, size_t nBytes, char* dest)
+void movsd_copy (const char* src, size_t nBytes, char* dest)
 {
     asm volatile (
 	"shr $2, %%ecx	\n\t"
@@ -22,7 +26,7 @@ void movsd (const char* src, size_t nBytes, char* dest)
 	: "memory");
 }
 
-void risc (const char* src, size_t nBytes, char* dest)
+void risc_copy (const char* src, size_t nBytes, char* dest)
 {
     asm volatile (
 	"shr $2, %%ecx		\n\t"
@@ -38,7 +42,7 @@ void risc (const char* src, size_t nBytes, char* dest)
 	: "memory", "eax");
 }
 
-void unrolled (const char* src, size_t nBytes, char* dest)
+void unroll_copy (const char* src, size_t nBytes, char* dest)
 {
     asm volatile (
 	"shr $4, %%ecx		\n\t"
@@ -61,7 +65,7 @@ void unrolled (const char* src, size_t nBytes, char* dest)
 }
 
 #if CPU_HAS_MMX
-void mmx (const char* src, size_t nBytes, char* dest)
+void mmx_copy (const char* src, size_t nBytes, char* dest)
 {
     asm volatile (
 	"shr $5, %%ecx		\n\t"
@@ -98,7 +102,7 @@ void mmx (const char* src, size_t nBytes, char* dest)
 #endif
 
 #if CPU_HAS_SSE
-void sse (const char* src, size_t nBytes, char* dest)
+void sse_copy (const char* src, size_t nBytes, char* dest)
 {
     for (; nBytes && (uintptr_t(src) % 16 || uintptr_t(dest) % 16); --nBytes)
 	*dest++ = *src++;
@@ -155,6 +159,101 @@ void TestCopyFunction (const char* name, CopyFunction pfn)
     cout.flush();
 }
 
+//----------------------------------------------------------------------
+// Fill functions
+//----------------------------------------------------------------------
+
+void stosb_fill (const char* dest, size_t nBytes, char v)
+{
+    asm volatile (
+	"cld		\n\t"
+	"rep stosb	\n\t"
+	: "=&D"(dest)
+	: "0"(dest), "a"(v), "c"(nBytes)
+	: "memory");
+}
+
+void stosd_fill (const char* dest, size_t nBytes, char v)
+{
+    uint32_t lv;
+    pack_type (v, lv);
+    asm volatile (
+	"shr $2, %%ecx		\n\t"
+	"cld			\n\t"
+	"rep stosl		\n\t"
+	: "=&D"(dest)
+	: "0"(dest), "a"(lv), "c"(nBytes)
+	: "memory");
+}
+
+void risc_fill (const char* dest, size_t nBytes, char v)
+{
+    uint32_t lv;
+    pack_type (v, lv);
+    asm volatile (
+	"shr $2, %%ecx		\n\t"
+	"1:			\n\t"
+	"mov %%eax, (%%edi)	\n\t"
+	"add $4, %%edi		\n\t"
+	"dec %%ecx		\n\t"
+	"jnz 1b			\n\t"
+	: "=&D"(dest)
+	: "0"(dest), "a"(lv), "c"(nBytes)
+	: "memory");
+}
+
+void unroll_fill (const char* dest, size_t nBytes, char v)
+{
+    uint32_t lv;
+    pack_type (v, lv);
+    asm volatile (
+	"shr $4, %%ecx		\n\t"
+	"1:			\n\t"
+	"mov %%eax, (%%edi)	\n\t"
+	"mov %%eax, 4(%%edi)	\n\t"
+	"mov %%eax, 8(%%edi)	\n\t"
+	"mov %%eax, 12(%%edi)	\n\t"
+	"add $16, %%edi		\n\t"
+	"dec %%ecx		\n\t"
+	"jnz 1b			\n\t"
+	: "=&D"(dest)
+	: "0"(dest), "a"(lv), "c"(nBytes)
+	: "memory");
+}
+
+#if CPU_HAS_MMX && HAVE_INT64_T
+void mmx_fill (const char* dest, size_t nBytes, char v)
+{
+    uint64_t lv;
+    pack_type (v, lv);
+    asm volatile (
+	"shr $5, %%ecx		\n\t"
+#if CPU_HAS_3DNOW
+	"prefetchw 512(%%edi)	\n\t"
+#endif
+	"1:			\n\t"
+#if CPU_HAS_SSE
+	"movntq %2, (%%edi)	\n\t"
+	"movntq %2, 8(%%edi)	\n\t"
+	"movntq %2, 16(%%edi)	\n\t"
+	"movntq %2, 24(%%edi)	\n\t"
+#else
+	"movq %2, (%%edi)	\n\t"
+	"movq %2, 8(%%edi)	\n\t"
+	"movq %2, 16(%%edi)	\n\t"
+	"movq %2, 24(%%edi)	\n\t"
+#endif
+	"add $32, %%esi		\n\t"
+	"add $32, %%edi		\n\t"
+	"dec %%ecx		\n\t"
+	"jnz 1b			\n\t"
+	"emms"
+	: "=&D"(dest)
+	: "0"(dest), "y"(lv), "c"(nBytes)
+	: "memory");
+}
+#endif
+
 template <typename FillFunction>
 void TestFillFunction (const char* name, FillFunction pfn)
 {
@@ -177,20 +276,36 @@ void TestFillFunction (const char* name, FillFunction pfn)
     cout.flush();
 }
 
+//----------------------------------------------------------------------
+
 int main (void)
 {
+    cout << "Testing fill" << endl;
+    cout << "---------------------------------------------------------" << endl;
+    TestFillFunction ("fill_n\t\t", &fill_n<char*, char>);
+#if CPU_HAS_MMX && HAVE_INT64_T
+    TestFillFunction ("mmx_fill\t", &mmx_fill);
+#endif
+    TestFillFunction ("stosb_fill\t", &stosb_fill);
+    TestFillFunction ("stosd_fill\t", &stosd_fill);
+    TestFillFunction ("unroll_fill\t", &unroll_fill);
+    TestFillFunction ("risc_fill\t", &risc_fill);
+
+    cout << endl;
+    cout << "Testing copy" << endl;
+    cout << "---------------------------------------------------------" << endl;
+    TestCopyFunction ("copy_n\t\t", &copy_n<const char*, char*>);
 #if CPU_HAS_SSE
-    TestCopyFunction ("sse", &sse);
+    TestCopyFunction ("sse_copy\t", &sse_copy);
 #endif
 #if CPU_HAS_MMX
-    TestCopyFunction ("mmx", &mmx);
+    TestCopyFunction ("mmx_copy\t", &mmx_copy);
 #endif
-    TestCopyFunction ("copy_n", &copy_n<const char*, char*>);
-    TestCopyFunction ("movsb", &movsb);
-    TestCopyFunction ("movsd", &movsd);
-    TestCopyFunction ("risc", &risc);
-    TestCopyFunction ("unrolled", &unrolled);
-    TestFillFunction ("fill_n", &fill_n<char*, char>);
+    TestCopyFunction ("movsb_copy\t", &movsb_copy);
+    TestCopyFunction ("movsd_copy\t", &movsd_copy);
+    TestCopyFunction ("risc_copy\t", &risc_copy);
+    TestCopyFunction ("unroll_copy\t", &unroll_copy);
+
     return (0);
 }
 

@@ -103,8 +103,8 @@ static SComponentInfo g_ComponentInfos [VectorSize(g_Components) / 3] = {
     { 0, "Compiles the library with debugging information" },
     { 0, "Enable runtime bounds checking on stream reads/writes" },
     { 1, "Removes support for standard cout/cin/cerr streams" },
-    { 0, "Enables use of MMX/SSE/3dNow! instructions (~10k)" },
-    { 1, "Adds optimized specializations for copy/fill (~4k)" },
+    { 0, "Enables use of MMX/SSE/3dNow! instructions (~4k)" },
+    { 1, "Adds optimized specializations for copy/fill (<1k)" },
 #if (__GNUC__ >= 3)
     { 0, "Link with libstdc++" },
     { 0, "" },

@@ -30,6 +30,12 @@ BitMask(uint16_t,1) = 1
 BitMask(uint8_t,8) = FF
 BitMask(uint16_t,0) = 0
 
+pack_type(uint8_t, uint16_t) = 4242
+pack_type(uint8_t, uint32_t) = 42424242
+pack_type(uint16_t, uint32_t) = 42434243
+pack_type(uint8_t, uint64_t) = 4242424242424242
+pack_type(uint32_t, uint64_t) = 4243444542434445
+
 byteswap.h exists.
 bswap(1234) = 3412
 le_to_native(1234) = 1234

@@ -66,17 +66,22 @@ int main (void)
     cout << s1.data() << endl;
     cout << "erase(5,5)" << endl;
     s1.erase (s1.begin() + 5, 5);
+    assert (!*s1.end());
     cout << s1 << endl;
     cout << "push_back('x')" << endl;
     s1.push_back ('x');
+    assert (!*s1.end());
     cout << s1 << endl;
     cout << "pop_back()" << endl;
     s1.pop_back();
+    assert (!*s1.end());
     cout << "insert(10,#)" << endl;
     s1.insert (s1.begin() + 10, '#');
+    assert (!*s1.end());
     cout << s1 << endl;
     cout << "replace(0,5,@)" << endl;
     s1.replace (s1.begin(), s1.begin() + 5, '@');
+    assert (!*s1.end());
     cout << s1 << endl;
 
     s1 = c_TestString1;
@@ -91,6 +96,7 @@ int main (void)
     cout << "[456] last found at " << s1.find_last_of ("456") - s1.begin() << endl;
 
     s2.clear();
+    assert (!*s2.end());
     if (s2.empty())
 	cout << "s2 is empty [" << s2 << "], capacity " << s2.capacity() << " bytes" << endl;
 

@@ -161,9 +161,9 @@ inline OutputIterator fill_n (OutputIterator first, size_t count, const T& value
 	    "movntq %%mm2, 16(%%edi)\n\t"	\
 	    "movntq %%mm3, 24(%%edi)\n\t"
 	#define UNROLLED_FILL_MMX_STORE		\
-	    "movntq %%mm0, (%%edi)  \n\t"		\
-	    "movntq %%mm0, 8(%%edi) \n\t"		\
-	    "movntq %%mm0, 16(%%edi)\n\t"		\
+	    "movntq %%mm0, (%%edi)  \n\t"	\
+	    "movntq %%mm0, 8(%%edi) \n\t"	\
+	    "movntq %%mm0, 16(%%edi)\n\t"	\
 	    "movntq %%mm0, 24(%%edi)\n\t"
     #else
 	#define UNROLLED_COPY_MMX_STORE		\
@@ -205,8 +205,8 @@ inline OutputIterator fill_n (OutputIterator first, size_t count, const T& value
 	    case 2:	asm volatile ("punpckldq %%mm0, %%mm0" : : : "mm0");\
 	};					\
 	asm volatile (				\
-	    "1: "				\
 	    MMX_PREFETCHW			\
+	    "1: "				\
 	    UNROLLED_FILL_MMX_STORE		\
 	    "add $32, %%edi		\n\t"	\
 	    "dec %%ecx			\n\t"	\
@@ -231,7 +231,7 @@ inline OutputIterator fill_n (OutputIterator first, size_t count, const T& value
 #endif
 
 template <typename T>
-inline T* unrolled_copy (const T* first, size_t count, T* result)
+T* unrolled_copy (const T* first, size_t count, T* result)
 {
     const size_t multi = CARRIER_SIZE / sizeof(T);
     size_t nCarriers = count / multi;
@@ -250,7 +250,7 @@ inline T* unrolled_copy (const T* first, size_t count, T* result)
 }
 
 template <typename T>
-inline T* unrolled_fill (T* first, size_t count, const T v)
+T* unrolled_fill (T* first, size_t count, const T v)
 {
     const size_t multi = CARRIER_SIZE / sizeof(T);
     size_t nCarriers = count / multi;
@@ -265,7 +265,6 @@ inline T* unrolled_fill (T* first, size_t count, const T v)
 	*first++ = v;
     return (first);
 }
-#undef CARRIER_SIZE
 #undef CARRIER_SIZE
 #undef UNROLLED_FILL_LOOP
 #undef UNROLLED_COPY_LOOP

@@ -43,6 +43,24 @@ int main (void)
     cout << "BitMask(uint8_t,8) = " << BitMask(uint8_t,8) << endl;
     cout << "BitMask(uint16_t,0) = " << BitMask(uint16_t,0) << endl;
     cout << endl;
+    uint16_t packed16 = 0xCDCD;
+    pack_type (uint8_t(0x42), packed16);
+    cout << "pack_type(uint8_t, uint16_t) = " << packed16 << endl;
+    uint32_t packed32 = 0xCDCDCDCD;
+    pack_type (uint8_t(0x42), packed32);
+    cout << "pack_type(uint8_t, uint32_t) = " << packed32 << endl;
+    packed32 = 0xCDCDCDCD;
+    pack_type (uint16_t(0x4243), packed32);
+    cout << "pack_type(uint16_t, uint32_t) = " << packed32 << endl;
+    #if HAVE_INT64_T
+	uint64_t packed64 = UINT64_C(0x123456789ABCDEF0);
+	pack_type (uint8_t(0x42), packed64);
+	cout << "pack_type(uint8_t, uint64_t) = " << packed64 << endl;
+	packed64 = UINT64_C(0x123456789ABCDEF0);
+	pack_type (uint32_t(0x42434445), packed64);
+	cout << "pack_type(uint32_t, uint64_t) = " << packed64 << endl;
+    #endif
+    cout << endl;
     #ifdef HAVE_BYTESWAP_H
 	uint16_t v1 = 0x1234;
 	cout << "byteswap.h exists." << endl;

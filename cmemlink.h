@@ -87,6 +87,7 @@ public:
     void		write_file (const char* filename, int mode = 0644) const;
 protected:
     virtual size_type	elementSize (void) const;
+    inline size_type	elementBytes (size_type n) const	{ return (n * elementSize()); }
 private:
     const_pointer	m_CData;	///< Pointer to the data block (const)
     size_type		m_Size;		///< size of the data block

@@ -54,7 +54,7 @@ public:
     inline void			assign (const cmemlink& l);
     inline void			swap (memblock& l);
     void			reserve (size_type newSize, bool bExact = true);
-    virtual void		resize (size_type newSize);
+    inline void			resize (size_type newSize, bool bExact = true);
     iterator			insert (iterator start, size_type size);
     iterator			erase (iterator start, size_type size);
     void			pop_back (void);
@@ -68,6 +68,8 @@ public:
     void			read (istream& is);
     void			read_file (const char* filename);
     inline bool			is_linked (void) const;
+protected:
+    inline virtual size_type	minimumFreeCapacity (void) const { return (0); }
 private:
     size_type			m_AllocatedSize;	///< Number of bytes allocated by Resize.
 };
@@ -103,6 +105,14 @@ inline const memblock& memblock::operator= (const memblock& l)
 inline memblock::size_type memblock::capacity (void) const
 {
     return (m_AllocatedSize);
+}
+
+/// resizes the block to \p newSize bytes, reallocating if necessary.
+inline void memblock::resize (size_type newSize, bool bExact)
+{
+    if (m_AllocatedSize < newSize + minimumFreeCapacity())
+	reserve (newSize, bExact);
+    memlink::resize (newSize);
 }
 
 /// Assumes control over block pointed to by \p l

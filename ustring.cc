@@ -99,7 +99,6 @@ string::string (size_type n, value_type c)
 /// Resize the string to \p n characters. New space contents is undefined.
 void string::resize (size_type n)
 {
-    reserve (n);
     memblock::resize (n);
     at(n) = c_Terminator;
 }
@@ -170,14 +169,14 @@ void string::append (const_pointer s, size_type len)
 {
     while (len && s[len - 1] == c_Terminator)
 	-- len;
-    memblock::insert (memblock::iterator(end()), len);
+    resize (size() + len);
     copy_n (s, len, end() - len);
 }
 
 /// Appends to itself \p n characters of value \p c.
 void string::append (size_type n, value_type c)
 {
-    memblock::insert (memblock::iterator(end()), n);
+    resize (size() + n);
     fill_n (end() - n, n, c);
 }
 
@@ -187,6 +186,7 @@ void string::append (size_type n, wchar_t c)
     iterator ipp (end());
     ipp = iterator (memblock::insert (memblock::iterator(ipp), n * Utf8Bytes(c)));
     fill_n (utf8out (ipp), n, c);
+    *end() = c_Terminator;
 }
 
 /// Copies into itself at offset \p start, the value of string \p p of length \p n.
@@ -251,6 +251,7 @@ void string::insert (const uoff_t ip, wchar_t c, size_type n)
     iterator ipp = ichar (ip);
     ipp = iterator (memblock::insert (memblock::iterator(ipp), n * Utf8Bytes(c)));
     fill_n (utf8out (ipp), n, c);
+    *end() = c_Terminator;
 }
 
 /// Inserts sequence of wide characters at \p ip.
@@ -265,6 +266,7 @@ void string::insert (const uoff_t ip, const wchar_t* first, const wchar_t* last,
     for (uoff_t j = 0; j < n; ++ j)
 	for (uoff_t k = 0; k < nti; ++ k, ++ uout)
 	    *uout = first[k];
+    *end() = c_Terminator;
 }
 
 /// Inserts character \p c into this string at \p start.
@@ -272,6 +274,7 @@ void string::insert (iterator start, const_reference c, size_type n)
 {
     start = iterator (memblock::insert (memblock::iterator(start), n));
     fill_n (start, n, c);
+    *end() = c_Terminator;
 }
 
 /// Inserts \p count instances of string \p s at offset \p start.
@@ -289,6 +292,15 @@ void string::insert (iterator start, const_pointer first, const_pointer last, si
     assert (begin() <= start && end() >= start);
     start = iterator (memblock::insert (memblock::iterator(start), distance(first, last) * n));
     fill (memblock::iterator(start), first, distance(first, last), n);
+    *end() = c_Terminator;
+}
+
+/// Erases \p size bytes at \p start.
+string::iterator string::erase (iterator ep, size_type n)
+{
+    string::iterator rv = memblock::erase (memblock::iterator(ep), n);
+    *end() = c_Terminator;
+    return (rv);
 }
 
 /// Erases \p size characters at \p start.
@@ -302,6 +314,7 @@ void string::erase (uoff_t ep, size_type n)
     iterator first (rfinder.base());
     rfinder += n;
     memblock::erase (first, distance (first, rfinder.base()));
+    *end() = c_Terminator;
 }
 
 /// Replaces range [\p start, \p start + \p len] with string \p s.
@@ -325,6 +338,7 @@ void string::replace (iterator first, iterator last, const_pointer i1, const_poi
     else if (bte < bti)
 	first = iterator (memblock::insert (memblock::iterator(first), bti - bte));
     fill (memblock::iterator(first), i1, distance(i1, i2), n);
+    *end() = c_Terminator;
 }
 
 /// Returns the offset of the first occurence of \p c after \p pos.
