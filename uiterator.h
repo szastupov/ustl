@@ -122,7 +122,7 @@ inline back_insert_iterator<Container> back_inserter (Container& ctr)
 
 /// Converts an iterator into a container of uoff_t indexes to an
 /// iterator of iterators into another container.
-template <class RandomAccessIterator, typename IndexIterator>
+template <typename RandomAccessIterator, typename IndexIterator>
 class index_iterate {
 public:
     typedef RandomAccessIterator	value_type;
@@ -157,10 +157,18 @@ private:
 };
 
 /// Returns an index_iterate for \p ibase over \p iindex.
-template <class RandomAccessIterator, typename IndexIterator>
+template <typename RandomAccessIterator, typename IndexIterator>
 inline index_iterate<RandomAccessIterator, IndexIterator> index_iterator (RandomAccessIterator ibase, IndexIterator iindex)
 {
     return (index_iterate<RandomAccessIterator, IndexIterator> (ibase, iindex));
+}
+
+/// Converts the indexes in \p xc to iterators in \p ic of base \p ibase.
+template <typename IndexContainer, typename IteratorContainer>
+inline void indexv_to_iteratorv (typename IteratorContainer::value_type ibase, const IndexContainer& xc, IteratorContainer& ic)
+{
+    ic.resize (xc.size());
+    copy_n (index_iterator (ibase, xc.begin()), xc.size(), ic.begin());
 }
 
 //----------------------------------------------------------------------

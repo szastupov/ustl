@@ -5,6 +5,7 @@
 #include <fdostream.h>
 #include <mistream.h>
 #include <uios.h>
+#include <uvector.h>
 using namespace ustl;
 
 int main (void)
@@ -15,12 +16,14 @@ int main (void)
     string testString ("TestString");
     const string* pStrC = NULL;
     string* pStr = NULL;
+    vector<int> tv (6);
 
     const size_t bufSize = stream_size_of(pBufC) +
 			   stream_size_of(pBuf) +
 			   Align(stream_size_of(testString)) +
 			   stream_size_of(pStrC) +
-			   stream_size_of(pStr);
+			   stream_size_of(pStr) +
+			   stream_size_of(tv);
     cout << "Allocating " << bufSize << " bytes" << endl;
     buffer.resize (bufSize);
     pBufC = buffer.cdata();
@@ -38,6 +41,8 @@ int main (void)
     cout << "Write const string*, pos = " << os.pos() << endl;
     os << &testString;
     cout << "Write string*, pos = " << os.pos() << endl;
+    os << tv;
+    cout << "Write vector<int>(6), pos = " << os.pos() << endl;
     assert (os.pos() == bufSize);
     
     istream is (buffer);
@@ -57,6 +62,10 @@ int main (void)
     is >> pStr;
     cout << "Read string*, pos = " << is.pos();
     cout << ", value is " << (pStr == &testString ? "right" : "wrong") << endl;
+    vector<int> rv;
+    is >> rv;
+    cout << "Read vector<int>(" << rv.size() << "), pos = " << is.pos();
+    cout << ", value is " << (rv == tv ? "right" : "wrong") << endl;
     assert (is.pos() == bufSize);
 
     return (0);

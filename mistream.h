@@ -81,9 +81,9 @@ public:
     void		swap (istream& is);
     void		read (void* buffer, size_t size);
     inline void		read (memlink& buf);
-    virtual void	read (istream& is);
-    virtual void	write (ostream& is) const;
-    virtual size_t	stream_size (void) const;
+    void		read (istream& is);
+    void		write (ostream& is) const;
+    inline size_t	stream_size (void) const;
     template <typename T>
     inline void		iread (T& v);
     template <typename T>
@@ -114,8 +114,8 @@ class istream_iterator {
 public:
     typedef T			value_type;
     typedef ptrdiff_t		difference_type;
-    typedef const T*		pointer;
-    typedef const T&		reference;
+    typedef const value_type*	pointer;
+    typedef const value_type&	reference;
 public:
     explicit			istream_iterator (istream& is)
 				    : m_Is (is), m_v (T()), m_vPos (is.size()) {}
@@ -187,6 +187,12 @@ inline void istream::align (size_t grain)
 inline void istream::read (memlink& buf)
 {
     read (buf.begin(), buf.size());
+}
+
+/// Returns number of unread bytes.
+inline size_t istream::stream_size (void) const
+{
+    return (remaining());
 }
 
 /// Reads type T from the stream via a direct pointer cast.

@@ -273,103 +273,43 @@ EXT_MEM_FUN_T(const_ext_mem_funbv_t,	const T*,	V,		const)
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 
-template <typename UnaryFunction, class T, typename VT>
-class mem_var1_t : public unary_function<T&,typename UnaryFunction::result_type> {
-public:
-    typedef T&					argument_type;
-    typedef typename UnaryFunction::result_type	result_type;
-    typedef VT T::*				mem_var_ptr_t;
-public:
-    mem_var1_t (mem_var_ptr_t pv, UnaryFunction pfn) : m_pv(pv), m_pfn(pfn) {}
-    mem_var1_t (const mem_var1_t& v) : m_pv(v.m_pv), m_pfn(v.m_pfn) {}
-    inline const mem_var1_t& operator= (const mem_var1_t& v) { m_pv = v.m_pv; m_pfn = v.m_pfn; return (*this); }
-    inline result_type operator() (argument_type p) const { return (m_pfn(p.*m_pv)); }
-private:
-    mem_var_ptr_t	m_pv;
-    UnaryFunction	m_pfn;
-};
+#define MEM_VAR_T(FunctorName, ArgType, VarType, BaseClass, CallImpl)	\
+template <typename Function, class T, typename VT> \
+class FunctorName##_t : public BaseClass { \
+public: \
+    typedef ArgType				argument_type; \
+    typedef typename Function::result_type	result_type; \
+    typedef VarType				mem_var_ptr_t; \
+public: \
+    FunctorName##_t (mem_var_ptr_t pv, Function pfn) : m_pv(pv), m_pfn(pfn) {} \
+    FunctorName##_t (const FunctorName##_t& v) : m_pv(v.m_pv), m_pfn(v.m_pfn) {} \
+    inline const FunctorName##_t& operator= (const FunctorName##_t& v) { m_pv = v.m_pv; m_pfn = v.m_pfn; return (*this); } \
+    inline result_type operator() CallImpl \
+private: \
+    mem_var_ptr_t	m_pv; \
+    Function		m_pfn; \
+}; \
+\
+template <typename Function, class T, typename VT> \
+inline FunctorName##_t<Function, T, VT> \
+FunctorName (VT T::*mvp, Function pfn) \
+{ \
+    return (FunctorName##_t<Function,T,VT> (mvp, pfn)); \
+}
 
-template <typename UnaryFunction, class T, typename VT>
-class const_mem_var1_t : public unary_function<const T&,typename UnaryFunction::result_type> {
-public:
-    typedef const T&				argument_type;
-    typedef typename UnaryFunction::result_type	result_type;
-    typedef const VT T::*			mem_var_ptr_t;
-public:
-    const_mem_var1_t (mem_var_ptr_t pv, UnaryFunction pfn) : m_pv(pv), m_pfn(pfn) {}
-    const_mem_var1_t (const const_mem_var1_t& v) : m_pv(v.m_pv), m_pfn(v.m_pfn) {}
-    inline const const_mem_var1_t& operator= (const const_mem_var1_t& v) { m_pv = v.m_pv; m_pfn = v.m_pfn; return (*this); }
-    inline result_type operator() (argument_type p) const { return (m_pfn(p.*m_pv)); }
-private:
-    mem_var_ptr_t	m_pv;
-    UnaryFunction	m_pfn;
-};
+#define MEM_VAR_UNARY_BASE(ArgType)	unary_function<ArgType, typename Function::result_type>
+#define MEM_VAR_BINARY_BASE(ArgType)	binary_function<ArgType, ArgType, typename Function::result_type>
+#define MEM_VAR_UNARY_ARGS		(argument_type p) const \
+					{ return (m_pfn(p.*m_pv)); }
+#define MEM_VAR_BINARY_ARGS		(argument_type p1, argument_type p2) const \
+					{ return (m_pfn(p1.*m_pv, p2.*m_pv)); }
 
-template <typename BinaryFunction, class T, typename VT>
-class mem_var2_t : public unary_function<T&,typename BinaryFunction::result_type> {
-public:
-    typedef T&					argument_type;
-    typedef typename BinaryFunction::result_type	result_type;
-    typedef VT T::*				mem_var_ptr_t;
-public:
-    mem_var2_t (mem_var_ptr_t pv, BinaryFunction pfn) : m_pv(pv), m_pfn(pfn) {}
-    mem_var2_t (const mem_var2_t& v) : m_pv(v.m_pv), m_pfn(v.m_pfn) {}
-    inline const mem_var2_t& operator= (const mem_var2_t& v) { m_pv = v.m_pv; m_pfn = v.m_pfn; return (*this); }
-    inline result_type operator() (argument_type p1, argument_type p2) const { return (m_pfn(p1.*m_pv, p2.*m_pv)); }
-private:
-    mem_var_ptr_t	m_pv;
-    BinaryFunction	m_pfn;
-};
-
-template <typename BinaryFunction, class T, typename VT>
-class const_mem_var2_t : public binary_function<const T&,const T&,typename BinaryFunction::result_type> {
-public:
-    typedef const T&					argument_type;
-    typedef typename BinaryFunction::result_type	result_type;
-    typedef const VT T::*				mem_var_ptr_t;
-public:
-    const_mem_var2_t (mem_var_ptr_t pv, BinaryFunction pfn) : m_pv(pv), m_pfn(pfn) {}
-    const_mem_var2_t (const const_mem_var2_t& v) : m_pv(v.m_pv), m_pfn(v.m_pfn) {}
-    inline const const_mem_var2_t& operator= (const const_mem_var2_t& v) { m_pv = v.m_pv; m_pfn = v.m_pfn; return (*this); }
-    inline result_type operator() (argument_type p1, argument_type p2) const { return (m_pfn(p1.*m_pv, p2.*m_pv)); }
-private:
-    mem_var_ptr_t	m_pv;
-    BinaryFunction	m_pfn;
-};
+MEM_VAR_T(mem_var1,		T&, VT T::*,		MEM_VAR_UNARY_BASE(T&),  MEM_VAR_UNARY_ARGS)
+MEM_VAR_T(const_mem_var1, const T&, const VT T::*,	MEM_VAR_UNARY_BASE(T&),  MEM_VAR_UNARY_ARGS)
+MEM_VAR_T(mem_var2,		T&, VT T::*,		MEM_VAR_BINARY_BASE(T&), MEM_VAR_BINARY_ARGS)
+MEM_VAR_T(const_mem_var2, const T&, const VT T::*,	MEM_VAR_BINARY_BASE(T&), MEM_VAR_BINARY_ARGS)
 
 #endif // DOXYGEN_SHOULD_SKIP_THIS
-
-/// Returned functor passes member variable \p mvp reference of given object to \p pfn.
-template <typename UnaryFunction, class T, typename VT>
-inline mem_var1_t<UnaryFunction, T, VT>
-mem_var1 (VT T::*mvp, UnaryFunction pfn)
-{
-    return (mem_var1_t<UnaryFunction,T,VT> (mvp, pfn));
-}
-
-/// Returned functor passes member variable \p mvp reference of given object to \p pfn.
-template <typename UnaryFunction, class T, typename VT>
-inline const_mem_var1_t<UnaryFunction, T, VT>
-const_mem_var1 (const VT T::*mvp, UnaryFunction pfn)
-{
-    return (const_mem_var1_t<UnaryFunction,T,VT> (mvp, pfn));
-}
-
-/// Returned functor passes member variable \p mvp reference of given object to \p pfn.
-template <typename BinaryFunction, class T, typename VT>
-inline mem_var2_t<BinaryFunction, T, VT>
-mem_var2 (VT T::*mvp, BinaryFunction pfn)
-{
-    return (mem_var2_t<BinaryFunction,T,VT> (mvp, pfn));
-}
-
-/// Returned functor passes member variable \p mvp reference of given object to \p pfn.
-template <typename BinaryFunction, class T, typename VT>
-inline const_mem_var2_t<BinaryFunction, T, VT>
-const_mem_var2 (const VT T::*mvp, BinaryFunction pfn)
-{
-    return (const_mem_var2_t<BinaryFunction,T,VT> (mvp, pfn));
-}
 
 /// Returned functor passes member variable \p mvp reference of given object to equal\<VT\>.
 template <class T, typename VT>

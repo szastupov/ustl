@@ -116,6 +116,13 @@ inline bool memblock::is_linked (void) const
     return (!m_AllocatedSize && cdata());
 }
 
+/// Reads object \p l from stream \p is
+inline istream& operator>> (istream& is, memblock& l)
+{
+    l.read (is);
+    return (is);
+}
+
 } // namespace ustl
 
 #endif

@@ -565,20 +565,18 @@ inline typename Container::iterator unconst (typename Container::const_iterator 
 }
 
 /// Converts a const_iterator in one container into a const_iterator in another container.
-template <class Container1, class Container2>
-inline typename Container2::const_iterator ibyi (typename Container1::const_iterator idx, const Container1& ctr1, const Container2& ctr2)
-{
-    assert (ctr1.size() == ctr2.size());
-    return (ctr2.begin() + (idx - ctr1.begin()));
+#define IBYI(Iter1, Iter2, Ctr1, Ctr2)	\
+template <class Container1, class Container2>		\
+inline typename Container2::Iter2 ibyi (typename Container1::Iter1 idx, Ctr1& ctr1, Ctr2& ctr2)	\
+{							\
+    assert (ctr1.size() == ctr2.size());		\
+    return (ctr2.begin() + (idx - ctr1.begin()));	\
 }
 
-/// Converts an iterator in one container into an iterator in another container.
-template <class Container1, class Container2>
-inline typename Container2::iterator ibyi (typename Container1::iterator idx, Container1& ctr1, Container2& ctr2)
-{
-    assert (ctr1.size() == ctr2.size());
-    return (ctr2.begin() + (idx - ctr1.begin()));
-}
+IBYI(const_iterator, const_iterator, const Container1, const Container2)
+IBYI(iterator, iterator, Container1, Container2)
+IBYI(const_iterator, iterator, const Container1, Container2)
+IBYI(iterator, const_iterator, Container1, const Container2)
 
 } // namespace ustl
 

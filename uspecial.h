@@ -57,5 +57,10 @@ inline void swap (multiset<T>& a, multiset<T>& b)
 
 } // namespace ustl
 
+// This is here because there really is no other place to put it.
+STD_STREAMABLE(ustl::cmemlink)
+STD_STREAMABLE(ustl::istream)
+STD_STREAMABLE(ustl::ostream)
+
 #endif
 

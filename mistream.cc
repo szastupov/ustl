@@ -81,12 +81,6 @@ void istream::write (ostream& os) const
     os.write (begin() + pos(), remaining());
 }
 
-/// Returns number of unread bytes.
-size_t istream::stream_size (void) const
-{
-    return (remaining());
-}
-
 /// Links to \p p of size \p n
 void istream::unlink (void)
 {
@@ -167,12 +161,6 @@ void ostream::swap (ostream& os)
 {
     memlink::swap (os);
     ::ustl::swap (m_Pos, os.m_Pos);
-}
-
-/// Returns number of bytes written.
-size_t ostream::stream_size (void) const
-{
-    return (pos());
 }
 
 //--------------------------------------------------------------------

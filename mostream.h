@@ -69,12 +69,12 @@ public:
     inline void		align (size_t grain = c_DefaultAlignment);
     void		write (const void* buffer, size_t size);
     inline void		write (const cmemlink& buf);
-    virtual void	read (istream& is);
-    virtual void	write (ostream& os) const;
+    void		read (istream& is);
+    void		write (ostream& os) const;
     void		insert (iterator start, size_t size);
     void		erase (iterator start, size_t size);
     void		swap (ostream& os);
-    virtual size_t	stream_size (void) const;
+    inline size_t	stream_size (void) const;
     template <typename T>
     inline void		iwrite (const T& v);
     template <typename T>
@@ -105,8 +105,8 @@ class ostream_iterator {
 public:
     typedef T			value_type;
     typedef ptrdiff_t		difference_type;
-    typedef T*			pointer;
-    typedef T&			reference;
+    typedef value_type*		pointer;
+    typedef value_type&		reference;
 public:
     explicit			ostream_iterator (ostream& os)
 				    : m_Os (os) {}
@@ -169,6 +169,12 @@ inline void ostream::align (size_t grain)
 inline void ostream::write (const cmemlink& buf)
 {
     write (buf.begin(), buf.size());
+}
+
+/// Returns number of bytes written.
+inline size_t ostream::stream_size (void) const
+{
+    return (pos());
 }
 
 /// Writes type T into the stream via a direct pointer cast.

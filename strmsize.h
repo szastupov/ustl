@@ -99,8 +99,5 @@ inline size_t stream_size_of (wchar_t)	{ return (sizeof(wchar_t));	}
 	void	write (::ustl::ostream& os) const;	\
 	size_t	stream_size (void) const
 
-// This is here because in cmemlink.h we don't know about streams yet.
-STD_STREAMABLE(ustl::cmemlink)
-
 #endif
 

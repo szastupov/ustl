@@ -42,13 +42,13 @@ namespace ustl {
 template <typename T>
 class vector : public memblock {
 public:
-    typedef T		value_type;
-    typedef T*		pointer;
-    typedef const T*	const_pointer;
-    typedef T&		reference;
-    typedef const T&	const_reference;
-    typedef T*		iterator;
-    typedef const T*	const_iterator;
+    typedef T				value_type;
+    typedef value_type*			pointer;
+    typedef const value_type*		const_pointer;
+    typedef value_type&			reference;
+    typedef const value_type&		const_reference;
+    typedef pointer			iterator;
+    typedef const_pointer		const_iterator;
     typedef ::ustl::reverse_iterator<iterator>	reverse_iterator;
     typedef ::ustl::reverse_iterator<const_iterator>	const_reverse_iterator;
     static const size_t c_DefaultPageSize = sizeof(T) * 16;	///< Minimum allocation unit.
@@ -449,7 +449,7 @@ size_t stream_size_of (const vector<T>& v)
     typedef typename vector<T>::const_iterator viter_t;
     size_t s = sizeof(size_t);
     for (viter_t first = v.begin(); first < v.end(); ++ first)
-	s += stream_size_of(*first++);
+	s += stream_size_of(*first);
     return (Align (s));
 }
 
