@@ -32,11 +32,13 @@ namespace ios {
 				align (size_t grain = c_DefaultAlignment) : m_Grain(grain) {}
 	inline istream&		apply (istream& is) const { is.align (m_Grain); return (is); }
 	inline ostream&		apply (ostream& os) const { os.align (m_Grain); return (os); }
+	friend inline size_t	stream_size_of (const align& op);
     private:
 	size_t			m_Grain;
     };
     inline istream& operator>> (istream& is, const align& op) { return (op.apply (is)); }
     inline ostream& operator<< (ostream& os, const align& op) { return (op.apply (os)); }
+    inline size_t stream_size_of (const align& op) { return (op.m_Grain - 1); }
 
     /// Stream functor to allow inline skip() calls. os << skip(sizeof(u_short));
     class skip {
@@ -44,11 +46,13 @@ namespace ios {
 				skip (size_t nBytes) : m_nBytes(nBytes) {}
 	inline istream&		apply (istream& is) const { is.skip (m_nBytes); return (is); }
 	inline ostream&		apply (ostream& os) const { os.skip (m_nBytes); return (os); }
+	friend inline size_t	stream_size_of (const skip& op);
     private:
 	size_t			m_nBytes;
     };
     inline istream& operator>> (istream& is, const skip& op) { return (op.apply (is)); }
     inline ostream& operator<< (ostream& os, const skip& op) { return (op.apply (os)); }
+    inline size_t stream_size_of (const skip& op) { return (op.m_nBytes); }
 }; // namespace ios
 }; // namespace ustl
 

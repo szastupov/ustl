@@ -19,11 +19,11 @@ INSTALLLIB	= ${INSTALL} -p -C -m 644
 INSTALLEXE	= ${INSTALL} -p -C -m 755
 INSTALLDATA	= ${INSTALL} -p -C -m 644
 
-CWARNOPTS	= -ansi -Werror -Wall -W -Winline -Wpointer-arith -Wcast-qual \
+CWARNOPTS	= -Werror -Wall -W -Winline -Wpointer-arith -Wcast-qual \
 		-Wno-cast-align -Wwrite-strings -Wmissing-prototypes \
-		-Wconversion -Wshadow -Wredundant-decls -pedantic-errors
+		-Wconversion -Wshadow -Wredundant-decls
 CXXWARNOPTS	= ${CWARNOPTS} -Wsign-promo -Weffc++ -Wsynth -Woverloaded-virtual
-OPTIMIZE	= -DNDEBUG=1 -frepo -fomit-frame-pointer -fmerge-all-constants
+OPTIMIZE	= -DNDEBUG=1 -fomit-frame-pointer -fmerge-all-constants
 #DEBUG		= 1
 ifdef DEBUG
     CFLAGS	= -ggdb3 ${CWARNOPTS}

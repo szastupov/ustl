@@ -24,16 +24,18 @@
 #ifndef UTYPES_H
 #define UTYPES_H
 
-#include <sys/types.h>
+#include "config.h"
+#include <stdint.h>
 #include <stddef.h>	// For ptrdiff_t, size_t
-#include <stdlib.h>	// for NULL
 #include <limits.h>
 #include <float.h>
-#ifndef unix
-    typedef unsigned char   u_char;
-    typedef unsigned short  u_short;
-    typedef unsigned int    u_int;
-    typedef unsigned long   u_long;
+#ifdef HAVE_SYS_TYPES_H
+    #include <sys/types.h>
+#else
+    typedef unsigned char	u_char;
+    typedef unsigned short	u_short;
+    typedef unsigned int	u_int;
+    typedef unsigned long	u_long;
 #endif
 #include "ulimits.h"
 

@@ -25,6 +25,7 @@
 #include "memblock.h"
 #include "ualgo.h"
 #include "uexception.h"
+#include <malloc.h>
 #include <memory.h>
 #include <fcntl.h>
 #include <unistd.h>

@@ -12,8 +12,9 @@ INCS	= cmemlink.h memblock.h memlink.h mistream.h mostream.h \
 	uctralgo.h ufunction.h upair.h uiterator.h ustack.h varsize.h \
 	uexception.h strmsize.h sistream.h sostream.h ulimits.h uset.h \
 	umultiset.h uspecial.h uios.h fdostream.h unew.h umap.h umultimap.h \
-	uiosfunc.h
+	uiosfunc.h config.h
 DOCT	= ustldoc.in
+TOCLEAN	= install config.status config.log
 
 include Comrulib.mk
 

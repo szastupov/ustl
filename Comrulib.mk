@@ -40,7 +40,12 @@ install-incs: ${INCS}
 	@echo "Installing headers to ${INCDIR} ..."
 	@if [ ! "${INCS}" = "${LIBNAME}.h" ]; then		\
 	    ${INSTALLDIR} ${INCDIR}/${LIBNAME};			\
-	    ${INSTALLDATA} ${INCS} ${INCDIR}/${LIBNAME};	\
+	    for i in ${INCS}; do				\
+	    	if [ ! "$$i" = "." ]; then			\
+		    ${INSTALLDIR} ${INCDIR}/${LIBNAME}/`dirname $$i`;		\
+		fi;						\
+		${INSTALLDATA} $$i ${INCDIR}/${LIBNAME}/$$i;	\
+	    done;						\
 	fi
 	@${INSTALLDATA} ${LIBNAME}.h ${INCDIR}
 
@@ -60,6 +65,7 @@ endif
 
 install-static: ${LIBA}
 	@echo "Installing ${LIBA} to ${LIBDIR} ..."
+	@${INSTALLDIR} ${LIBDIR}
 	@${INSTALLLIB} ${LIBA} ${LIBDIR}
 
 uninstall-static:
@@ -68,6 +74,7 @@ uninstall-static:
 
 install-shared: ${LIBSOBLD}
 	@echo "Installing ${LIBSOBLD} to ${LIBDIR} ..."
+	@${INSTALLDIR} ${LIBDIR}
 	@${INSTALLLIB} ${LIBSOBLD} ${LIBDIR}
 	@(cd ${LIBDIR}; ${LN} -sf ${LIBSOBLD} ${LIBSO}; ${LN} -sf ${LIBSOBLD} ${LIBSOLNK})
 
