@@ -12,7 +12,7 @@ void TestTuple (const char* ctrType)
     T increment;
     tuple<N,T> pt1 (pt1v);
     tuple<N,T> pt2 (5, 6, 7, 8);
-    increment = pt1[2];
+    increment = pt1v[2];
 
     cout << "pt1:\t\t\tsize = " << pt1.size() << ", value = " << pt1 << endl;
     cout << "pt2:\t\t\t" << pt2 << endl;
