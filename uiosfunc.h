@@ -32,13 +32,10 @@ namespace ios {
 				align (size_t grain = c_DefaultAlignment) : m_Grain(grain) {}
 	inline istream&		apply (istream& is) const { is.align (m_Grain); return (is); }
 	inline ostream&		apply (ostream& os) const { os.align (m_Grain); return (os); }
-	friend inline size_t	stream_size_of (const align& op);
+	inline size_t		stream_size (void) const  { return (m_Grain - 1); }
     private:
 	size_t			m_Grain;
     };
-    inline istream& operator>> (istream& is, const align& op) { return (op.apply (is)); }
-    inline ostream& operator<< (ostream& os, const align& op) { return (op.apply (os)); }
-    inline size_t stream_size_of (const align& op) { return (op.m_Grain - 1); }
 
     /// Stream functor to allow inline skip() calls. os << ios::skip(sizeof(u_short));
     class skip {
@@ -46,13 +43,10 @@ namespace ios {
 				skip (size_t nBytes) : m_nBytes(nBytes) {}
 	inline istream&		apply (istream& is) const { is.skip (m_nBytes); return (is); }
 	inline ostream&		apply (ostream& os) const { os.skip (m_nBytes); return (os); }
-	friend inline size_t	stream_size_of (const skip& op);
+	inline size_t		stream_size (void) const  { return (m_nBytes); }
     private:
 	size_t			m_nBytes;
     };
-    inline istream& operator>> (istream& is, const skip& op) { return (op.apply (is)); }
-    inline ostream& operator<< (ostream& os, const skip& op) { return (op.apply (os)); }
-    inline size_t stream_size_of (const skip& op) { return (op.m_nBytes); }
 
     /// Stream functor to allow inline set_width() calls. os << ios::width(15);
     class width {
@@ -62,7 +56,6 @@ namespace ios {
     private:
 	size_t			m_nBytes;
     };
-    inline ostringstream& operator<< (ostringstream& os, const width& op) { return (op.apply (os)); }
 
     /// Stream functor to allow inline set_base() calls. os << ios::base(15);
     class base {
@@ -72,8 +65,18 @@ namespace ios {
     private:
 	size_t			m_Base;
     };
-    inline ostringstream& operator<< (ostringstream& os, const base& op) { return (op.apply (os)); }
+
 }; // namespace ios
+
+inline istream& operator>> (istream& is, const ios::skip& op)	{ return (op.apply (is)); }
+inline ostream& operator<< (ostream& os, const ios::skip& op)	{ return (op.apply (os)); }
+inline size_t stream_size_of (const ios::skip& op)		{ return (op.stream_size()); }
+inline istream& operator>> (istream& is, const ios::align& op)	{ return (op.apply (is)); }
+inline ostream& operator<< (ostream& os, const ios::align& op)	{ return (op.apply (os)); }
+inline size_t stream_size_of (const ios::align& op)		{ return (op.stream_size()); }
+inline ostringstream& operator<< (ostringstream& os, const ios::width& op)	{ return (op.apply (os)); }
+inline ostringstream& operator<< (ostringstream& os, const ios::base& op)	{ return (op.apply (os)); }
+
 }; // namespace ustl
 
 CAST_STREAMABLE(ustl::ios::fmtflags, u_int)

@@ -101,9 +101,12 @@ istream& operator>> (istream& is, vector<T>& v)
 {
     size_t n;
     is >> n;
-    assert (n * stream_size_of(T()) <= is.remaining() && "This does not look like a written vector.");
-    v.resize (n);
-    copy_n (istream_iterator<T>(is), n, v.begin());
+    const size_t expectedSize = n * stream_size_of(T());
+    assert (expectedSize <= is.remaining() && "This does not look like a written vector.");
+    if (expectedSize <= is.remaining()) {
+	v.resize (n);
+	copy_n (istream_iterator<T>(is), n, v.begin());
+    }
     is.align();
     return (is);
 }

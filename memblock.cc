@@ -183,8 +183,11 @@ void memblock::read (istream& is)
 {
     size_t n;
     is >> n;
-    resize (n);
-    is.read (data(), size());
+    assert (n <= is.remaining());
+    if (n <= is.remaining()) {
+	resize (n);
+	is.read (data(), size());
+    }
     is.align();
 }
 

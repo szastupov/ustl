@@ -369,8 +369,12 @@ size_t string::stream_size (void) const
 /// Reads the object from stream \p os
 void string::read (istream& is)
 {
-    resize (*utf8in(is));
-    is.read (data(), length());
+    size_t n = *utf8in(is);
+    assert (n <= is.remaining());
+    if (n <= is.remaining()) {
+	resize (n);
+	is.read (data(), length());
+    }
 }
 
 /// Writes the object to stream \p os
