@@ -46,27 +46,37 @@ struct binary_function {
     typedef Result	result_type;
 };
 
-template <class T> struct plus		: public binary_function<T,T,T> { inline T operator()(const T& a, const T& b) const { return (a + b); } };
-template <class T> struct minus		: public binary_function<T,T,T> { inline T operator()(const T& a, const T& b) const { return (a - b); } };
-template <class T> struct divides	: public binary_function<T,T,T> { inline T operator()(const T& a, const T& b) const { return (a / b); } };
-template <class T> struct modulus	: public binary_function<T,T,T> { inline T operator()(const T& a, const T& b) const { return (a % b); } };
-template <class T> struct multiplies	: public binary_function<T,T,T> { inline T operator()(const T& a, const T& b) const { return (a * b); } };
-template <class T> struct logical_and	: public binary_function<T,T,T> { inline T operator()(const T& a, const T& b) const { return (a && b); } };
-template <class T> struct logical_or	: public binary_function<T,T,T> { inline T operator()(const T& a, const T& b) const { return (a || b); } };
-template <class T> struct logical_not	: public unary_function<T,T>    { inline T operator()(const T& a) const { return (!a); } };
-template <class T> struct bitwise_or	: public binary_function<T,T,T> { inline T operator()(const T& a, const T& b) const { return (a | b); } };
-template <class T> struct bitwise_and	: public binary_function<T,T,T> { inline T operator()(const T& a, const T& b) const { return (a & b); } };
-template <class T> struct bitwise_xor	: public binary_function<T,T,T> { inline T operator()(const T& a, const T& b) const { return (a ^ b); } };
-template <class T> struct bitwise_not	: public unary_function<T,T>    { inline T operator()(const T& a) const { return (~a); } };
-template <class T> struct negate	: public unary_function<T,T>    { inline T operator()(const T& a) const { return (-a); } };
-template <class T> struct equal_to	: public binary_function<T,T,bool> { inline bool operator()(const T& a, const T& b) const { return (a == b); } };
-template <class T> struct not_equal_to	: public binary_function<T,T,bool> { inline bool operator()(const T& a, const T& b) const { return (!(a == b)); } };
-template <class T> struct greater	: public binary_function<T,T,bool> { inline bool operator()(const T& a, const T& b) const { return (b < a); } };
-template <class T> struct less		: public binary_function<T,T,bool> { inline bool operator()(const T& a, const T& b) const { return (a < b); } };
-template <class T> struct greater_equal	: public binary_function<T,T,bool> { inline bool operator()(const T& a, const T& b) const { return (b < a || a == b); } };
-template <class T> struct less_equal	: public binary_function<T,T,bool> { inline bool operator()(const T& a, const T& b) const { return (a < b || a == b); } };
-template <class T> struct compare	: public binary_function<T,T,int> { inline int operator()(const T& a, const T& b) const { return (a < b ? -1 : (a == b ? 0 : 1)); } };
-template <class T> struct identity	: public unary_function<T,T>    { inline const T& operator()(const T& a) const { return (a); } };
+#define STD_BINARY_FUNCTOR(name, rv, func)	\
+template <class T> struct name : public binary_function<T,T,rv> \
+{ inline rv operator()(const T& a, const T& b) const { return func; } };
+#define STD_UNARY_FUNCTOR(name, rv, func)	\
+template <class T> struct name : public unary_function<T,rv> \
+{ inline rv operator()(const T& a) const { return func; } };
+#define STD_CONVERSION_FUNCTOR(name, func)	\
+template <class S, class D> struct name : public unary_function<S,D> \
+{ inline D operator()(const S& a) const { return func; } };
+
+STD_BINARY_FUNCTOR (plus,		T,	(a + b))
+STD_BINARY_FUNCTOR (minus,		T,	(a - b))
+STD_BINARY_FUNCTOR (divides,		T,	(a / b))
+STD_BINARY_FUNCTOR (modulus,		T,	(a % b))
+STD_BINARY_FUNCTOR (multiplies,		T,	(a * b))
+STD_BINARY_FUNCTOR (logical_and,	T,	(a && b))
+STD_BINARY_FUNCTOR (logical_or,		T,	(a || b))
+STD_UNARY_FUNCTOR  (logical_not,	T,	(!a))
+STD_BINARY_FUNCTOR (bitwise_or,		T,	(a | b))
+STD_BINARY_FUNCTOR (bitwise_and,	T,	(a & b))
+STD_BINARY_FUNCTOR (bitwise_xor,	T,	(a ^ b))
+STD_UNARY_FUNCTOR  (bitwise_not,	T,	(~a))
+STD_UNARY_FUNCTOR  (negate,		T,	(-a))
+STD_BINARY_FUNCTOR (equal_to,		bool,	(a == b))
+STD_BINARY_FUNCTOR (not_equal_to,	bool,	(!(a == b)))
+STD_BINARY_FUNCTOR (greater,		bool,	(b < a))
+STD_BINARY_FUNCTOR (less,		bool,	(a < b))
+STD_BINARY_FUNCTOR (greater_equal,	bool,	(b < a || a == b))
+STD_BINARY_FUNCTOR (less_equal,		bool,	(a < b || a == b))
+STD_BINARY_FUNCTOR (compare,		int,	(a < b ? -1 : (a == b ? 0 : 1)))
+STD_UNARY_FUNCTOR  (identity,		T,	(a))
 
 template <class T1, class T2> struct project1st	: public binary_function<T1,T2,T1>    { inline const T1& operator()(const T1& a, const T2&) const { return (a); } };
 template <class T1, class T2> struct project2nd	: public binary_function<T1,T2,T2>    { inline const T2& operator()(const T1&, const T2& a) const { return (a); } };

@@ -78,34 +78,30 @@ inline void pconvert (const Ctr1& op1, Ctr2& op2, ConvertFunction f)
 }
 
 // Functionoids for SIMD operations, like saturation arithmetic, shifts, etc.
-template <class T> struct fpadds: public binary_function<T,T,T> { inline T operator()(const T& a, const T& b) const
-    { const T c_MaxValue = numeric_limits<T>::max();
-      return ((b > c_MaxValue - a) ? c_MaxValue : a + b); } };
-template <class T> struct fpsubs: public binary_function<T,T,T> { inline T operator()(const T& a, const T& b) const
-    { const T c_MinValue = numeric_limits<T>::min();
-      return ((a < c_MinValue + b) ? c_MinValue : a - b); } };
-template <class T> struct fpshl	: public binary_function<T,T,T> { inline T operator()(const T& a, const T& b) const { return (a << b); } };
-template <class T> struct fpshr	: public binary_function<T,T,T> { inline T operator()(const T& a, const T& b) const { return (a >> b); } };
-template <class T> struct fpmin	: public binary_function<T,T,T> { inline T operator()(const T& a, const T& b) const { return (min (a, b)); } };
-template <class T> struct fpmax	: public binary_function<T,T,T> { inline T operator()(const T& a, const T& b) const { return (max (a, b)); } };
-template <class T> struct fpavg	: public binary_function<T,T,T> { inline T operator()(const T& a, const T& b) const { return ((a + b + 1) / 2); } };
-template <class T, class D> struct fcast : public unary_function<T,D> { inline D operator()(const T& a) const { return (D(a)); } };
-template <> inline float fpavg<float>::operator()(const float& a, const float& b) const { return ((a + b) / 2); }
-template <> inline double fpavg<double>::operator()(const double& a, const double& b) const { return ((a + b) / 2); }
+STD_BINARY_FUNCTOR (fpadds, T, ((b > numeric_limits<T>::max() - a) ? numeric_limits<T>::max() : a + b))
+STD_BINARY_FUNCTOR (fpsubs, T, ((a < numeric_limits<T>::min() + b) ? numeric_limits<T>::min() : a - b))
+STD_BINARY_FUNCTOR (fpshl,  T, (a << b))
+STD_BINARY_FUNCTOR (fpshr,  T, (a >> b))
+STD_BINARY_FUNCTOR (fpmin,  T, (min (a, b)))
+STD_BINARY_FUNCTOR (fpmax,  T, (max (a, b)))
+STD_BINARY_FUNCTOR (fpavg,  T, ((a + b + 1) / 2))
+STD_CONVERSION_FUNCTOR (fcast, (D(a)))
 #if HAVE_MATH_H
-template <class T> struct fpreciprocal	: public unary_function<T,T> { inline T operator()(const T& a) const { return (1 / a); } };
-template <class T> struct fpsqrt	: public unary_function<T,T> { inline T operator()(const T& a) const { reset_mmx(); return (T (sqrt (a))); } };
-template <class T> struct fprecipsqrt	: public unary_function<T,T> { inline T operator()(const T& a) const { reset_mmx(); return (1 / T(sqrt (a))); } };
-template <class T> struct fsin		: public unary_function<T,T> { inline T operator()(const T& a) const { reset_mmx(); return (T (sin (a))); } };
-template <class T> struct fcos		: public unary_function<T,T> { inline T operator()(const T& a) const { reset_mmx(); return (T (cos (a))); } };
-template <class T> struct ftan		: public unary_function<T,T> { inline T operator()(const T& a) const { reset_mmx(); return (T (tan (a))); } };
+STD_UNARY_FUNCTOR (fpreciprocal,T, (1 / a))
+STD_UNARY_FUNCTOR (fpsqrt,	T, (reset_mmx(), T (sqrt (a))))
+STD_UNARY_FUNCTOR (fprecipsqrt,	T, (reset_mmx(), 1 / T(sqrt (a))))
+STD_UNARY_FUNCTOR (fsin,	T, (reset_mmx(), T (sin (a))))
+STD_UNARY_FUNCTOR (fcos,	T, (reset_mmx(), T (cos (a))))
+STD_UNARY_FUNCTOR (ftan,	T, (reset_mmx(), T (tan (a))))
 #if HAVE_RINTF
-template <class T, class D> struct fround : public unary_function<T,D> { inline D operator()(const T& a) const { reset_mmx(); return (D(rintf(a))); } };
+STD_CONVERSION_FUNCTOR (fround, (reset_mmx(), D(rintf(a))))
 #else
-template <class T, class D> struct fround : public unary_function<T,D> { inline D operator()(const T& a) const { reset_mmx(); return (D(rint(a))); } };
+STD_CONVERSION_FUNCTOR (fround, (reset_mmx(), D(rint(a))))
 #endif
 template <> inline int32_t fround<double,int32_t>::operator()(const double& a) const { reset_mmx(); return (int32_t(rint(a))); }
 #endif
+template <> inline float fpavg<float>::operator()(const float& a, const float& b) const { return ((a + b) / 2); }
+template <> inline double fpavg<double>::operator()(const double& a, const double& b) const { return ((a + b) / 2); }
 
 #define SIMD_PACKEDOP1(name, operation)		\
 template <typename Ctr>				\
