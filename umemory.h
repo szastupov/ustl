@@ -39,14 +39,15 @@ public:
     typedef T&		reference;
 public:
     inline explicit	auto_ptr (pointer p = NULL)	: m_p (p) {}
-    inline explicit	auto_ptr (auto_ptr<T>& p)	: m_p (p.release()) {}
+    inline		auto_ptr (auto_ptr<T>& p)	: m_p (p.release()) {}
     inline	       ~auto_ptr (void)			{ delete m_p; }
     inline reference	operator* (void) const		{ return (*m_p); }
     inline pointer	operator-> (void) const		{ return (m_p); }
     inline pointer	get (void) const		{ return (m_p); }
     inline pointer	release (void)			{ pointer rv (m_p); m_p = NULL; return (rv); }
     inline void		reset (pointer p)		{ if (p != m_p) { delete m_p; m_p = p; } }
-    inline auto_ptr<T>	operator= (auto_ptr<T>& p)	{ reset (p.release()); }
+    inline auto_ptr<T>&	operator= (pointer p)		{ reset (p); return (*this); }
+    inline auto_ptr<T>&	operator= (auto_ptr<T>& p)	{ reset (p.release()); return (*this); }
     inline bool		operator== (const pointer p) const	{ return (m_p == p); }
     inline bool		operator== (const auto_ptr<T>& p) const	{ return (m_p == p.m_p); }
     inline bool		operator< (const auto_ptr<T>& p) const	{ return (p.m_p < m_p); }
