@@ -39,7 +39,6 @@ namespace ustl {
 class memblock : public memlink {
 public:
     static const size_t c_PageSize = 64;		///< The default minimum allocation unit.
-    static const size_t	c_MinimumShrinkSize = 0x10000;	///< reserve will shrink reallocated block if this much unused space results.
 public:
 			memblock (void);
     explicit		memblock (size_t n);

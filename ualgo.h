@@ -312,6 +312,8 @@ OutputIterator generate_n (OutputIterator first, size_t n, Generator gen)
 template <class ForwardIterator>
 ForwardIterator rotate (ForwardIterator first, ForwardIterator middle, ForwardIterator last)
 {
+    if (first == middle || middle == last)
+	return (first); // the push_back implementation will always go here.
     reverse (first, middle);
     reverse (middle, last);
     while (first < middle && middle < last)

@@ -154,27 +154,33 @@ void memlink::fill (iterator start, const void* p, size_t elSize, size_t elCount
 }
 
 /// Shifts the data in the linked block from \p start to \p start + \p n.
+/// The contents of the uncovered bytes is undefined.
 void memlink::insert (iterator start, size_t n)
 {
     assert (m_Data || !n);
     assert (cmemlink::begin() || !n);
     assert (start >= begin() && start + n <= end());
     assert (n % elementSize() == 0 && "You are trying to write an incompatible element type");
-    destructBlock (end() - n, n);
-    memmove (start + n, start, distance (start, end()) - n);
-    constructBlock (start, n);
+    assert (distance(begin(), start) % elementSize() == 0 && "You are trying to write in the middle of an element");
+    u_char* first = reinterpret_cast<u_char*>(start.base());
+    u_char* last = reinterpret_cast<u_char*>(end().base());
+    u_char* middle = last - n;
+    rotate (first, middle, last);
 }
 
 /// Shifts the data in the linked block from \p start + \p n to \p start.
+/// The contents of the uncovered bytes is undefined.
 void memlink::erase (iterator start, size_t n)
 {
     assert (m_Data || !n);
     assert (cmemlink::begin() || !n);
     assert (start >= begin() && start + n <= end());
     assert (n % elementSize() == 0 && "You are trying to write an incompatible element type");
-    destructBlock (start, n);
-    memmove (start, start + n, distance (start, end()) - n);
-    constructBlock (end() - n, n);
+    assert (distance(begin(), start) % elementSize() == 0 && "You are trying to write in the middle of an element");
+    u_char* first = reinterpret_cast<u_char*>(start.base());
+    u_char* last = reinterpret_cast<u_char*>(end().base());
+    u_char* middle = first + n;
+    rotate (first, middle, last);
 }
 
 /// Override to initialize malloc'ed space, like calling constructors, for example.

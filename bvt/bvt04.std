@@ -18,8 +18,6 @@ A::A
 A::operator=
 A::operator=
 A::operator=
-A::~A
-A::A
 Class insertion testing successful
 A::~A
 A::~A

@@ -16,31 +16,38 @@
 // Free Software Foundation, Inc., 59 Temple Place - Suite 330, 
 // Boston, MA  02111-1307  USA.
 //
-/// \file utypes.h
-///
-/// \brief Types used by this library.
-///
+// unew.cc
+//
 
-#ifndef UTYPES_H
-#define UTYPES_H
+#include "unew.h"
+#include <malloc.h>
 
-#include "config.h"
-#define __STDC_LIMIT_MACROS	// For WCHAR_MIN and WCHAR_MAX in stdint.
-#include <stdint.h>
-#include <stddef.h>		// For ptrdiff_t, size_t
-#include <limits.h>
-#include <float.h>
-#ifdef HAVE_SYS_TYPES_H
-    #include <sys/types.h>
-#else
-    typedef unsigned char	u_char;
-    typedef unsigned short	u_short;
-    typedef unsigned int	u_int;
-    typedef unsigned long	u_long;
-#endif
-#include "ulimits.h"
+void* operator new (size_t n) throw (ustl::bad_alloc)
+{
+    void* p = malloc (n);
+    if (!p)
+	throw ustl::bad_alloc (n);
+    return (p);
+}
 
-typedef size_t	uoff_t; ///< A type for storing offsets into blocks measured by size_t.
+void* operator new[] (size_t n) throw (ustl::bad_alloc)
+{
+    void* p = malloc (n);
+    if (!p)
+	throw ustl::bad_alloc (n);
+    return (p);
+}
 
-#endif
+void operator delete (void* p) throw()
+{
+    if (p)
+	free (p);
+}
+
+void operator delete[] (void* p) throw()
+{
+    if (p)
+	free (p);
+}
+
 

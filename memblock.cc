@@ -162,26 +162,23 @@ void memblock::swap (memblock& l)
 /// Reallocates internal block to hold at least \p newSize bytes. Some
 /// additional memory may be allocated, but for efficiency it is a very
 /// good idea to call reserve before doing byte-by-byte edit operations.
-/// The block size as returned by size() is not altered.
+/// The block size as returned by size() is not altered. reserve will not
+/// reduce allocated memory. If you think you are wasting space, call
+/// deallocate and start over. To avoid wasting space, use the block for
+/// only one purpose, and try to get that purpose to use similar amounts
+/// of memory on each iteration.
 ///
 void memblock::reserve (size_t newSize, bool bExact)
 {
-    if ((m_AllocatedSize > newSize &&
-	 m_AllocatedSize < newSize + c_MinimumShrinkSize) ||
-	is_linked() || !newSize)
+    if (m_AllocatedSize >= newSize || is_linked())
 	return;
     if (!bExact)
 	newSize = Align (newSize, Align (c_PageSize, elementSize()));
     assert (newSize % elementSize() == 0 && "reserve can only allocate units of elementType.");
-    if (newSize < m_AllocatedSize) {
-	destructBlock (begin() + newSize, m_AllocatedSize - newSize);
-	m_AllocatedSize = newSize;
-    }
     void* newBlock = realloc (data(), newSize);
     if (!newBlock)
 	throw bad_alloc(newSize);
-    if (newSize > m_AllocatedSize)
-	constructBlock (advance (newBlock, m_AllocatedSize), newSize - m_AllocatedSize);
+    constructBlock (advance (newBlock, m_AllocatedSize), newSize - m_AllocatedSize);
     link (newBlock, size());
     m_AllocatedSize = newSize;
 }

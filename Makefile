@@ -4,9 +4,9 @@ SUBDIRS	= bvt
 LIBNAME	= ustl
 
 SRCS	= cmemlink.cc memlink.cc memblock.cc mstream.cc ustring.cc \
-       	uexception.cc sistream.cc sostream.cc fdostream.cc
+       	uexception.cc sistream.cc sostream.cc fdostream.cc unew.cc
 OBJS	= cmemlink.o memlink.o memblock.o mstream.o ustring.o \
-        uexception.o sistream.o sostream.o fdostream.o
+        uexception.o sistream.o sostream.o fdostream.o unew.o
 INCS	= cmemlink.h memblock.h memlink.h mistream.h mostream.h \
 	ualgo.h ustl.h ustring.h utypes.h uutility.h uvector.h \
 	uctralgo.h ufunction.h upair.h uiterator.h ustack.h \

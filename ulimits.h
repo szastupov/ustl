@@ -107,8 +107,8 @@ struct numeric_limits<u_long> {
 
 template <>
 struct numeric_limits<wchar_t> {
-    static inline wchar_t min (void){ return (INT_MIN); } // FIXME: There are WCHAR_MIN and WCHAR_MAX, but they are in wchar.h which is big and non-standard.
-    static inline wchar_t max (void){ return (INT_MAX); }
+    static inline wchar_t min (void){ return (WCHAR_MIN); }
+    static inline wchar_t max (void){ return (WCHAR_MAX); }
     static inline bool is_signed (void)	{ return (true); }
 };
 
