@@ -1,0 +1,11 @@
+Allocating 28 bytes
+Write const void*, pos = 4
+Write void*, pos = 8
+Write string, pos = 19
+Write const string*, pos = 24
+Write string*, pos = 28
+Read const void*, pos = 4, value is wrong
+Read void*, pos = 8, value is wrong
+Read string, pos = 19, value is TestString
+Read const string*, pos = 24, value is right
+Read string*, pos = 28, value is right

@@ -1,0 +1,26 @@
+123456789012345678901234567890
+abcdefghijklmnopqrstuvwxyz
+123456789012345678901234567890
+12345678901234567890
+s3.size() = 20, max_size() = 4294967294, capacity() = 63
+abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ$
+HelloWorld
+Concatenated HelloWorld string.
+s1 < s2
+s1 == s1
+s1 == s4
+56789 == 56789
+&s1[7] = 89012345678901234567890
+123456789012345678901234567890
+erase(5,5)
+1234512345678901234567890
+insert(10,#)
+1234512345#678901234567890
+replace(0,5,@)
+@12345#678901234567890
+8 found at 7
+9 found at 8
+[456] found at 3
+[456] last found at 25
+s2 is empty [], capacity 31 bytes
+<31 bytes of 63> Format '<const] 42, [rfile>, 0xDEADBEEF'

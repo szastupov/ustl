@@ -1,0 +1,20 @@
+36 bytes written
+Values:
+char:    0x12
+u_char:  0x12
+bool:    1
+int:     0x12345678
+u_int:   0x12345678
+long:    0x12345678
+u_long:  0x12345678
+float:   0.12345678
+double:  0.1234567891234568
+short:   0x1234
+u_short: 0x1234
+
+Binary dump:
+12 12 01 CD 78 56 34 12 
+78 56 34 12 78 56 34 12 
+78 56 34 12 E9 D6 FC 3D 
+5E 21 C1 37 DD 9A BF 3F 
+34 12 34 12 

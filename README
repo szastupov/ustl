@@ -1,0 +1,114 @@
+/-/
+|   /=--=\\
+|{?//    \\\
+|}\}       \\
+|\}|      +========+
+|\{|      |  uSTL  |
+|}\}      +========+
+|}{|
+|}\}
++//
+/
+
+---------
+OVERVIEW:
+---------
+
+uSTL (micro-STL) is a partial implementation of the STL specification
+intended to reduce code size of the derivative programs. Usually,
+the STL containers manage their own storage with new[] and delete[]
+operators, which create strongly typed storage. That is the standard
+way of allocating C++ object vectors, allowing appropriate constructors
+and destructors to be called on the allocated storage and ensuring that
+objects are copied via their copy operators. Although type safety is a
+good thing, placing memory management code into a template necessitates
+its reinstantiation for every template instance used by the derivative
+program. This produces substantial code bloat, that is frequently derided
+by C developers and used by them as an argument that C is better than
+C++. The uSTL implementation attempts to work around this problem
+by factoring memory management code into a non-template base class,
+ustl::memblock, which performs unstructured memory allocation. STL
+containers are then implemented as template wrappers for memblock to
+provide a measure of type safety. The result is that each template
+instantiation contains less code, and although it does not completely
+"disappear", due to the requirement for calling placement constructors on
+the allocated memory, most of it does, being replaced by calls to memblock
+methods. A vector<T> template instance, for instance, implements virtuals
+constructBlock (simply a call to placement new[]) and destructBlock
+(iterates over all elements to manually call the destructor) and two
+algorithms copy and fill (which most STL programs use anyway); everything
+else melts away at compile time as if you were using only unstructured
+storage in the first place. ustl::string is implemented as a static class,
+not a template, so it is shared among all users of the library. The base
+classes for unstructured storage management (cmemlink - link to constant
+memory, memlink - link to mutable memory, and memblock - owner of mutable
+memory) are, of course, also available for use as data buffers wherever
+those are needed, and streams that efficiently read and write binary data
+into them are also available. The present implementation is about 75%
+complete, with STL-equivalent containers vector<T>, string, stack<T>,
+set<T>, multiset<T>, map<T>, and multimap<T> available and working.
+
+------------
+COMPILATION:
+------------
+
+./configure
+	(you may edit Common.mk at this point to adjust compiler flags)
+make install
+	This copies the static library libustl.a to your lib directory,
+	(usually /usr/local/lib) and the headers to your include directory
+	(usually /usr/local/include)
+
+You may also chdir to the bvt subdirectory and 'make run' to verify that
+	the library works correctly on your system. I pretty much assume
+	an ANSI-compliant system, and have no desire whatsoever to support
+	some weird architecture that lacks regular libc headers or something.
+	GNU extensions may be used (like long long), but are not required
+	and if you are failing the build because of them it is a bug.
+Documentation may be built with doxygen by typing 'make dox'. This is not
+	working very well right now because doxygen is blind to templates.
+	You do get a page for all the static classes though.
+The .mk files in this distribution are actually another project, giving
+	common rules for people who hate HaTe HATE writing makefiles. See
+	if you like it; Makefile pretty much explains how to use it. I am
+	not satisfied though and might turn to some other build system later.
+
+------
+USAGE:
+------
+
+#include <ustl.h>
+
+and link with -lustl
+
+This is usually the only thing you need to do, aside from possibly adding
+
+using namespace ustl;
+
+to avoid having to prefix everything with ustl::
+Most of the library is compliant with the STL specification (or, at least, it
+should be), so if you know how to use STL, you know how to use uSTL. Excellent
+tutorials on STL are found all over the web and can explain it much better
+than I. For information on usage of uSTL-specific extensions, read through
+the bvt sources, which try to call every method at least once, and by doing
+so give a reasonably good example for how I expect the library to be used.
+Incidentally, all the source code is formatted with the expectation of the
+tab size to be 8, and it may look really weird otherwise.
+
+--------------
+BUG REPORTING:
+--------------
+
+Report bugs through the ustl SourceForge.net page with their bugtracker.
+Additional contact information may also be found there.
+
+------------------------------------------------------------------------
+
+I hope you'll enjoy using this library; I am trying my best to keep it
+internally consistent and cleanly implemented. If you were afraid to
+use STL because of the code bloat, here's your alternative. I really
+love generic programming; it makes the code tighter and more readable,
+and in some cases there are even some efficiency gains from using
+iterators instead of index addressing. So play with it and tell me what
+you think. Long live C++! :)
+
