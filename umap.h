@@ -33,6 +33,8 @@ class map : public vector<pair<K,V> > {
 public:
     typedef K						key_type;
     typedef V						data_type;
+    typedef const K&					const_key_ref;
+    typedef const V&					const_data_ref;
     typedef typename vector<pair<K,V> >::value_type	value_type;
     typedef typename vector<pair<K,V> >::pointer	pointer;
     typedef typename vector<pair<K,V> >::const_pointer	const_pointer;
@@ -48,17 +50,17 @@ public:
     				map (const map<K,V>& v);
 				map (const_iterator i1, const_iterator i2);
     inline const map<K,V>&	operator= (const map<K,V>& v);
-    inline const data_type&	operator[] (const key_type& i) const;
-    data_type&			operator[] (const key_type& i);
+    inline const_data_ref	operator[] (const_key_ref i) const;
+    data_type&			operator[] (const_key_ref i);
     inline void			assign (const_iterator i1, const_iterator i2);
     inline void			push_back (const_reference v);
-    inline const_iterator	find (const key_type& k) const;
-    inline iterator		find (const key_type& k);
-    inline const_iterator	find_data (const data_type& v, const_iterator first = NULL, const_iterator last = NULL) const;
-    inline iterator		find_data (const data_type& v, iterator first = NULL, iterator last = NULL);
+    inline const_iterator	find (const_key_ref k) const;
+    inline iterator		find (const_key_ref k);
+    inline const_iterator	find_data (const_data_ref v, const_iterator first = NULL, const_iterator last = NULL) const;
+    inline iterator		find_data (const_data_ref v, iterator first = NULL, iterator last = NULL);
     iterator			insert (const_reference v);
     inline void			insert (const_iterator i1, const_iterator i2);
-    void			erase (const key_type& k);
+    void			erase (const_key_ref k);
     inline iterator		erase (iterator ep);
     inline iterator		erase (iterator ep1, iterator ep2);
 };
@@ -110,21 +112,21 @@ inline void map<K,V>::assign (const_iterator i1, const_iterator i2)
 
 /// Returns the pair<K,V> where K = \p k.
 template <typename K, typename V>
-inline typename map<K,V>::const_iterator map<K,V>::find (const key_type& k) const
+inline typename map<K,V>::const_iterator map<K,V>::find (const_key_ref k) const
 {
     return (binary_search (begin(), end(), make_pair(k,V()), mem_var_less(&value_type::first)));
 }
 
 /// Returns the pair<K,V> where K = \p k.
 template <typename K, typename V>
-inline typename map<K,V>::iterator map<K,V>::find (const key_type& k)
+inline typename map<K,V>::iterator map<K,V>::find (const_key_ref k)
 {
     return (binary_search (begin(), end(), make_pair(k,V()), mem_var_less(&value_type::first)));
 }
 
 /// Returns the pair<K,V> where V = \p v, occuring in range [first,last).
 template <typename K, typename V>
-inline typename map<K,V>::const_iterator map<K,V>::find_data (const data_type& v, const_iterator first, const_iterator last) const
+inline typename map<K,V>::const_iterator map<K,V>::find_data (const_data_ref v, const_iterator first, const_iterator last) const
 {
     if (!first) first = begin();
     if (!last) last = end();
@@ -133,7 +135,7 @@ inline typename map<K,V>::const_iterator map<K,V>::find_data (const data_type& v
 
 /// Returns the pair<K,V> where V = \p v, occuring in range [first,last).
 template <typename K, typename V>
-inline typename map<K,V>::iterator map<K,V>::find_data (const data_type& v, iterator first, iterator last)
+inline typename map<K,V>::iterator map<K,V>::find_data (const_data_ref v, iterator first, iterator last)
 {
     if (!first) first = begin();
     if (!last) last = end();
@@ -142,7 +144,7 @@ inline typename map<K,V>::iterator map<K,V>::find_data (const data_type& v, iter
 
 /// Returns data associated with key \p k.
 template <typename K, typename V>
-inline const typename map<K,V>::data_type& map<K,V>::operator[] (const key_type& k) const
+inline const typename map<K,V>::data_type& map<K,V>::operator[] (const_key_ref k) const
 {
     assert (find(k) && "operator[] const can not insert non-existent keys");
     return (find(k)->second);
@@ -150,7 +152,7 @@ inline const typename map<K,V>::data_type& map<K,V>::operator[] (const key_type&
 
 /// Returns data associated with key \p k.
 template <typename K, typename V>
-typename map<K,V>::data_type& map<K,V>::operator[] (const key_type& k)
+typename map<K,V>::data_type& map<K,V>::operator[] (const_key_ref k)
 {
     const value_type match (k, V());
     iterator ip = lower_bound (begin(), end(), match, mem_var_less(&value_type::first));
@@ -189,7 +191,7 @@ inline void map<K,V>::insert (const_iterator i1, const_iterator i2)
 
 /// Erases the element with key value \p k.
 template <typename K, typename V>
-void map<K,V>::erase (const key_type& k)
+void map<K,V>::erase (const_key_ref k)
 {
     iterator ip = binary_search (begin(), end(), make_pair(k,V()), mem_var_less(&value_type::first));
     if (ip != end())

@@ -644,7 +644,7 @@ void sort (RandomAccessIterator first, RandomAccessIterator last, Compare comp)
 template <class RandomAccessIterator>
 inline void sort (RandomAccessIterator first, RandomAccessIterator last)
 {
-    typedef iterator_traits<RandomAccessIterator>::value_type value_type;
+    typedef typename iterator_traits<RandomAccessIterator>::value_type value_type;
     sort (first, last, less<value_type>());
 }
 

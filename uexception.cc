@@ -218,11 +218,11 @@ const char* file_exception::what (void) const
     return ("file exception");
 }
 
-/// Returns a descriptive error message. fmt="%s %s: %m (%d)"
+/// Returns a descriptive error message. fmt="%s %s: %s (%d)"
 void file_exception::info (string& msgbuf, const char* fmt) const
 {
-    if (!fmt) fmt = "%s %s: %m (%d)";
-    try { msgbuf.format (fmt, m_Operation, m_Filename, m_Errno, m_Errno); } catch (...) {}
+    if (!fmt) fmt = "%s %s: %s (%d)";
+    try { msgbuf.format (fmt, m_Operation, m_Filename, strerror(m_Errno), m_Errno); } catch (...) {}
 }
 
 /// Reads the exception from stream \p is.
@@ -247,7 +247,7 @@ void file_exception::write (ostream& os) const
 size_t file_exception::stream_size (void) const
 {
     return (libc_exception::stream_size() +
-	    stream_size_of(string (m_Filename)));
+	    Align(stream_size_of(string (m_Filename))));
 }
 
 //----------------------------------------------------------------------

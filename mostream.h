@@ -77,22 +77,6 @@ public:
     inline size_t	stream_size (void) const;
     template <typename T>
     inline void		iwrite (const T& v);
-    template <typename T>
-    inline ostream&	operator<< (T* v);
-    template <typename T>
-    inline ostream&	operator<< (const T* v);
-    inline ostream&	operator<< (char v);
-    inline ostream&	operator<< (short v);
-    inline ostream&	operator<< (int v);
-    inline ostream&	operator<< (long v);
-    inline ostream&	operator<< (u_char v);
-    inline ostream&	operator<< (u_short v);
-    inline ostream&	operator<< (u_int v);
-    inline ostream&	operator<< (u_long v);
-    inline ostream&	operator<< (float v);
-    inline ostream&	operator<< (double v);
-    inline ostream&	operator<< (bool v);
-    inline ostream&	operator<< (wchar_t v);
 private:
     uoff_t		m_Pos;	///< Current write position.
 };
@@ -189,21 +173,21 @@ inline void ostream::iwrite (const T& v)
 }
 
 template <typename T>
-inline ostream&	ostream::operator<< (T* v)	{ iwrite(v); return (*this); }
+inline ostream&	operator<< (ostream& os, T* v)	{ os.iwrite(v); return (os); }
 template <typename T>
-inline ostream&	ostream::operator<< (const T* v){ iwrite(v); return (*this); }
-inline ostream&	ostream::operator<< (char v)	{ iwrite(v); return (*this); }
-inline ostream&	ostream::operator<< (short v)	{ iwrite(v); return (*this); }
-inline ostream&	ostream::operator<< (int v)	{ iwrite(v); return (*this); }
-inline ostream&	ostream::operator<< (long v)	{ iwrite(v); return (*this); }
-inline ostream&	ostream::operator<< (u_char v)	{ iwrite(v); return (*this); }
-inline ostream&	ostream::operator<< (u_short v)	{ iwrite(v); return (*this); }
-inline ostream&	ostream::operator<< (u_int v)	{ iwrite(v); return (*this); }
-inline ostream&	ostream::operator<< (u_long v)	{ iwrite(v); return (*this); }
-inline ostream&	ostream::operator<< (float v)	{ iwrite(v); return (*this); }
-inline ostream&	ostream::operator<< (double v)	{ iwrite(v); return (*this); }
-inline ostream&	ostream::operator<< (bool v)	{ iwrite(v); return (*this); }
-inline ostream&	ostream::operator<< (wchar_t v)	{ iwrite(v); return (*this); }
+inline ostream&	operator<< (ostream& os, const T* v)	{ os.iwrite(v); return (os); }
+inline ostream&	operator<< (ostream& os, char v)	{ os.iwrite(v); return (os); }
+inline ostream&	operator<< (ostream& os, short v)	{ os.iwrite(v); return (os); }
+inline ostream&	operator<< (ostream& os, int v)		{ os.iwrite(v); return (os); }
+inline ostream&	operator<< (ostream& os, long v)	{ os.iwrite(v); return (os); }
+inline ostream&	operator<< (ostream& os, u_char v)	{ os.iwrite(v); return (os); }
+inline ostream&	operator<< (ostream& os, u_short v)	{ os.iwrite(v); return (os); }
+inline ostream&	operator<< (ostream& os, u_int v)	{ os.iwrite(v); return (os); }
+inline ostream&	operator<< (ostream& os, u_long v)	{ os.iwrite(v); return (os); }
+inline ostream&	operator<< (ostream& os, float v)	{ os.iwrite(v); return (os); }
+inline ostream&	operator<< (ostream& os, double v)	{ os.iwrite(v); return (os); }
+inline ostream&	operator<< (ostream& os, bool v)	{ os.iwrite(v); return (os); }
+inline ostream&	operator<< (ostream& os, wchar_t v)	{ os.iwrite(v); return (os); }
 
 }; // namespace ustl
 

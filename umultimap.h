@@ -33,6 +33,8 @@ class multimap : public vector<pair<K,V> > {
 public:
     typedef K						key_type;
     typedef V						data_type;
+    typedef const K&					const_key_ref;
+    typedef const V&					const_data_ref;
     typedef typename vector<pair<K,V> >::value_type	value_type;
     typedef typename vector<pair<K,V> >::pointer	pointer;
     typedef typename vector<pair<K,V> >::const_pointer	const_pointer;
@@ -49,15 +51,15 @@ public:
 				multimap (const_iterator i1, const_iterator i2);
     inline const multimap<K,V>&	operator= (const multimap<K,V>& v);
     inline void			assign (const_iterator i1, const_iterator i2);
-    size_t			count (const key_type& k) const;
+    size_t			count (const_key_ref k) const;
     inline void			push_back (const_reference v);
-    inline pair<const_iterator,const_iterator>	equal_range (const key_type& k) const;
-    inline pair<iterator,iterator>	equal_range (const key_type& k);
-    inline const_iterator	lower_bound (const key_type& k) const;
-    inline const_iterator	upper_bound (const key_type& k) const;
+    inline pair<const_iterator,const_iterator>	equal_range (const_key_ref k) const;
+    inline pair<iterator,iterator>	equal_range (const_key_ref k);
+    inline const_iterator	lower_bound (const_key_ref k) const;
+    inline const_iterator	upper_bound (const_key_ref k) const;
     iterator			insert (const_reference v);
     inline void			insert (const_iterator i1, const_iterator i2);
-    void			erase (const key_type& k);
+    void			erase (const_key_ref k);
     inline iterator		erase (iterator ep);
     inline iterator		erase (iterator ep1, iterator ep2);
 };
@@ -110,7 +112,7 @@ inline void multimap<K,V>::assign (const_iterator i1, const_iterator i2)
 /// Returns the range of all elements with key value \p k.
 template <typename K, typename V>
 inline pair<typename multimap<K,V>::const_iterator,typename multimap<K,V>::const_iterator>
-multimap<K,V>::equal_range (const key_type& k) const
+multimap<K,V>::equal_range (const_key_ref k) const
 {
     return (::ustl::equal_range (begin(), end(), make_pair(k, V()), mem_var_less(&value_type::first)));
 }
@@ -118,14 +120,14 @@ multimap<K,V>::equal_range (const key_type& k) const
 /// Returns the range of all elements with key value \p k.
 template <typename K, typename V>
 inline pair<typename multimap<K,V>::iterator,typename multimap<K,V>::iterator>
-multimap<K,V>::equal_range (const key_type& k)
+multimap<K,V>::equal_range (const_key_ref k)
 {
     return (::ustl::equal_range (begin(), end(), make_pair(k, V()), mem_var_less(&value_type::first)));
 }
 
 /// Returns the number of elements with key value \p k.
 template <typename K, typename V>
-size_t multimap<K,V>::count (const key_type& k) const
+size_t multimap<K,V>::count (const_key_ref k) const
 {
     const pair<const_iterator,const_iterator> fr = equal_range (k);
     return (distance (fr.first, fr.second));
@@ -133,14 +135,14 @@ size_t multimap<K,V>::count (const key_type& k) const
 
 /// Returns an iterator to the first element with key value \p k.
 template <typename K, typename V>
-inline typename multimap<K,V>::const_iterator multimap<K,V>::lower_bound (const key_type& k) const
+inline typename multimap<K,V>::const_iterator multimap<K,V>::lower_bound (const_key_ref k) const
 {
     return (::ustl::lower_bound (begin(), end(), make_pair(k, V()), mem_var_less(&value_type::first)));
 }
 
 /// Returns an iterator to the first element with key value \p k.
 template <typename K, typename V>
-inline typename multimap<K,V>::const_iterator multimap<K,V>::upper_bound (const key_type& k) const
+inline typename multimap<K,V>::const_iterator multimap<K,V>::upper_bound (const_key_ref k) const
 {
     return (::ustl::upper_bound (begin(), end(), make_pair(k, V()), mem_var_less(&value_type::first)));
 }
@@ -171,7 +173,7 @@ inline void multimap<K,V>::insert (const_iterator i1, const_iterator i2)
 
 /// Erases all elements with key value \p k.
 template <typename K, typename V>
-void multimap<K,V>::erase (const key_type& k)
+void multimap<K,V>::erase (const_key_ref k)
 {
     pair<iterator,iterator> epr = equal_range (k);
     erase (epr.first, epr.second);

@@ -27,10 +27,12 @@ namespace ustl {
 void convert_to_bitstring (const u_int* v, size_t n, string& buf);
 void convert_from_bitstring (const string& buf, u_int* v, size_t n);
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 template <class T> struct bitwise_or	: public binary_function<T,T,T> { inline T operator()(const T& a, const T& b) const { return (a | b); } };
 template <class T> struct bitwise_and	: public binary_function<T,T,T> { inline T operator()(const T& a, const T& b) const { return (a & b); } };
 template <class T> struct bitwise_xor	: public binary_function<T,T,T> { inline T operator()(const T& a, const T& b) const { return (a ^ b); } };
 template <class T> struct bitwise_not	: public unary_function<T,T>    { inline T operator()(const T& a) const { return (~a); } };
+#endif
 
 ///
 /// bitset is a fixed-size block of memory with addressable bits.

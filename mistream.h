@@ -87,22 +87,6 @@ public:
     inline size_t	stream_size (void) const;
     template <typename T>
     inline void		iread (T& v);
-    template <typename T>
-    inline istream&	operator>> (T*& v);
-    template <typename T>
-    inline istream&	operator>> (const T*& v);
-    inline istream&	operator>> (char& v);
-    inline istream&	operator>> (short& v);
-    inline istream&	operator>> (int& v);
-    inline istream&	operator>> (long& v);
-    inline istream&	operator>> (u_char& v);
-    inline istream&	operator>> (u_short& v);
-    inline istream&	operator>> (u_int& v);
-    inline istream&	operator>> (u_long& v);
-    inline istream&	operator>> (float& v);
-    inline istream&	operator>> (double& v);
-    inline istream&	operator>> (bool& v);
-    inline istream&	operator>> (wchar_t& v);
 private:
     uoff_t		m_Pos;		///< The current read position.
 };
@@ -202,21 +186,21 @@ inline void istream::iread (T& v)
 }
 
 template <typename T>
-inline istream& istream::operator>> (T*& v)		{ iread(v); return (*this); }
+inline istream& operator>> (istream& is, T*& v)		{ is.iread(v); return (is); }
 template <typename T>
-inline istream& istream::operator>> (const T*& v)	{ iread(v); return (*this); }
-inline istream&	istream::operator>> (char& v)		{ iread(v); return (*this); }
-inline istream&	istream::operator>> (short& v)		{ iread(v); return (*this); }
-inline istream&	istream::operator>> (int& v)		{ iread(v); return (*this); }
-inline istream&	istream::operator>> (long& v)		{ iread(v); return (*this); }
-inline istream&	istream::operator>> (u_char& v)		{ iread(v); return (*this); }
-inline istream&	istream::operator>> (u_short& v)	{ iread(v); return (*this); }
-inline istream&	istream::operator>> (u_int& v)		{ iread(v); return (*this); }
-inline istream&	istream::operator>> (u_long& v)		{ iread(v); return (*this); }
-inline istream&	istream::operator>> (float& v)		{ iread(v); return (*this); }
-inline istream&	istream::operator>> (double& v)		{ iread(v); return (*this); }
-inline istream&	istream::operator>> (bool& v)		{ iread(v); return (*this); }
-inline istream&	istream::operator>> (wchar_t& v)	{ iread(v); return (*this); }
+inline istream& operator>> (istream& is, const T*& v)	{ is.iread(v); return (is); }
+inline istream&	operator>> (istream& is, char& v)	{ is.iread(v); return (is); }
+inline istream&	operator>> (istream& is, short& v)	{ is.iread(v); return (is); }
+inline istream&	operator>> (istream& is, int& v)	{ is.iread(v); return (is); }
+inline istream&	operator>> (istream& is, long& v)	{ is.iread(v); return (is); }
+inline istream&	operator>> (istream& is, u_char& v)	{ is.iread(v); return (is); }
+inline istream&	operator>> (istream& is, u_short& v)	{ is.iread(v); return (is); }
+inline istream&	operator>> (istream& is, u_int& v)	{ is.iread(v); return (is); }
+inline istream&	operator>> (istream& is, u_long& v)	{ is.iread(v); return (is); }
+inline istream&	operator>> (istream& is, float& v)	{ is.iread(v); return (is); }
+inline istream&	operator>> (istream& is, double& v)	{ is.iread(v); return (is); }
+inline istream&	operator>> (istream& is, bool& v)	{ is.iread(v); return (is); }
+inline istream&	operator>> (istream& is, wchar_t& v)	{ is.iread(v); return (is); }
 
 }; // namespace ustl
 
