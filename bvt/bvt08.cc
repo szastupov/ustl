@@ -1,4 +1,6 @@
 #include <uvector.h>
+#include <upair.h>
+#include <ualgo.h>
 #include <uctralgo.h>
 #include <ustring.h>
 #include <fdostream.h>

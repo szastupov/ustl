@@ -6,6 +6,14 @@
 	@echo "    Compiling $< ..."
 	@${CC} ${CFLAGS} -o $@ -c $<
 
+%.s:	%.cc
+	@echo "    Compiling $< to assembly ..."
+	@${CXX} ${CXXFLAGS} -S -o $@ -c $<
+
+%.s:	%.c
+	@echo "    Compiling $< to assembly ..."
+	@${CC} ${CFLAGS} -S -o $@ -c $<
+
 clean:	subdirs-clean
 	@echo "Removing generated files ..."
 	@${RM} -f ${OBJS} ${TOCLEAN} *.rpo .depend

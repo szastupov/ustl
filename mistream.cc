@@ -23,9 +23,6 @@
 
 #include "mistream.h"
 #include "mostream.h"
-#include "ulimits.h"
-#include "ualgo.h"
-#include <memory.h>
 
 namespace ustl {
 
@@ -66,8 +63,14 @@ void istream::swap (istream& is)
 void istream::read (void* buffer, size_t n)
 {
     assert (remaining() >= n && "Reading past end of buffer. Make sure you are reading the right format.");
-    memcpy (buffer, begin() + pos(), n);
+    copy_n (advance (begin().base(), pos()), n, buffer);
     skip (n);
+}
+
+/// Reads \p buf.size() bytes into \p buf.
+void istream::read (memlink& buf)
+{
+    read (buf.begin(), buf.size());
 }
 
 /// No reading into an input stream allowed, so this is a NOP.
@@ -125,7 +128,7 @@ void ostream::unlink (void)
 void ostream::write (const void* buffer, size_t n)
 {
     assert (remaining() >= n && "Buffer overrun. Check your stream size calculations.");
-    memcpy (begin() + pos(), buffer, n);
+    copy_n (buffer, n, advance (begin().base(), pos()));
     skip (n);
 }
 

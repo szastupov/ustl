@@ -40,13 +40,13 @@ class memblock : public memlink {
 public:
     static const size_t c_PageSize = 64;		///< The default minimum allocation unit.
 public:
-    inline 		memblock (void);
+			memblock (void);
+			memblock (const void* p, size_t n);
     explicit		memblock (size_t n);
-    inline		memblock (const void* p, size_t n);
     explicit		memblock (const cmemlink& b);
     explicit		memblock (const memlink& b);
     explicit		memblock (const memblock& b);
-    inline virtual     ~memblock (void);
+    virtual	     ~memblock (void);
  inline const memblock&	operator= (const cmemlink& b);
  inline const memblock&	operator= (const memlink& b);
  inline const memblock&	operator= (const memblock& b);
@@ -62,7 +62,7 @@ public:
     void		manage (void* p, size_t n);
     inline void		manage (memlink& l);
     inline size_t	capacity (void) const;
-    inline virtual void	unlink (void);
+    virtual void	unlink (void);
     inline size_t	max_size (void) const;
     void		read (istream& is);
     void		read_file (const char* filename);
@@ -70,13 +70,6 @@ public:
 private:
     size_t		m_AllocatedSize;	///< Number of bytes allocated by Resize.
 };
-
-/// Allocates 0 bytes for the internal block.
-inline memblock::memblock (void)
-: memlink (),
-  m_AllocatedSize (0)
-{
-}
 
 /// Copies data from \p l.
 inline void memblock::assign (const cmemlink& l)
@@ -120,20 +113,13 @@ inline void memblock::manage (memlink& l)
 /// Returns the maximum possible size of the block
 inline size_t memblock::max_size (void) const
 {
-    return (numeric_limits<size_t>::max() / elementSize());
+    return (SIZE_MAX / elementSize());
 }
 
 /// Returns true if the storage is linked, false if allocated.
 inline bool memblock::is_linked (void) const
 {
     return (!m_AllocatedSize && cdata());
-}
-
-/// Unlinks object.
-inline void memblock::unlink (void)
-{
-    memlink::unlink();
-    m_AllocatedSize = 0;
 }
 
 /// Swaps the contents with \p l
@@ -161,18 +147,6 @@ inline istream& operator>> (istream& is, memblock& l)
 {
     l.read (is);
     return (is);
-}
-
-/// Frees internal data, if appropriate
-/// Only if the block was allocated using resize, or linked to using Manage,
-/// will it be freed. Also, Derived classes should call DestructBlock from
-/// their destructor, because upstream virtual functions are unavailable at
-/// this point and will not be called automatically.
-///
-inline memblock::~memblock (void)
-{
-    if (!is_linked())
-	deallocate();
 }
 
 }; // namespace ustl

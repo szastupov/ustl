@@ -24,8 +24,6 @@
 
 #include "memblock.h"
 #include "uiterator.h"
-#include "ulimits.h"
-#include "strmsize.h"
 
 namespace ustl {
 
@@ -70,12 +68,13 @@ public:
     static const value_type c_Terminator = 0;			///< String terminator
     static const char empty_string [size_Terminator];		///< An empty string.
 public:
-    inline			string (void);
+				string (void);
 				string (const string& s);
-    inline explicit		string (const cmemlink& l);
+    explicit			string (const cmemlink& l);
 				string (const_pointer s);
 				string (const_pointer s, size_t len);
 				string (const_pointer s1, const_pointer s2);
+				string (size_t n, value_type c);
     inline size_t		size (void) const;
     inline size_t		length (void) const;
     inline pointer		data (void);
@@ -144,19 +143,6 @@ public:
     void			write (ostream& os) const;
     size_t			stream_size (void) const;
 };
-
-/// Creates an empty string.
-inline string::string (void)
-: memblock ()
-{
-    link (empty_string, sizeof(empty_string));
-}
-
-/// Assigns itself the value of string \p s
-inline string::string (const cmemlink& s)
-: memblock (s)
-{
-}
 
 /// Returns the number of characters in the string, not including the terminator.
 inline size_t string::size (void) const
@@ -419,8 +405,6 @@ inline void string::replace (iterator first, iterator last, const_reference c, s
 }
 
 }; // namespace ustl
-
-STD_STREAMABLE(ustl::string)
 
 #endif
 

@@ -4,6 +4,7 @@
 #include <uvector.h>
 #include <fdostream.h>
 #include <mistream.h>
+#include <strmsize.h>
 #include <uios.h>
 using namespace ustl;
 

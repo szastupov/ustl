@@ -25,8 +25,6 @@
 
 namespace ustl {
 
-class istream;
-
 ///
 /// \brief Wrapper for pointer to block with size.
 ///
@@ -66,8 +64,8 @@ public:
 	typedef void*		pointer;
 	typedef void		reference;
     public:
-				iterator (pointer p = NULL) : m_p (p) {}
-				iterator (const iterator& v) : m_p (v.m_p) {}
+	inline			iterator (pointer p = NULL) : m_p (p) {}
+	inline			iterator (const iterator& v) : m_p (v.m_p) {}
 	inline const iterator&	operator= (const iterator& v) { m_p = v.m_p; return (*this); }
 	inline 			operator void* (void) const { return (m_p); }
 	inline pointer		base (void) const { return (m_p); }
@@ -86,11 +84,11 @@ public:
 	pointer			m_p;
     };
 public:
-    inline 		memlink (void);
-    inline 		memlink (void* p, size_t n);
-    inline 		memlink (const void* p, size_t n);
-    inline explicit	memlink (const cmemlink& l);
-    inline 		memlink (const memlink& l);
+			memlink (void);
+			memlink (void* p, size_t n);
+			memlink (const void* p, size_t n);
+			memlink (const memlink& l);
+    explicit		memlink (const cmemlink& l);
     inline void		link (const void* p, size_t n);
     inline void		link (const cmemlink& l);
     inline void		link (void* p, size_t n);
@@ -101,8 +99,8 @@ public:
     void		copy (iterator offset, const void* p, size_t n);
     inline void*	data (void);
     inline		operator void* (void) const;
-    inline const memlink&	operator= (const cmemlink& l);
-    inline const memlink&	operator= (const memlink& l);
+    const memlink&	operator= (const cmemlink& l);
+    const memlink&	operator= (const memlink& l);
     inline void		swap (memlink& l);
     inline iterator	begin (void);
     inline iterator	end (void);
@@ -118,57 +116,6 @@ protected:
 private:
     void*		m_Data;	///< Pointer to the begin block (non-const)
 };
-
-/// Initializes both links to point to NULL,0
-inline memlink::memlink (void)
-: cmemlink (),
-  m_Data (NULL)
-{
-}
-
-/// Initializes the const link to point to \p p, \p n. Non-const link is NULL.
-inline memlink::memlink (const void* p, size_t n)
-: cmemlink (p, n),
-  m_Data (NULL)
-{
-}
-
-/// Initializes both links to point to \p p, \p n
-inline memlink::memlink (void* p, size_t n)
-: cmemlink (p, n),
-  m_Data (p)
-{
-}
-
-/// Copies information from \p l
-inline memlink::memlink (const cmemlink& l)
-: cmemlink (l),
-  m_Data (NULL)
-{
-}
-
-/// Copies information from \p l
-inline memlink::memlink (const memlink& l)
-: cmemlink (l),
-  m_Data (l.m_Data)
-{
-}
-
-/// Copies information from \p l
-inline const memlink& memlink::operator= (const cmemlink& l)
-{
-    cmemlink::operator= (l);
-    m_Data = NULL;
-    return (*this);
-}
-
-/// Copies information from \p l
-inline const memlink& memlink::operator= (const memlink& l)
-{
-    cmemlink::operator= (l);
-    m_Data = l.m_Data;
-    return (*this);
-}
 
 /// Exchanges the contents with \p l
 inline void memlink::swap (memlink& l)

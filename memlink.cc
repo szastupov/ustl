@@ -28,6 +28,57 @@
 
 namespace ustl {
 
+/// Initializes both links to point to NULL,0
+memlink::memlink (void)
+: cmemlink (),
+  m_Data (NULL)
+{
+}
+
+/// Initializes the const link to point to \p p, \p n. Non-const link is NULL.
+memlink::memlink (const void* p, size_t n)
+: cmemlink (p, n),
+  m_Data (NULL)
+{
+}
+
+/// Initializes both links to point to \p p, \p n
+memlink::memlink (void* p, size_t n)
+: cmemlink (p, n),
+  m_Data (p)
+{
+}
+
+/// Copies information from \p l
+memlink::memlink (const cmemlink& l)
+: cmemlink (l),
+  m_Data (NULL)
+{
+}
+
+/// Copies information from \p l
+memlink::memlink (const memlink& l)
+: cmemlink (l),
+  m_Data (l.m_Data)
+{
+}
+
+/// Copies information from \p l
+const memlink& memlink::operator= (const cmemlink& l)
+{
+    cmemlink::operator= (l);
+    m_Data = NULL;
+    return (*this);
+}
+
+/// Copies information from \p l
+const memlink& memlink::operator= (const memlink& l)
+{
+    cmemlink::operator= (l);
+    m_Data = l.m_Data;
+    return (*this);
+}
+
 /// Reads the object from stream \p s
 void memlink::read (istream& is)
 {

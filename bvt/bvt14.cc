@@ -1,3 +1,5 @@
+#include <upair.h>
+#include <ualgo.h>
 #include <umap.h>
 #include <ustring.h>
 #include <fdostream.h>

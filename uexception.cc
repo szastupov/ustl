@@ -19,12 +19,13 @@
 // uexception.cc
 //
 
+#include "utypes.h"
 #include "uexception.h"
 #include "ustring.h"
 #include "mistream.h"
-#include "mostream.h"
 #include "sostream.h"
-#include "uiosfunc.h"
+#include "strmsize.h"
+#include "uspecial.h"
 #include <errno.h>
 
 namespace ustl {
@@ -229,7 +230,8 @@ void file_exception::read (istream& is)
 {
     libc_exception::read (is);
     string filename;
-    is >> filename >> ios::align();
+    is >> filename;
+    is.align();
     strncpy (m_Filename, filename, PATH_MAX - 1);
 }
 
@@ -237,7 +239,8 @@ void file_exception::read (istream& is)
 void file_exception::write (ostream& os) const
 {
     libc_exception::write (os);
-    os << string(m_Filename) << ios::align();
+    os << string(m_Filename);
+    os.align();
 }
 
 /// Returns the size of the written exception.

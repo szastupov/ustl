@@ -18,7 +18,7 @@
 //
 /// \file unew.h
 ///
-///	Same as \<new\>; to avoid including it and to throw correct exceptions.
+/// \brief Same as \<new\>, but throws ustl:: exceptions.
 //
 
 #ifndef UNEW_H_11D237512B324C9C05A55DAF1BF086F1

@@ -98,6 +98,13 @@ inline size_t distance (const void* p1, const void* p2)
 /// Returns the number of bits in the given type
 #define BitsInType(t) (sizeof(t) * CHAR_BIT)
 
+/// Argument that is used only in debug builds (as in an assert)
+#ifndef NDEBUG
+    #define DebugArg(x)	x
+#else
+    #define DebugArg(x)
+#endif
+
 /// Template for for_each to call delete
 template <typename T>
 inline void Delete (T* p)

@@ -39,16 +39,24 @@ public:
     typedef T*		pointer;
     typedef T&		reference;
 public:
+    /// Takes ownership of \p p.
     inline explicit	auto_ptr (pointer p = NULL)	: m_p (p) {}
+    /// Takes ownership of pointer in \p p. \p p relinquishes ownership.
     inline		auto_ptr (auto_ptr<T>& p)	: m_p (p.release()) {}
+    /// Deletes the owned pointer.
     inline	       ~auto_ptr (void)			{ delete m_p; }
+    /// Returns the pointer without relinquishing ownership.
+    inline pointer	get (void) const		{ return (m_p); }
+    /// Returns the pointer and gives up ownership.
+    inline pointer	release (void)			{ pointer rv (m_p); m_p = NULL; return (rv); }
+    /// Deletes the pointer and sets it equal to \p p.
+    inline void		reset (pointer p)		{ if (p != m_p) { delete m_p; m_p = p; } }
+    /// Takes ownership of \p p.
+    inline auto_ptr<T>&	operator= (pointer p)		{ reset (p); return (*this); }
+    /// Takes ownership of pointer in \p p. \p p relinquishes ownership.
+    inline auto_ptr<T>&	operator= (auto_ptr<T>& p)	{ reset (p.release()); return (*this); }
     inline reference	operator* (void) const		{ return (*m_p); }
     inline pointer	operator-> (void) const		{ return (m_p); }
-    inline pointer	get (void) const		{ return (m_p); }
-    inline pointer	release (void)			{ pointer rv (m_p); m_p = NULL; return (rv); }
-    inline void		reset (pointer p)		{ if (p != m_p) { delete m_p; m_p = p; } }
-    inline auto_ptr<T>&	operator= (pointer p)		{ reset (p); return (*this); }
-    inline auto_ptr<T>&	operator= (auto_ptr<T>& p)	{ reset (p.release()); return (*this); }
     inline bool		operator== (const pointer p) const	{ return (m_p == p); }
     inline bool		operator== (const auto_ptr<T>& p) const	{ return (m_p == p.m_p); }
     inline bool		operator< (const auto_ptr<T>& p) const	{ return (p.m_p < m_p); }

@@ -22,9 +22,6 @@
 #include "sistream.h"
 #include "sostream.h"
 #include "ustring.h"
-#include <ctype.h>
-#include "sostream.h"
-#include "uios.h"
 
 namespace ustl {
 

@@ -22,7 +22,7 @@
 #ifndef UIOSFUNC_H_730C16E316F7650E3A02E1C6611B789A
 #define UIOSFUNC_H_730C16E316F7650E3A02E1C6611B789A
 
-#include "uios.h"
+#include "sostream.h"
 
 namespace ustl {
 namespace ios {

@@ -23,6 +23,7 @@
 #define UMULTISET_H_446AEDBB7F61C6994DC228C25D5FA3A1
 
 #include "uvector.h"
+#include "ualgo.h"
 
 namespace ustl {
 
@@ -129,7 +130,8 @@ inline void multiset<T>::insert (const_iterator i1, const_iterator i2)
 {
     assert (i1 <= i2);
     reserve (size() + distance (i1, i2));
-    for_each (i1, i2, mem_fun (this, &multiset<T>::push_back));
+    while (i1 < i2)
+	push_back (*i1++);
 }
 
 /// Erases all elements with value \p v.

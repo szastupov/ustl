@@ -16,19 +16,17 @@
 // Free Software Foundation, Inc., 59 Temple Place - Suite 330, 
 // Boston, MA  02111-1307  USA.
 //
-/// \file uctralgo.h
-///
-/// \brief Implementation of STL algorithms with container shortcuts.
-///
-/// The function prototypes are copied
-/// exactly from the SGI version of STL documentation along with comments about
-/// their use. The code is NOT the same, though the functionality usually is.
-///
+// uctralgo.h
+//
+// \brief Implementation of STL algorithms with container shortcuts.
+//
+// The function prototypes are copied
+// exactly from the SGI version of STL documentation along with comments about
+// their use. The code is NOT the same, though the functionality usually is.
+//
 
 #ifndef UCTRALGO_H
 #define UCTRALGO_H
-
-#include "ualgo.h"
 
 namespace ustl {
 
@@ -488,7 +486,8 @@ inline typename Container::iterator unconst (typename Container::const_iterator 
     return (ctr.begin() + (i - cctr.begin()));
 }
 
-/// Converts a const_iterator in one container into a const_iterator in another container.
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+
 #define IBYI(Iter1, Iter2, Ctr1, Ctr2)	\
 template <class Container1, class Container2>		\
 inline typename Container2::Iter2 ibyi (typename Container1::Iter1 idx, Ctr1& ctr1, Ctr2& ctr2)	\
@@ -501,6 +500,16 @@ IBYI(const_iterator, const_iterator, const Container1, const Container2)
 IBYI(iterator, iterator, Container1, Container2)
 IBYI(const_iterator, iterator, const Container1, Container2)
 IBYI(iterator, const_iterator, Container1, const Container2)
+
+#else // DOXYGEN
+
+#error This declaration is for doxygen only; it is not compiled.
+
+/// Converts a const_iterator in one container into a const_iterator in another container.
+template <class Container1, class Container2>
+inline typename Container2::iterator ibyi (typename Container1::iterator idx, Container1& ctr1, Container2& ctr2) {}
+
+#endif // DOXYGEN
 
 }; // namespace ustl
 

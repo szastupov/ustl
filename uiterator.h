@@ -22,8 +22,6 @@
 #ifndef UITERATOR_H
 #define UITERATOR_H
 
-#include "utypes.h"
-
 namespace ustl {
 
 //----------------------------------------------------------------------

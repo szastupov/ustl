@@ -36,6 +36,13 @@
 
 namespace ustl {
 
+/// Allocates 0 bytes for the internal block.
+memblock::memblock (void)
+: memlink (),
+  m_AllocatedSize (0)
+{
+}
+
 /// Allocates \p n bytes for the internal block.
 memblock::memblock (size_t n)
 : memlink (),
@@ -74,6 +81,18 @@ memblock::memblock (const memblock& b)
   m_AllocatedSize (0)
 {
     assign (b);
+}
+
+/// Frees internal data, if appropriate
+/// Only if the block was allocated using resize, or linked to using Manage,
+/// will it be freed. Also, Derived classes should call DestructBlock from
+/// their destructor, because upstream virtual functions are unavailable at
+/// this point and will not be called automatically.
+///
+memblock::~memblock (void)
+{
+    if (!is_linked())
+	deallocate();
 }
 
 /// Frees internal data.
@@ -150,6 +169,13 @@ memblock::iterator memblock::erase (iterator start, size_t n)
     memlink::erase (begin() + ep, n);
     resize (size() - n, false);
     return (begin() + ep);
+}
+
+/// Unlinks object.
+void memblock::unlink (void)
+{
+    memlink::unlink();
+    m_AllocatedSize = 0;
 }
 
 /// Reads the object from stream \p s

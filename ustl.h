@@ -79,22 +79,20 @@
 #ifndef USTL_H_99881273
 #define USTL_H_99881273
 
-#include "ustl/uvector.h"
-#include "ustl/uctralgo.h"
-#include "ustl/ufunction.h"
-#include "ustl/ustring.h"
-#include "ustl/ustack.h"
-#include "ustl/sistream.h"
-#include "ustl/sostream.h"
+#include "ustl/uspecial.h"
 #include "ustl/ulimits.h"
-#include "ustl/uset.h"
-#include "ustl/umultiset.h"
+#include "ustl/sistream.h"
+#include "ustl/uiosfunc.h"
+#include "ustl/uctralgo.h"
+#include "ustl/utf8.h"
 #include "ustl/umap.h"
 #include "ustl/umultimap.h"
-#include "ustl/uspecial.h"
-#include "ustl/uiosfunc.h"
-#include "ustl/fdostream.h"
-#include "ustl/utf8.h"
+#include "ustl/ustack.h"
+#ifndef WITHOUT_CIN_COUT_CERR
+    #include "ustl/fdostream.h"
+#else
+    #include "ustl/sostream.h"
+#endif
 
 #endif
 

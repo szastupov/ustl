@@ -23,7 +23,6 @@
 #define USET_H_45543F516E02A87A3FCEA5024052A6F5
 
 #include "uvector.h"
-#include "ufunction.h"
 
 namespace ustl {
 
@@ -143,7 +142,8 @@ inline void set<T>::insert (const_iterator i1, const_iterator i2)
 {
     assert (i1 <= i2);
     reserve (size() + distance (i1, i2));
-    for_each (i1, i2, mem_fun (this, &set<T>::push_back));
+    while (i1 < i2)
+	push_back (*i1++);
 }
 
 /// Erases the element with value \p v.

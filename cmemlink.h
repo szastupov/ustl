@@ -66,8 +66,8 @@ public:
 	typedef const void*	pointer;
 	typedef void		reference;
     public:
-				iterator (pointer p = NULL) : m_p (p) {}
-				iterator (const iterator& v) : m_p (v.m_p) {}
+	inline			iterator (pointer p = NULL) : m_p (p) {}
+	inline			iterator (const iterator& v) : m_p (v.m_p) {}
 	inline const iterator&	operator= (const iterator& v) { m_p = v.m_p; return (*this); }
 	inline 			operator const void* (void) const { return (m_p); }
 	inline pointer		base (void) const { return (m_p); }
@@ -87,9 +87,9 @@ public:
     };
     typedef iterator		const_iterator;
 public:
-    inline 		cmemlink (void);
-    inline 		cmemlink (const void* p, size_t n);
-    inline 		cmemlink (const cmemlink& l);
+			cmemlink (void);
+			cmemlink (const void* p, size_t n);
+			cmemlink (const cmemlink& l);
     inline virtual     ~cmemlink (void) {}
     void		link (const void* p, size_t n);
     inline void		link (const cmemlink& l);
@@ -115,30 +115,6 @@ private:
     const void*		m_CData;	///< Pointer to the data block (const)
     size_t		m_Size;		///< size of the data block
 };
-
-/// Default constructor initializes to point to NULL,0
-inline cmemlink::cmemlink (void)
-: m_CData (NULL),
-  m_Size (0)
-{
-}
-
-/// Attaches the object to pointer \p p of size \p n.
-inline cmemlink::cmemlink (const void* p, size_t n)
-: m_CData (p),
-  m_Size (n)
-{
-    assert (p || !n);
-    assert (size() % elementSize() == 0 && "You are trying to link to a block of different element type.");
-}
-
-/// Copies values from l
-inline cmemlink::cmemlink (const cmemlink& l)
-: m_CData (l.m_CData),
-  m_Size (l.m_Size)
-{
-    assert (size() % elementSize() == 0 && "You are trying to link to a block of different element type.");
-}
 
 /// Returns the pointer to the internal data
 inline const void* cmemlink::cdata (void) const

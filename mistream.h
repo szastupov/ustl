@@ -21,11 +21,12 @@
 #ifndef MISTREAM_H
 #define MISTREAM_H
 
-#include "memblock.h"
+#include "cmemlink.h"
 
 namespace ustl {
 
 class ostream;
+class memlink;
 
 ///
 /// \brief Helper class to read packed binary streams.
@@ -80,7 +81,7 @@ public:
     inline void		align (size_t grain = c_DefaultAlignment);
     void		swap (istream& is);
     void		read (void* buffer, size_t size);
-    inline void		read (memlink& buf);
+    void		read (memlink& buf);
     void		read (istream& is);
     void		write (ostream& is) const;
     inline size_t	stream_size (void) const;
@@ -181,12 +182,6 @@ inline bool istream::aligned (size_t grain) const
 inline void istream::align (size_t grain)
 {
     seek (Align (pos(), grain));
-}
-
-/// Reads \p buf.size() bytes into \p buf.
-inline void istream::read (memlink& buf)
-{
-    read (buf.begin(), buf.size());
 }
 
 /// Returns number of unread bytes.

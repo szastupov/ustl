@@ -16,14 +16,13 @@
 // Free Software Foundation, Inc., 59 Temple Place - Suite 330, 
 // Boston, MA  02111-1307  USA.
 //
-/// \file uios.h
-/// \brief Types used by the streams for option setting.
+// uios.h
+//
+// Types used by the streams for option setting.
 //
 
 #ifndef UIOS_H_630C16E316F7650E3A02E1C6611B789A
 #define UIOS_H_630C16E316F7650E3A02E1C6611B789A
-
-#include "strmsize.h"
 
 namespace ustl {
 

@@ -16,19 +16,19 @@
 // Free Software Foundation, Inc., 59 Temple Place - Suite 330, 
 // Boston, MA  02111-1307  USA.
 //
-/// \file ufunction.h
-///
-/// \brief Implements STL standard functors.
-///
-/// See STL specification and bvts for usage of these. The only
-/// extension is the mem_var functors for member variable access:
-/// \code
-///	f = find_if (ctr, mem_var_equal_to(&MyClass::m_Var, matchVar));
-///	f = find_if (ctr, mem_var_less(&MyClass::m_Var, matchVar));
-/// \endcode
-/// There are a couple of others but the syntax is much harder to grasp.
-/// See bvt10.cc for more examples.
-///
+// ufunction.h
+//
+// \brief Implements STL standard functors.
+//
+// See STL specification and bvts for usage of these. The only
+// extension is the mem_var functors for member variable access:
+// \code
+//	f = find_if (ctr, mem_var_equal_to(&MyClass::m_Var, matchVar));
+//	f = find_if (ctr, mem_var_less(&MyClass::m_Var, matchVar));
+// \endcode
+// There are a couple of others but the syntax is much harder to grasp.
+// See bvt10.cc for more examples.
+//
 
 #ifndef UFUNCTION_H_221ABA8551801799263C927234C085F3
 #define UFUNCTION_H_221ABA8551801799263C927234C085F3
@@ -343,6 +343,8 @@ mem_var_less (const VT T::*mvp)
 // Dereference adaptors (uSTL extension)
 //----------------------------------------------------------------------
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+
 #define DEREFERENCER_T(ClassName, ArgType, BaseClass, CallImpl, FunctorKey)	\
     template <typename T, typename Function>					\
     class ClassName : public BaseClass {					\
@@ -376,6 +378,8 @@ DEREFERENCER_T(const_deref2_t,	const T, 	FUNCTOR_BINARY_BASE(const T*),	DEREF_BI
 
 #undef DEREF_UNARY_ARGS
 #undef DEREF_BINARY_ARGS
+
+#endif
 
 }; // namespace ustl
 

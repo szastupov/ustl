@@ -1,11 +1,10 @@
 #include <ustring.h>
-#include <mistream.h>
-#include <mostream.h>
-#include <strmsize.h>
 #include <fdostream.h>
 #include <mistream.h>
 #include <uios.h>
 #include <uvector.h>
+#include <strmsize.h>
+#include <uspecial.h>
 using namespace ustl;
 
 int main (void)

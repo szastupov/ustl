@@ -1,4 +1,6 @@
 #include <uvector.h>
+#include <upair.h>
+#include <ualgo.h>
 #include <uctralgo.h>
 #include <uiterator.h>
 #include <fdostream.h>

@@ -1,8 +1,13 @@
 #include <ustring.h>
 #include <uvector.h>
+#include <mistream.h>
+#include <mostream.h>
+#include <strmsize.h>
 #include <fdostream.h>
 #include <uios.h>
 #include <utf8.h>
+#include <upair.h>
+#include <ualgo.h>
 #include <uctralgo.h>
 using namespace ustl;
 

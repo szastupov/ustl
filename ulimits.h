@@ -18,11 +18,6 @@
 //
 // ulimits.h
 //
-/// \file ulimits.h
-///
-/// \brief This is a rewrite of the system \<limits\> file to use
-/// C limits.h and be smaller.
-///
 
 #ifndef ULIMITS_H_1C2192EA3821E0811BBAF86B0F048364
 #define ULIMITS_H_1C2192EA3821E0811BBAF86B0F048364

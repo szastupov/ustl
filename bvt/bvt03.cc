@@ -4,6 +4,7 @@
 #include <memblock.h>
 #include <fdostream.h>
 #include <mistream.h>
+#include <strmsize.h>
 #include <uiosfunc.h>
 using namespace ustl;
 

@@ -1,3 +1,4 @@
+#include <ualgo.h>
 #include <umultimap.h>
 #include <ustring.h>
 #include <fdostream.h>

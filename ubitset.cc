@@ -16,32 +16,36 @@
 // Free Software Foundation, Inc., 59 Temple Place - Suite 330, 
 // Boston, MA  02111-1307  USA.
 //
-// utypes.h
-//
-// Types used by this library.
+// ubitset.cc
 //
 
-#ifndef UTYPES_H
-#define UTYPES_H
+#include "ubitset.h"
 
-#include "config.h"
-#define __STDC_LIMIT_MACROS	// For WCHAR_MIN and WCHAR_MAX in stdint.
-#ifdef HAVE_STDINT_H
-    #include <stdint.h>
-#endif
-#include <stddef.h>		// For ptrdiff_t, size_t
-#include <limits.h>
-#include <float.h>
-#ifdef HAVE_SYS_TYPES_H
-    #include <sys/types.h>
-#else
-    typedef unsigned char	u_char;
-    typedef unsigned short	u_short;
-    typedef unsigned int	u_int;
-    typedef unsigned long	u_long;
-#endif
+namespace ustl {
 
-typedef size_t	uoff_t; ///< A type for storing offsets into blocks measured by size_t.
+/// Copies bits from \p v of size \p n into \p buf as MSB "1011001..." LSB
+/// If \p buf is too small, MSB bits will be truncated.
+void convert_to_bitstring (const u_int* v, size_t n, string& buf)
+{
+    string::iterator stri = buf.end();
+    for (size_t i = 0; i < n && stri > buf.begin(); ++ i)
+	for (size_t b = 1; b != 0 && stri > buf.begin(); b <<= 1)
+	    *--stri = (v[i] & b) ? '1' : '0';
+}
 
-#endif
+/// Copies bits from \p buf as MSB "1011001..." LSB into \p v of size \p n.
+void convert_from_bitstring (const string& buf, u_int* v, size_t n)
+{
+    string::const_iterator stri = buf.end();
+    for (size_t i = 0; i < n; ++ i) {
+	for (size_t b = 1; b != 0; b <<= 1) {
+	    if (stri == buf.begin() || *--stri == '0')
+		v[i] &= ~b;
+	    else
+		v[i] |= b;
+	}
+    }
+}
+
+}; // namespace ustl
 

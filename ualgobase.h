@@ -16,14 +16,14 @@
 // Free Software Foundation, Inc., 59 Temple Place - Suite 330, 
 // Boston, MA  02111-1307  USA.
 //
-/// \file ualgo.h
-///
-/// \brief Implementation of STL algorithms.
-///
-/// The function prototypes are copied
-/// exactly from the SGI version of STL documentation along with comments about
-/// their use. The code is NOT the same, though the functionality usually is.
-///
+// ualgobase.h
+//
+// Implementation of STL algorithms.
+//
+// The function prototypes are copied
+// exactly from the SGI version of STL documentation along with comments about
+// their use. The code is NOT the same, though the functionality usually is.
+//
 
 #ifndef UALGOBASE_H
 #define UALGOBASE_H
@@ -54,7 +54,7 @@ inline void swap (Assignable& a, Assignable& b)
 /// i.e. in order of increasing n. 
 ///
 template <class InputIterator, class OutputIterator>
-OutputIterator copy (InputIterator first, InputIterator last, OutputIterator result)
+inline OutputIterator copy (InputIterator first, InputIterator last, OutputIterator result)
 {
     while (first < last)
 	*result++ = *first++;
@@ -84,7 +84,7 @@ inline OutputIterator copy_n (InputIterator first, size_t count, OutputIterator 
 /// the function object after it has been applied to each element.
 ///
 template <class InputIterator, class UnaryFunction>
-UnaryFunction for_each (InputIterator first, InputIterator last, UnaryFunction f)
+inline UnaryFunction for_each (InputIterator first, InputIterator last, UnaryFunction f)
 {
     while (first < last)
 	f (*first++);
@@ -97,7 +97,7 @@ UnaryFunction for_each (InputIterator first, InputIterator last, UnaryFunction f
 /// it performs the assignment *i = value.
 ///
 template <class ForwardIterator, class T>
-void fill (ForwardIterator first, ForwardIterator last, const T& value)
+inline void fill (ForwardIterator first, ForwardIterator last, const T& value)
 {
     while (first < last)
 	*first++ = value;
@@ -109,10 +109,10 @@ void fill (ForwardIterator first, ForwardIterator last, const T& value)
 /// it performs the assignment *i = value. The return value is first + n.
 ///
 template <class OutputIterator, class T>
-OutputIterator fill_n (OutputIterator first, size_t n, const T& value)
+inline OutputIterator fill_n (OutputIterator first, size_t n, const T& value)
 {
-    while (n--)
-	*first++ = value;
+    for (size_t i = 0; i < n; ++ i)
+	first[i] = value;
     return (first);
 }
 

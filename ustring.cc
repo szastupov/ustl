@@ -21,10 +21,10 @@
 //	STL basic_string equivalent functionality.
 //
 
+#include "utypes.h"
 #include "ustring.h"
 #include "mistream.h"
 #include "mostream.h"
-#include "strmsize.h"
 #include "utf8.h"
 #include <stdarg.h>	// for va_list, va_start, and va_end (in string::format)
 #include <stdio.h>	// for vsnprintf (in string::format)
@@ -32,6 +32,19 @@
 namespace ustl {
 
 const char string::empty_string[string::size_Terminator] = "";
+
+/// Creates an empty string.
+string::string (void)
+: memblock ()
+{
+    link (empty_string, sizeof(empty_string));
+}
+
+/// Assigns itself the value of string \p s
+string::string (const cmemlink& s)
+: memblock (s)
+{
+}
 
 /// Assigns itself the value of string \p s
 string::string (const string& s)
@@ -65,6 +78,13 @@ string::string (const_pointer s1, const_pointer s2)
 {
     assert (s1 <= s2 && "Negative ranges result in memory allocation errors.");
     assign (s1, s2);
+}
+
+/// Creates a string of length \p n filled with character \p c.
+string::string (size_t n, value_type c)
+: memblock (n + size_Terminator)
+{
+    fill_n (begin(), n, c);
 }
 
 /// Resize the string to \p n characters. New space contents is undefined.

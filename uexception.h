@@ -18,11 +18,9 @@
 //
 // uexception.h
 //
-/// \file uexception.h
-///
-/// \brief This file contains stuff from \<exception\>.
-///	The standard C++ headers are duplicated because uSTL is intended
-/// 	to completely replace all C++ standard library functions.
+// This file contains stuff from \<exception\>.
+// The standard C++ headers are duplicated because uSTL is intended
+// to completely replace all C++ standard library functions.
 //
 
 #ifndef UEXCEPTION
