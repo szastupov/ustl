@@ -31,24 +31,20 @@ namespace ustl {
 //----------------------------------------------------------------------
 
 /// \p arg contains a description of the error.
-logic_error::logic_error (const string& arg)
+logic_error::logic_error (const string& arg) throw()
 : m_Arg ()
 {
     try { m_Arg = arg; } catch (...) {}
     set_format (xfmt_LogicError);
 }
 
-logic_error::~logic_error (void)
-{
-}
-
-const char* logic_error::what (void) const
+const char* logic_error::what (void) const throw()
 {
     return ("logic error");
 }
 
 /// Returns a descriptive error message. fmt="%s: %s"
-void logic_error::info (string& msgbuf, const char* fmt) const
+void logic_error::info (string& msgbuf, const char* fmt) const throw()
 {
     if (!fmt) fmt = "%s: %s";
     try { msgbuf.format (fmt, what(), m_Arg.cdata()); } catch (...) {}
@@ -73,48 +69,48 @@ size_t logic_error::stream_size (void) const
 
 //----------------------------------------------------------------------
 
-domain_error::domain_error (const string& arg)
+domain_error::domain_error (const string& arg) throw()
 : logic_error (arg)
 {
 }
 
-const char* domain_error::what (void) const
+const char* domain_error::what (void) const throw()
 {
     return ("domain error");
 }
 
 //----------------------------------------------------------------------
 
-invalid_argument::invalid_argument (const string& arg)
+invalid_argument::invalid_argument (const string& arg) throw()
 : logic_error (arg)
 {
 }
 
-const char* invalid_argument::what (void) const
+const char* invalid_argument::what (void) const throw()
 {
     return ("invalid argument");
 }
 
 //----------------------------------------------------------------------
 
-length_error::length_error (const string& arg)
+length_error::length_error (const string& arg) throw()
 : logic_error (arg)
 {
 }
 
-const char* length_error::what (void) const
+const char* length_error::what (void) const throw()
 {
     return ("length error");
 }
 
 //----------------------------------------------------------------------
 
-out_of_range::out_of_range (const string& arg)
+out_of_range::out_of_range (const string& arg) throw()
 : logic_error (arg)
 {
 }
 
-const char* out_of_range::what (void) const
+const char* out_of_range::what (void) const throw()
 {
     return ("out of range");
 }
@@ -122,24 +118,24 @@ const char* out_of_range::what (void) const
 //----------------------------------------------------------------------
 
 /// \p arg contains a description of the error.
-runtime_error::runtime_error (const string& arg)
+runtime_error::runtime_error (const string& arg) throw()
 : m_Arg ()
 {
     try { m_Arg = arg; } catch (...) {}
     set_format (xfmt_RuntimeError);
 }
 
-runtime_error::~runtime_error (void)
+runtime_error::~runtime_error (void) throw()
 {
 }
 
-const char* runtime_error::what (void) const
+const char* runtime_error::what (void) const throw()
 {
     return ("runtime error");
 }
 
 /// Returns a descriptive error message. fmt="%s: %s"
-void runtime_error::info (string& msgbuf, const char* fmt) const
+void runtime_error::info (string& msgbuf, const char* fmt) const throw()
 {
     if (!fmt) fmt = "%s: %s";
     try { msgbuf.format (fmt, what(), m_Arg.cdata()); } catch (...) {}
@@ -164,36 +160,36 @@ size_t runtime_error::stream_size (void) const
 
 //----------------------------------------------------------------------
 
-range_error::range_error (const string& arg)
+range_error::range_error (const string& arg) throw()
 : runtime_error (arg)
 {
 }
 
-const char* range_error::what (void) const
+const char* range_error::what (void) const throw()
 {
     return ("range error");
 }
 
 //----------------------------------------------------------------------
 
-overflow_error::overflow_error (const string& arg)
+overflow_error::overflow_error (const string& arg) throw()
 : runtime_error (arg)
 {
 }
 
-const char* overflow_error::what (void) const
+const char* overflow_error::what (void) const throw()
 {
     return ("overflow error");
 }
 
 //----------------------------------------------------------------------
 
-underflow_error::underflow_error (const string& arg)
+underflow_error::underflow_error (const string& arg) throw()
 : runtime_error (arg)
 {
 }
 
-const char* underflow_error::what (void) const
+const char* underflow_error::what (void) const throw()
 {
     return ("underflow error");
 }

@@ -232,8 +232,6 @@ inline void istream::iread (T& v)
 
 template <typename T>
 inline istream& operator>> (istream& is, T*& v)		{ is.iread(v); return (is); }
-template <typename T>
-inline istream& operator>> (istream& is, const T*& v)	{ is.iread(v); return (is); }
 inline istream&	operator>> (istream& is, signed char& v){ is.iread(v); return (is); }
 inline istream&	operator>> (istream& is, char& v)	{ is.iread(v); return (is); }
 inline istream&	operator>> (istream& is, short& v)	{ is.iread(v); return (is); }

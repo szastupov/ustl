@@ -23,7 +23,11 @@
 #define SOSTREAM_H_5323DC8C26E181D43278F2F53FDCF19F
 
 #include "mostream.h"
-#include "ufacets.h"
+#ifdef WITHOUT_LIBSTDCPP
+    #include "ufacets.h"
+#else
+    #include <locale>
+#endif
 #include "uios.h"
 
 namespace ustl {

@@ -74,7 +74,7 @@ namespace ios {
 	size_t			m_Base;
     };
 
-}; // namespace ios
+} // namespace ios (no semicolon to support dumb compilers)
 
 inline istream& operator>> (istream& is, const ios::skip& op)	{ return (op.apply (is)); }
 inline ostream& operator<< (ostream& os, const ios::skip& op)	{ return (op.apply (os)); }

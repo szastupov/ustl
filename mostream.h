@@ -23,9 +23,7 @@
 
 #include "memlink.h"
 #include "uexception.h"
-#ifdef WANT_STREAM_BOUNDS_CHECKING
-    #include <typeinfo>
-#endif
+#include <typeinfo>
 
 namespace ustl {
 
@@ -224,9 +222,7 @@ inline void ostream::iwrite (const T& v)
 }
 
 template <typename T>
-inline ostream&	operator<< (ostream& os, T* v)	{ os.iwrite(v); return (os); }
-template <typename T>
-inline ostream&	operator<< (ostream& os, const T* v)	{ os.iwrite(v); return (os); }
+inline ostream&	operator<< (ostream& os, T* v)		{ os.iwrite(v); return (os); }
 inline ostream&	operator<< (ostream& os, signed char v)	{ os.iwrite(v); return (os); }
 inline ostream&	operator<< (ostream& os, char v)	{ os.iwrite(v); return (os); }
 inline ostream&	operator<< (ostream& os, short v)	{ os.iwrite(v); return (os); }

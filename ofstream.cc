@@ -27,6 +27,7 @@
 #include <stdio.h>
 #include <stdarg.h>
 
+#ifndef WITHOUT_CIN_COUT_CERR
 namespace ustl {
 
 //----------------------------------------------------------------------
@@ -140,4 +141,5 @@ size_t fdistringstream::underflow (size_t n)
 //----------------------------------------------------------------------
 
 }; // namespace ustl
+#endif // WITHOUT_CIN_COUT_CERR
 

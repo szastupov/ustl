@@ -27,6 +27,10 @@
 #define UEXCEPTION_H_18DE3EF55C4F00673268F0D66546AF5D
 
 #include "utypes.h"
+#ifndef WITHOUT_LIBSTDCPP
+    #include <exception>
+    #include <new>
+#endif
 
 namespace ustl {
 
@@ -50,12 +54,16 @@ static const xfmt_t	xfmt_StreamBoundsException	= 14;
 ///
 /// \brief Base class for exceptions, equivalent to std::exception.
 ///
+#ifdef WITHOUT_LIBSTDCPP
 class exception {
+#else
+class exception : public std::exception {
+#endif
 public:
-    			exception (void);
-    virtual	       ~exception (void);
-    virtual const char*	what (void) const;
-    virtual void	info (string& msgbuf, const char* fmt = NULL) const;
+    			exception (void) throw();
+    virtual	       ~exception (void) throw();
+    virtual const char*	what (void) const throw();
+    virtual void	info (string& msgbuf, const char* fmt = NULL) const throw();
     virtual void	read (istream& is);
     virtual void	write (ostream& os) const;
     void		text_write (ostringstream& os) const;
@@ -77,8 +85,8 @@ private:
 ///
 class bad_cast : public exception {
 public:
-    explicit		bad_cast (void);
-    virtual const char*	what (void) const;
+    explicit		bad_cast (void) throw();
+    virtual const char*	what (void) const throw();
 };
 
 /// \class bad_alloc uexception.h ustl.h
@@ -86,11 +94,15 @@ public:
 ///
 /// \brief Exception thrown on memory allocation failure by memblock::reserve.
 ///
+#ifdef WITHOUT_LIBSTDCPP
 class bad_alloc : public exception {
+#else
+class bad_alloc : public std::bad_alloc, public exception {
+#endif
 public:
-    explicit		bad_alloc (size_t nBytes);
-    virtual const char*	what (void) const;
-    virtual void	info (string& msgbuf, const char* fmt = NULL) const;
+    explicit		bad_alloc (size_t nBytes = 0) throw();
+    virtual const char*	what (void) const throw();
+    virtual void	info (string& msgbuf, const char* fmt = NULL) const throw();
     virtual void	read (istream& is);
     virtual void	write (ostream& os) const;
     virtual size_t	stream_size (void) const;
@@ -107,11 +119,11 @@ protected:
 ///
 class libc_exception : public exception {
 public:
-    explicit		libc_exception (const char* operation);
-			libc_exception (const libc_exception& v);
+    explicit		libc_exception (const char* operation) throw();
+			libc_exception (const libc_exception& v) throw();
     const libc_exception& operator= (const libc_exception& v);
-    virtual const char*	what (void) const;
-    virtual void	info (string& msgbuf, const char* fmt = NULL) const;
+    virtual const char*	what (void) const throw();
+    virtual void	info (string& msgbuf, const char* fmt = NULL) const throw();
     virtual void	read (istream& is);
     virtual void	write (ostream& os) const;
     virtual size_t	stream_size (void) const;
@@ -129,9 +141,9 @@ protected:
 ///
 class file_exception : public libc_exception {
 public:
-			file_exception (const char* operation, const char* filename);
-    virtual const char*	what (void) const;
-    virtual void	info (string& msgbuf, const char* fmt = NULL) const;
+			file_exception (const char* operation, const char* filename) throw();
+    virtual const char*	what (void) const throw();
+    virtual void	info (string& msgbuf, const char* fmt = NULL) const throw();
     virtual void	read (istream& is);
     virtual void	write (ostream& os) const;
     virtual size_t	stream_size (void) const;
@@ -150,9 +162,9 @@ protected:
 ///
 class stream_bounds_exception : public libc_exception {
 public:
-			stream_bounds_exception (const char* operation, const char* type, uoff_t offset, size_t expected, size_t remaining);
-    virtual const char*	what (void) const;
-    virtual void	info (string& msgbuf, const char* fmt = NULL) const;
+			stream_bounds_exception (const char* operation, const char* type, uoff_t offset, size_t expected, size_t remaining) throw();
+    virtual const char*	what (void) const throw();
+    virtual void	info (string& msgbuf, const char* fmt = NULL) const throw();
     virtual void	read (istream& is);
     virtual void	write (ostream& os) const;
     virtual size_t	stream_size (void) const;

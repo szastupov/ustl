@@ -77,6 +77,7 @@ static void SubstitutePrograms (void);
 static void SubstituteHostOptions (void);
 static void SubstituteHeaders (void);
 static void SubstituteFunctions (void);
+static void SubstituteComponents (void);
 static void SubstituteCustomVars (void);
 
 static void DetermineHost (void);
@@ -150,6 +151,7 @@ int main (int argc, char** argv)
 	SubstitutePrograms();
 	SubstituteHeaders();
 	SubstituteFunctions();
+	SubstituteComponents();
 	SubstituteCustomVars();
 	SubstituteEnvironment (1);
 	WriteFile (g_Files[f]);
@@ -159,6 +161,7 @@ int main (int argc, char** argv)
 
 static void PrintHelp (void)
 {
+    int i;
     printf (
 "`configure' configures " PACKAGE_STRING " to adapt to many kinds of systems.\n"
 "\n"
@@ -187,7 +190,20 @@ static void PrintHelp (void)
 "System types:\n"
 "  --build=BUILD\t\tconfigure for building on BUILD [guessed]\n"
 "  --host=HOST\t\tcross-compile to build programs to run on HOST [BUILD]\n"
-"\n"
+"\n");
+    if (VectorSize(g_Components)) {
+	printf ("Options:\n");
+	for (i = 0; i < VectorSize(g_ComponentInfos); ++ i) {
+	    if (!g_ComponentInfos[i].m_Description[0])
+		continue;
+	    if (g_ComponentInfos[i].m_bDefaultOn)
+		printf ("  --without-%s\t%s\n", g_Components[i * 3], g_ComponentInfos[i].m_Description);
+	    else
+		printf ("  --with-%s\t\t%s\n", g_Components[i * 3], g_ComponentInfos[i].m_Description);
+	}
+	printf ("\n");
+    }
+    printf (
 "Some influential environment variables:\n"
 "  CC\t\tC compiler\t\tCFLAGS\n"
 "  CPP\t\tC preprocessor\t\tCPPFLAGS\n"
@@ -215,22 +231,32 @@ static void GetConfigVarValues (int argc, char** argv)
 	fill_n (g_ConfigVV[cv], sizeof(string_t), 0);
     /* --var=VALUE */
     for (a = 0; a < argc; ++ a) {
-	apos = 2;
 	if (compare (argv[a], "--"))
 	    continue;
+	apos = 2;
 	if (!compare (argv[a] + apos, "help"))
 	    PrintHelp();
-	if (!compare (argv[a] + apos, "version"))
+	else if (!compare (argv[a] + apos, "version"))
 	    PrintVersion();
-	for (cv = 0; cv < vv_last; ++ cv)
-	    if (!compare (argv[a] + apos, g_ConfigV[cv]))
-		break;
-	if (cv == vv_last)
-	    continue;
-	apos += StrLen (g_ConfigV[cv]) + 1;
-	cvl = StrLen (argv[a]) - apos;
-	if (cvl > 0)
-	    copy_n (argv[a] + apos, g_ConfigVV[cv], cvl + 1);
+	else if (!compare (argv[a] + apos, "with")) {
+	    apos += 4;
+	    if (!compare (argv[a] + apos, "out"))
+		apos += 3;
+	    ++ apos;
+	    for (cv = 0; cv < VectorSize(g_ComponentInfos); ++ cv)
+		if (!compare (argv[a] + apos, g_Components[cv * 3]))
+		    g_ComponentInfos[cv].m_bDefaultOn = (apos == 7);
+	} else {
+	    for (cv = 0; cv < vv_last; ++ cv)
+		if (!compare (argv[a] + apos, g_ConfigV[cv]))
+		    break;
+	    if (cv == vv_last)
+		continue;
+	    apos += StrLen (g_ConfigV[cv]) + 1;
+	    cvl = StrLen (argv[a]) - apos;
+	    if (cvl > 0)
+		copy_n (argv[a] + apos, g_ConfigVV[cv], cvl + 1);
+	}
     }
 }
 
@@ -452,6 +478,15 @@ static void SubstituteFunctions (void)
     unsigned int i;
     for (i = 0; i < VectorSize(g_Functions) / 3; ++ i)
 	Substitute (g_Functions [i * 3 + 1], g_Functions [i * 3 + 2]);
+}
+
+static void SubstituteComponents (void)
+{
+    unsigned int i, isOn;
+    for (i = 0; i < VectorSize(g_Components) / 3; ++ i) {
+	isOn = g_ComponentInfos[i].m_bDefaultOn;
+	Substitute (g_Components [i * 3 + 1 + !isOn], g_Components [i * 3 + 1 + isOn]);
+    }
 }
 
 /*--------------------------------------------------------------------*/

@@ -1,18 +1,21 @@
 include Common.mk
 
-SRCS	= cmemlink.cc memlink.cc memblock.cc mstream.cc ustring.cc \
-	uexception.cc sistream.cc sostream.cc fdostream.cc unew.cc ubitset.cc \
-	ustdxept.cc ulocale.cc ufacets.cc
-OBJS	= cmemlink.o memlink.o memblock.o mstream.o ustring.o \
-	uexception.o sistream.o sostream.o fdostream.o unew.o ubitset.o \
-	ustdxept.o ulocale.o ufacets.o
-INCS	= cmemlink.h memblock.h memlink.h mistream.h mostream.h \
+SRCS	= cmemlink.cc memlink.cc memblock.cc mstream.cc ustring.cc ubitset.cc \
+	sistream.cc sostream.cc fdostream.cc uexception.cc ustdxept.cc
+OBJS	= cmemlink.o memlink.o memblock.o mstream.o ustring.o sistream.o \
+	sostream.o fdostream.o ubitset.o uexception.o ustdxept.o
+INCS	= cmemlink.h memblock.h memlink.h mistream.h mostream.h ustdxept.h \
 	ualgo.h ustl.h ustring.h utypes.h uutility.h uvector.h ualgobase.h \
 	uctralgo.h ufunction.h upair.h uiterator.h ustack.h uqueue.h \
 	uexception.h strmsize.h sistream.h sostream.h ulimits.h uset.h \
-	umultiset.h uspecial.h uios.h fdostream.h unew.h umap.h umultimap.h \
+	umultiset.h uspecial.h uios.h fdostream.h umap.h umultimap.h \
 	umemory.h uiosfunc.h utf8.h config.h ubitset.h unumeric.h utuple.h \
-	ulocale.h ufacets.h ulist.h upredalgo.h ustdxept.h
+	ulocale.h ufacets.h ulist.h upredalgo.h
+ifdef STANDALONE
+SRCS	+= unew.cc ulocale.cc ufacets.cc
+OBJS	+= unew.o ulocale.o ufacets.o
+INCS	+= unew.h ulocale.h ufacets.h
+endif
 DOCT	= ustldoc.in
 TOCLEAN	= config.status config.log
 

@@ -24,7 +24,7 @@
 #include "mistream.h"
 #include "memblock.h"
 #include "ualgo.h"
-#include "uexception.h"
+#include "umemory.h"
 #include <fcntl.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -139,7 +139,7 @@ void memblock::reserve (size_t newSize, bool bExact)
     assert (newSize % elementSize() == 0 && "reserve can only allocate units of elementType.");
     pointer newBlock = (pointer) realloc (oldBlock, newSize);
     if (!newBlock)
-	throw bad_alloc(newSize);
+	throw bad_alloc (newSize);
     constructBlock (advance (newBlock, m_AllocatedSize), newSize - m_AllocatedSize);
     if (!oldBlock && cdata())
 	copy_n (cdata(), min (size(), newSize), newBlock);

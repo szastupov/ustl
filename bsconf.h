@@ -72,6 +72,26 @@ static string_t g_Functions [] = {
     "strrchr",		"#undef HAVE_STRRCHR",		"#define HAVE_STRRCHR 1"
 };
 
+static string_t g_Components [] = {
+    "debug",		"#DEBUG\t\t= 1",			"DEBUG\t\t= 1",
+    "bounds",		"#undef WANT_STREAM_BOUNDS_CHECKING",	"#define WANT_STREAM_BOUNDS_CHECKING 1",
+    "cout",		"#define WITHOUT_CIN_COUT_CERR 1",	"#undef WITHOUT_CIN_COUT_CERR",
+    "libstdc++",	"#define WITHOUT_LIBSTDCPP 1",		"#undef WITHOUT_LIBSTDCPP",
+    "libstdc++",	"STANDALONE\t= -nodefaultlibs ",	"#STANDALONE\t= -nodefaultlibs"
+};
+
+typedef struct {
+    int		m_bDefaultOn;
+    string_t	m_Description;
+} SComponentInfo;
+static SComponentInfo g_ComponentInfos [VectorSize(g_Components) / 3] = {
+    { 0, "Compiles the library with debugging information" },
+    { 0, "Enable runtime bounds checking on stream reads/writes" },
+    { 1, "Removes support for standard cout/cin/cerr streams" },
+    { 1, "Allows user programs to not link with libstdc++" },
+    { 1, "" }
+};
+
 static string_t g_CustomVars [] = {
     "PACKAGE_NAME",		PACKAGE_NAME,
     "PACKAGE_VERSION",		PACKAGE_VERSION,

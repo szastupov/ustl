@@ -26,6 +26,7 @@
 #include "sostream.h"
 #include "memblock.h"
 
+#ifndef WITHOUT_CIN_COUT_CERR
 namespace ustl {
 
 class string;
@@ -86,5 +87,6 @@ extern fdistringstream cin;
 
 }; // namespace ustl
 
+#endif
 #endif
 

@@ -4,9 +4,29 @@
  * data in a separate step. It slows down stream operations a lot,
  * but it's your call. By default only debug builds throw.
 */
+#undef WANT_STREAM_BOUNDS_CHECKING
 
-#ifndef NDEBUG
-    #define WANT_STREAM_BOUNDS_CHECKING 1
+#ifndef WANT_STREAM_BOUNDS_CHECKING
+    #ifndef NDEBUG
+	#define WANT_STREAM_BOUNDS_CHECKING 1
+    #endif
+#endif
+
+/* Define to 1 if you want to build without libstdc++
+*/
+#undef WITHOUT_LIBSTDCPP
+
+/* Define to 1 if you don't want the standard streams.
+ * Note that you will not be able to run bvt tests if you do this.
+*/
+#undef WITHOUT_CIN_COUT_CERR
+
+/* GCC (and some other compilers) define '__attribute__'; we're using this
+ * macro to alert the compiler to flag inconsistencies in printf/scanf-like
+ * function calls.  Just in case '__attribute__' isn't defined, make a dummy.
+ */
+#if !defined(__GNUC__) && !defined(__attribute__)
+    #define __attribute__(p) /* nothing */
 #endif
 
 //----------------------------------------------------------------------

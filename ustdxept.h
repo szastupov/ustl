@@ -37,10 +37,10 @@ static const xfmt_t	xfmt_RuntimeError	= 3;
 ///
 class logic_error : public exception {
 public:
-    explicit		logic_error (const string& arg);
-    virtual	       ~logic_error (void);
-    virtual const char*	what (void) const;
-    virtual void	info (string& msgbuf, const char* fmt = NULL) const;
+    explicit		logic_error (const string& arg) throw();
+    inline virtual     ~logic_error (void) throw() {}
+    virtual const char*	what (void) const throw();
+    virtual void	info (string& msgbuf, const char* fmt = NULL) const throw();
     virtual void	read (istream& is);
     virtual void	write (ostream& os) const;
     virtual size_t	stream_size (void) const;
@@ -55,8 +55,8 @@ protected:
 ///
 class domain_error : public logic_error {
 public:
-    explicit		domain_error (const string& arg);
-    virtual const char*	what (void) const;
+    explicit		domain_error (const string& arg) throw();
+    virtual const char*	what (void) const throw();
 };
 
 /// \class invalid_argument ustdxept.h ustl.h
@@ -66,8 +66,8 @@ public:
 ///
 class invalid_argument : public logic_error {
 public:
-    explicit		invalid_argument (const string& arg);
-    virtual const char*	what (void) const;
+    explicit		invalid_argument (const string& arg) throw();
+    virtual const char*	what (void) const throw();
 };
 
 /// \class length_error ustdxept.h ustl.h
@@ -77,8 +77,8 @@ public:
 ///
 class length_error : public logic_error {
 public:
-    explicit		length_error (const string& arg);
-    virtual const char*	what (void) const;
+    explicit		length_error (const string& arg) throw();
+    virtual const char*	what (void) const throw();
 };
 
 /// \class out_of_range ustdxept.h ustl.h
@@ -88,8 +88,8 @@ public:
 ///
 class out_of_range : public logic_error {
 public:
-    explicit		out_of_range (const string& arg);
-    virtual const char*	what (void) const;
+    explicit		out_of_range (const string& arg) throw();
+    virtual const char*	what (void) const throw();
 };
 
 /// \class runtime_error ustdxept.h ustl.h
@@ -99,10 +99,10 @@ public:
 ///
 class runtime_error : public exception {
 public:
-    explicit		runtime_error (const string& arg);
-    virtual	       ~runtime_error (void);
-    virtual const char*	what (void) const;
-    virtual void	info (string& msgbuf, const char* fmt = NULL) const;
+    explicit		runtime_error (const string& arg) throw();
+    virtual	       ~runtime_error (void) throw();
+    virtual const char*	what (void) const throw();
+    virtual void	info (string& msgbuf, const char* fmt = NULL) const throw();
     virtual void	read (istream& is);
     virtual void	write (ostream& os) const;
     virtual size_t	stream_size (void) const;
@@ -117,8 +117,8 @@ protected:
 ///
 class range_error : public runtime_error {
 public:
-    explicit		range_error (const string& arg);
-    virtual const char*	what (void) const;
+    explicit		range_error (const string& arg) throw();
+    virtual const char*	what (void) const throw();
 };
 
 /// \class overflow_error ustdxept.h ustl.h
@@ -128,8 +128,8 @@ public:
 ///
 class overflow_error : public runtime_error {
 public:
-    explicit		overflow_error (const string& arg);
-    virtual const char*	what (void) const;
+    explicit		overflow_error (const string& arg) throw();
+    virtual const char*	what (void) const throw();
 };
 
 /// \class underflow_error ustdxept.h ustl.h
@@ -139,8 +139,8 @@ public:
 ///
 class underflow_error : public runtime_error {
 public:
-    explicit		underflow_error (const string& arg);
-    virtual const char*	what (void) const;
+    explicit		underflow_error (const string& arg) throw();
+    virtual const char*	what (void) const throw();
 };
 
 }; // namespace ustl

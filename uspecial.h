@@ -239,7 +239,24 @@ inline size_t stream_size_of (const tuple<N,T>& v)
 
 //----------------------------------------------------------------------
 
-class fdostringstream; // for TEXT_STREAMABLE below
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+#ifndef WITHOUT_LIBSTDCPP
+
+/// \todo Need a better solution to getting the hash value.
+inline hashvalue_t hash_value (const string::const_pointer& v)
+{
+    string::const_pointer first (v), last (v + strlen(v));
+    hashvalue_t h = 0;
+    // This has the bits flowing into each other from both sides of the u_long
+    for (; first < last; ++ first)
+	h = *first + ((h << 7) | (h >> BitsInType(hashvalue_t) - 7));
+    return (h);
+}
+
+#endif
+#endif
+
+//----------------------------------------------------------------------
 
 }; // namespace ustl
 
@@ -247,9 +264,8 @@ class fdostringstream; // for TEXT_STREAMABLE below
 STD_STREAMABLE(ustl::cmemlink);
 STD_STREAMABLE(ustl::istream);
 STD_STREAMABLE(ustl::ostream);
-STD_STREAMABLE(ustl::exception);
 STD_STREAMABLE(ustl::string)
-
+STD_STREAMABLE(ustl::exception);
 TEXT_STREAMABLE(ustl::exception);
 
 #endif

@@ -183,34 +183,15 @@ ostringstream& ostringstream::operator<< (double iv)
     assert (m_Base < VectorSize(c_Digits));
     const size_t c_BufSize = BitsInType(double) + 1;
     char buffer [c_BufSize];
-    buffer [c_BufSize - 1] = 0;
+    char fmt [16];
     assert (m_Precision < c_BufSize / 2);
-    uoff_t i = c_BufSize - 2 - (m_Precision + 1);
+    snprintf (fmt, 16, "%%.%dlf", m_Precision);
+    size_t i = snprintf (buffer, c_BufSize, fmt, iv);
+    if (i > c_BufSize)
+	i = c_BufSize - 1;
+    buffer [c_BufSize - 1] = 0;
     assert (i < c_BufSize);
-    double v = iv;
-    bool negative = (v < 0);
-    if (negative)
-	v = -v;
-    if (v < 1.0)
-	buffer[i--] = c_Digits[0];
-    while (v >= 1.0 && i) {
-	buffer[i--] = c_Digits[u_long(v) % m_Base];
-	v /= m_Base;
-    }
-    if (negative)
-	buffer[i--] = '-';
-    ++ i;
-    if (m_Precision > 0) {
-	v = iv;
-	uoff_t di = c_BufSize - 2 - m_Precision;
-	buffer [di] = m_DecimalSeparator;
-	u_short precision = m_Precision;
-	while (precision--) {
-	    v *= m_Base;
-	    buffer[++di] = c_Digits[u_long(v) % m_Base];
-	}
-    }
-    write_buffer (buffer + i, c_BufSize - i - 1);
+    write_buffer (buffer, i);
     return (*this);
 }
 

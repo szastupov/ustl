@@ -22,7 +22,11 @@
 #ifndef UMEMORY_H_4AB5B0DB5BF09140541409CC47BCD17A
 #define UMEMORY_H_4AB5B0DB5BF09140541409CC47BCD17A
 
-#include "unew.h"
+#ifdef WITHOUT_LIBSTDCPP
+    #include "unew.h"
+#else
+    #include <new>
+#endif
 
 namespace ustl {
 

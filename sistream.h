@@ -23,7 +23,11 @@
 #define SISTREAM_H_0CCA102229A49F5D65EE852E62B27CE2
 
 #include "mistream.h"
-#include "ufacets.h"
+#ifdef WITHOUT_LIBSTDCPP
+    #include "ufacets.h"
+#else
+    #include <locale>
+#endif
 
 namespace ustl {
 
