@@ -18,6 +18,7 @@
 #include "mostream.h"
 #include "sostream.h"
 #include "strmsize.h"
+#include <ctype.h>
 
 namespace ustl {
 
