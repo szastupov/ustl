@@ -26,8 +26,7 @@ namespace ustl {
 
 //----------------------------------------------------------------------
 
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
-
+/// Contains the type traits of \p Iterator
 template <typename Iterator>
 struct iterator_traits {
     typedef typename Iterator::value_type        value_type;
@@ -35,6 +34,8 @@ struct iterator_traits {
     typedef typename Iterator::pointer           pointer;
     typedef typename Iterator::reference         reference;
 };
+
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 
 template <typename T>
 struct iterator_traits<T*> {
@@ -50,6 +51,22 @@ struct iterator_traits<const T*> {
     typedef ptrdiff_t	difference_type;
     typedef const T*	pointer;
     typedef const T&	reference;
+};
+
+template <>
+struct iterator_traits<void*> {
+    typedef uint8_t	value_type;
+    typedef ptrdiff_t	difference_type;
+    typedef void*	pointer;
+    typedef value_type&	reference;
+};
+
+template <>
+struct iterator_traits<const void*> {
+    typedef uint8_t		value_type;
+    typedef ptrdiff_t		difference_type;
+    typedef const void*		pointer;
+    typedef const value_type&	reference;
 };
 
 #endif

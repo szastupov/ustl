@@ -17,6 +17,7 @@ distance(cvp,vp) = 30ED
 distance(vp,cvp) = -30ED
 abs_distance(vp,cvp) = 30ED
 
+size_of_elements(3, c_Numbers) = 12
 VectorSize(c_Numbers[5]) = 5
 VectorSize(c_Numbers[0]) = 0
 
@@ -46,6 +47,11 @@ be_to_native(123456789ABCDEF0) = F0DEBC9A78563412
 native_to_le(123456789ABCDEF0) = 123456789ABCDEF0
 native_to_be(123456789ABCDEF0) = F0DEBC9A78563412
 
+absv(12) = 12
+absv(-12) = 12
+sign(12) = 1
+sign(-12) = -1
+sign(0) = 0
 min(3,4) = 3
 min(6U,1U) = 1
 max(-3,-6) = -3

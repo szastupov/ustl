@@ -48,6 +48,42 @@ void TestEqualRange (const vector<int>& v)
     	 << ", " << rv.second - v.begin() << " }" << endl;
 }
 
+template <typename T>
+void TestBigFill (const size_t size, const T magic)
+{
+    vector<T> vbig (size);
+    fill (vbig.begin() + 1, vbig.end(), magic);		// offset to test prealignment loop
+    typename vector<T>::const_iterator iMismatch;
+    iMismatch = find_if (vbig.begin() + 1, vbig.end(), bind1st (not_equal_to<T>(), magic));
+    if (iMismatch == vbig.end())
+	cout << "works";
+    else {
+	cout << "does not work: mismatch at " << distance(vbig.begin(), iMismatch);
+	cout << ", value = 0x" << ios::hex << u_long(*iMismatch) << ios::dec;
+    }
+    cout << endl;
+}
+
+template <typename T>
+void TestBigCopy (const size_t size, const T magic)
+{
+    vector<T> vbig1 (size), vbig2 (size);
+    fill (vbig1, magic);
+    copy (vbig1.begin() + 1, vbig1.end(), vbig2.begin() + 1);	// offset to test prealignment loop
+    typedef typename vector<T>::const_iterator iter_t;
+    pair<iter_t, iter_t> iMismatch;
+    iMismatch = mismatch (vbig1.begin() + 1, vbig1.end(), vbig2.begin() + 1);
+    if (iMismatch.first == vbig1.end())
+	cout << "works";
+    else {
+	cout << "does not work: mismatch at " << distance(vbig1.begin(), iMismatch.first);
+	cout << ios::hex << ", 0x" << u_long(*iMismatch.first);
+	assert (iMismatch.second < vbig2.end());
+	cout << " != 0x" << u_long(*iMismatch.second) << ios::dec;
+    }
+    cout << endl;
+}
+
 int main (void)
 {
     const int c_TestNumbers[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 11, 12, 13, 13, 14, 15, 16, 17, 18 };
@@ -127,6 +163,28 @@ int main (void)
     fill_n (v.begin(), 5, 13);
     PrintVector (v);
     v.assign (first, last);
+
+    cout << "fill 64083 uint8_t(0x41) ";
+    TestBigFill<uint8_t> (64083, 0x41);
+    cout << "fill 64083 uint16_t(0x4142) ";
+    TestBigFill<uint16_t> (64083, 0x4142);
+    cout << "fill 64083 uint32_t(0x41424344) ";
+    TestBigFill<uint32_t> (64083, 0x41424344);
+#ifdef HAVE_INT64_T
+    cout << "fill 64083 uint64_t(0x4142434445464748) ";
+    TestBigFill<uint64_t> (64083, UINT64_C(0x4142434445464748));
+#endif
+
+    cout << "copy 64083 uint8_t(0x41) ";
+    TestBigCopy<uint8_t> (64083, 0x41);
+    cout << "copy 64083 uint16_t(0x4142) ";
+    TestBigCopy<uint16_t> (64083, 0x4142);
+    cout << "copy 64083 uint32_t(0x41424344) ";
+    TestBigCopy<uint32_t> (64083, 0x41424344);
+#ifdef HAVE_INT64_T
+    cout << "copy 64083 uint64_t(0x4142434445464748) ";
+    TestBigCopy<uint64_t> (64083, UINT64_C(0x4142434445464748));
+#endif
 
     cout << "generate(genint)" << endl;
     generate (v, &genint);

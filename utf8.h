@@ -121,7 +121,7 @@ WChar utf8in_iterator<Iterator,WChar>::operator* (void) const
 {
     WChar v;
     Iterator i (m_i);
-    u_char c = *i++;
+    const u_char c = *i++;
     size_t nBytes = Utf8SequenceBytes (c);
     v = c & (0xFF >> nBytes);	// First byte contains bits after the header.
     while (--nBytes && *i)	// Each subsequent byte has 6 bits.

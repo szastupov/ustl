@@ -66,6 +66,7 @@ int main (void)
     ctv.assign (3, a);
     ctv.pop_back();
     cout << "Class insertion testing successful" << endl;
+    cout.flush();
     return (0);
 }
 

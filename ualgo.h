@@ -33,20 +33,9 @@
 #include "uiterator.h"
 #include "ufunction.h"
 #include "upredalgo.h"
-#include <stdlib.h>	// for rand() and alloca()
+#include <stdlib.h>	// for rand()
 
 namespace ustl {
-
-/// \brief Copy copies elements from the range (last, first] to result.
-/// \ingroup MutatingAlgorithms
-///
-template <typename InputIterator, typename OutputIterator>
-inline OutputIterator copy_backward (InputIterator first, InputIterator last, OutputIterator result)
-{
-    for (; first != last; ++result)
-	*result = *--last;
-    return (result);
-}
 
 /// Swaps corresponding elements of [first, last) and [result,)
 /// \ingroup SwapAlgorithms
@@ -230,13 +219,13 @@ ForwardIterator rotate (ForwardIterator first, ForwardIterator middle, ForwardIt
     if (first == middle || middle == last)
 	return (first);
 #ifdef HAVE_ALLOCA_H
-    void *buf, *vfirst(first), *vresult(first + distance(middle, last));
+    void *buf, *vfirst(first), *vlast(last), *vresult(first + distance(middle, last));
     const void *cvfirst(first), *cvmiddle(middle), *cvlast(last);
     const size_t half1 (distance (cvfirst, cvmiddle));
     const size_t half2 (distance (cvmiddle, cvlast));
     if (half2 < half1 && (buf = alloca (half2))) {
 	copy (cvmiddle, cvlast, buf);
-	copy (cvfirst, cvmiddle, vresult);
+	copy_backward (cvfirst, cvmiddle, vlast);
 	copy_n ((const void*) buf, half2, vfirst);
     } else if (half1 <= half2 && (buf = alloca (half1))) {
 	copy (cvfirst, cvmiddle, buf);

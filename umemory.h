@@ -27,6 +27,10 @@
 #else
     #include <new>
 #endif
+#ifdef HAVE_ALLOCA_H
+    #include <alloca.h>
+#endif
+#include "upair.h"
 
 namespace ustl {
 
@@ -121,6 +125,28 @@ void destroy (ForwardIterator first, ForwardIterator last)
 	++ first;
     }
 }
+
+/// Casts \p p to the type of the second pointer argument.
+template <typename T> inline T* cast_to_type (void* p, const T*) { return ((T*) p); }
+
+/// \brief Creates a temporary buffer pair from \p p and \p n
+/// This is intended to be used with alloca to create temporary buffers.
+/// The size in the returned pair is set to 0 if the allocation is unsuccessful.
+///
+template <typename T>
+inline pair<T*, ptrdiff_t> make_temporary_buffer (void* p, size_t n, const T* ptype)
+{
+    return (make_pair (cast_to_type(p,ptype), ptrdiff_t(p ? n : 0)));
+}
+
+#ifdef HAVE_ALLOCA_H
+    /// \brief Allocates a temporary buffer, if possible.
+    /// \ingroup RawStorageAlgorithms
+    #define get_temporary_buffer(size, ptype)	make_temporary_buffer (alloca(size_of_elements(size, ptype)), size_of_elements(size, ptype), ptype)
+#else
+    #define get_temporary_buffer(size, ptype)	make_pair(cast_to_type(NULL,ptype), 0)
+#endif
+#define return_temporary_buffer(p)
 
 /// Copies [first, last) into result by calling copy constructors in result.
 /// \ingroup RawStorageAlgorithms

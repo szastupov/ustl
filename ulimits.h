@@ -132,24 +132,23 @@ struct numeric_limits<long double> {
 };
 
 #ifdef HAVE_LONG_LONG
-
-#ifndef LONG_LONG_MIN
-#define ULONG_LONG_MAX	0xFFFFFFFFFFFFFFFFLL
-#define LONG_LONG_MAX	0x7FFFFFFFFFFFFFFFLL
-#define LONG_LONG_MIN	ULONG_LONG_MAX
+#ifndef LLONG_MAX
+    #define ULLONG_MAX	UINT64_C(0xFFFFFFFFFFFFFFFF)
+    #define LLONG_MAX	INT64_C(0x7FFFFFFFFFFFFFFF)
+    #define LLONG_MIN	ULLONG_MAX
 #endif
 
 template <>
 struct numeric_limits<long long> {
-    static inline long long min (void)	{ return (LONG_LONG_MIN); }
-    static inline long long max (void)	{ return (LONG_LONG_MAX); }
+    static inline long long min (void)	{ return (LLONG_MIN); }
+    static inline long long max (void)	{ return (LLONG_MAX); }
     static inline bool is_signed (void)	{ return (true); }
 };
 
 template <>
 struct numeric_limits<unsigned long long> {
     static inline unsigned long long min (void)	{ return (0); }
-    static inline unsigned long long max (void)	{ return (ULONG_LONG_MAX); }
+    static inline unsigned long long max (void)	{ return (ULLONG_MAX); }
     static inline bool is_signed (void)		{ return (false); }
 };
 #endif

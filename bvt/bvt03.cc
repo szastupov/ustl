@@ -3,9 +3,9 @@ using namespace ustl;
 
 int main (void)
 {
-    const u_char magic_Char = 0x12;
-    const u_short magic_Short = 0x1234;
-    const u_long magic_Int = 0x12345678;
+    const uint8_t magic_Char = 0x12;
+    const uint16_t magic_Short = 0x1234;
+    const uint32_t magic_Int = 0x12345678;
     const float magic_Float = 0.12345678;
     const double magic_Double = 0.123456789123456789;
     const bool magic_Bool = true;

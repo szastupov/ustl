@@ -26,6 +26,7 @@
 
 #include "config.h"
 #define __STDC_LIMIT_MACROS	// For WCHAR_MIN and WCHAR_MAX in stdint.
+#define __STDC_CONSTANT_MACROS	// For UINT??_C macros to avoid using L and UL suffixes on constants.
 #ifdef HAVE_STDINT_H
     #include <stdint.h>
 #endif

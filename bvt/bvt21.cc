@@ -28,8 +28,9 @@ int main (void)
     cout << "distance(vp,cvp) = " << distance(vp,cvp) << endl;
     cout << "abs_distance(vp,cvp) = " << abs_distance(vp,cvp) << endl;
     cout << ios::dec << endl;
-    const int c_Numbers[] = { 1, 2, 3, 4, 5 };
-    const int c_Empty[] = { };
+    const int32_t c_Numbers[] = { 1, 2, 3, 4, 5 };
+    const int32_t c_Empty[] = { };
+    cout << "size_of_elements(3, c_Numbers) = " << size_of_elements(3, c_Numbers) << endl;
     cout << "VectorSize(c_Numbers[5]) = " << VectorSize(c_Numbers) << endl;
     cout << "VectorSize(c_Numbers[0]) = " << VectorSize(c_Empty) << endl;
     cout << endl;
@@ -57,7 +58,7 @@ int main (void)
 	cout << "native_to_le(" << v2 << ") = " << native_to_le(v2) << endl;
 	cout << "native_to_be(" << v2 << ") = " << native_to_be(v2) << endl;
 	#ifdef bswap_64
-	    uint64_t v3 = 0x123456789ABCDEF0ULL;
+	    uint64_t v3 = UINT64_C(0x123456789ABCDEF0);
 	    cout << "bswap(" << v3 << ") = " << bswap(v3) << endl;
 	    cout << "le_to_native(" << v3 << ") = " << le_to_native(v3) << endl;
 	    cout << "be_to_native(" << v3 << ") = " << be_to_native(v3) << endl;
@@ -68,6 +69,11 @@ int main (void)
 	cout << "byteswap.h does not exist." << endl;
     #endif
     cout << ios::dec << endl;
+    cout << "absv(12) = " << absv(12) << endl;
+    cout << "absv(-12) = " << absv(-12) << endl;
+    cout << "sign(12) = " << sign(12) << endl;
+    cout << "sign(-12) = " << sign(-12) << endl;
+    cout << "sign(0) = " << sign(0) << endl;
     cout << "min(3,4) = " << min(3,4) << endl;
     cout << "min(6U,1U) = " << min(6U,1U) << endl;
     cout << "max(-3,-6) = " << max(-3,-6) << endl;
