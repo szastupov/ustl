@@ -490,5 +490,15 @@ void string::write (ostream& os) const
     os.write (cdata(), size());
 }
 
+/// Returns a hash value for [first, last)
+/*static*/ hashvalue_t string::hash (const char* first, const char* last)
+{
+    hashvalue_t h = 0;
+    // This has the bits flowing into each other from both sides of the number
+    for (; first < last; ++ first)
+	h = *first + ((h << 7) | (h >> BitsInType(hashvalue_t) - 7));
+    return (h);
+}
+
 } // namespace ustl
 

@@ -1,5 +1,9 @@
 Release 0.6
 	* The library is relicensed under the MIT License (was LGPL)
+	* Dropped support for locale due to its great complexity and ugliness.
+		You can include <locale> from libstdc++ if you still want it.
+	* ostringstream now uses snprintf for all integer types, so the output
+		will be localized according to libc locale settings.
 	* tuple will no longer align at the end:
 		This affects you if you write tuples with small elements
 		off default grain. For example, writing tuple<2,int16>

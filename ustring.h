@@ -150,6 +150,7 @@ public:
     void			read (istream&);
     void			write (ostream& os) const;
     size_t			stream_size (void) const;
+    static hashvalue_t		hash (const char* f1, const char* l1);
 protected:
     virtual size_type		minimumFreeCapacity (void) const;
 };
@@ -375,6 +376,22 @@ inline bool operator>= (const char* s1, const string& s2)
 
 // Specialization for stream alignment
 template <> inline size_t alignof (string) { return (alignof (string::value_type())); }
+
+//----------------------------------------------------------------------
+
+template <typename T>
+inline hashvalue_t hash_value (const T& v)
+{ return (string::hash (v.begin(), v.end())); }
+
+template <>
+inline hashvalue_t hash_value (const string::const_pointer& v)
+{ return (string::hash (v, v + strlen(v))); }
+
+template <>
+inline hashvalue_t hash_value (const string::pointer& v)
+{ return (string::hash (v, v + strlen(v))); }
+
+//----------------------------------------------------------------------
 
 } // namespace ustl
 

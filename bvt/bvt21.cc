@@ -31,7 +31,6 @@ int main (void)
     cout << "advance(cvp,5) = " << advance(cvp,5) << endl;
     cout << "advance(vp,4) = " << advance(vp,4) << endl;
     cout << "distance(cvp,vp) = " << distance(cvp,vp) << endl;
-    cout << "distance(vp,cvp) = " << distance(vp,cvp) << endl;
     cout << "abs_distance(vp,cvp) = " << abs_distance(vp,cvp) << endl;
     cout << ios::dec << endl;
     const int32_t c_Numbers[] = { 1, 2, 3, 4, 5 };

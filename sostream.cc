@@ -10,7 +10,8 @@
 #include "sostream.h"
 #include "ustring.h"
 #include "utf8.h"
-#include <stdio.h>	// for vsnprintf in ostringstream::format
+#include "ulimits.h"
+#include <stdio.h>
 
 namespace ustl {
 
@@ -72,7 +73,12 @@ ostringstream::ostringstream (memlink& dest)
     link (dest);
 }
 
-const char c_Digits[] = "0123456789ABCDEF";
+/// Writes a single character into the stream.
+void ostringstream::iwrite (uint8_t v)
+{
+    if (remaining() >= sizeof(uint8_t) || overflow() >= sizeof(uint8_t))
+	ostream::iwrite (v);
+}
 
 /// Writes \p buf of size \p bufSize through the internal buffer.
 void ostringstream::write_buffer (const char* buf, size_type bufSize)
@@ -82,65 +88,52 @@ void ostringstream::write_buffer (const char* buf, size_type bufSize)
 	write (buf + written, btw = min (remaining(), bufSize - written));
 }
 
-/// Writes a single character into the stream.
-void ostringstream::iwrite (uint8_t v)
+void ostringstream::fmtstring (char* fmt, const char* typestr, bool bInteger) const
 {
-    if (remaining() >= sizeof(uint8_t) || overflow() >= sizeof(uint8_t))
-	ostream::iwrite (v);
+    #define encode_dec(p,n)	{ *p++ = '0'+n/10; *p++ = '0'+n%10; }
+    *fmt++ = '%';
+    if (m_Width)
+	encode_dec (fmt, m_Width);
+    if (m_Flags & ios::left)
+	*fmt++ = '-';
+    if (!bInteger) {
+	*fmt++ = '.';
+	encode_dec (fmt, m_Precision);
+    }
+    while (*typestr)
+	*fmt++ = *typestr++;
+    if (bInteger) {
+	if (m_Base == 16)
+	    fmt[-1] = 'X';
+	else if (m_Base == 8)
+	    fmt[-1] = 'o';
+    } else {
+	if (m_Flags & ios::scientific)
+	    fmt[-1] = 'E';
+    }
+    *fmt = 0;
 }
 
 template <typename T>
-inline char* digitize_with_base (char* end, T v, size_t base)
+inline void ostringstream::sprintf_iwrite (T v, const char* typestr)
 {
-    char* p (end);
-    *--p = 0;
-    switch (base) {
-	default: do { *--p = c_Digits[v % 10]; } while (v /= 10); break;
-	case 16: do { *--p = c_Digits[v % 16]; } while (v /= 16); break;
-	case  8: do { *--p = c_Digits[v % 8]; } while (v /= 8); break;
-    };
-    return (p);
+    const size_type c_BufSize = 64, c_FmtStrSize = 16;
+    char fmt [c_FmtStrSize], buffer [c_BufSize];
+    fmtstring (fmt, typestr, numeric_limits<T>::is_integer);
+    size_type i = snprintf (buffer, c_BufSize, fmt, v);
+    i = min (i, c_BufSize - 1);
+    write_buffer (buffer, i);
 }
 
-/// Generalization of iwrite for integer types
-template <typename T>
-inline void ostringstream::iwrite_uinteger (T v)
-{
-    const size_type c_BufSize = BitsInType(v) / 2;
-    char buf [c_BufSize];
-    const char* first = digitize_with_base (buf + c_BufSize, v, m_Base);
-    write_buffer (first, c_BufSize - distance(buf, first) - 1);
-}
-
-/// Generalization of iwrite for integer types
-template <typename T>
-inline void ostringstream::iwrite_integer (T v)
-{
-    const size_type c_BufSize = BitsInType(v) / 2;
-    char buf [c_BufSize];
-    char* first = digitize_with_base (buf + c_BufSize, absv(v), m_Base);
-    if (v < 0)
-	*--first = '-';
-    write_buffer (first, c_BufSize - distance(buf, first) - 1);
-}
-
-/// Writes signed value \p sv into the stream.
-void ostringstream::iwrite (int32_t sv) { iwrite_integer (sv); }
-/// Writes number \p v into the stream as text.
-void ostringstream::iwrite (uint32_t v) { iwrite_uinteger (v); }
-
-#if HAVE_INT64_T
-/// Writes signed value \p sv into the stream.
-void ostringstream::iwrite (int64_t sv) { iwrite_integer (sv); }
-/// Writes number \p v into the stream as text.
-void ostringstream::iwrite (uint64_t v) { iwrite_uinteger (v); }
-#endif
-
-#if HAVE_LONG_LONG && (!HAVE_INT64_T || SIZE_OF_LONG_LONG > 8)
-/// Writes number \p v into the stream as text.
-void ostringstream::iwrite (long long sv) { iwrite_integer (sv); }
-/// Writes number \p v into the stream as text.
-void ostringstream::iwrite (unsigned long long v) { iwrite_uinteger (v); }
+void ostringstream::iwrite (int v)		{ sprintf_iwrite (v, "d"); }
+void ostringstream::iwrite (unsigned int v)	{ sprintf_iwrite (v, "u"); }
+void ostringstream::iwrite (long v)		{ sprintf_iwrite (v, "ld"); }
+void ostringstream::iwrite (unsigned long v)	{ sprintf_iwrite (v, "lu"); }
+void ostringstream::iwrite (float v)		{ simd::reset_mmx(); sprintf_iwrite (v, "f"); }
+void ostringstream::iwrite (double v)		{ simd::reset_mmx(); sprintf_iwrite (v, "lf"); }
+#if HAVE_LONG_LONG
+void ostringstream::iwrite (long long v)	{ sprintf_iwrite (v, "lld"); }
+void ostringstream::iwrite (unsigned long long v) { sprintf_iwrite (v, "llu"); }
 #endif
 
 /// Writes \p v into the stream as utf8
@@ -149,31 +142,6 @@ void ostringstream::iwrite (wchar_t v)
     char buffer [9];
     *utf8out(buffer) = v;
     write_buffer (buffer, Utf8Bytes(v));
-}
-
-/// Writes number \p v into the stream as text.
-void ostringstream::iwrite (float v)
-{
-    simd::reset_mmx();
-    iwrite (double(v));
-}
-
-/// Writes number \p iv into the stream as text.
-void ostringstream::iwrite (double iv)
-{
-    assert (m_Base < VectorSize(c_Digits));
-    simd::reset_mmx();
-    const size_type c_BufSize = BitsInType(double) + 1;
-    char buffer [c_BufSize];
-    char fmt [16];
-    assert (m_Precision < c_BufSize / 2);
-    snprintf (fmt, 16, "%%.%dlf", m_Precision);
-    size_type i = snprintf (buffer, c_BufSize, fmt, iv);
-    if (i > c_BufSize)
-	i = c_BufSize - 1;
-    buffer [c_BufSize - 1] = 0;
-    assert (i < c_BufSize);
-    write_buffer (buffer, i);
 }
 
 /// Writes value \p v into the stream as text.

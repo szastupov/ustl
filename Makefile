@@ -14,9 +14,9 @@ INCS	= cmemlink.h config.h fdostream.h memblock.h memlink.h mistream.h \
 DOCT	= ustldoc.in
 
 ifdef STANDALONE
-SRCS	+= unew.cc ulocale.cc ufacets.cc
-OBJS	+= unew.o ulocale.o ufacets.o
-INCS	+= unew.h ulocale.h ufacets.h
+SRCS	+= unew.cc
+OBJS	+= unew.o
+INCS	+= unew.h
 endif
 TOCLEAN	+= config.status config.log
 

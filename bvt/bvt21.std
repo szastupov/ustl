@@ -14,7 +14,6 @@ vp = 4321
 advance(cvp,5) = 1239
 advance(vp,4) = 4325
 distance(cvp,vp) = 30ED
-distance(vp,cvp) = -30ED
 abs_distance(vp,cvp) = 30ED
 
 size_of_elements(3, c_Numbers) = 12

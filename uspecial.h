@@ -23,9 +23,7 @@
 #include "mostream.h"
 #include "sostream.h"
 #include "strmsize.h"
-#ifdef WITHOUT_LIBSTDCPP
-    #include "ufacets.h"
-#elif defined(__GNUC__) && (__GNUC__ >= 3)
+#if !defined(WITHOUT_LIBSTDCPP) && defined(__GNUC__) && (__GNUC__ >= 3)
     #include <locale>
 #else
     #include <ctype.h>

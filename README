@@ -195,13 +195,3 @@ BUG REPORTING:
 Report bugs through the ustl SourceForge.net page with their bugtracker.
 Additional contact information may also be found there.
 
-------------------------------------------------------------------------
-
-I hope you'll enjoy using this library; I am trying my best to keep it
-internally consistent and cleanly implemented. If you were reluctant to
-use STL because of the code bloat, here's your alternative. I really
-love generic programming; it makes the code tighter and more readable,
-and in some cases there are even some efficiency gains from using
-iterators instead of index addressing. So play with it and tell me what
-you think. Long live C++! :)
-
