@@ -291,7 +291,7 @@ template <typename InputIterator, typename OutputIterator, typename T>
 inline OutputIterator remove_copy (InputIterator first, InputIterator last, OutputIterator result, const T& value)
 {
     for (; first != last; ++first) {
-	if (*first != value) {
+	if (!(*first == value)) {
 	    *result = *first;
 	    ++ result;
 	}
@@ -299,7 +299,7 @@ inline OutputIterator remove_copy (InputIterator first, InputIterator last, Outp
     return (result);
 }
 
-/// Remove_copy copies elements that are not equal to values in [rfirst, rlast)
+/// Remove_copy copies elements pointed to by iterators in [rfirst, rlast)
 /// from the range [first, last) to a range beginning at result. The return
 /// value is the end of the resulting range. This operation is stable, meaning
 /// that the relative order of the elements that are copied is the same as in the
@@ -349,7 +349,7 @@ OutputIterator unique_copy (InputIterator first, InputIterator last, OutputItera
     if (first != last) {
 	*result = *first;
 	while (++first != last)
-	    if (*first != *result)
+	    if (!(*first == *result))
 		*++result = *first;
 	++ result;
     }
