@@ -1,5 +1,11 @@
 Release 0.6-1
 	* Increased the version number after relase.
+	* vector inheritance from memblock is now private.
+		There are just too many problems with treating a vector
+		this way. You can still do it explicitly by linking a
+		memblock to the vector.
+	* Restricted vector link calls to T* instead of void*.
+		This way there would be explicit casts to warn of weirdness.
 	* Optimized vector push_back
 	* ostream will now zero bytes skipped by align.
 	* memblock will no longer zero newly allocated storage.

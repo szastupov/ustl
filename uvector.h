@@ -20,11 +20,12 @@ namespace ustl {
 ///
 /// \brief STL vector equivalent.
 ///
-/// In this design elements frequently undergo
-/// BITWISE COPY! Don't put it in here if it doesn't support it.
+/// In this design elements frequently undergo BITWISE MOVE!
+/// Don't put it in here if it doesn't support it. This mostly means
+/// having no pointers into itself.
 ///
 template <typename T>
-class vector : public memblock {
+class vector : private memblock {
 public:
     typedef T				value_type;
     typedef value_type*			pointer;
@@ -33,6 +34,8 @@ public:
     typedef const value_type&		const_reference;
     typedef pointer			iterator;
     typedef const_pointer		const_iterator;
+    typedef memblock::size_type		size_type;
+    typedef memblock::difference_type	difference_type;
     typedef ::ustl::reverse_iterator<iterator>	reverse_iterator;
     typedef ::ustl::reverse_iterator<const_iterator>	const_reverse_iterator;
 public:
@@ -43,10 +46,13 @@ public:
 				vector (const_iterator i1, const_iterator i2);
     inline virtual	       ~vector (void);
     inline const vector<T>&	operator= (const vector<T>& v);
+    inline bool			operator== (const vector<T>& v)	{ return (memblock::operator== (v)); }
     inline void			reserve (size_type n);
     inline void			resize (size_type n);
     inline size_type		capacity (void) const		{ return (memblock::capacity() / sizeof(T));	}
     inline size_type		size (void) const		{ return (memblock::size() / sizeof(T));	}
+    inline size_type		max_size (void) const		{ return (memblock::max_size());		}
+    inline bool			empty (void) const		{ return (memblock::empty());			}
     inline iterator		begin (void)			{ return (iterator (memblock::begin()));	}
     inline const_iterator	begin (void) const		{ return (const_iterator (memblock::begin()));	}
     inline iterator		end (void)			{ return (iterator (memblock::end()));		}
@@ -64,21 +70,28 @@ public:
     inline reference		back (void);
     inline const_reference	back (void) const;
     inline void			push_back (const T& v = T());
+    inline void			pop_back (void)			{ memblock::pop_back(); }
+    inline void			clear (void)			{ memblock::clear(); }
+    inline void			deallocate (void)		{ memblock::deallocate(); }
     inline void			assign (const_iterator i1, const_iterator i2);
     inline void			assign (size_type n, const T& v);
+    inline void			swap (vector<T>& v)		{ memblock::swap (v); }
     inline iterator		insert (iterator ip, const T& v = T());
     inline iterator		insert (iterator ip, size_type n, const T& v);
     inline iterator		insert (iterator ip, const_iterator i1, const_iterator i2);
     inline iterator		erase (iterator ep, size_type n = 1);
     inline iterator		erase (iterator ep1, iterator ep2);
-    inline void			link (const void* p, size_type n)	{ memblock::link (p, n * sizeof(T)); }
-    inline void			link (void* p, size_type n)		{ memblock::link (p, n * sizeof(T)); }
+    inline void			manage (pointer p, size_type n)		{ memblock::manage (p, n * sizeof(T)); }
+    inline bool			is_linked (void) const			{ return (memblock::is_linked()); }
+    inline void			unlink (void)				{ memblock::unlink(); }
+    inline void			link (const_pointer p, size_type n)	{ memblock::link (p, n * sizeof(T)); }
+    inline void			link (pointer p, size_type n)		{ memblock::link (p, n * sizeof(T)); }
     inline void			link (const vector<T>& v)		{ memblock::link (v); }
     inline void			link (vector<T>& v)			{ memblock::link (v); }
-    inline void			link (const void* first, const void* last)	{ memblock::link (first, last); }
-    inline void			link (void* first, void* last)		{ memblock::link (first, last); }
-				OVERLOAD_POINTER_AND_SIZE_T_V2(link, void*)
-				OVERLOAD_POINTER_AND_SIZE_T_V2(link, const void*)
+    inline void			link (const_pointer first, const_pointer last)	{ memblock::link (first, last); }
+    inline void			link (pointer first, pointer last)		{ memblock::link (first, last); }
+				OVERLOAD_POINTER_AND_SIZE_T_V2(link, pointer)
+				OVERLOAD_POINTER_AND_SIZE_T_V2(link, const_pointer)
     inline virtual size_type	elementSize (void) const		{ return (sizeof(T)); }
     inline size_type		elementBytes (size_type n) const	{ return (n * sizeof(T)); }
 protected:
