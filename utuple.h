@@ -125,6 +125,14 @@ inline const tuple<N,T1>& operator-= (tuple<N,T1>& t1, const tuple<N,T2>& t2)
     { transform (t1.begin(), t1.end(), t2.begin(), t1.begin(), minus<T1>()); return (t1); }
 
 template <size_t N, typename T1, typename T2>
+inline const tuple<N,T1>& operator*= (tuple<N,T1>& t1, const tuple<N,T2>& t2)
+    { transform (t1.begin(), t1.end(), t2.begin(), t1.begin(), multiplies<T1>()); return (t1); }
+
+template <size_t N, typename T1, typename T2>
+inline const tuple<N,T1>& operator/= (tuple<N,T1>& t1, const tuple<N,T2>& t2)
+    { transform (t1.begin(), t1.end(), t2.begin(), t1.begin(), divides<T1>()); return (t1); }
+
+template <size_t N, typename T1, typename T2>
 inline const tuple<N,T1> operator+ (const tuple<N,T1>& t1, const tuple<N,T2>& t2)
 {
     tuple<N,T1> result;
@@ -137,6 +145,22 @@ inline const tuple<N,T1> operator- (const tuple<N,T1>& t1, const tuple<N,T2>& t2
 {
     tuple<N,T1> result;
     transform (t1.begin(), t1.end(), t2.begin(), result.begin(), minus<T1>());
+    return (result);
+}
+
+template <size_t N, typename T1, typename T2>
+inline const tuple<N,T1> operator* (const tuple<N,T1>& t1, const tuple<N,T2>& t2)
+{
+    tuple<N,T1> result;
+    transform (t1.begin(), t1.end(), t2.begin(), result.begin(), multiplies<T1>());
+    return (result);
+}
+
+template <size_t N, typename T1, typename T2>
+inline const tuple<N,T1> operator/ (const tuple<N,T1>& t1, const tuple<N,T2>& t2)
+{
+    tuple<N,T1> result;
+    transform (t1.begin(), t1.end(), t2.begin(), result.begin(), divides<T1>());
     return (result);
 }
 
