@@ -59,7 +59,7 @@ string::string (const string& s)
 : memblock()
 {
     if (s.is_linked())
-	link (s.c_str(), s.length() + size_Terminator);
+	link (s.c_str(), s.size() + size_Terminator);
     else
 	operator= (s);
 }
@@ -106,7 +106,7 @@ void string::resize (size_t n)
 /// This may be different from the value returned by size() if
 /// you have non-ascii characters (UTF-8) in the string.
 ///
-size_t string::nchars (void) const
+size_t string::length (void) const
 {
     size_t nc = 0;
     utf8in_iterator<const_iterator> endfinder (begin());
@@ -193,7 +193,7 @@ size_t string::copyto (pointer p, size_t n, const_iterator start) const
     assert (p && n);
     if (!start)
 	start = begin();
-    const size_t btc = min(n - size_Terminator, length());
+    const size_t btc = min(n - size_Terminator, size());
     copy_n (start, btc, p);
     p[btc] = c_Terminator;
     return (btc + size_Terminator);
@@ -238,7 +238,7 @@ bool string::operator== (const_pointer s) const
 /// Inserts wide character \p c at \p ip \p n times as a UTF-8 string.
 ///
 /// \p ip is a character position, not a byte position, and must fall in
-/// the 0 through nchars() range.
+/// the 0 through length() range.
 /// The first argument is not an iterator because it is rather difficult
 /// to get one. You'd have to use ((utf8in(s.begin()) + n).base()) as the first
 /// argument, which is rather ugly. Besides, then this insert would be
@@ -285,7 +285,7 @@ void string::insert (iterator start, const_pointer first, const_pointer last, si
 
 /// Erases \p size characters at \p start.
 /// \p start is a character position, not a byte position, and must be
-/// in the 0..nchars() range.
+/// in the 0..length() range.
 ///
 void string::erase (uoff_t ep, size_t n)
 {
@@ -453,25 +453,34 @@ int string::format (const char* fmt, ...)
 /// Returns the number of bytes required to write this object to a stream.
 size_t string::stream_size (void) const
 {
-    return (Utf8Bytes(length()) + length());
+    return (Utf8Bytes(size()) + size());
 }
 
 /// Reads the object from stream \p os
 void string::read (istream& is)
 {
     size_t n = *utf8in(is);
+#ifdef WANT_STREAM_BOUNDS_CHECKING
+    if (n > is.remaining())
+	throw stream_bounds_exception ("read", "ustl::string", is.pos(), n, is.remaining());
+#else
     assert (n <= is.remaining());
+#endif
     if (n <= is.remaining()) {
 	resize (n);
-	is.read (data(), length());
+	is.read (data(), size());
     }
 }
 
 /// Writes the object to stream \p os
 void string::write (ostream& os) const
 {
-    *utf8out(os)++ = length();
-    os.write (cdata(), length());
+    *utf8out(os)++ = size();
+#ifdef WANT_STREAM_BOUNDS_CHECKING
+    if (size() > os.remaining())
+	throw stream_bounds_exception ("write", "ustl::string", os.pos(), size(), os.remaining());
+#endif
+    os.write (cdata(), size());
 }
 
 }; // namespace ustl

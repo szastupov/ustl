@@ -39,7 +39,7 @@ public:
     inline ostringstream&	operator<< (short v);
     inline ostringstream&	operator<< (int v);
     ostringstream&		operator<< (long v);
-    inline ostringstream&	operator<< (u_char v);
+    ostringstream&		operator<< (u_char v);
     inline ostringstream&	operator<< (u_short v);
     inline ostringstream&	operator<< (u_int v);
     ostringstream&		operator<< (u_long v);
@@ -106,58 +106,49 @@ inline void ostringstream::set_precision (u_short precision)
 /// Writes a single character into the stream.
 inline ostringstream& ostringstream::operator<< (char v)
 {
-    ostream::iwrite (v);
-    return (*this);
+    return (operator<< (u_char(v)));
 }
 
 /// Writes a single character into the stream.
 inline ostringstream& ostringstream::operator<< (signed char v)
 {
-    ostream::iwrite (v);
-    return (*this);
-}
-
-/// Writes a single character into the stream.
-inline ostringstream& ostringstream::operator<< (u_char v)
-{
-    ostream::iwrite (v);
-    return (*this);
+    return (operator<< (u_char(v)));
 }
 
 /// Writes number \p v into the stream as text.
 inline ostringstream& ostringstream::operator<< (short v)
 {
-    operator<< (long(v)); return (*this);
+    return (operator<< (long(v)));
 }
 
 /// Writes number \p v into the stream as text.
 inline ostringstream& ostringstream::operator<< (int v)
 {
-    operator<< (long(v)); return (*this);
+    return (operator<< (long(v)));
 }
 
 /// Writes number \p v into the stream as text.
 inline ostringstream& ostringstream::operator<< (u_short v)
 {
-    operator<< (u_long(v)); return (*this);
+    return (operator<< (u_long(v)));
 }
 
 /// Writes number \p v into the stream as text.
 inline ostringstream& ostringstream::operator<< (u_int v)
 {
-    operator<< (u_long(v)); return (*this);
+    return (operator<< (u_long(v)));
 }
 
 /// Writes number \p v into the stream as text.
 inline ostringstream& ostringstream::operator<< (float v)
 {
-    operator<< (double(v)); return (*this);
+    return (operator<< (double(v)));
 }
 
 /// Writes number \p v into the stream as text.
 inline ostringstream& ostringstream::operator<< (wchar_t v)
 {
-    operator<< (long(v)); return (*this);
+    return (operator<< (long(v)));
 }
 
 /// Writes text pointed to by \p s into the stream.

@@ -266,5 +266,57 @@ size_t file_exception::stream_size (void) const
 
 //----------------------------------------------------------------------
 
+#ifdef WANT_STREAM_BOUNDS_CHECKING
+
+/// Initializes the empty object. \p operation is the function that returned the error code.
+stream_bounds_exception::stream_bounds_exception (const char* operation, const char* type, uoff_t offset, size_t expected, size_t remaining)
+: libc_exception (operation),
+  m_TypeName (type),
+  m_Offset (offset),
+  m_Expected (expected),
+  m_Remaining (remaining)
+{
+    set_format (xfmt_StreamBoundsException);
+}
+
+/// Returns the name of the libc_exception.
+const char* stream_bounds_exception::what (void) const
+{
+    return ("stream bounds exception");
+}
+
+/// Returns a descriptive error message. fmt="%s stream %s: @%u: expected %u, available %u";
+void stream_bounds_exception::info (string& msgbuf, const char* fmt) const
+{
+    if (!fmt) fmt = "%s stream %s: @%u: expected %u, available %u";
+    try { msgbuf.format (fmt, m_TypeName, m_Operation, m_Offset, m_Expected, m_Remaining); } catch (...) {}
+}
+
+/// Reads the exception from stream \p is.
+void stream_bounds_exception::read (istream& is)
+{
+    libc_exception::read (is);
+    is >> m_TypeName >> m_Offset >> m_Expected >> m_Remaining;
+}
+
+/// Writes the exception into stream \p os.
+void stream_bounds_exception::write (ostream& os) const
+{
+    libc_exception::write (os);
+    os << m_TypeName << m_Offset << m_Expected << m_Remaining;
+}
+
+/// Returns the size of the written exception.
+size_t stream_bounds_exception::stream_size (void) const
+{
+    return (libc_exception::stream_size() +
+	    stream_size_of(m_TypeName) +
+	    stream_size_of(m_Offset) +
+	    stream_size_of(m_Expected) +
+	    stream_size_of(m_Remaining));
+}
+
+#endif
+
 }; // namespace ustl
 

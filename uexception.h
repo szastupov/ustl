@@ -37,10 +37,13 @@ class ostringstream;
 
 typedef u_int		xfmt_t;
 
-static const xfmt_t	xfmt_Exception		= 0;
-static const xfmt_t	xfmt_BadAlloc		= 1;
-static const xfmt_t	xfmt_LibcException	= 12;
-static const xfmt_t	xfmt_FileException	= 13;
+static const xfmt_t	xfmt_Exception			= 0;
+static const xfmt_t	xfmt_BadAlloc			= 1;
+static const xfmt_t	xfmt_LibcException		= 12;
+static const xfmt_t	xfmt_FileException		= 13;
+#ifdef WANT_STREAM_BOUNDS_CHECKING
+static const xfmt_t	xfmt_StreamBoundsException	= 14;
+#endif
 
 /// Base class for exceptions, equivalent to std::exception.
 class exception {
@@ -102,7 +105,7 @@ protected:
 /// File-related exceptions. Contains the file name.
 class file_exception : public libc_exception {
 public:
-    			file_exception (const char* operation, const char* filename);
+			file_exception (const char* operation, const char* filename);
     virtual const char*	what (void) const;
     virtual void	info (string& msgbuf, const char* fmt = NULL) const;
     virtual void	read (istream& is);
@@ -111,6 +114,26 @@ public:
 protected:
     char		m_Filename [PATH_MAX];	///< Name of the file causing the error.
 };
+
+#ifdef WANT_STREAM_BOUNDS_CHECKING
+/// Stream bounds checking.
+/// Only thrown in debug builds unless you say otherwise in config.h
+///
+class stream_bounds_exception : public libc_exception {
+public:
+			stream_bounds_exception (const char* operation, const char* type, uoff_t offset, size_t expected, size_t remaining);
+    virtual const char*	what (void) const;
+    virtual void	info (string& msgbuf, const char* fmt = NULL) const;
+    virtual void	read (istream& is);
+    virtual void	write (ostream& os) const;
+    virtual size_t	stream_size (void) const;
+protected:
+    const char*		m_TypeName;
+    uoff_t		m_Offset;
+    size_t		m_Expected;
+    size_t		m_Remaining;
+};
+#endif
 
 }; // namespace ustl
 

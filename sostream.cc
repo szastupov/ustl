@@ -68,6 +68,15 @@ void ostringstream::write_buffer (const char* buf, size_t bufSize)
 	write (buf + written, btw = min (remaining(), bufSize - written));
 }
 
+/// Writes a single character into the stream.
+ostringstream& ostringstream::operator<< (u_char v)
+{
+    if (remaining() >= sizeof(u_char) || overflow() >= sizeof(u_char))
+	ostream::iwrite (v);
+    return (*this);
+}
+
+/// Writes long value \p sv into the stream.
 ostringstream& ostringstream::operator<< (long sv)
 {
     assert (m_Base < VectorSize(c_Digits));
@@ -105,6 +114,7 @@ ostringstream& ostringstream::operator<< (u_long v)
     return (*this);
 }
 
+/// Writes number \p iv into the stream as text.
 ostringstream& ostringstream::operator<< (double iv)
 {
     assert (m_Base < VectorSize(c_Digits));
@@ -141,6 +151,7 @@ ostringstream& ostringstream::operator<< (double iv)
     return (*this);
 }
 
+/// Writes value \p v into the stream as text.
 ostringstream& ostringstream::operator<< (bool v)
 {
     if (v)
@@ -150,15 +161,17 @@ ostringstream& ostringstream::operator<< (bool v)
     return (*this);
 }
 
+/// Writes string \p s into the stream.
 ostringstream& ostringstream::operator<< (const char* s)
 {
     write_buffer (s, strlen(s));
     return (*this);
 }
 
+/// Writes string \p v into the stream.
 ostringstream& ostringstream::operator<< (const string& v)
 {
-    write_buffer (v.begin(), v.length());
+    write_buffer (v.begin(), v.size());
     return (*this);
 }
 

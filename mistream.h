@@ -22,6 +22,8 @@
 #define MISTREAM_H
 
 #include "cmemlink.h"
+#include "uexception.h"
+#include <typeinfo>
 
 namespace ustl {
 
@@ -198,7 +200,12 @@ template <typename T>
 inline void istream::iread (T& v)
 {
     assert (aligned (sizeof(T) < c_DefaultAlignment ? sizeof(T) : c_DefaultAlignment));
+#ifdef WANT_STREAM_BOUNDS_CHECKING
+    if (remaining() < sizeof(T))
+	throw stream_bounds_exception ("read", typeid(v).name(), pos(), sizeof(T), remaining());
+#else
     assert (remaining() >= sizeof(T));
+#endif
     const void* pv = begin() + pos();
     v = *reinterpret_cast<const T*>(pv);
     skip (sizeof(T));

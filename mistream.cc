@@ -71,7 +71,12 @@ void istream::swap (istream& is)
 /// Reads \p n bytes into \p buffer.
 void istream::read (void* buffer, size_t n)
 {
+#ifdef WANT_STREAM_BOUNDS_CHECKING
+    if (remaining() < n)
+	throw stream_bounds_exception ("read", "binary data", pos(), n, remaining());
+#else
     assert (remaining() >= n && "Reading past end of buffer. Make sure you are reading the right format.");
+#endif
     copy_n (ipos(), n, reinterpret_cast<value_type*>(buffer));
     skip (n);
 }
@@ -148,7 +153,12 @@ void ostream::unlink (void)
 /// Writes \p n bytes from \p buffer.
 void ostream::write (const void* buffer, size_t n)
 {
+#ifdef WANT_STREAM_BOUNDS_CHECKING
+    if (remaining() < n)
+	throw stream_bounds_exception ("write", "binary data", pos(), n, remaining());
+#else
     assert (remaining() >= n && "Buffer overrun. Check your stream size calculations.");
+#endif
     copy_n (const_iterator(buffer), n, ipos());
     skip (n);
 }

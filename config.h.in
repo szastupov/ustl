@@ -1,4 +1,15 @@
-/* config.h.in.  Generated from configure.in by autoheader.  */
+/* Define to 1 if you want stream operations to throw exceptions on
+ * insufficient data or insufficient space. All these errors should
+ * be preventable in output code; the input code should verify the
+ * data in a separate step. It slows down stream operations a lot,
+ * but it's your call. By default only debug builds throw.
+*/
+
+#ifndef NDEBUG
+    #define WANT_STREAM_BOUNDS_CHECKING 1
+#endif
+
+//----------------------------------------------------------------------
 
 /* Define to 1 if you have the `atexit' function. */
 #undef HAVE_ATEXIT

@@ -53,8 +53,8 @@ namespace ustl {
 /// 		to type .c_str() every time. A side effect of this is that
 /// 		const operator[] is no longer needed (gcc will warn about an
 /// 		ambiguous overload)
-/// 	length() currently returns the same number as size(), but eventually
-/// 		size() will return the allocated size including the terminator.
+/// 	length() returns the number of _characters_, not bytes. This function
+///		is O(N), since the character count is not stored, so use wisely.
 ///
 class string : public memblock {
 public:
@@ -81,8 +81,7 @@ public:
 				string (const_pointer s1, const_pointer s2);
 				string (size_t n, value_type c = c_Terminator);
     inline size_t		size (void) const;
-    inline size_t		length (void) const;
-    size_t			nchars (void) const;
+    size_t			length (void) const;
     const_iterator		ichar (uoff_t c) const;
     iterator			ichar (uoff_t c);
     inline pointer		data (void);
@@ -164,12 +163,6 @@ public:
 inline size_t string::size (void) const
 {
     return (memblock::size() - size_Terminator);
-}
-
-/// Returns the number of characters in the string, not including the terminator.
-inline size_t string::length (void) const
-{
-    return (size());
 }
 
 /// Returns the pointer to the string

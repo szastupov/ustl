@@ -22,6 +22,8 @@
 #define MOSTREAM_H
 
 #include "memlink.h"
+#include "uexception.h"
+#include <typeinfo>
 
 namespace ustl {
 
@@ -191,7 +193,12 @@ template <typename T>
 inline void ostream::iwrite (const T& v)
 {
     assert (aligned (sizeof(T) < c_DefaultAlignment ? sizeof(T) : c_DefaultAlignment));
+#ifdef WANT_STREAM_BOUNDS_CHECKING
+    if (remaining() < sizeof(T))
+	throw stream_bounds_exception ("write", typeid(v).name(), pos(), sizeof(T), remaining());
+#else
     assert (remaining() >= sizeof(T));
+#endif
     void* pv = begin() + pos();
     *reinterpret_cast<T*>(pv) = v;
     skip (sizeof(T));

@@ -23,7 +23,7 @@ private:
 void Widen (const string& str, vector<wchar_t>& result)
 {
     result.clear();
-    result.resize (str.nchars());
+    result.resize (str.length());
     copy (utf8in (str.begin()), utf8in (str.end()), result.begin());
 }
 
@@ -69,19 +69,19 @@ int main (void)
     ws.insert (0, wchar_t(1234));
     ws.insert (3, wchar_t(2345));
     ws.insert (4, wchar_t(3456));
-    ws.insert (ws.nchars(), wchar_t(4567));
-    cout << "Values[" << ws.nchars() << "]:";
-    for (uoff_t i = 0; i < ws.nchars(); ++ i)
+    ws.insert (ws.length(), wchar_t(4567));
+    cout << "Values[" << ws.length() << "]:";
+    for (uoff_t i = 0; i < ws.length(); ++ i)
 	cout << ' ' << ws.char_at(i);
     cout << endl;
 
     cout << "Character offsets:";
-    for (size_t i = 0; i < ws.nchars(); ++ i)
+    for (size_t i = 0; i < ws.length(); ++ i)
 	cout << ' ' << distance (ws.begin(), ws.ichar(i));
     cout << endl;
 
-    cout << "Erasing character " << ws.nchars() - 1 << ": ";
-    ws.erase (ws.nchars() - 1);
+    cout << "Erasing character " << ws.length() - 1 << ": ";
+    ws.erase (ws.length() - 1);
     Widen (ws, decChars);
     DumpWchars (decChars);
     cout << endl;

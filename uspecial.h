@@ -103,7 +103,12 @@ istream& operator>> (istream& is, vector<T>& v)
     size_t n;
     is >> n;
     const size_t expectedSize = n * stream_size_of(T());
+#ifdef WANT_STREAM_BOUNDS_CHECKING
+    if (expectedSize > is.remaining())
+	throw stream_bounds_exception ("read", typeid(v).name(), is.pos(), expectedSize, is.remaining());
+#else
     assert (expectedSize <= is.remaining() && "This does not look like a written vector.");
+#endif
     if (expectedSize <= is.remaining()) {
 	v.resize (n);
 	copy_n (istream_iterator<T>(is), n, v.begin());
@@ -175,6 +180,7 @@ inline istream& operator>> (istream& is, tuple<N,T>& v)
 {
     for (typename tuple<N,T>::iterator i = v.begin(); i < v.end(); ++ i)
 	is >> *i;
+    is.align();
     return (is);
 }
 
@@ -184,6 +190,7 @@ inline ostream& operator<< (ostream& os, const tuple<N,T>& v)
 {
     for (typename tuple<N,T>::const_iterator i = v.begin(); i < v.end(); ++ i)
 	os << *i;
+    os.align();
     return (os);
 }
 
@@ -205,7 +212,7 @@ inline ostringstream& operator<< (ostringstream& os, const tuple<N,T>& v)
 template <size_t N, typename T>
 inline size_t stream_size_of (const tuple<N,T>& v)
 {
-    return (v.size() * stream_size_of(T()));
+    return (Align (v.size() * stream_size_of(T())));
 }
 
 //----------------------------------------------------------------------
