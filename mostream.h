@@ -38,11 +38,10 @@ class string;
 /// \code
 ///     memblock b;
 ///     ostream os (b);
-///     os << boolVar;
-///     os.align (sizeof(int));
+///     os << boolVar << talign<int>();
 ///     os << intVar << floatVar;
 ///     os.write (binaryData, binaryDataSize);
-///     os.align ();
+///     os.align();
 ///     b.resize (os.pos());
 ///     write (fd, b, b.size());
 /// \endcode
@@ -61,7 +60,7 @@ public:
     inline size_type	remaining (void) const;
     inline bool		aligned (size_type grain = c_DefaultAlignment) const;
     inline size_type	align_size (size_type grain = c_DefaultAlignment) const;
-    inline void		align (size_type grain = c_DefaultAlignment);
+    void		align (size_type grain = c_DefaultAlignment);
     void		write (const void* buffer, size_type size);
     inline void		write (const cmemlink& buf);
     void		write_strz (const char* str);
@@ -178,12 +177,6 @@ inline bool ostream::aligned (size_type grain) const
 inline ostream::size_type ostream::align_size (size_type grain) const
 {
     return (Align (pos(), grain) - pos());
-}
-
-/// Aligns the write pointer on \p grain. Nothing is written to the skipped bytes.
-inline void ostream::align (size_type grain)
-{
-    seek (Align (pos(), grain));
 }
 
 /// Writes the contents of \p buf into the stream as a raw dump.

@@ -137,6 +137,20 @@ void ostream::unlink (void)
     m_Pos = 0;
 }
 
+/// Aligns the write pointer on \p grain. The skipped bytes are zeroed.
+void ostream::align (size_type grain)
+{
+    const size_t nb = Align (pos(), grain) - pos();
+#ifdef WANT_STREAM_BOUNDS_CHECKING
+    if (remaining() < nb)
+	throw stream_bounds_exception ("align", "padding", pos(), nb, remaining());
+#else
+    assert (remaining() >= nb && "Buffer overrun. Check your stream size calculations.");
+#endif
+    fill_n (ipos(), nb, 0);
+    skip (nb);
+}
+
 /// Writes \p n bytes from \p buffer.
 void ostream::write (const void* buffer, size_type n)
 {
