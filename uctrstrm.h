@@ -132,7 +132,7 @@ ostream& container_write (ostream& os, const Container& v)
 template <typename Container>
 size_t container_stream_size (const Container& v)
 {
-    return (Align (stream_size_of(v.size())) + nr_container_stream_size (v));
+    return (Align (stream_size_of(v.size()) + nr_container_stream_size (v)));
 }
 
 /// \brief Writes element \p v into stream \p os as text.
