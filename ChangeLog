@@ -27,6 +27,7 @@ Release 0.4-3
 		time. It's cleaner and saner this way.
 	* benchmarking tool in bvt	
 	* More functions implemented in bitset.
+	* Added --with-static and --without-shared flags to configure.
 
 Release 0.4-2
 	* ostringstreams will now correctly resize the buffer as needed.
