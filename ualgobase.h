@@ -189,7 +189,7 @@ inline T* unrolled_fill (T* first, size_t count, const T v)
     return (first);
 }
 
-#ifdef CPU_HAS_3DNOW
+#if CPU_HAS_3DNOW
     #define MMX_RESET_FPU	__builtin_ia32_femms
 #else
     #define MMX_RESET_FPU
@@ -210,16 +210,12 @@ inline type* unrolled_copy (const type* first, size_t count, type* result)	\
 	nCarriers = count / multi;				\
 	if (nCarriers) {					\
 	    const vec_t* csrc ((const vec_t*) first);		\
-	    vec_t* cdest ((vec_t*) result), di[4];		\
+	    vec_t* cdest ((vec_t*) result);			\
 	    do {						\
-		di[0] = csrc[0];				\
-		di[1] = csrc[1];				\
-		di[2] = csrc[2];				\
-		di[3] = csrc[3];				\
-		cdest[0] = di[0];				\
-		cdest[1] = di[1];				\
-		cdest[2] = di[2];				\
-		cdest[3] = di[3];				\
+		cdest[0] = csrc[0];				\
+		cdest[1] = csrc[1];				\
+		cdest[2] = csrc[2];				\
+		cdest[3] = csrc[3];				\
 		cdest += 4;					\
 		csrc += 4;					\
 	    } while (--nCarriers);				\
@@ -299,7 +295,7 @@ inline type* unrolled_fill (type* first, size_t count, const type v)	\
 #define __MMX_EIGHT_ARGS	{v,v,v,v,v,v,v,v}
 #define __MMX_FOUR_ARGS		{v,v,v,v}
 #define __MMX_TWO_ARGS		{v,v}
-#ifdef HAVE_VECTOR_EXTENSIONS
+#if HAVE_VECTOR_EXTENSIONS
 MMX_UNROLLED_COPY(uint8_t, V8QI)
 MMX_UNROLLED_COPY(uint16_t, V4HI)
 MMX_UNROLLED_COPY(uint32_t, V2SI)
@@ -312,6 +308,10 @@ MMX_UNROLLED_FILL(float, V2SF, __MMX_TWO_ARGS)
 #undef __MMX_EIGHT_ARGS
 #undef __MMX_FOUR_ARGS
 #undef __MMX_TWO_ARGS
+#undef MMX_UNROLLED_COPY
+#undef MMX_UNROLLED_FILL
+UNROLLED_COPY_BACKWARD(const uint8_t, uint8_t)
+#undef UNROLLED_COPY_BACKWARD
 
 #define UNROLLED_COPY_SPECIALIZATION(type)						\
 template <> inline type* copy (const type* first, const type* last, type* result)	\
@@ -343,22 +343,40 @@ UNROLLED_FILL_SPECIALIZATION(float)
 #undef UNROLLED_FILL_SPECIALIZATION
 
 // Specializations for void* and char*, aliasing the above optimized versions.
-#define COPY_ALIAS_FUNC(type, alias_type)						\
-template <> inline type* copy (const type* first, const type* last, type* result)	\
+//
+// All these need duplication with const and non-const arguments, since
+// otherwise the compiler will default to the unoptimized version for
+// pointers not const in the caller's context, such as local variables.
+// These are all inline, but they sure slow down compilation... :(
+//
+#define COPY_ALIAS_FUNC(ctype, type, alias_type)			\
+template <> inline type* copy (ctype* first, ctype* last, type* result)	\
 { return ((type*) copy ((const alias_type*) first, (const alias_type*) last, (alias_type*) result)); }
-COPY_ALIAS_FUNC(void, uint8_t)
-COPY_ALIAS_FUNC(char, uint8_t)
-COPY_ALIAS_FUNC(int8_t, uint8_t)
-COPY_ALIAS_FUNC(int16_t, uint16_t)
-COPY_ALIAS_FUNC(int32_t, uint32_t)
+COPY_ALIAS_FUNC(const void, void, uint8_t)
+COPY_ALIAS_FUNC(void, void, uint8_t)
+COPY_ALIAS_FUNC(const char, char, uint8_t)
+COPY_ALIAS_FUNC(char, char, uint8_t)
+COPY_ALIAS_FUNC(const int8_t, int8_t, uint8_t)
+COPY_ALIAS_FUNC(int8_t, int8_t, uint8_t)
+COPY_ALIAS_FUNC(uint8_t, uint8_t, uint8_t)
+COPY_ALIAS_FUNC(const int16_t, int16_t, uint16_t)
+COPY_ALIAS_FUNC(int16_t, int16_t, uint16_t)
+COPY_ALIAS_FUNC(uint16_t, uint16_t, uint16_t)
+#if HAVE_VECTOR_EXTENSIONS || (SIZE_OF_LONG > 4)
+COPY_ALIAS_FUNC(const int32_t, int32_t, uint32_t)
+COPY_ALIAS_FUNC(int32_t, int32_t, uint32_t)
+COPY_ALIAS_FUNC(uint32_t, uint32_t, uint32_t)
+#endif
 #undef COPY_ALIAS_FUNC
-UNROLLED_COPY_BACKWARD(const uint8_t, uint8_t)
 #define COPY_BACKWARD_ALIAS_FUNC(ctype, type, alias_type)				\
 template <> inline type* copy_backward (ctype* first, ctype* last, type* result)	\
 { return ((type*) copy_backward ((const alias_type*) first, (const alias_type*) last, (alias_type*) result)); }
 COPY_BACKWARD_ALIAS_FUNC(uint8_t, uint8_t, uint8_t)
+COPY_BACKWARD_ALIAS_FUNC(int8_t, int8_t, uint8_t)
 COPY_BACKWARD_ALIAS_FUNC(uint16_t, uint16_t, uint8_t)
 COPY_BACKWARD_ALIAS_FUNC(const uint16_t, uint16_t, uint8_t)
+COPY_BACKWARD_ALIAS_FUNC(int16_t, int16_t, uint8_t)
+COPY_BACKWARD_ALIAS_FUNC(const int16_t, int16_t, uint8_t)
 COPY_BACKWARD_ALIAS_FUNC(void, void, uint8_t)
 COPY_BACKWARD_ALIAS_FUNC(const void, void, uint8_t)
 #undef COPY_BACKWARD_ALIAS_FUNC
@@ -371,16 +389,28 @@ FILL_ALIAS_FUNC(char, uint8_t, char)
 FILL_ALIAS_FUNC(char, uint8_t, u_char)
 FILL_ALIAS_FUNC(int8_t, uint8_t, int8_t)
 FILL_ALIAS_FUNC(int16_t, uint16_t, int16_t)
+#if HAVE_VECTOR_EXTENSIONS || (SIZE_OF_LONG > 4)
 FILL_ALIAS_FUNC(int32_t, uint32_t, int32_t)
+#endif
 #undef FILL_ALIAS_FUNC
-#define COPY_N_ALIAS_FUNC(type, alias_type)					\
-template <> inline type* copy_n (const type* first, size_t count, type* result)	\
+#define COPY_N_ALIAS_FUNC(ctype, type, alias_type)					\
+template <> inline type* copy_n (ctype* first, size_t count, type* result)	\
 { return ((type*) copy_n ((const alias_type*) first, count, (alias_type*) result)); }
-COPY_N_ALIAS_FUNC(void, uint8_t)
-COPY_N_ALIAS_FUNC(char, uint8_t)
-COPY_N_ALIAS_FUNC(int8_t, uint8_t)
-COPY_N_ALIAS_FUNC(int16_t, uint16_t)
-COPY_N_ALIAS_FUNC(int32_t, uint32_t)
+COPY_N_ALIAS_FUNC(const void, void, uint8_t)
+COPY_N_ALIAS_FUNC(void, void, uint8_t)
+COPY_N_ALIAS_FUNC(const char, char, uint8_t)
+COPY_N_ALIAS_FUNC(char, char, uint8_t)
+COPY_N_ALIAS_FUNC(int8_t, int8_t, uint8_t)
+COPY_N_ALIAS_FUNC(uint8_t, uint8_t, uint8_t)
+COPY_N_ALIAS_FUNC(const int8_t, int8_t, uint8_t)
+COPY_N_ALIAS_FUNC(int16_t, int16_t, uint16_t)
+COPY_N_ALIAS_FUNC(uint16_t, uint16_t, uint16_t)
+COPY_N_ALIAS_FUNC(const int16_t, int16_t, uint16_t)
+#if HAVE_VECTOR_EXTENSIONS || (SIZE_OF_LONG > 4)
+COPY_N_ALIAS_FUNC(int32_t, int32_t, uint32_t)
+COPY_N_ALIAS_FUNC(uint32_t, uint32_t, uint32_t)
+COPY_N_ALIAS_FUNC(const int32_t, int32_t, uint32_t)
+#endif
 #undef COPY_N_ALIAS_FUNC
 #define FILL_N_ALIAS_FUNC(type, alias_type, v_type)				\
 template <> inline type* fill_n (type* first, size_t n, const v_type& value)	\
@@ -391,7 +421,9 @@ FILL_N_ALIAS_FUNC(char, uint8_t, char)
 FILL_N_ALIAS_FUNC(char, uint8_t, u_char)
 FILL_N_ALIAS_FUNC(int8_t, uint8_t, int8_t)
 FILL_N_ALIAS_FUNC(int16_t, uint16_t, int16_t)
+#if HAVE_VECTOR_EXTENSIONS || (SIZE_OF_LONG > 4)
 FILL_N_ALIAS_FUNC(int32_t, uint32_t, int32_t)
+#endif
 #undef FILL_N_ALIAS_FUNC
 
 } // namespace ustl
