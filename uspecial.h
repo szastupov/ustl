@@ -18,7 +18,13 @@
 #include "mostream.h"
 #include "sostream.h"
 #include "strmsize.h"
-#include "ufacets.h"
+#ifdef WITHOUT_LIBSTDCPP
+    #include "ufacets.h"
+#elif defined(__GNUC__) && (__GNUC__ >= 3)
+    #include <locale>
+#else
+    #include <ctype.h>
+#endif
 
 namespace ustl {
 
