@@ -87,7 +87,6 @@ public:
     void		write (ostream& os) const;
     size_type		stream_size (void) const;
     void		write_file (const char* filename, int mode = 0644) const;
-protected:
     virtual size_type	elementSize (void) const;
     inline size_type	elementBytes (size_type n) const	{ return (n * elementSize()); }
 private:
@@ -166,8 +165,6 @@ template <> inline size_t alignof (cmemlink) { return (alignof (size_t())); }
 
 /// Use with cmemlink-derived classes to link to a static array
 #define static_link(v)	link (v, VectorSize(v))
-/// Use with memlink-derived classes to allocate and link to stack space.
-#define alloca_link(n)	link (alloca(n), n)
 
 } // namespace ustl
 

@@ -92,11 +92,11 @@ public:
     inline void			link (void* first, void* last)		{ memblock::link (first, last); }
 				OVERLOAD_POINTER_AND_SIZE_T_V2(link, void*)
 				OVERLOAD_POINTER_AND_SIZE_T_V2(link, const void*)
+    inline virtual size_type	elementSize (void) const		{ return (sizeof(T)); }
+    inline size_type		elementBytes (size_type n) const	{ return (n * sizeof(T)); }
 protected:
     virtual void		constructBlock (void* p, size_type s) const;
     virtual void		destructBlock (void* p, size_type s) const;
-    inline virtual size_type	elementSize (void) const		{ return (sizeof(T)); }
-    inline size_type		elementBytes (size_type n) const	{ return (n * sizeof(T)); }
 };
 
 /// Initializes empty vector.
