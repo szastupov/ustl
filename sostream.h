@@ -41,22 +41,22 @@ class string;
 ///
 class ostringstream : public ostream {
 public:
-    				ostringstream (void);
+				ostringstream (void);
 				ostringstream (void* p, size_t n);
     explicit			ostringstream (string& dest);
     explicit			ostringstream (const memlink& dest);
     void			iwrite (long v);
     void			iwrite (u_char v);
     void			iwrite (u_long v);
-#ifdef __GNUC__
-    void			iwrite (long long v);
-    void			iwrite (unsigned long long v);
-#endif
     void			iwrite (double v);
     void			iwrite (bool v);
     void			iwrite (const char* s);
     void			iwrite (const string& v);
     void			iwrite (ios::fmtflags f);
+#ifdef __GNUC__
+    void			iwrite (long long v);
+    void			iwrite (unsigned long long v);
+#endif
     int				format (const char* fmt, ...) __attribute__((__format__(__printf__, 2, 3)));
     inline void			set_base (uint16_t b);
     inline void			set_width (uint16_t w);

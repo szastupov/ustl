@@ -39,6 +39,15 @@ namespace ios {
 	size_t			m_Grain;
     };
 
+    /// \class talign uiosfunc.h ustl.h
+    /// \ingroup StreamFunctors
+    /// Stream functor to allow type-based alignment.
+    template <typename T>
+    class talign : public align {
+    public:
+	inline talign (void) : align (sizeof(T)) {}
+    };
+
     /// \class skip uiosfunc.h ustl.h
     /// \ingroup StreamFunctors
     /// Stream functor to allow inline skip() calls. os << ios::skip(sizeof(u_short));

@@ -211,6 +211,7 @@ static void PrintHelp (void)
 "  LD\t\tLinker\t\t\tLDFLAGS\n"
 "\n"
 "Report bugs to " PACKAGE_BUGREPORT ".\n");
+    exit (0);
 }
 
 static void PrintVersion (void)
@@ -220,6 +221,7 @@ static void PrintVersion (void)
 	    "Copyright 2003, Mike Sharov <msharov@talentg.com>\n"
 	    "This configure script and the bsconf package are free software.\n"
 	    "Unlimited permission to copy, distribute, and modify is granted.\n");
+    exit (0);
 }
 
 /*--------------------------------------------------------------------*/

@@ -32,9 +32,7 @@ int main (void)
     const int c_Numbers[] = { 1, 2, 3, 4, 5 };
     const int c_Empty[] = { };
     cout << "VectorSize(c_Numbers[5]) = " << VectorSize(c_Numbers) << endl;
-    #ifdef __GNUC__
-	cout << "VectorSize(c_Numbers[0]) = " << VectorSize(c_Empty) << endl;
-    #endif
+    cout << "VectorSize(c_Numbers[0]) = " << VectorSize(c_Empty) << endl;
     cout << endl;
     cout << "BitsInType(uint32_t) = " << BitsInType(uint32_t) << endl;
     cout << "BitsInType(int16_t) = " << BitsInType(int16_t) << endl;

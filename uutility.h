@@ -96,8 +96,16 @@ UNVOID_DISTANCE(const,const)
 UNVOID_DISTANCE(,const)
 UNVOID_DISTANCE(const,)
 
-/// Returns the number of elements in the static vector
-#define VectorSize(v)	(sizeof(v) / sizeof(*v))
+#ifdef __GNUC__
+    /// Returns the number of elements in a static vector
+    #define VectorSize(v)	(sizeof(v) / sizeof(*v))
+#else
+    // Old compilers will not be able to evaluate *v on an empty vector.
+    // The tradeoff here is that VectorSize will not be able to measure arrays of local structs.
+    template <typename T>
+    inline size_t VectorElementSize (const T[]) { return (sizeof(T)); }
+    #define VectorSize(v)	(sizeof(v) / ustl::VectorElementSize(v))
+#endif
 
 /// Returns the number of bits in the given type
 #define BitsInType(t)	(sizeof(t) * CHAR_BIT)

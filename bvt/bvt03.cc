@@ -36,13 +36,13 @@ int main (void)
 
     os << c;
     os << uc;
-    os << ios::align(sizeof(bool)) << bv;
-    os << ios::align(sizeof(int)) << i;
+    os << ios::talign<bool>() << bv;
+    os << ios::talign<int>() << i;
     os << ui;
     os << ios::align() << li;
     os << uli;
-    os << ios::align(sizeof(float)) << f;
-    os << ios::align(sizeof(double)) << d;
+    os << ios::talign<float>() << f;
+    os << ios::talign<double>() << d;
     os << si;
     os << usi;
     b.resize (os.pos());
@@ -63,8 +63,8 @@ int main (void)
     is >> ui;
     is >> ios::align() >> li;
     is >> uli;
-    is >> ios::align(sizeof(float)) >> f;
-    is >> ios::align(sizeof(double)) >> d;
+    is >> ios::talign<float>() >> f;
+    is >> ios::talign<double>() >> d;
     is >> si;
     is >> usi;
     if (is.pos() != b.size())
