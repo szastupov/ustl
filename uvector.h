@@ -18,14 +18,6 @@
 //
 // uvector.h
 //
-/** \class ustl::vector<T>
- *
- * \brief STL vector equivalent.
- *
- * In this design elements frequently undergo
- * BITWISE COPY! Don't put it in here if it doesn't support it. pvector
- * template should be used for objects with non-trivial copy methods.
-*/
 
 #ifndef UVECTOR_H
 #define UVECTOR_H
@@ -41,6 +33,12 @@
 
 namespace ustl {
 
+///
+/// \brief STL vector equivalent.
+///
+/// In this design elements frequently undergo
+/// BITWISE COPY! Don't put it in here if it doesn't support it.
+///
 template <typename T>
 class vector : public memblock {
 public:
@@ -149,10 +147,10 @@ vector<T>::vector (const_iterator i1, const_iterator i2)
 }
 
 /// Destructor
-/** Here the class must call deallocate, which is overloaded in this
- * template to call destructors on all the elements. ~memblock does this too,
- * but by the time the code gets there, the destructBlock overload is gone.
- */
+/// Here the class must call deallocate, which is overloaded in this
+/// template to call destructors on all the elements. ~memblock does this too,
+/// but by the time the code gets there, the destructBlock overload is gone.
+///
 template <typename T>
 vector<T>::~vector (void)
 {
@@ -407,9 +405,9 @@ inline void vector<T>::pop_back (void)
 }
 
 /// Calls T() for every element.
-/** Because storage is allocated by malloc() in memblock::Reserve(),
- * the constructors must be explicitly called here.
-*/
+/// Because storage is allocated by malloc() in memblock::Reserve(),
+/// the constructors must be explicitly called here.
+///
 template <typename T>
 void vector<T>::constructBlock (void* p, size_t s) const
 {
@@ -419,11 +417,11 @@ void vector<T>::constructBlock (void* p, size_t s) const
 }
 
 /// Calls ~T() for every element.
-/** Because storage is deallocated by free() in memblock::Link(),
- * the destructors must be explicitly called here. This function must
- * also be called from the destructor of this class because it is virtual
- * and cannot be called from ~memblock().
-*/
+/// Because storage is deallocated by free() in memblock::Link(),
+/// the destructors must be explicitly called here. This function must
+/// also be called from the destructor of this class because it is virtual
+/// and cannot be called from ~memblock().
+///
 template <typename T>
 void vector<T>::destructBlock (void* p, size_t s) const
 {
@@ -435,6 +433,7 @@ void vector<T>::destructBlock (void* p, size_t s) const
     memblock::destructBlock (p, s);
 }
 
+/// Reads the vector from stream \p is.
 template <typename T>
 inline void vector<T>::read (istream& is)
 {
@@ -446,6 +445,7 @@ inline void vector<T>::read (istream& is)
     is.align();
 }
 
+/// Writes the vector to stream \p os.
 template <typename T>
 inline void vector<T>::write (ostream& os) const
 {

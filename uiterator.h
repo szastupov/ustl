@@ -16,7 +16,7 @@
 // Free Software Foundation, Inc., 59 Temple Place - Suite 330, 
 // Boston, MA  02111-1307  USA.
 //
-// uiterator.h
+/// \file uiterator.h
 //
 
 #ifndef UITERATOR_H
@@ -25,6 +25,8 @@
 namespace ustl {
 
 //----------------------------------------------------------------------
+
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 
 template <typename Iterator>
 struct iterator_traits {
@@ -50,8 +52,11 @@ struct iterator_traits<const T*> {
     typedef const T&	reference;
 };
 
+#endif
+
 //----------------------------------------------------------------------
 
+/// Wraps \p Iterator to behave in an exactly opposite manner.
 template <class Iterator>
 class reverse_iterator {
 public:
@@ -85,6 +90,7 @@ protected:
 
 //----------------------------------------------------------------------
 
+/// Calls push_back on bound container for each assignment.
 template <class Container>
 class back_insert_iterator {
 public:
@@ -98,6 +104,7 @@ protected:
     Container&		m_rCtr;
 };
 
+/// Returns the back_insert_iterator for \p ctr.
 template <class Container>
 inline back_insert_iterator<Container> back_inserter (Container& ctr)
 {

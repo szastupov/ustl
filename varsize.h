@@ -18,20 +18,6 @@
 //
 // varsize.h
 //
-/** \class ustl::varsize
- *
- * \brief A size_t wrapper for writing to binary streams in minimum-byte form.
- *
- * The minimum-byte form is defined as follows:
- * \item values in [0..UCHAR_MAX] are written using 1 byte
- * \item [UCHAR_MAX..USHRT_MAX] are written using 4 bytes
- * \item [USHRT_MAX..ULONG_MAX] are written using 8 bytes
- *
- * The above numbers are for u_long aligned writes only. If your writes are
- * not, the worst case scenarios will write 5 bytes for shorts and up to 10
- * bytes for longs. varsize exists because most collections have less than
- * 256 elements; this is especially true of strings.
- */
 
 #ifndef VARSIZE_H_5F2DD7855F1CD23A031BCCF643F57965
 #define VARSIZE_H_5F2DD7855F1CD23A031BCCF643F57965
@@ -44,6 +30,19 @@ namespace ustl {
 
 class ostream;
 
+///
+/// A size_t wrapper for writing to binary streams in minimum-byte form.
+///
+/// The minimum-byte form is defined as follows:
+/// \li values in [0..UCHAR_MAX] are written using 1 byte
+/// \li [UCHAR_MAX..USHRT_MAX] are written using 4 bytes
+/// \li [USHRT_MAX..ULONG_MAX] are written using 8 bytes
+///
+/// The above numbers are for u_long aligned writes only. If your writes are
+/// not, the worst case scenarios will write 5 bytes for shorts and up to 10
+/// bytes for longs. varsize exists because most collections have less than
+/// 256 elements; this is especially true of strings.
+///
 class varsize {
 public:
     			varsize (void);

@@ -18,9 +18,6 @@
 //
 // fdostringstream.h
 //
-/** \class ustl::fdostringstream
- *  \brief A string stream that writes to an fd. Implements cout and cerr.
- */
 
 #ifndef FDOSTREAM_H_5E27FC3D530BF3CA04D6C73F5700EECC
 #define FDOSTREAM_H_5E27FC3D530BF3CA04D6C73F5700EECC
@@ -33,6 +30,8 @@ namespace ustl {
 #define USTL_COUT_BUFFER_SIZE		1024
 
 class string;
+
+/// A string stream that writes to an fd. Implements cout and cerr.
 class fdostringstream : public ostringstream {
 public:
     				fdostringstream (int fd, size_t bufSize = USTL_COUT_BUFFER_SIZE);

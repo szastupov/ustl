@@ -18,12 +18,12 @@
 //
 // uexception.h
 //
-/** \file uexception.h
- *
- * \brief This file contains stuff from <exception> and <new>, the standard
- * 	C++ headers, because uSTL is intended to completely replace all C++
- * 	standard library functions.
- */
+/// \file uexception.h
+///
+/// \brief This file contains stuff from \<exception\>.
+///	The standard C++ headers are duplicated because uSTL is intended
+/// 	to completely replace all C++ standard library functions.
+//
 
 #ifndef UEXCEPTION
 #define UEXCEPTION
@@ -34,9 +34,7 @@ namespace ustl {
 
 class string;
 
-/** \class ustl::exception
- * \brief base class for exceptions, equivalent to std::exception.
- */
+/// Base class for exceptions, equivalent to std::exception.
 class exception {
 public:
     			exception (void);
@@ -45,12 +43,7 @@ public:
     virtual void	info (string& msgbuf, const char* fmt = NULL) const;
 };
 
-/** \class ustl::bad_alloc
- * \brief Exception thrown on memory allocation failure by memblock::reserve.
- *
- * The standard C++ new will still throw std::bad_alloc though, so you need to
- * catch that too if you are using new.
- */
+/// Exception thrown on memory allocation failure by memblock::reserve.
 class bad_alloc : public exception {
 public:
     			bad_alloc (size_t nBytes);
@@ -60,9 +53,7 @@ protected:
     size_t		m_nBytesRequested;	///< Number of bytes requested by the failed allocation.
 };
 
-/** \class ustl::libc_exception
- * \brief Thrown when a libc function returns an error. Contains an errno and description.
-*/
+/// Thrown when a libc function returns an error. Contains an errno and description.
 class libc_exception : public exception {
 public:
     			libc_exception (const char* operation);
@@ -75,9 +66,7 @@ protected:
     const char*		m_Operation;		///< Name of the failed operation.
 };
 
-/** \class ustl::file_exception
- * \brief File-related exceptions.
-*/
+/// File-related exceptions. Contains the file name.
 class file_exception : public libc_exception {
 public:
     			file_exception (const char* operation, const char* filename);

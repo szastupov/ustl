@@ -27,6 +27,7 @@
 
 namespace ustl {
 
+/// Unique sorted container. Sorted vector with all values unique.
 template <typename T>
 class set : public vector<T> {
 public:
@@ -58,24 +59,28 @@ public:
     inline iterator	erase (iterator ep1, iterator ep2);
 };
 
+/// Default constructor.
 template <typename T>
 set<T>::set (void)
 : vector<T> ()
 {
 }
 
+/// Creates a container able to hold at least \p n elements.
 template <typename T>
 set<T>::set (size_t n)
 : vector<T> (n)
 {
 }
 
+/// Creates a copy of \p v.
 template <typename T>
 set<T>::set (const set<T>& v)
 : vector<T> (v)
 {
 }
 
+/// Inserts elements from range [i1,i2), which does not have to be sorted.
 template <typename T>
 set<T>::set (const_iterator i1, const_iterator i2)
 : vector<T> ()
@@ -83,6 +88,7 @@ set<T>::set (const_iterator i1, const_iterator i2)
     insert (i1, i2);
 }
 
+/// Copies the contents of \p v.
 template <typename T>
 inline const set<T>& set<T>::operator= (const set<T>& v)
 {
@@ -90,6 +96,7 @@ inline const set<T>& set<T>::operator= (const set<T>& v)
     return (*this);
 }
 
+/// Copies the contents of range [i1,i2).
 template <typename T>
 inline void set<T>::assign (const_iterator i1, const_iterator i2)
 {
@@ -97,24 +104,28 @@ inline void set<T>::assign (const_iterator i1, const_iterator i2)
     insert (i1, i2);
 }
 
+/// Returns the iterator to an element with value of \p v.
 template <typename T>
 typename set<T>::const_iterator set<T>::find (const_reference v) const
 {
     return (binary_search (begin(), end(), v));
 }
 
+/// Returns the iterator to an element with value of \p v.
 template <typename T>
 typename set<T>::iterator set<T>::find (const_reference v)
 {
     return (binary_search (begin(), end(), v));
 }
 
+/// Inserts \p v into the container, maintaining the sort order.
 template <typename T>
 inline void set<T>::push_back (const_reference v)
 {
     insert (v);
 }
 
+/// Inserts \p v into the container, maintaining the sort order.
 template <typename T>
 typename set<T>::iterator set<T>::insert (const_reference v)
 {
@@ -126,6 +137,7 @@ typename set<T>::iterator set<T>::insert (const_reference v)
     return (ip);
 }
 
+/// Inserts the contents of range [i1,i2)
 template <typename T>
 inline void set<T>::insert (const_iterator i1, const_iterator i2)
 {
@@ -134,6 +146,7 @@ inline void set<T>::insert (const_iterator i1, const_iterator i2)
     for_each (i1, i2, mem_fun (this, &set<T>::push_back));
 }
 
+/// Erases the element with value \p v.
 template <typename T>
 void set<T>::erase (const_reference v)
 {
@@ -142,12 +155,14 @@ void set<T>::erase (const_reference v)
 	erase (ip);
 }
 
+/// Erases the element at \p ep.
 template <typename T>
 inline typename set<T>::iterator set<T>::erase (iterator ep)
 {
     return (vector<T>::erase (ep));
 }
 
+/// Erases the range [ep1,ep2).
 template <typename T>
 inline typename set<T>::iterator set<T>::erase (iterator ep1, iterator ep2)
 {

@@ -26,6 +26,7 @@
 
 namespace ustl {
 
+/// Multiple sorted container. Unlike set, it may contain multiple copies of each element.
 template <typename K>
 class multiset : public vector<K> {
 public:
@@ -54,24 +55,28 @@ public:
     inline iterator	erase (iterator ep1, iterator ep2);
 };
 
+/// Default constructor.
 template <typename K>
 multiset<K>::multiset (void)
 : vector<K> ()
 {
 }
 
+/// Creates the container with space enough to hold \p n elements.
 template <typename K>
 multiset<K>::multiset (size_t n)
 : vector<K> (n)
 {
 }
 
+/// Creates a copy of \p v.
 template <typename K>
 multiset<K>::multiset (const multiset<K>& v)
 : vector<K> (v)
 {
 }
 
+/// Copies range [i1,i2)
 template <typename K>
 multiset<K>::multiset (const_iterator i1, const_iterator i2)
 : vector<K> ()
@@ -79,6 +84,7 @@ multiset<K>::multiset (const_iterator i1, const_iterator i2)
     insert (i1, i2);
 }
 
+/// Copies contents of \p v.
 template <typename K>
 inline const multiset<K>& multiset<K>::operator= (const multiset<K>& v)
 {
@@ -86,6 +92,7 @@ inline const multiset<K>& multiset<K>::operator= (const multiset<K>& v)
     return (*this);
 }
 
+/// Copies contents of range [i1,i2)
 template <typename K>
 inline void multiset<K>::assign (const_iterator i1, const_iterator i2)
 {
@@ -93,6 +100,7 @@ inline void multiset<K>::assign (const_iterator i1, const_iterator i2)
     insert (i1, i2);
 }
 
+/// Returns the number of elements of value \p v.
 template <typename K>
 size_t multiset<K>::count (const_reference v) const
 {
@@ -100,12 +108,14 @@ size_t multiset<K>::count (const_reference v) const
     return (distance (fr.first, fr.second));
 }
 
+/// Inserts \p v.
 template <typename K>
 inline void multiset<K>::push_back (const_reference v)
 {
     insert (v);
 }
 
+/// Inserts \p v.
 template <typename K>
 typename multiset<K>::iterator multiset<K>::insert (const_reference v)
 {
@@ -113,6 +123,7 @@ typename multiset<K>::iterator multiset<K>::insert (const_reference v)
     return (vector<K>::insert (ip, v));
 }
 
+/// Inserts all elements from range [i1,i2).
 template <typename K>
 inline void multiset<K>::insert (const_iterator i1, const_iterator i2)
 {
@@ -121,6 +132,7 @@ inline void multiset<K>::insert (const_iterator i1, const_iterator i2)
     for_each (i1, i2, mem_fun (this, &multiset<K>::push_back));
 }
 
+/// Erases all elements with value \p v.
 template <typename K>
 void multiset<K>::erase (const_reference v)
 {
@@ -128,12 +140,14 @@ void multiset<K>::erase (const_reference v)
     erase (epr.first, epr.second);
 }
 
+/// Erases the element at \p ep.
 template <typename K>
 inline typename multiset<K>::iterator multiset<K>::erase (iterator ep)
 {
     return (vector<K>::erase (ep));
 }
 
+/// Erases range [ep1,ep2).
 template <typename K>
 inline typename multiset<K>::iterator multiset<K>::erase (iterator ep1, iterator ep2)
 {

@@ -27,6 +27,7 @@
 
 namespace ustl {
 
+/// A sorted associative container of pair<K,V>
 template <typename K, typename V>
 class map : public vector<pair<K,V> > {
 public:
@@ -62,24 +63,28 @@ public:
     inline iterator		erase (iterator ep1, iterator ep2);
 };
 
+/// Default constructor.
 template <typename K, typename V>
 map<K,V>::map (void)
 : vector<pair<K,V> > ()
 {
 }
 
+/// Constructs the container with space for \p n elements.
 template <typename K, typename V>
 map<K,V>::map (size_t n)
 : vector<pair<K,V> > (n)
 {
 }
 
+/// Copies contents of \p v.
 template <typename K, typename V>
 map<K,V>::map (const map<K,V>& v)
 : vector<pair<K,V> > (v)
 {
 }
 
+/// Inserts elements from range [i1,i2)
 template <typename K, typename V>
 map<K,V>::map (const_iterator i1, const_iterator i2)
 : vector<pair<K,V> > ()
@@ -87,6 +92,7 @@ map<K,V>::map (const_iterator i1, const_iterator i2)
     insert (i1, i2);
 }
 
+/// Copies contents of \p v.
 template <typename K, typename V>
 inline const map<K,V>& map<K,V>::operator= (const map<K,V>& v)
 {
@@ -94,6 +100,7 @@ inline const map<K,V>& map<K,V>::operator= (const map<K,V>& v)
     return (*this);
 }
 
+/// Inserts elements from range [i1,i2)
 template <typename K, typename V>
 inline void map<K,V>::assign (const_iterator i1, const_iterator i2)
 {
@@ -101,18 +108,21 @@ inline void map<K,V>::assign (const_iterator i1, const_iterator i2)
     insert (i1, i2);
 }
 
+/// Returns the pair<K,V> where K = \p k.
 template <typename K, typename V>
 inline typename map<K,V>::const_iterator map<K,V>::find (const key_type& k) const
 {
     return (binary_search (begin(), end(), make_pair(k,V()), mem_var_less(&value_type::first)));
 }
 
+/// Returns the pair<K,V> where K = \p k.
 template <typename K, typename V>
 inline typename map<K,V>::iterator map<K,V>::find (const key_type& k)
 {
     return (binary_search (begin(), end(), make_pair(k,V()), mem_var_less(&value_type::first)));
 }
 
+/// Returns the pair<K,V> where V = \p v, occuring in range [first,last).
 template <typename K, typename V>
 inline typename map<K,V>::const_iterator map<K,V>::find_data (const data_type& v, const_iterator first, const_iterator last) const
 {
@@ -121,6 +131,7 @@ inline typename map<K,V>::const_iterator map<K,V>::find_data (const data_type& v
     return (find_if (first, last, mem_var_equal_to(&value_type::second, v)));
 }
 
+/// Returns the pair<K,V> where V = \p v, occuring in range [first,last).
 template <typename K, typename V>
 inline typename map<K,V>::iterator map<K,V>::find_data (const data_type& v, iterator first, iterator last)
 {
@@ -129,39 +140,44 @@ inline typename map<K,V>::iterator map<K,V>::find_data (const data_type& v, iter
     return (find_if (first, last, mem_var_equal_to(&value_type::second, v)));
 }
 
+/// Returns data associated with key \p k.
 template <typename K, typename V>
 inline const typename map<K,V>::data_type& map<K,V>::operator[] (const key_type& k) const
 {
     return (find(k)->second);
 }
 
+/// Returns data associated with key \p k.
 template <typename K, typename V>
 typename map<K,V>::data_type& map<K,V>::operator[] (const key_type& k)
 {
     const value_type match (k, V());
     iterator ip = lower_bound (begin(), end(), match, mem_var_less(&value_type::first));
-    if (ip == end() || match < *ip)
+    if (ip == end() || match.first < ip->first)
 	ip = vector<pair<K,V> >::insert (ip, match);
     return (ip->second);
 }
 
+/// Inserts the pair into the container.
 template <typename K, typename V>
 inline void map<K,V>::push_back (const_reference v)
 {
     insert (v);
 }
 
+/// Inserts the pair into the container.
 template <typename K, typename V>
 typename map<K,V>::iterator map<K,V>::insert (const_reference v)
 {
     iterator ip = lower_bound (begin(), end(), v, mem_var_less(&value_type::first));
-    if (ip == end() || v < *ip)
+    if (ip == end() || v.first < ip->first)
 	ip = vector<pair<K,V> >::insert (ip, v);
     else
 	*ip = v;
     return (ip);
 }
 
+/// Inserts elements from range [i1,i2) into the container.
 template <typename K, typename V>
 inline void map<K,V>::insert (const_iterator i1, const_iterator i2)
 {
@@ -170,6 +186,7 @@ inline void map<K,V>::insert (const_iterator i1, const_iterator i2)
     for_each (i1, i2, mem_fun (this, &map<K,V>::push_back));
 }
 
+/// Erases the element with key value \p k.
 template <typename K, typename V>
 void map<K,V>::erase (const key_type& k)
 {
@@ -178,12 +195,14 @@ void map<K,V>::erase (const key_type& k)
 	erase (ip);
 }
 
+/// Erases the element at iterator \p ep.
 template <typename K, typename V>
 inline typename map<K,V>::iterator map<K,V>::erase (iterator ep)
 {
     return (vector<pair<K,V> >::erase (ep));
 }
 
+/// Erases range [ep1,ep2).
 template <typename K, typename V>
 inline typename map<K,V>::iterator map<K,V>::erase (iterator ep1, iterator ep2)
 {

@@ -18,47 +18,6 @@
 //
 // mistream.h
 //
-/** \class ustl::istream
- *
- * \brief Helper class to read packed binary streams.
- *
- * This class contains a set of functions to read integral types from an
- * unstructured memory block. Unpacking binary file data can be done this
- * way, for instance. aligning the data is your responsibility, and can
- * be accomplished by proper ordering of reads and by calling the align()
- * function. Unaligned access is usually slower by orders of magnitude and,
- * on some architectures, such as PowerPC, can cause your program to crash.
- * Therefore, all read functions have asserts to check alignment.
- * Overreading the end of the stream will also cause a crash (an assert in
- * debug builds). Oh, and don't be intimidated by the size of the inlines
- * here. In the assembly code the compiler will usually chop everything down
- * to five instructions each.
- *
- * Alignment rules for your objects:
- * 	Assume your writes start off u_long aligned.
- * 	After completion, align the stream to u_long.
- * 	Non-u_long alignment is allowed if you plan to frequently write this
- * 	object in array form and alignment would be costly. For example, an
- * 	array of u_short-sized objects may leave the stream u_short aligned
- * 	as long as you know about it and will u_long-align the stream after
- * 	writing	the array (note: vector<T> will already do this for you)
- *
- * Example code:
- * \code
- *     CMemoryBlock b;
- *     int br = read (fd, b, b.size());
- *     b.SetSize (br);
- *     COStream is (b);
- *     is >> boolVar;
- *     is.align (sizeof(int));
- *     is >> intVar >> floatVar;
- *     is.read (binaryData, binaryDataSize);
- *     is.align (sizeof(u_long));
- *     // Assuming the input is written by code in mostream.h
- *     assert (is.pos() == b.size()); 
- * \endcode
-*/
-
 #ifndef MISTREAM_H
 #define MISTREAM_H
 
@@ -68,6 +27,45 @@ namespace ustl {
 
 class ostream;
 
+///
+/// \brief Helper class to read packed binary streams.
+/// 
+/// This class contains a set of functions to read integral types from an
+/// unstructured memory block. Unpacking binary file data can be done this
+/// way, for instance. aligning the data is your responsibility, and can
+/// be accomplished by proper ordering of reads and by calling the align()
+/// function. Unaligned access is usually slower by orders of magnitude and,
+/// on some architectures, such as PowerPC, can cause your program to crash.
+/// Therefore, all read functions have asserts to check alignment.
+/// Overreading the end of the stream will also cause a crash (an assert in
+/// debug builds). Oh, and don't be intimidated by the size of the inlines
+/// here. In the assembly code the compiler will usually chop everything down
+/// to five instructions each.
+/// 
+/// Alignment rules for your objects:
+///	\li Assume your writes start off u_long aligned.
+///	\li After completion, align the stream to u_long.
+///	\li Non-u_long alignment is allowed if you plan to frequently write this
+///	object in array form and alignment would be costly. For example, an
+///	array of u_short-sized objects may leave the stream u_short aligned
+///	as long as you know about it and will u_long-align the stream after
+///	writing the array (note: vector<T> will already do this for you)
+/// 
+/// Example code:
+/// \code
+///	CMemoryBlock b;
+///	int br = read (fd, b, b.size());
+///	b.SetSize (br);
+///	COStream is (b);
+///	is >> boolVar;
+///	is.align (sizeof(int));
+///	is >> intVar >> floatVar;
+///	is.read (binaryData, binaryDataSize);
+///	is.align (sizeof(u_long));
+///	// Assuming the input is written by code in mostream.h
+///	assert (is.pos() == b.size()); 
+/// \endcode
+///
 class istream : public cmemlink {
 public:
 			istream (void);
@@ -80,6 +78,7 @@ public:
     inline size_t	remaining (void) const;
     inline bool		aligned (size_t grain = c_DefaultAlignment) const;
     inline void		align (size_t grain = c_DefaultAlignment);
+    void		swap (istream& is);
     void		read (void* buffer, size_t size);
     inline void		read (memlink& buf);
     virtual void	read (istream& is);
@@ -108,6 +107,7 @@ private:
 
 //----------------------------------------------------------------------
 
+/// An iterator over an istream to use with uSTL algorithms.
 template <class T>
 class istream_iterator {
 public:
@@ -117,6 +117,7 @@ public:
 				    : m_Is (i.m_Is), m_v (i.m_v), m_vPos (i.m_vPos) {} 
     inline const istream_iterator& operator= (const istream_iterator& i)
 				    { m_Is = i.m_Is; m_v = i.m_v; m_vPos = i.m_vPos; return (*this); }
+    /// Reads and returns the next value.
     inline const T&		operator* (void)
     				{
 				    if (m_vPos != m_Is.pos()) {
@@ -182,7 +183,7 @@ inline void istream::read (memlink& buf)
     read (buf.begin(), buf.size());
 }
 
-/// Reads any type from the stream
+/// Reads type T from the stream via a direct pointer cast.
 template <typename T>
 inline void istream::iread (T& v)
 {

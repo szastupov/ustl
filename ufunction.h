@@ -16,11 +16,19 @@
 // Free Software Foundation, Inc., 59 Temple Place - Suite 330, 
 // Boston, MA  02111-1307  USA.
 //
-/** \file ufunction.h
-*   \brief Implements STL standard functors.
-*   See STL specification and bvts for usage of these. Furthermore, doxygen
-*   can not handle templates and I have great difficulty commenting these.
-*/
+/// \file ufunction.h
+///
+/// \brief Implements STL standard functors.
+///
+/// See STL specification and bvts for usage of these. The only
+/// extension is the mem_var functors for member variable access:
+/// \code
+///	f = find_if (ctr, mem_var_equal_to(&MyClass::m_Var, matchVar));
+///	f = find_if (ctr, mem_var_less(&MyClass::m_Var, matchVar));
+/// \endcode
+/// There are a couple of others but the syntax is much harder to grasp.
+/// See bvt10.cc for more examples.
+///
 
 #ifndef UFUNCTION_H_221ABA8551801799263C927234C085F3
 #define UFUNCTION_H_221ABA8551801799263C927234C085F3
@@ -30,6 +38,8 @@ namespace ustl {
 //----------------------------------------------------------------------
 // Standard functors
 //----------------------------------------------------------------------
+
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 
 template <typename Arg, typename Result>
 struct unary_function {
@@ -123,11 +133,16 @@ private:
     BinaryFunction	m_pfn;
 };
 
+#endif // DOXYGEN_SHOULD_SKIP_THIS
+
+/// functor(pfn) wraps function pointer pfn into a functor class that calls it.
 template <typename Arg, typename Result>
 inline functor1<Arg,Result,Result (*)(Arg)> functor (Result (*pfn)(Arg))
 {
     return (functor1<Arg,Result,Result (*)(Arg)> (pfn));
 }
+
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 
 template <typename Arg>
 inline vfunctor1<Arg,void (*)(Arg)> functor (void (*pfn)(Arg))
@@ -166,6 +181,9 @@ private:
     UnaryFunction	m_pfn;
 };
 
+#endif // DOXYGEN_SHOULD_SKIP_THIS
+
+/// Returns the functor that negates the result of *pfn().
 template <class UnaryFunction>
 inline unary_negate<UnaryFunction> unary_negator (UnaryFunction pfn)
 {
@@ -175,6 +193,8 @@ inline unary_negate<UnaryFunction> unary_negator (UnaryFunction pfn)
 //----------------------------------------------------------------------
 // Argument binders
 //----------------------------------------------------------------------
+
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 
 template <class BinaryFunction> 
 class binder1st : public unary_function<typename BinaryFunction::second_argument_type,
@@ -191,13 +211,6 @@ protected:
     arg1_t		m_Value;
 };
 
-template <typename BinaryFunction>
-inline binder1st<BinaryFunction>
-bind1st (const BinaryFunction& pfn, const typename BinaryFunction::first_argument_type& v) 
-{
-    return (binder1st<BinaryFunction> (pfn, v));
-}
-
 template <class BinaryFunction> 
 class binder2nd : public unary_function<typename BinaryFunction::first_argument_type,
 					typename BinaryFunction::result_type> {
@@ -213,6 +226,17 @@ protected:
     arg2_t		m_Value;
 };
 
+#endif // DOXYGEN_SHOULD_SKIP_THIS
+
+/// Converts \p pfn into a unary function by binding the first argument to \p v.
+template <typename BinaryFunction>
+inline binder1st<BinaryFunction>
+bind1st (const BinaryFunction& pfn, const typename BinaryFunction::first_argument_type& v) 
+{
+    return (binder1st<BinaryFunction> (pfn, v));
+}
+
+/// Converts \p pfn into a unary function by binding the second argument to \p v.
 template <typename BinaryFunction>
 inline binder2nd<BinaryFunction>
 bind2nd (const BinaryFunction& pfn, const typename BinaryFunction::second_argument_type& v) 
@@ -223,6 +247,8 @@ bind2nd (const BinaryFunction& pfn, const typename BinaryFunction::second_argume
 //----------------------------------------------------------------------
 // Member function adaptors
 //----------------------------------------------------------------------
+
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 
 template <class T>
 class mem_fun_t : public unary_function<T*,void> {
@@ -292,36 +318,44 @@ private:
     void	(T::*m_pf)(const V& v) const;
 };
 
+#endif // DOXYGEN_SHOULD_SKIP_THIS
+
+/// A unary functor that calls member function \p pf of given object.
 template <class T>
 inline mem_fun_t<T> mem_fun (void (T::*pf)())
 {
     return (mem_fun_t<T> (pf));
 }
 
+/// A unary functor that calls member function \p pf of given object.
 template <class T>
 inline const_mem_fun_t<T> mem_fun (void (T::*pf)() const)
 {
     return (const_mem_fun_t<T> (pf));
 }
 
+/// A unary functor that calls member function \p pf of given object.
 template <class Ret, typename T>
 inline mem_rfun_t<Ret,T> mem_fun (Ret (T::*pf)())
 {
     return (mem_rfun_t<Ret,T> (pf));
 }
 
+/// A unary functor that calls member function \p pf of given object.
 template <class Ret, typename T>
 inline const_mem_rfun_t<Ret,T> mem_fun (Ret (T::*pf)() const)
 {
     return (const_mem_rfun_t<Ret,T> (pf));
 }
 
+/// A unary functor that calls member function \p pf of bound object \p t.
 template <class T, typename V>
 inline ext_mem_fun_t<T,V> mem_fun (T* t, void (T::*pf)(V& v))
 {
     return (ext_mem_fun_t<T,V> (t, pf));
 }
 
+/// A unary functor that calls member function \p pf of bound object \p t.
 template <class T, typename V>
 inline const_ext_mem_fun_t<T,V> mem_fun (const T* t, void (T::*pf)(const V& v) const)
 {
@@ -331,6 +365,8 @@ inline const_ext_mem_fun_t<T,V> mem_fun (const T* t, void (T::*pf)(const V& v) c
 //----------------------------------------------------------------------
 // Member variable adaptors (uSTL extension)
 //----------------------------------------------------------------------
+
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 
 template <typename UnaryFunction, class T, typename VT>
 class mem_var1_t : public unary_function<T&,typename UnaryFunction::result_type> {
@@ -396,6 +432,9 @@ private:
     BinaryFunction	m_pfn;
 };
 
+#endif // DOXYGEN_SHOULD_SKIP_THIS
+
+/// Returned functor passes member variable \p mvp reference of given object to \p pfn.
 template <typename UnaryFunction, class T, typename VT>
 inline mem_var1_t<UnaryFunction, T, VT>
 mem_var1 (VT T::*mvp, UnaryFunction pfn)
@@ -403,6 +442,7 @@ mem_var1 (VT T::*mvp, UnaryFunction pfn)
     return (mem_var1_t<UnaryFunction,T,VT> (mvp, pfn));
 }
 
+/// Returned functor passes member variable \p mvp reference of given object to \p pfn.
 template <typename UnaryFunction, class T, typename VT>
 inline const_mem_var1_t<UnaryFunction, T, VT>
 const_mem_var1 (const VT T::*mvp, UnaryFunction pfn)
@@ -410,6 +450,7 @@ const_mem_var1 (const VT T::*mvp, UnaryFunction pfn)
     return (const_mem_var1_t<UnaryFunction,T,VT> (mvp, pfn));
 }
 
+/// Returned functor passes member variable \p mvp reference of given object to \p pfn.
 template <typename BinaryFunction, class T, typename VT>
 inline mem_var2_t<BinaryFunction, T, VT>
 mem_var2 (VT T::*mvp, BinaryFunction pfn)
@@ -417,6 +458,7 @@ mem_var2 (VT T::*mvp, BinaryFunction pfn)
     return (mem_var2_t<BinaryFunction,T,VT> (mvp, pfn));
 }
 
+/// Returned functor passes member variable \p mvp reference of given object to \p pfn.
 template <typename BinaryFunction, class T, typename VT>
 inline const_mem_var2_t<BinaryFunction, T, VT>
 const_mem_var2 (const VT T::*mvp, BinaryFunction pfn)
@@ -424,6 +466,7 @@ const_mem_var2 (const VT T::*mvp, BinaryFunction pfn)
     return (const_mem_var2_t<BinaryFunction,T,VT> (mvp, pfn));
 }
 
+/// Returned functor passes member variable \p mvp reference of given object to equal\<VT\>.
 template <class T, typename VT>
 inline const_mem_var1_t<binder2nd<equal_to<VT> >, T, VT>
 mem_var_equal_to (const VT T::*mvp, const VT& v)
@@ -431,6 +474,7 @@ mem_var_equal_to (const VT T::*mvp, const VT& v)
     return (const_mem_var1_t<binder2nd<equal_to<VT> >,T,VT> (mvp, bind2nd(equal_to<VT>(), v)));
 }
 
+/// Returned functor passes member variable \p mvp reference of given object to less\<VT\>.
 template <class T, typename VT>
 inline const_mem_var1_t<binder2nd<less<VT> >, T, VT>
 mem_var_less (const VT T::*mvp, const VT& v)
@@ -438,6 +482,7 @@ mem_var_less (const VT T::*mvp, const VT& v)
     return (const_mem_var1_t<binder2nd<less<VT> >,T,VT> (mvp, bind2nd(less<VT>(), v)));
 }
 
+/// Returned functor passes member variable \p mvp reference of given object to equal\<VT\>.
 template <class T, typename VT>
 inline const_mem_var2_t<equal_to<VT>, T, VT>
 mem_var_equal_to (const VT T::*mvp)
@@ -445,6 +490,7 @@ mem_var_equal_to (const VT T::*mvp)
     return (const_mem_var2_t<equal_to<VT>,T,VT> (mvp, equal_to<VT>()));
 }
 
+/// Returned functor passes member variable \p mvp reference of given object to less\<VT\>.
 template <class T, typename VT>
 inline const_mem_var2_t<less<VT>, T, VT>
 mem_var_less (const VT T::*mvp)

@@ -17,36 +17,6 @@
 // Boston, MA  02111-1307  USA.
 //
 // mostream.h
-//
-/** \class ustl::ostream
- *
- * \brief Helper class to write packed binary streams.
- *
- * This class contains a set of functions to write integral types into an
- * unstructured memory block. Packing binary file data can be done this
- * way, for instance. aligning the data is your responsibility, and can
- * be accomplished by proper ordering of writes and by calling the align()
- * function. Unaligned access is usually slower by orders of magnitude and,
- * on some architectures, such as PowerPC, can cause your program to crash.
- * Therefore, all write functions have asserts to check alignment.
- * Overwriting the end of the stream will also cause a crash (an assert in
- * debug builds). Oh, and don't be intimidated by the size of the inlines
- * here. In the assembly code the compiler will usually chop everything down
- * to five instructions each.
- *
- * Example code:
- * \code
- *     CMemoryBlock b;
- *     ostream os (b);
- *     os << boolVar;
- *     os.align (sizeof(int));
- *     os << intVar << floatVar;
- *     os.write (binaryData, binaryDataSize);
- *     os.align (sizeof(u_long));
- *     b.SetSize (os.pos());
- *     write (fd, b, b.size());
- * \endcode
-*/
 
 #ifndef MOSTREAM_H
 #define MOSTREAM_H
@@ -57,6 +27,34 @@ namespace ustl {
 
 class istream;
 
+///
+/// \brief Helper class to write packed binary streams.
+///
+/// This class contains a set of functions to write integral types into an
+/// unstructured memory block. Packing binary file data can be done this
+/// way, for instance. aligning the data is your responsibility, and can
+/// be accomplished by proper ordering of writes and by calling the align()
+/// function. Unaligned access is usually slower by orders of magnitude and,
+/// on some architectures, such as PowerPC, can cause your program to crash.
+/// Therefore, all write functions have asserts to check alignment.
+/// Overwriting the end of the stream will also cause a crash (an assert in
+/// debug builds). Oh, and don't be intimidated by the size of the inlines
+/// here. In the assembly code the compiler will usually chop everything down
+/// to five instructions each.
+///
+/// Example code:
+/// \code
+///     CMemoryBlock b;
+///     ostream os (b);
+///     os << boolVar;
+///     os.align (sizeof(int));
+///     os << intVar << floatVar;
+///     os.write (binaryData, binaryDataSize);
+///     os.align (sizeof(u_long));
+///     b.SetSize (os.pos());
+///     write (fd, b, b.size());
+/// \endcode
+///
 class ostream : public memlink {
 public:
 			ostream (void);
@@ -73,6 +71,9 @@ public:
     inline void		write (const cmemlink& buf);
     virtual void	read (istream& is);
     virtual void	write (ostream& os) const;
+    void		insert (iterator start, size_t size);
+    void		erase (iterator start, size_t size);
+    void		swap (ostream& os);
     virtual size_t	stream_size (void) const;
     template <typename T>
     inline void		iwrite (const T& v);
@@ -97,6 +98,7 @@ private:
 
 //----------------------------------------------------------------------
 
+/// An iterator over an ostream to use with uSTL algorithms.
 template <class T>
 class ostream_iterator {
 public:
@@ -104,6 +106,7 @@ public:
 				    : m_Os (os) {}
  				ostream_iterator (const ostream_iterator& i)
 				    : m_Os (i.m_Os) {} 
+    /// Writes \p v into the stream.
     inline ostream_iterator&	operator= (const T& v)
 				    { m_Os << v; return (*this); }
     inline ostream_iterator&	operator* (void) { return (*this); }
@@ -162,7 +165,7 @@ inline void ostream::write (const cmemlink& buf)
     write (buf.begin(), buf.size());
 }
 
-/// Writes any type to the stream.
+/// Writes type T into the stream via a direct pointer cast.
 template <typename T>
 inline void ostream::iwrite (const T& v)
 {

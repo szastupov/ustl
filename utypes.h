@@ -16,10 +16,10 @@
 // Free Software Foundation, Inc., 59 Temple Place - Suite 330, 
 // Boston, MA  02111-1307  USA.
 //
-/** \file utypes.h
- *
- * \brief Types used by this library.
-*/
+/// \file utypes.h
+///
+/// \brief Types used by this library.
+///
 
 #ifndef UTYPES_H
 #define UTYPES_H
@@ -40,3 +40,4 @@
 typedef size_t	uoff_t; ///< A type for storing offsets into blocks measured by size_t.
 
 #endif
+

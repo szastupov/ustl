@@ -27,11 +27,11 @@ OPTIMIZE	= -DNDEBUG=1 -frepo -fomit-frame-pointer -fmerge-all-constants
 #DEBUG		= 1
 ifdef DEBUG
     CFLAGS	= -ggdb3 ${CWARNOPTS}
-    CXXFLAGS	= -ggdb3 -fno-rtti ${CXXWARNOPTS}
+    CXXFLAGS	= -ggdb3 ${CXXWARNOPTS}
     LDFLAGS	=
 else
     CFLAGS	= @CFLAGS@ ${CWARNOPTS} ${OPTIMIZE}
-    CXXFLAGS	= @CXXFLAGS@ -fno-rtti ${CXXWARNOPTS} ${OPTIMIZE}
+    CXXFLAGS	= @CXXFLAGS@ ${CXXWARNOPTS} ${OPTIMIZE}
     LDFLAGS	= -s
 endif
 

@@ -17,32 +17,6 @@
 // Boston, MA  02111-1307  USA.
 //
 // memlink.h
-/** \class ustl::memlink
-*
-* \brief Wrapper for pointer to block with size.
-* Use this class the way you would a pointer to an allocated unstructured block.
-* The pointer and block size are available through member functions and cast operator.
-* The begin in the block may be modified, but the block is static in size.
-* \warning This class actually contains two pointers: a const pointer and a non-const
-* pointer. Both are the same when you have linked the object to a modifiable block.
-* But if you have for some reason linked the object to a const block, the non-const
-* pointer will be NULL. With proper usage, there should be no problem with this; just
-* be aware that such a thing may happen.
-*
-* Example usage:
-* \code
-*     void* p = malloc (46721);
-*     memlink a, b;
-*     a.link (p, 46721);
-*     assert (a.size() == 46721));
-*     b = a;
-*     assert (b.size() == 46721));
-*     assert (b.begin() + 34 == a.begin + 34);
-*     assert (0 == memcmp (a, b, 12));
-*     a.fill (673, b, 42, 67);
-*     b.erase (87, 12);
-* \endcode
-*/
 
 #ifndef MEMLINK_H
 #define MEMLINK_H
@@ -53,11 +27,38 @@ namespace ustl {
 
 class istream;
 
+///
+/// \brief Wrapper for pointer to block with size.
+///
+/// Use this class the way you would a pointer to an allocated unstructured block.
+/// The pointer and block size are available through member functions and cast operator.
+/// The begin in the block may be modified, but the block is static in size.
+/// \warning This class actually contains two pointers: a const pointer and a non-const
+/// pointer. Both are the same when you have linked the object to a modifiable block.
+/// But if you have for some reason linked the object to a const block, the non-const
+/// pointer will be NULL. With proper usage, there should be no problem with this; just
+/// be aware that such a thing may happen.
+///
+/// Example usage:
+/// \code
+///     void* p = malloc (46721);
+///     memlink a, b;
+///     a.link (p, 46721);
+///     assert (a.size() == 46721));
+///     b = a;
+///     assert (b.size() == 46721));
+///     assert (b.begin() + 34 == a.begin + 34);
+///     assert (0 == memcmp (a, b, 12));
+///     a.fill (673, b, 42, 67);
+///     b.erase (87, 12);
+/// \endcode
+///
 class memlink : public cmemlink {
 public:
     typedef value_type*			pointer;
     typedef cmemlink::pointer		const_pointer;
     typedef cmemlink::const_iterator	const_iterator;
+    /// A wrapper for void pointers to allow iterator functionality.
     class iterator {
     public:
 	typedef void		value_type;

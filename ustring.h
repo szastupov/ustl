@@ -18,31 +18,6 @@
 //
 // ustring.h
 //
-/** \class ustl::string
- *
- * \brief STL basic_string equivalent.
- *
- * An STL container for string manipulation.
- * Differences from C++ standard:
- * 	format member function - strstreams on the string are possible, but
- * 		are in many cases inconvenient because they hardcode not only
- * 		the locations of substitutions, but also the constant text in
- * 		between. Such behaviour makes string localization all but
- * 		impossible. Another constant gripe is the requirement for
- * 		space precomputation for strings. string::format will
- * 		reallocate the string, if needed, to hold the entire output.
- * 		(That's only for glibc > 2.0.6. See code for comments)
- * 		Also, take care not to pass in untrusted format strings lest
- * 		they contain a %n, which causes a nasty security hole.
- * 	const char* cast operator. It is much clearer to use this than having
- * 		to type .c_str() every time. A side effect of this is that
- * 		const operator[] is no longer needed (gcc will warn about an
- * 		ambiguous overload)
- * 	copyto avoids having to include <string.h> and knowledge of the string
- * 		size.
- * 	length() currently returns the same number as size(), but eventually
- * 		size() will return the allocated size including the terminator.
-*/
 
 #ifndef USTRING_H
 #define USTRING_H
@@ -53,6 +28,30 @@
 
 namespace ustl {
 
+///
+/// \brief STL basic_string equivalent.
+///
+/// An STL container for string manipulation.
+/// Differences from C++ standard:
+/// 	format member function - strstreams on the string are possible, but
+/// 		are in many cases inconvenient because they hardcode not only
+/// 		the locations of substitutions, but also the constant text in
+/// 		between. Such behaviour makes string localization all but
+/// 		impossible. Another constant gripe is the requirement for
+/// 		space precomputation for strings. string::format will
+/// 		reallocate the string, if needed, to hold the entire output.
+/// 		(That's only for glibc > 2.0.6. See code for comments)
+/// 		Also, take care not to pass in untrusted format strings lest
+/// 		they contain a %n, which causes a nasty security hole.
+/// 	const char* cast operator. It is much clearer to use this than having
+/// 		to type .c_str() every time. A side effect of this is that
+/// 		const operator[] is no longer needed (gcc will warn about an
+/// 		ambiguous overload)
+/// 	copyto avoids having to include <string.h> and knowledge of the string
+/// 		size.
+/// 	length() currently returns the same number as size(), but eventually
+/// 		size() will return the allocated size including the terminator.
+///
 class string : public memblock {
 public:
     typedef char		value_type;
@@ -66,7 +65,7 @@ public:
     typedef ::ustl::reverse_iterator<const_iterator>	const_reverse_iterator;
 public:
     static const uoff_t npos = static_cast<uoff_t>(-1);		///< Value that means the end of string.
-    static const size_t c_TerminatorSize = sizeof(value_type);	///< Most systems terminate strings with '\0'
+    static const size_t c_TerminatorSize = sizeof(value_type);	///< Most systems terminate strings with '\\0'
     static const value_type c_Terminator = 0;			///< String terminator
     static const char empty_string [c_TerminatorSize];		///< An empty string.
 public:
@@ -181,11 +180,12 @@ inline bool string::empty (void) const
     return (!size());
 }
 
-/// Returns the number of bytes allocated for string data.
-/** The number of bytes allocated may be greater than the number
- * used (and returned by size()), depending on the memory allocation
- * scheme.
- */
+/// \brief Returns the number of bytes allocated for string data.
+//
+/// The number of bytes allocated may be greater than the number
+/// used (and returned by size()), depending on the memory allocation
+/// scheme.
+///
 inline size_t string::capacity (void) const
 {
     return (memblock::capacity() / sizeof(value_type) - c_TerminatorSize);
@@ -334,17 +334,15 @@ inline void string::append (const_iterator i1, const_iterator i2)
     append (i1, i2 - i1);
 }
 
-/// Returns comparison value regarding string \p s.
-/** \see compare(start,len,s,sstart,slen)
- */
+/// \brief Returns comparison value regarding string \p s.
+/// \see compare(start,len,s,sstart,slen)
 inline int string::compare (const string& s) const
 {
     return (compare (begin(), end(), s.begin(), s.end()));
 }
 
-/// Returns comparison value regarding string \p s.
-/** \see compare(start,len,s,sstart,slen)
- */
+/// \brief Returns comparison value regarding string \p s.
+/// \see compare(start,len,s,sstart,slen)
 inline int string::compare (const_pointer s) const
 {
     return (compare (begin(), end(), s, NULL));

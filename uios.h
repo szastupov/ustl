@@ -16,9 +16,9 @@
 // Free Software Foundation, Inc., 59 Temple Place - Suite 330, 
 // Boston, MA  02111-1307  USA.
 //
-/** \file uios.h
-*   \brief Types used by the streams for option setting.
-*/
+/// \file uios.h
+/// \brief Types used by the streams for option setting.
+//
 
 #ifndef UIOS_H_630C16E316F7650E3A02E1C6611B789A
 #define UIOS_H_630C16E316F7650E3A02E1C6611B789A
@@ -30,6 +30,7 @@ namespace ustl {
 const char endl = '\n';		///< End of line character.
 const char ends = '\0';		///< End of string character.
 
+/// Defines types and constants used by all stream classes.
 namespace ios {
     /// Used to set parameters for stringstreams
     enum fmtflags {

@@ -26,6 +26,7 @@
 
 namespace ustl {
 namespace ios {
+    /// Stream functor to allow inline align() calls. os << align(sizeof(u_short));
     class align {
     public:
 				align (size_t grain = c_DefaultAlignment) : m_Grain(grain) {}
@@ -37,6 +38,7 @@ namespace ios {
     inline istream& operator>> (istream& is, const align& op) { return (op.apply (is)); }
     inline ostream& operator<< (ostream& os, const align& op) { return (op.apply (os)); }
 
+    /// Stream functor to allow inline skip() calls. os << skip(sizeof(u_short));
     class skip {
     public:
 				skip (size_t nBytes) : m_nBytes(nBytes) {}

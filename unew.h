@@ -16,9 +16,9 @@
 // Free Software Foundation, Inc., 59 Temple Place - Suite 330, 
 // Boston, MA  02111-1307  USA.
 //
-// unew.h
-//
-//	Same as <new> to avoid including it and to throw correct exceptions.
+/// \file unew.h
+///
+///	Same as \<new\>; to avoid including it and to throw correct exceptions.
 //
 
 #ifndef UNEW_H_11D237512B324C9C05A55DAF1BF086F1

@@ -16,10 +16,10 @@
 // Free Software Foundation, Inc., 59 Temple Place - Suite 330, 
 // Boston, MA  02111-1307  USA.
 //
-/** \file uutility.h
- *
- * \brief Utility templates.
-*/
+/// \file uutility.h
+///
+/// \brief Utility templates.
+//
 
 #ifndef UUTILITY_H
 #define UUTILITY_H
@@ -30,6 +30,7 @@
 
 namespace ustl {
 
+/// The alignment performed by default.
 const size_t c_DefaultAlignment = sizeof(u_long);
 
 /// Rounds \p n up to be divisible by \p grain

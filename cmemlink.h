@@ -18,35 +18,37 @@
 //
 // cmemlink.h
 //
-/** \class ustl::cmemlink
-* \brief A read-only pointer to a sized block of memory.
-* Use this class the way you would a const pointer to an allocated unstructured block.
-* The pointer and block size are available through member functions and cast operator.
-*
-* Example usage:
-*
-* \code
-*     void* p = malloc (46721);
-*     cmemlink a, b;
-*     a.link (p, 46721);
-*     assert (a.size() == 46721));
-*     b = a;
-*     assert (b.size() == 46721));
-*     assert (b.DataAt(34) == a.DataAt(34));
-*     assert (0 == memcmp (a, b, 12));
-* \endcode
-*/
 
 #ifndef CMEMLINK_H
 #define CMEMLINK_H
 
 #include "uutility.h"
 
+/// The ustl namespace contains all ustl classes and algorithms.
 namespace ustl {
 
 class istream;
 class ostream;
 
+///
+/// A read-only pointer to a sized block of memory.
+///
+/// Use this class the way you would a const pointer to an allocated unstructured block.
+/// The pointer and block size are available through member functions and cast operator.
+///
+/// Example usage:
+///
+/// \code
+///     void* p = malloc (46721);
+///     cmemlink a, b;
+///     a.link (p, 46721);
+///     assert (a.size() == 46721));
+///     b = a;
+///     assert (b.size() == 46721));
+///     assert (b.DataAt(34) == a.DataAt(34));
+///     assert (0 == memcmp (a, b, 12));
+/// \endcode
+///
 class cmemlink {
 public:
     typedef void		value_type;
@@ -56,6 +58,7 @@ public:
     typedef value_type		const_reference;
     typedef size_t		size_type;
     typedef ptrdiff_t		difference_type;
+    /// A wrapper for void pointers to allow iterator functionality.
     class iterator {
     public:
 	typedef void		value_type;

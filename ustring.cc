@@ -158,11 +158,11 @@ size_t string::copyto (pointer p, size_t n, const_iterator start) const
 }
 
 /// Returns comparison value regarding string \p s.
-/** The return value is:
- *  - 1 if this string is greater (by value, not length) than string \p s
- *  - 0 if this string is equal to string \p s
- *  - -1 if this string is less than string \p s
- */
+/// The return value is:
+/// \li 1 if this string is greater (by value, not length) than string \p s
+/// \li 0 if this string is equal to string \p s
+/// \li -1 if this string is less than string \p s
+///
 int string::compare (const_iterator first1, const_iterator last1, const_iterator first2, const_iterator last2) const
 {
     assert (first1 <= last1 && first2 <= last2);

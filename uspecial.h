@@ -1,7 +1,7 @@
-// uspecial.h
-//
-// 	Template specializations for uSTL classes.
-//
+/// \file uspecial.h
+///
+/// \brief Template specializations for uSTL classes.
+///
 
 #ifndef USPECIAL_H_947ADYOU0ARE3YOU2REALLY8ARE44CE0
 #define USPECIAL_H_947ADYOU0ARE3YOU2REALLY8ARE44CE0

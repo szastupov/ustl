@@ -44,15 +44,15 @@ const char* exception::what (void) const
     return ("Generic exception");
 }
 
-/// Returns a descriptive error message. fmt="%s"
-/** Overloads of this functions must set NULL as the default fmt
- * argument and handle that case to provide a default format string
- * in case the user does not have a localized one. The format
- * string should be shown in the documentation to not require
- * translators to look through code. Also, this function must
- * not throw anything, so you must wrap memory allocation routines
- * (like string::format, for instance) in a try{}catch(...){} block.
-*/
+/// \brief Returns a descriptive error message. fmt="%s"
+/// Overloads of this functions must set NULL as the default fmt
+/// argument and handle that case to provide a default format string
+/// in case the user does not have a localized one. The format
+/// string should be shown in the documentation to not require
+/// translators to look through code. Also, this function must
+/// not throw anything, so you must wrap memory allocation routines
+/// (like string::format, for instance) in a try{}catch(...){} block.
+///
 void exception::info (string& msgbuf, const char*) const
 {
     try { msgbuf.format ("%s", what()); } catch (...) { /* Ignore all exceptions */ }

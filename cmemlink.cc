@@ -40,10 +40,7 @@ cmemlink::cmemlink (void)
 {
 }
 
-/// Attaches the object to the given memory block
-/** \arg \c p Pointer to the memory block
- *  \arg \c n Size of the memory block
- */
+/// Attaches the object to pointer \p p of size \p n.
 cmemlink::cmemlink (const void* p, size_t n)
 : m_CData (p),
   m_Size (n)
@@ -63,10 +60,7 @@ cmemlink::~cmemlink (void)
 {
 }
 
-/// Attaches the object to the given memory block
-/** \arg \c p Pointer to the memory block
- *  \arg \c n Size of the memory block
- */
+/// Attaches the object to pointer \p p of size \p n.
 void cmemlink::link (const void* p, size_t n)
 {
     unlink();
@@ -108,7 +102,7 @@ void cmemlink::write (ostream& os) const
     os.align();
 }
 
-/// Writes the data to file \p <filename>.
+/// Writes the data to file \p "filename".
 void cmemlink::write_file (const char* filename, int mode) const
 {
     int fd = open (filename, O_WRONLY | O_CREAT | O_TRUNC, mode);

@@ -18,16 +18,13 @@
 //
 // ustack.h
 //
-/** \class stack
- *
- * \brief Stack adapter to uSTL containers.
- */
 
 #ifndef USTACK_H
 #define USTACK_H
 
 namespace ustl {
 
+/// Stack adapter to uSTL containers.
 template <class Sequence>
 class stack {
 public:
@@ -52,60 +49,70 @@ private:
     Sequence	m_Storage;
 };
 
+/// Default constructor.
 template <class Sequence>
 stack<Sequence>::stack (void)
 : m_Storage ()
 {
 }
 
+/// Copies contents of \p s.
 template <class Sequence>
 stack<Sequence>::stack (const Sequence& s)
 : m_Storage (s)
 {
 }
 
+/// Returns true if empty.
 template <class Sequence>
 inline bool stack<Sequence>::empty (void) const
 {
     return (m_Storage.empty());
 }
 
+/// Returns the number of elements.
 template <class Sequence>
 inline typename stack<Sequence>::size_type stack<Sequence>::size (void) const
 {
     return (m_Storage.size());
 }
 
+/// Returns the topmost element.
 template <class Sequence>
 inline typename stack<Sequence>::reference stack<Sequence>::top (void)
 {
     return (m_Storage.back());
 }
 
+/// Returns the topmost element.
 template <class Sequence>
 inline typename stack<Sequence>::const_reference stack<Sequence>::top (void) const
 {
     return (m_Storage.back());
 }
 
+/// Pushes \p v on the stack.
 template <class Sequence>
 inline void stack<Sequence>::push (const value_type& v)
 {
     m_Storage.push_back (b);
 }
 
+/// Pops the topmost element from the stack.
 template <class Sequence>
 inline void stack<Sequence>::pop (void)
 {
     m_Storage.pop_back();
 }
 
+/// Compares to \p s.
 template <class Sequence>
 inline bool stack<Sequence>::operator== (const stack& s)
 {
     return (m_Storage == s.m_Storage);
 }
 
+/// Compares to \p s.
 template <class Sequence>
 inline bool stack<Sequence>::operator< (const stack& s)
 {

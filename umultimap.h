@@ -27,6 +27,7 @@
 
 namespace ustl {
 
+/// A sorted associative container that may container multiple entries for each key.
 template <typename K, typename V>
 class multimap : public vector<pair<K,V> > {
 public:
@@ -61,24 +62,28 @@ public:
     inline iterator		erase (iterator ep1, iterator ep2);
 };
 
+/// Default constructor.
 template <typename K, typename V>
 multimap<K,V>::multimap (void)
 : vector<pair<K,V> > ()
 {
 }
 
+/// Creates container with enough space for \p n elements.
 template <typename K, typename V>
 multimap<K,V>::multimap (size_t n)
 : vector<pair<K,V> > (n)
 {
 }
 
+/// Creates a copy of \p v.
 template <typename K, typename V>
 multimap<K,V>::multimap (const multimap<K,V>& v)
 : vector<pair<K,V> > (v)
 {
 }
 
+/// Inserts elements from range [i1,i2).
 template <typename K, typename V>
 multimap<K,V>::multimap (const_iterator i1, const_iterator i2)
 : vector<pair<K,V> > ()
@@ -86,6 +91,7 @@ multimap<K,V>::multimap (const_iterator i1, const_iterator i2)
     insert (i1, i2);
 }
 
+/// Copies contents of \p v.
 template <typename K, typename V>
 inline const multimap<K,V>& multimap<K,V>::operator= (const multimap<K,V>& v)
 {
@@ -93,6 +99,7 @@ inline const multimap<K,V>& multimap<K,V>::operator= (const multimap<K,V>& v)
     return (*this);
 }
 
+/// Copies contents of [i1,i2).
 template <typename K, typename V>
 inline void multimap<K,V>::assign (const_iterator i1, const_iterator i2)
 {
@@ -100,6 +107,7 @@ inline void multimap<K,V>::assign (const_iterator i1, const_iterator i2)
     insert (i1, i2);
 }
 
+/// Returns the range of all elements with key value \p k.
 template <typename K, typename V>
 inline pair<typename multimap<K,V>::const_iterator,typename multimap<K,V>::const_iterator>
 multimap<K,V>::equal_range (const key_type& k) const
@@ -107,6 +115,7 @@ multimap<K,V>::equal_range (const key_type& k) const
     return (::ustl::equal_range (begin(), end(), make_pair(k, V()), mem_var_less(&value_type::first)));
 }
 
+/// Returns the range of all elements with key value \p k.
 template <typename K, typename V>
 inline pair<typename multimap<K,V>::iterator,typename multimap<K,V>::iterator>
 multimap<K,V>::equal_range (const key_type& k)
@@ -114,6 +123,7 @@ multimap<K,V>::equal_range (const key_type& k)
     return (::ustl::equal_range (begin(), end(), make_pair(k, V()), mem_var_less(&value_type::first)));
 }
 
+/// Returns the number of elements with key value \p k.
 template <typename K, typename V>
 size_t multimap<K,V>::count (const key_type& k) const
 {
@@ -121,24 +131,28 @@ size_t multimap<K,V>::count (const key_type& k) const
     return (distance (fr.first, fr.second));
 }
 
+/// Returns an iterator to the first element with key value \p k.
 template <typename K, typename V>
 inline typename multimap<K,V>::const_iterator multimap<K,V>::lower_bound (const key_type& k) const
 {
     return (::ustl::lower_bound (begin(), end(), make_pair(k, V()), mem_var_less(&value_type::first)));
 }
 
+/// Returns an iterator to the first element with key value \p k.
 template <typename K, typename V>
 inline typename multimap<K,V>::const_iterator multimap<K,V>::upper_bound (const key_type& k) const
 {
     return (::ustl::upper_bound (begin(), end(), make_pair(k, V()), mem_var_less(&value_type::first)));
 }
 
+/// Inserts the pair into the container.
 template <typename K, typename V>
 inline void multimap<K,V>::push_back (const_reference v)
 {
     insert (v);
 }
 
+/// Inserts the pair into the container.
 template <typename K, typename V>
 typename multimap<K,V>::iterator multimap<K,V>::insert (const_reference v)
 {
@@ -146,6 +160,7 @@ typename multimap<K,V>::iterator multimap<K,V>::insert (const_reference v)
     return (vector<pair<K,V> >::insert (ip, v));
 }
 
+/// Inserts elements from range [i1,i2) into the container.
 template <typename K, typename V>
 inline void multimap<K,V>::insert (const_iterator i1, const_iterator i2)
 {
@@ -154,6 +169,7 @@ inline void multimap<K,V>::insert (const_iterator i1, const_iterator i2)
     for_each (i1, i2, mem_fun (this, &multimap<K,V>::push_back));
 }
 
+/// Erases all elements with key value \p k.
 template <typename K, typename V>
 void multimap<K,V>::erase (const key_type& k)
 {
@@ -161,12 +177,14 @@ void multimap<K,V>::erase (const key_type& k)
     erase (epr.first, epr.second);
 }
 
+/// Erases element at \p ep.
 template <typename K, typename V>
 inline typename multimap<K,V>::iterator multimap<K,V>::erase (iterator ep)
 {
     return (vector<pair<K,V> >::erase (ep));
 }
 
+/// Erases range [ep1,ep2).
 template <typename K, typename V>
 inline typename multimap<K,V>::iterator multimap<K,V>::erase (iterator ep1, iterator ep2)
 {

@@ -130,12 +130,12 @@ void memlink::copy (iterator start, const void* p, size_t n)
 }
 
 /// Fills the linked block with the given pattern.
-/** \arg start   Offset at which to start filling the linked block
- *  \arg p       Pointer to the pattern.
- *  \arg elSize  Size of the pattern.
- *  \arg elCount Number of times to write the pattern.
- *  Total number of bytes written is \p elSize * \p elCount.
-*/
+/// \arg start   Offset at which to start filling the linked block
+/// \arg p       Pointer to the pattern.
+/// \arg elSize  Size of the pattern.
+/// \arg elCount Number of times to write the pattern.
+/// Total number of bytes written is \p elSize * \p elCount.
+///
 void memlink::fill (iterator start, const void* p, size_t elSize, size_t elCount)
 {
     assert (m_Data || !elCount || !elSize);

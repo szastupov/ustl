@@ -16,11 +16,8 @@
 // Free Software Foundation, Inc., 59 Temple Place - Suite 330, 
 // Boston, MA  02111-1307  USA.
 //
-// upair.h
+/// \file upair.h
 //
-/** \class pair
- *  \brief Container for two values.
-*/
 
 #ifndef UPAIR_H
 #define UPAIR_H
@@ -30,6 +27,7 @@
 
 namespace ustl {
 
+/// Container for two values.
 template <typename T1, typename T2>
 class pair {
 public:
@@ -41,13 +39,12 @@ public:
 			pair (const pair<T1,T2>& p);
     inline size_t	stream_size (void) const;
     const pair<T1,T2>&	operator= (const pair<T1,T2>& p);
-    bool		operator== (const pair<T1,T2>& p) const;
-    bool		operator< (const pair<T1,T2>& p) const;
 public:
     first_type		first;
     second_type		second;
 };
 
+/// Default constructor.
 template <typename T1, typename T2>
 pair<T1,T2>::pair (void)
 : first (T1()),
@@ -55,6 +52,7 @@ pair<T1,T2>::pair (void)
 {
 }
 
+/// Initializes members with \p a, and \p b.
 template <typename T1, typename T2>
 pair<T1,T2>::pair (const T1& a, const T2& b)
 : first (a),
@@ -62,6 +60,7 @@ pair<T1,T2>::pair (const T1& a, const T2& b)
 {
 }
 
+/// Copies contents of \p p.
 template <typename T1, typename T2>
 pair<T1,T2>::pair (const pair<T1,T2>& p)
 : first (p.first),
@@ -69,6 +68,7 @@ pair<T1,T2>::pair (const pair<T1,T2>& p)
 {
 }
 
+/// Copies contents of \p p.
 template <typename T1, typename T2>
 const pair<T1,T2>& pair<T1,T2>::operator= (const pair<T1,T2>& p)
 {
@@ -77,48 +77,55 @@ const pair<T1,T2>& pair<T1,T2>::operator= (const pair<T1,T2>& p)
     return (*this);
 }
 
+/// Compares both values of \p p1 to those of \p p2.
 template <typename T1, typename T2>
-bool pair<T1,T2>::operator== (const pair<T1,T2>& p) const
+bool operator== (const pair<T1,T2>& p1, const pair<T1,T2>& p2)
 {
-    return (first == p.first && second == p.second);
+    return (p1.first == p2.first && p1.second == p2.second);
 }
 
+/// Compares both values of \p p1 to those of \p p2.
 template <typename T1, typename T2>
-bool pair<T1,T2>::operator< (const pair<T1,T2>& p) const
+bool operator< (const pair<T1,T2>& p1, const pair<T1,T2>& p2)
 {
-    return (first < p.first || (first == p.first && second < p.second));
+    return (p1.first < p2.first || (p1.first == p2.first && p1.second < p2.second));
 }
 
+/// Returns a pair object with (a,b)
 template <typename T1, typename T2>
 inline pair<T1,T2> make_pair (const T1& a, const T2& b)
 {
     return (pair<T1,T2> (a, b));
 }
 
+/// Returns the written size of the object.
 template <typename T1, typename T2>
 inline size_t pair<T1,T2>::stream_size (void) const
 {
     return (2 * max(sizeof(T1), sizeof(T2)));
 }
 
+/// Returns the written size of the object.
 template <typename T1, typename T2>
 inline size_t stream_size_of (const pair<T1,T2>&)
 {
     return (2 * max(sizeof(T1), sizeof(T2)));
 }
 
+///
+/// \brief Reads pair \p p from stream \p is.
+///
+/// To allow compile-time resolution of these conditionals, sizeof is
+/// used instead of stream_size_of. This is ok as long as you don't create
+/// some strange class that writes only a short. If you do that you'll
+/// have to resolve the alignment issues yourself. It is not efficient to
+/// do it here as a general case since stream_size methods are not always
+/// constant.
+///
 template <typename T1, typename T2>
 istream& operator>> (istream& is, pair<T1,T2>& p)
 {
     is >> p.first;
-    //
-    // To allow compile-time resolution of these conditionals, sizeof is
-    // used instead of stream_size_of. This is ok as long as you don't create
-    // some strange class that writes only a short. If you do that you'll
-    // have to resolve the alignment issues yourself. It is not efficient to
-    // do it here as a general case since stream_size methods are not always
-    // constant.
-    //
     if (sizeof(T1) < sizeof(T2) && sizeof(T1) % c_DefaultAlignment)
 	is.align (min (sizeof(T2), c_DefaultAlignment));
     is >> p.second;
@@ -127,6 +134,7 @@ istream& operator>> (istream& is, pair<T1,T2>& p)
     return (is);
 }
 
+/// Writes pair \p p to stream \p os.
 template <typename T1, typename T2>
 ostream& operator<< (ostream& os, const pair<T1,T2>& p)
 {

@@ -16,19 +16,21 @@
 // Free Software Foundation, Inc., 59 Temple Place - Suite 330, 
 // Boston, MA  02111-1307  USA.
 //
-/** \file strmsize.h
- * \brief This file contains stream_size_of functions for basic types and *STREAMABLE macros.
- * stream_size_of functions return the size of the object's data that is written or
- * read from a stream.
-*/
+/// \file strmsize.h
+/// \brief This file contains stream_size_of functions for basic types and *STREAMABLE macros.
+/// stream_size_of functions return the size of the object's data that is written or
+/// read from a stream.
+//
 
 #ifndef STRMSIZE_H
 #define STRMSIZE_H
 
 namespace ustl {
 
+/// Returns the size of the given object. Overloads for standard types are available.
 template <typename T>
 inline size_t stream_size_of (T*)	{ return (sizeof(T*));		}
+#ifndef DOXYGEN_SHOULD_IGNORE_THIS
 template <typename T>
 inline size_t stream_size_of (const T*)	{ return (sizeof(const T*));	}
 inline size_t stream_size_of (char)	{ return (sizeof(char));	}
@@ -42,9 +44,11 @@ inline size_t stream_size_of (u_long)	{ return (sizeof(u_long));	}
 inline size_t stream_size_of (float)	{ return (sizeof(float));	}
 inline size_t stream_size_of (double)	{ return (sizeof(double));	}
 inline size_t stream_size_of (bool)	{ return (sizeof(bool));	}
+#endif // DOXYGEN_SHOULD_IGNORE_THIS
 
 } // namespace ustl
 
+/// Declares that T is not written to istream/ostream.
 #define NOT_STREAMABLE(T)	\
     namespace ustl {		\
 	inline istream& operator>> (istream& is, T&)		{ return (is); }	\
@@ -61,7 +65,7 @@ inline size_t stream_size_of (bool)	{ return (sizeof(bool));	}
 // point in adding the overloads to other macros, since they are never used
 // for pointers.
 //
-/// This macro declares that T is to be written as is into binary streams.
+/// Declares that T is to be written as is into binary streams.
 #define INTEGRAL_STREAMABLE(T)	\
     namespace ustl {		\
 	inline istream& operator>> (istream& is, T& v)		{ is.iread(v);  return (is); }	\
@@ -71,7 +75,7 @@ inline size_t stream_size_of (bool)	{ return (sizeof(bool));	}
 	inline size_t stream_size_of (T& v)			{ return (sizeof(v)); }		\
     }
 
-/// This macro declares that T contains read, write, and stream_size methods.
+/// Declares that T contains read, write, and stream_size methods.
 #define STD_STREAMABLE(T)	\
     namespace ustl {		\
 	inline istream& operator>> (istream& is, T& v)		{ v.read (is);  return (is); }	\
@@ -79,7 +83,7 @@ inline size_t stream_size_of (bool)	{ return (sizeof(bool));	}
 	inline size_t stream_size_of (const T& v)		{ return (v.stream_size()); }	\
     }
 
-/// This macro declares that T is to be cast into TSUB for streaming.
+/// Declares that T is to be cast into TSUB for streaming.
 #define CAST_STREAMABLE(T,TSUB)	\
     namespace ustl {		\
 	inline istream& operator>> (istream& is, T& v)		{ TSUB sv; is >> sv; v = (T)(sv); return (is); }	\

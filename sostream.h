@@ -18,9 +18,6 @@
 //
 // sostream.h
 //
-/** \class ustl::ostringstream
-*   \brief This stream writes textual data into a memory block.
-*/
 
 #ifndef SOSTREAM_H
 #define SOSTREAM_H
@@ -30,6 +27,7 @@
 namespace ustl {
 
 class string;
+/// This stream writes textual data into a memory block.
 class ostringstream : public ostream {
 public:
     				ostringstream (void);

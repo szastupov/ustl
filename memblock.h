@@ -18,16 +18,6 @@
 //
 // memblock.h
 //
-/** \class ustl::memblock
- *
- * \brief Allocated memory block.
- * Adds memory management capabilities to memlink. Uses malloc and realloc to
- * maintain the internal pointer, but only if allocated using members of this class,
- * or if linked to using the Manage() member function. Managed memory is automatically
- * freed in the destructor.
- *
- * @see memlink
-*/
 
 #ifndef MEMBLOCK_H
 #define MEMBLOCK_H
@@ -36,6 +26,16 @@
 
 namespace ustl {
 
+//
+/// \brief Allocated memory block.
+//
+/// Adds memory management capabilities to memlink. Uses malloc and realloc to
+/// maintain the internal pointer, but only if allocated using members of this class,
+/// or if linked to using the Manage() member function. Managed memory is automatically
+/// freed in the destructor.
+///
+/// \see memlink
+///
 class memblock : public memlink {
 public:
     static const size_t c_DefaultPageSize = 16;			///< The default minimum allocation unit.
@@ -110,6 +110,7 @@ inline void memblock::clear (void)
     resize (0);
 }
 
+/// Returns true if the storage is linked, false if allocated.
 inline bool memblock::is_linked (void) const
 {
     return (!m_AllocatedSize && cdata());

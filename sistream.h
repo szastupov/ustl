@@ -18,9 +18,6 @@
 //
 // sistream.h
 //
-/** \class ustl::istringstream
-*   \brief A stream that reads textual data from a memory block.
-*/
 
 #ifndef SISTREAM_H
 #define SISTREAM_H
@@ -30,9 +27,10 @@
 namespace ustl {
 
 class string;
+/// A stream that reads textual data from a memory block.
 class istringstream : public istream {
 public:
-    static const size_t c_MaxDelimiters = 16;
+    static const size_t c_MaxDelimiters = 16;	///< Maximum number of word delimiters.
 public:
     				istringstream (void);
 				istringstream (const void* p, size_t n);

@@ -83,11 +83,11 @@ memblock::memblock (const memblock& b)
 }
 
 /// Frees internal data, if appropriate
-/** Only if the block was allocated using resize, or linked to using Manage,
- * will it be freed. Also, Derived classes should call DestructBlock from
- * their destructor, because upstream virtual functions are unavailable at
- * this point and will not be called automatically.
-*/
+/// Only if the block was allocated using resize, or linked to using Manage,
+/// will it be freed. Also, Derived classes should call DestructBlock from
+/// their destructor, because upstream virtual functions are unavailable at
+/// this point and will not be called automatically.
+///
 memblock::~memblock (void)
 {
     deallocate();
@@ -134,8 +134,7 @@ void memblock::deallocate (void)
 }
 
 /// Assumes control of the memory block \p p of size \p n.
-/** The block assigned using this function will be freed in the destructor.
- */
+/// The block assigned using this function will be freed in the destructor.
 void memblock::manage (void* p, size_t n)
 {
     assert (p || !n);
@@ -169,10 +168,10 @@ void memblock::swap (memblock& l)
 }
 
 /// Reallocates internal block to hold at least \p newSize bytes
-/** Paged allocation is performed with minimum allocation unit
- * defined by variable m_PageSize. The block size as returned by
- * size() is not altered.
- */
+/// Paged allocation is performed with minimum allocation unit
+/// defined by variable m_PageSize. The block size as returned by
+/// size() is not altered.
+///
 void memblock::reserve (size_t newSize)
 {
     if ((newSize < m_AllocatedSize && newSize + c_MinimumShrinkSize > m_AllocatedSize) ||
@@ -233,7 +232,7 @@ void memblock::read (istream& is)
     is.align();
 }
 
-/// Reads the entire file \p <filename>.
+/// Reads the entire file \p "filename".
 void memblock::read_file (const char* filename)
 {
     struct stat st;

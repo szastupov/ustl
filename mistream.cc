@@ -24,16 +24,17 @@
 #include "mistream.h"
 #include "mostream.h"
 #include "ulimits.h"
+#include "ualgo.h"
 #include <memory.h>
 
 namespace ustl {
 
 //--------------------------------------------------------------------
 
-/// Constructs a stream attached to nothing.
-/** A stream attached to nothing is not usable. Call Link() functions
- * inherited from cmemlink to attach to some memory block.
- */
+/// \brief Constructs a stream attached to nothing.
+/// A stream attached to nothing is not usable. Call Link() functions
+/// inherited from cmemlink to attach to some memory block.
+///
 istream::istream (void)
 : cmemlink (),
   m_Pos (0)
@@ -52,6 +53,13 @@ istream::istream (const cmemlink& source)
 : cmemlink (source),
   m_Pos (0)
 {
+}
+
+/// Swaps contents with \p is
+void istream::swap (istream& is)
+{
+    cmemlink::swap (is);
+    ::ustl::swap (m_Pos, is.m_Pos);
 }
 
 /// Reads \p n bytes into \p buffer.
@@ -88,10 +96,10 @@ void istream::unlink (void)
 
 //--------------------------------------------------------------------
 
-/// Constructs a stream attached to nothing.
-/** A stream attached to nothing is not usable. Call Link() functions
- * inherited from memlink to attach to some memory block.
- */
+/// \brief Constructs a stream attached to nothing.
+/// A stream attached to nothing is not usable. Call Link() functions
+/// inherited from memlink to attach to some memory block.
+///
 ostream::ostream (void)
 : memlink (),
   m_Pos (0)
@@ -138,6 +146,27 @@ void ostream::read (istream& is)
 void ostream::write (ostream& os) const
 {
     os.write (begin(), pos());
+}
+
+/// Inserts an empty area of \p size, at \p start.
+void ostream::insert (iterator start, size_t s)
+{
+    memlink::insert (start, s);
+    m_Pos += s;
+}
+
+/// Erases an area of \p size, at \p start.
+void ostream::erase (iterator start, size_t s)
+{
+    m_Pos -= s;
+    memlink::erase (start, s);
+}
+
+/// Swaps with \p os
+void ostream::swap (ostream& os)
+{
+    memlink::swap (os);
+    ::ustl::swap (m_Pos, os.m_Pos);
 }
 
 /// Returns number of bytes written.
