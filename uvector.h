@@ -333,6 +333,9 @@ void vector<T>::destructBlock (void* p, size_type s) const throw()
     #endif
 }
 
+/// Use with vector classes to allocate and link to stack space. \p n is in elements.
+#define typed_alloca_link(m,T,n)	(m).link ((T*) alloca (n * sizeof(T)), (n))
+
 } // namespace ustl
 
 #endif
