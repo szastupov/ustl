@@ -1,0 +1,29 @@
+Release 0.4-3
+	* A ChangeLog! After all these years...
+	* SIMD instruction support for fill and copy via gcc vector extensions
+	* matrix template (on top of tuple)
+		3dNow! instructions are supported for vector transforms.
+	* New utility templates
+	    absv		- absolute value.
+	    sign		- -1 for negative, 0 for 0, 1 for positive
+	    abs_distance	- returns an absolute value of the difference.
+	    distance		- now returns ptrdiff_t, as in SGI STL.
+	    size_of_elements	- useful for working with static arrays in
+				  templates; returns sizeof(T) * n.
+	    pack_type		- useful for unrolling loops, packs a small
+				  type into a big one.
+	    alignof		- recommended alignment for a type (uses GCC
+				  __alignof__ extension, if available)
+	* get_temporary_buffer implemented using alloca and macros
+	* Updated rotate to use alloca for small moves.
+		This should speed up vector operations, like insert and erase.
+	* Fixed copy_backward to actually copy backward rather than reverse.
+	* Made resize virtual in memblock to properly handle strings.
+	* sostream/sistream will handle wchar_t properly (as utf8 read/write)
+	* ustring.cc: fixed multiple wchar_t insert
+
+Release 0.4-2
+	* ostringstreams will now correctly resize the buffer as needed.
+	* Fixed floating point output
+		(well, not really, just switched to using snprintf)
+
