@@ -377,7 +377,7 @@ inline ForwardIterator unique (ForwardIterator first, ForwardIterator last)
 /// \ingroup SearchingAlgorithms
 ///
 template <typename ForwardIterator, typename LessThanComparable>
-ForwardIterator lower_bound (ForwardIterator first, ForwardIterator last, const LessThanComparable& value)
+inline ForwardIterator lower_bound (ForwardIterator first, ForwardIterator last, const LessThanComparable& value)
 {
     ForwardIterator mid;
     while (first != last) {
@@ -405,7 +405,7 @@ inline ForwardIterator binary_search (ForwardIterator first, ForwardIterator las
 /// \ingroup SearchingAlgorithms
 ///
 template <typename ForwardIterator, typename LessThanComparable>
-ForwardIterator upper_bound (ForwardIterator first, ForwardIterator last, const LessThanComparable& value)
+inline ForwardIterator upper_bound (ForwardIterator first, ForwardIterator last, const LessThanComparable& value)
 {
     ForwardIterator mid;
     while (first != last) {

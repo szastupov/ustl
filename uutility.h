@@ -32,6 +32,31 @@
 
 namespace ustl {
 
+#ifdef __GNUC__
+    /// Returns the number of elements in a static vector
+    #define VectorSize(v)	(sizeof(v) / sizeof(*v))
+#else
+    // Old compilers will not be able to evaluate *v on an empty vector.
+    // The tradeoff here is that VectorSize will not be able to measure arrays of local structs.
+    #define VectorSize(v)	(sizeof(v) / ustl::size_of_elements(1, v))
+#endif
+
+/// Returns the number of bits in the given type
+#define BitsInType(t)	(sizeof(t) * CHAR_BIT)
+
+/// Returns the mask of type \p t with the lowest \p n bits set.
+#define BitMask(t,n)	(t(~t(0)) >> ((sizeof(t) * CHAR_BIT) - (n)))
+
+/// Argument that is used only in debug builds (as in an assert)
+#ifndef NDEBUG
+    #define DebugArg(x)	x
+#else
+    #define DebugArg(x)
+#endif
+
+/// Shorthand for container iteration.
+#define foreach(type,i,ctr)	for (type i = ctr.begin(); i != ctr.end(); ++ i)
+
 /// The alignment performed by default.
 const size_t c_DefaultAlignment = sizeof(void*);
 
@@ -125,31 +150,6 @@ inline size_t size_of_elements (size_t n, const T*)
 {
     return (n * sizeof(T));
 }
-
-#ifdef __GNUC__
-    /// Returns the number of elements in a static vector
-    #define VectorSize(v)	(sizeof(v) / sizeof(*v))
-#else
-    // Old compilers will not be able to evaluate *v on an empty vector.
-    // The tradeoff here is that VectorSize will not be able to measure arrays of local structs.
-    #define VectorSize(v)	(sizeof(v) / ustl::size_of_elements(1, v))
-#endif
-
-/// Returns the number of bits in the given type
-#define BitsInType(t)	(sizeof(t) * CHAR_BIT)
-
-/// Returns the mask of type \p t with the lowest \p n bits set.
-#define BitMask(t,n)	(t(~t(0)) >> ((sizeof(t) * CHAR_BIT) - n))
-
-/// Argument that is used only in debug builds (as in an assert)
-#ifndef NDEBUG
-    #define DebugArg(x)	x
-#else
-    #define DebugArg(x)
-#endif
-
-/// Shorthand for container iteration.
-#define foreach(type,i,ctr)	for (type i = ctr.begin(); i != ctr.end(); ++ i)
 
 #ifdef HAVE_BYTESWAP_H
 

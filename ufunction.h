@@ -91,7 +91,7 @@ public:
     typedef Result	result_type;
     typedef Result	(*pfunc_t)(Arg);
 public:
-    explicit		pointer_to_unary_function (pfunc_t pfn) : m_pfn (pfn) {}
+    explicit inline	pointer_to_unary_function (pfunc_t pfn) : m_pfn (pfn) {}
     inline result_type	operator() (argument_type v) const { return (m_pfn(v)); }
 private:
     pfunc_t		m_pfn;
@@ -105,7 +105,7 @@ public:
     typedef Result	result_type;
     typedef Result	(*pfunc_t)(Arg1, Arg2);
 public:
-    explicit		pointer_to_binary_function (pfunc_t pfn) : m_pfn (pfn) {}
+    explicit inline	pointer_to_binary_function (pfunc_t pfn) : m_pfn (pfn) {}
     inline result_type	operator() (first_argument_type v1, second_argument_type v2) const { return (m_pfn(v1, v2)); }
 private:
     pfunc_t		m_pfn;
@@ -139,7 +139,7 @@ public:
     typedef typename UnaryFunction::argument_type	argument_type;
     typedef typename UnaryFunction::result_type		result_type;
 public:
-    explicit	unary_negate (UnaryFunction pfn) : m_pfn (pfn) {}
+    explicit inline unary_negate (UnaryFunction pfn) : m_pfn (pfn) {}
     inline result_type operator() (argument_type v) const { return (!m_pfn(v)); }
 private:
     UnaryFunction	m_pfn;
@@ -168,7 +168,7 @@ public:
     typedef typename BinaryFunction::second_argument_type	arg2_t;
     typedef typename BinaryFunction::result_type		result_t;
 public:
-    binder1st (const BinaryFunction& pfn, const arg1_t& v) : m_pfn (pfn), m_Value(v) {}
+    inline binder1st (const BinaryFunction& pfn, const arg1_t& v) : m_pfn (pfn), m_Value(v) {}
     inline result_t operator()(arg2_t v2) const { return (m_pfn (m_Value, v2)); }
 protected:
     BinaryFunction	m_pfn;
@@ -183,7 +183,7 @@ public:
     typedef typename BinaryFunction::second_argument_type	arg2_t;
     typedef typename BinaryFunction::result_type		result_t;
 public:
-    binder2nd (const BinaryFunction& pfn, const arg2_t& v) : m_pfn (pfn), m_Value(v) {}
+    inline binder2nd (const BinaryFunction& pfn, const arg2_t& v) : m_pfn (pfn), m_Value(v) {}
     inline result_t operator()(arg1_t v1) const { return (m_pfn (v1, m_Value)); }
 protected:
     BinaryFunction	m_pfn;
@@ -220,7 +220,7 @@ bind2nd (BinaryFunction pfn, typename BinaryFunction::second_argument_type v)
     public:											\
 	typedef Ret (T::*func_t) FuncType;							\
     public:											\
-	explicit	ClassName (func_t pf) : m_pf (pf) {}					\
+	explicit inline	ClassName (func_t pf) : m_pf (pf) {}					\
 	inline Ret	operator() (ArgType p) const { return ((p CallType m_pf)()); }		\
     private:											\
 	func_t	m_pf;										\
@@ -243,7 +243,7 @@ MEM_FUN_T(mem_fun_ref,	const_mem_fun_ref_t, 	const T&,	(void) const,	.*)
     public: \
 	typedef Ret (T::*func_t)(V) FuncType; \
     public: \
-	explicit	ClassName (HostType t, func_t pf) : m_t (t), m_pf (pf) {} \
+	inline		ClassName (HostType t, func_t pf) : m_t (t), m_pf (pf) {} \
 	inline Ret	operator() (V v) const { return ((m_t->*m_pf)(v)); } \
     private: \
 	HostType	m_t; \
@@ -275,7 +275,7 @@ EXT_MEM_FUN_T(const_ext_mem_fun_t,	const T*,	const)
 	typedef typename Function::result_type	result_type;				\
 	typedef VarType				mem_var_ptr_t;				\
     public:										\
-	FunctorName##_t (mem_var_ptr_t pv, Function pfn) : m_pv(pv), m_pfn(pfn) {}	\
+	inline FunctorName##_t (mem_var_ptr_t pv, Function pfn) : m_pv(pv), m_pfn(pfn) {}	\
 	inline result_type operator() CallImpl						\
     private:										\
 	mem_var_ptr_t	m_pv;								\
@@ -352,8 +352,8 @@ mem_var_less (const VT T::*mvp)
 	typedef ArgType*			argument_type;			\
 	typedef typename Function::result_type	result_type;			\
     public:									\
-				ClassName (Function pfn) : m_pfn (pfn) {}	\
-	result_type		operator() CallImpl				\
+	inline			ClassName (Function pfn) : m_pfn (pfn) {}	\
+	inline result_type	operator() CallImpl				\
     private:									\
 	Function		m_pfn;						\
     };										\
