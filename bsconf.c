@@ -347,6 +347,12 @@ static void GetConfigVarValues (int argc, const char* const* argv)
 		else if (cv == vv_custominclude)
 		    copy_n (argv[a] + apos, g_CustomIncDirs [g_nCustomIncDirs++], cvl);
 	    }
+	    if (cv == vv_prefix && compare (g_ConfigVV[cv], "/home")) {
+		copy (g_ConfigVV[cv], g_CustomLibDirs [g_nCustomLibDirs]);
+		append ("/lib", g_CustomLibDirs [g_nCustomLibDirs++]);
+		copy (g_ConfigVV[cv], g_CustomIncDirs [g_nCustomIncDirs]);
+		append ("/include", g_CustomIncDirs [g_nCustomIncDirs++]);
+	    }
 	}
     }
 }
@@ -476,38 +482,44 @@ static void SubstitutePaths (void)
 
 static void SubstituteCFlags (void)
 {
-    strbuf_t syscflags, cflagbuf, ssbuf;
-    const char* cflagvars[] = { "CFLAGS", "CXXFLAGS" };
-    const char* pevv;
-    int i, j;
+    strbuf_t buf;
+    int j;
 
-    for (i = 0; i < VectorSize(cflagvars); ++ i) {
-	pevv = getenv (cflagvars[i]);
-	copy (pevv ? pevv : "-Wall -O2", cflagbuf);
-	for (j = 0; j < g_nCustomIncDirs; ++ j)
-	    append2 (" -I", g_CustomIncDirs[j], cflagbuf);
-#if __GNUC__ >= 3
-	if (g_CpuCapBits & (1 << 23))
-	    append (" -mmmx", cflagbuf);
-	if (g_CpuCapBits & ((1 << 22) | (1 << 25)))
-	    append (" -msse -mfpmath=sse", cflagbuf);
-	if (g_CpuCapBits & (1 << 26))
-	    append (" -msse2", cflagbuf);
-	if (g_CpuCapBits & (1 << 27))
-	    append (" -msse3", cflagbuf);
-	if (g_CpuCapBits & ((1 << 30) | (1 << 31)))
-	    append (" -m3dnow", cflagbuf);
-#endif
-	copy ("@", ssbuf);
-	append2 (cflagvars[i], "@", ssbuf);
-	Substitute (ssbuf, cflagbuf);
-    }
+    buf[0] = 0;
+    for (j = 0; j < g_nCustomIncDirs; ++ j)
+	append2 (" -I", g_CustomIncDirs[j], buf);
+    Substitute ("@CUSTOMINCDIR@", buf);
 
-    pevv = getenv ("LDFLAGS");
-    copy (pevv ? pevv : "", cflagbuf);
+    buf[0] = 0;
     for (j = 0; j < g_nCustomLibDirs; ++ j)
-	append2 (" -L", g_CustomLibDirs[j], cflagbuf);
-    Substitute ("@LDFLAGS@", cflagbuf);
+	append2 (" -L", g_CustomLibDirs[j], buf);
+    Substitute ("@CUSTOMLIBDIR@", buf);
+
+    buf[0] = 0;
+    #if __GNUC__ >= 3
+	if (g_CpuCapBits & (1 << 23))
+	    append (" -mmmx", buf);
+	if (compare (g_Uname.sysname, "linux"))
+	    if (g_CpuCapBits & ((1 << 22) | (1 << 25)))
+		append (" -msse -mfpmath=sse", buf);
+	if (g_CpuCapBits & (1 << 26))
+	    append (" -msse2", buf);
+	if (g_CpuCapBits & (1 << 27))
+	    append (" -msse3", buf);
+	if (g_CpuCapBits & ((1 << 30) | (1 << 31)))
+	    append (" -m3dnow", buf);
+    #endif
+    Substitute ("@PROCESSOR_OPTS@", buf);
+
+    buf[0] = 0;
+    #if __GNUC__ >= 3
+	append (" -finline-limit=65535", buf);
+	#if __GNUC__ > 3 || __GNUC_MINOR__ >= 4
+	    append (" --param large-function-growth=65535", buf);
+	    append (" --param inline-unit-growth=1024", buf);
+	#endif
+    #endif
+    Substitute ("@INLINE_OPTS@", buf);
 }
 
 static void SubstituteEnvironment (int bForce)
@@ -582,8 +594,8 @@ static unsigned int cpuid (void)
 static void SubstituteCpuCaps (void)
 {
     unsigned int i;
-    g_CpuCapBits = cpuid();
     strbuf_t mmxopts = "";
+    g_CpuCapBits = cpuid();
     for (i = 0; i < VectorSize(g_CpuCaps); ++ i)
 	if (g_CpuCapBits & (1 << g_CpuCaps[i].m_Bit))
 	    Substitute (g_CpuCaps[i].m_Disabled, g_CpuCaps[i].m_Enabled);
@@ -598,10 +610,15 @@ static void SubstituteHostOptions (void)
 	Substitute ("@SYSWARNS@", "-Wno-long-double");
     else
 	Substitute ("@SYSWARNS@", "");
+    #if __GNUC__ >= 3
     if (compare (g_Uname.sysname, "sun") ||
 	compare (g_Uname.sysname, "solaris") ||
 	compare (g_Uname.sysname, "openbsd"))
-	Substitute ("-Wredunant-decls", "-Wno-redundant-decls");
+    #endif
+	Substitute ("-Wredundant-decls", "-Wno-redundant-decls");
+
+    if (compare (g_Uname.sysname, "openbsd"))
+	Substitute ("-Winline", "-Wno-inline");
 
     if (!compare (g_Uname.sysname, "linux") &&
 	!compare (g_Uname.sysname, "solaris") &&
@@ -611,7 +628,7 @@ static void SubstituteHostOptions (void)
     }
 
     if (compare (g_Uname.sysname, "linux"))
-	Substitute ("@SHBLDFL@", "-Wl,-shared,-soname=${LIBSOLNK}");
+	Substitute ("@SHBLDFL@", "-shared -Wl,-soname=${LIBSOLNK}");
     else
 	Substitute ("@SHBLDFL@", "-G");
 
@@ -660,6 +677,9 @@ static void SubstituteHostOptions (void)
     Substitute ("#undef PACKAGE_STRING",	"#define PACKAGE_STRING \"" PACKAGE_STRING "\"");
     Substitute ("#undef PACKAGE_TARNAME",	"#define PACKAGE_TARNAME \"" PACKAGE_TARNAME "\"");
     Substitute ("#undef PACKAGE_VERSION",	"#define PACKAGE_VERSION \"" PACKAGE_VERSION "\"");
+
+    if (compare (g_Uname.sysname, "linux"))
+	Substitute ("#undef HAVE_RINTF", "#define HAVE_RINTF 1");
 }
 
 static void SubstituteCustomVars (void)
@@ -697,12 +717,12 @@ static void SubstituteLibs (void)
 {
     unsigned int i, j, k, ok;
     const char *pi;
-    strbuf_t defaultPath = "/lib:/usr/lib:/usr/local/lib";
+    char defaultPath [4096] = "/lib:/usr/lib:/usr/local/lib";
     strbuf_t match;
 
     pi = getenv ("LD_LIBRARY_PATH");
     if (pi)
-	copy (pi, defaultPath);
+	append (pi, defaultPath);
     append2 (":", g_ConfigVV [vv_libdir], defaultPath);
     append2 (":", g_ConfigVV [vv_gcclibdir], defaultPath);
     for (i = 0; i < g_nCustomLibDirs; ++ i)

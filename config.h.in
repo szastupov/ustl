@@ -124,8 +124,11 @@
 /* Define to 1 if you have the <math.h> header file. */
 #undef HAVE_MATH_H
 
+/* Define to 1 if you have the rintf function. Will use rint otherwise. */
+#undef HAVE_RINTF
+
 /* Define to 1 if you have the <byteswap.h> header file. */
-#if (__GNUG__ >= 3) /* Older compilers are simply incapable of handling byteswap code */
+#if (__GNUG__ >= 3) /* gcc 2.95 somehow doesn't recognize 'asm volatile' */
 #undef HAVE_BYTESWAP_H
 #endif
 

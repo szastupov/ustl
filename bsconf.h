@@ -39,6 +39,7 @@ static string_t g_EnvVars [] = {
     "CXXFLAGS",
     "LDFLAGS",
     "CPPFLAGS",
+    "LDFLAGS",
     "CFLAGS"
 };
 
@@ -99,6 +100,9 @@ static string_t g_Functions [] = {
     "strerror",		"#undef HAVE_STRERROR",		"#define HAVE_STRERROR 1",
     "strsignal",	"#undef HAVE_STRSIGNAL",	"#define HAVE_STRSIGNAL 1",
     "strtol",		"#undef HAVE_STRTOL",		"#define HAVE_STRTOL 1",
+#if __GNUC__ >= 3
+    "round",		"#undef HAVE_ROUND",		"#define HAVE_ROUND 1",
+#endif
     "strrchr",		"#undef HAVE_STRRCHR",		"#define HAVE_STRRCHR 1"
 };
 
