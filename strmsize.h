@@ -113,7 +113,20 @@ inline size_t stream_size_of (unsigned long long v)	{ return (sizeof (v));	}
 /// Declares T to be writable to text streams. Reading is not implemented because you should not do it.
 #define TEXT_STREAMABLE(T)	\
     namespace ustl {		\
-	inline ostringstream& operator<< (ostringstream& os, const T& v)	{ v.text_write (os); return (os); }	\
+	inline ostringstream& operator<< (ostringstream& os, const T& v)	\
+	    { v.text_write (os); return (os); }	\
+    }
+
+#define LOOKUP_TEXT_STREAMABLE(T,Names,nNames)	\
+    namespace ustl {		\
+	inline ostringstream& operator<< (ostringstream& os, const T& v)	\
+	{				\
+	    if (uoff_t(v) < (nNames))	\
+		os << Names[v];		\
+	    else			\
+		os << uoff_t(v);	\
+	    return (os);		\
+	}				\
     }
 
 #endif
