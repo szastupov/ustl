@@ -116,6 +116,6 @@ int main (void)
 	cout << "CAN'T TEST: math.h functions are not available on this platform." << endl;
     #endif
 
-    return (0);
+    return (EXIT_SUCCESS);
 }
 

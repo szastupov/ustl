@@ -25,6 +25,6 @@ int main (void)
     cout << "apple = " << fruits [apple] << endl;
     cout << "peach = " << fruits [apple + 3] << endl;
 
-    return (0);
+    return (EXIT_SUCCESS);
 }
 

@@ -57,6 +57,6 @@ void TestML (void)
 int main (void)
 {
     TestML();
-    return (0);
+    return (EXIT_SUCCESS);
 }
 

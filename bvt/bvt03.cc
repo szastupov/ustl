@@ -91,6 +91,6 @@ int main (void)
     }
     cout << endl;
 
-    return (0);
+    return (EXIT_SUCCESS);
 }
 

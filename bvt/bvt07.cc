@@ -111,7 +111,7 @@ int main (void)
     cout << "> Format '" << s2 << '\''<< endl;
     MyFormat ("'<const] %d, %s, 0x%08X'", 42, "[rfile>", 0xDEADBEEF);
 
-    return (0);
+    return (EXIT_SUCCESS);
 }
 
 void MyFormat (const char* fmt, ...)

@@ -153,6 +153,6 @@ int main (void)
     transform (av.begin(), av.end() - 1, av.begin() + 1, av.begin(), mem_var2(&A::m_v, plus<int>()));
     PrintAVector (av.begin(), av.end());
 
-    return (0);
+    return (EXIT_SUCCESS);
 }
 

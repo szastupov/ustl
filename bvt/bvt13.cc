@@ -24,6 +24,6 @@ int main (void)
 	cout << testString;
     cout.flush();
     cerr << "All done." << endl;
-    return (0);
+    return (EXIT_SUCCESS);
 }
 

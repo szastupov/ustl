@@ -51,6 +51,6 @@ int main (void)
 	cout << i->first << " ";
     cout << endl;
 
-    return (0);
+    return (EXIT_SUCCESS);
 }
 

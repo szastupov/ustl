@@ -65,6 +65,6 @@ int main (void)
     cout << "========================================" << endl;
     cout.set_precision (1);
     TestMatrix<4,4,float>();
-    return (0);
+    return (EXIT_SUCCESS);
 }
 

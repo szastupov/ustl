@@ -309,6 +309,6 @@ int main (void)
     TestCopyFunction ("unroll_copy\t", &unroll_copy);
 #endif
 
-    return (0);
+    return (EXIT_SUCCESS);
 }
 

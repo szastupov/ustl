@@ -45,6 +45,6 @@ void TestCML (void)
 int main (void)
 {
     TestCML();
-    return (0);
+    return (EXIT_SUCCESS);
 }
 

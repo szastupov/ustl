@@ -96,6 +96,6 @@ int main (void)
     cout << "min(6U,1U) = " << min(6U,1U) << endl;
     cout << "max(-3,-6) = " << max(-3,-6) << endl;
     cout << "max(-3L,6L) = " << max(-3L,6L) << endl;
-    return (0);
+    return (EXIT_SUCCESS);
 }
 

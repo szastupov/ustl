@@ -67,6 +67,6 @@ int main (void)
     ctv.pop_back();
     cout << "Class insertion testing successful" << endl;
     cout.flush();
-    return (0);
+    return (EXIT_SUCCESS);
 }
 

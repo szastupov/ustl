@@ -61,6 +61,6 @@ int main (void)
     cout << ", value is " << (rv == tv ? "right" : "wrong") << endl;
     assert (is.pos() == bufSize);
 
-    return (0);
+    return (EXIT_SUCCESS);
 }
 

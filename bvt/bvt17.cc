@@ -63,6 +63,6 @@ int main (void)
     bs4 = bs4 ^ 0x30303030;
     cout << "bs4 ^ bs1;  bs4 = " << bs4 << endl;
 
-    return (0);
+    return (EXIT_SUCCESS);
 }
 

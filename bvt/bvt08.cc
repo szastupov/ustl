@@ -49,6 +49,6 @@ int main (void)
     cout << "After insert(1,1,3):" << endl;
     for_each (v, &PrintString);
 
-    return (0);
+    return (EXIT_SUCCESS);
 }
 

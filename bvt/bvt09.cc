@@ -78,6 +78,6 @@ int main (void)
     cout << reinterpret_cast<const char*>(b.cdata()) << endl;
     cout << endl;
 
-    return (0);
+    return (EXIT_SUCCESS);
 }
 

@@ -51,6 +51,6 @@ int main (void)
     cout << "---" << endl;
     for_each (v.rbegin(), v.rend(), &PrintBlock);
     cout << "---" << endl;
-    return (0);
+    return (EXIT_SUCCESS);
 }
 

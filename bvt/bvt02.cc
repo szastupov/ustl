@@ -64,6 +64,6 @@ void TestMB (void)
 int main (void)
 {
     TestMB();
-    return (0);
+    return (EXIT_SUCCESS);
 }
 

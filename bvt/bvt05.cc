@@ -262,6 +262,6 @@ int main (void)
     PrintVector (v);
     v.assign (first, last);
 
-    return (0);
+    return (EXIT_SUCCESS);
 }
 

@@ -69,6 +69,6 @@ int main (void)
     strv[2] = "str2";
     cout << "str: " << strv << endl;
 
-    return (0);
+    return (EXIT_SUCCESS);
 }
 

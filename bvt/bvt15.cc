@@ -47,6 +47,6 @@ int main (void)
     employees.erase (employees.begin(), employees.begin() + 1);
     PrintEntries (employees);
 
-    return (0);
+    return (EXIT_SUCCESS);
 }
 
