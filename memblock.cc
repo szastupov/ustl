@@ -181,16 +181,10 @@ void memblock::read (istream& is)
 {
     size_t n;
     is >> n;
-#ifdef WANT_STREAM_BOUNDS_CHECKING
     if (is.remaining() < n)
 	throw stream_bounds_exception ("read", "ustl::memblock", is.pos(), n, is.remaining());
-#else
-    assert (n <= is.remaining() && "Not enough data in the input stream");
-#endif
-    if (n <= is.remaining()) {
-	resize (n);
-	is.read (data(), writable_size());
-    }
+    resize (n);
+    is.read (data(), writable_size());
     is.align();
 }
 

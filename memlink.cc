@@ -92,17 +92,11 @@ void memlink::read (istream& is)
     is >> n;
     assert (n % elementSize() == 0 && "You are trying to read a block with different element type.");
     const size_t btr = min (n, size());
-#ifdef WANT_STREAM_BOUNDS_CHECKING
     if (is.remaining() < btr)
 	throw stream_bounds_exception ("read", "ustl::memlink", is.pos(), btr, is.remaining());
-#else
-    assert (btr <= is.remaining() && "Not enough data in the input stream");
-#endif
-    if (btr <= is.remaining()) {
-	is.read (data(), btr);
-	resize (btr);
-	is.skip (n - btr);
-    }
+    is.read (data(), btr);
+    resize (btr);
+    is.skip (n - btr);
     is.align();
 }
 

@@ -347,7 +347,7 @@ string::const_iterator string::find (const string& s, const_iterator pos) const
 {
     if (!pos) pos = begin();
     assert (pos >= begin() && pos <= end());
-    if (s.empty() || s.size() > distance (pos, end()))
+    if (s.empty() || s.size() > size_t(distance (pos, end())))
 	return (end());
     const uoff_t endi = s.size() - 1;
     const_reference endchar = s[endi];
@@ -383,7 +383,7 @@ string::const_iterator string::rfind (const string& s, const_iterator pos) const
 {
     if (!pos) pos = end();
     assert (pos >= begin() && pos <= end());
-    if (s.empty() || s.size() > distance (pos, end()))
+    if (s.empty() || s.size() > size_t(distance (pos, end())))
 	return (begin());
     // Match from the tail, iterating backwards.
     const_iterator d = --pos;
@@ -476,26 +476,18 @@ size_t string::stream_size (void) const
 void string::read (istream& is)
 {
     size_t n = *utf8in(is);
-#ifdef WANT_STREAM_BOUNDS_CHECKING
     if (n > is.remaining())
 	throw stream_bounds_exception ("read", "ustl::string", is.pos(), n, is.remaining());
-#else
-    assert (n <= is.remaining());
-#endif
-    if (n <= is.remaining()) {
-	resize (n);
-	is.read (data(), size());
-    }
+    resize (n);
+    is.read (data(), size());
 }
 
 /// Writes the object to stream \p os
 void string::write (ostream& os) const
 {
     *utf8out(os)++ = size();
-#ifdef WANT_STREAM_BOUNDS_CHECKING
     if (size() > os.remaining())
 	throw stream_bounds_exception ("write", "ustl::string", os.pos(), size(), os.remaining());
-#endif
     os.write (cdata(), size());
 }
 
