@@ -44,6 +44,8 @@ public:
     typedef typename vector<pair<K,V> >::iterator		iterator;
     typedef typename vector<pair<K,V> >::reverse_iterator	reverse_iterator;
     typedef typename vector<pair<K,V> >::const_reverse_iterator	const_reverse_iterator;
+    typedef pair<const_iterator,const_iterator>		const_range_t;
+    typedef pair<iterator,iterator>			range_t;
 public:
     				map (void);
     explicit			map (size_t n);

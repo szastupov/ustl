@@ -7,7 +7,8 @@ using namespace ustl;
 
 int main (void)
 {
-    multimap<int,string> employees;
+    typedef multimap<int,string> empmap_t;
+    empmap_t employees;
     employees.insert (make_pair (27000, string("Dave"))); 
     employees.insert (make_pair (27000, string("Jim"))); 
     employees.insert (make_pair (99000, string("BigBoss"))); 
@@ -16,10 +17,9 @@ int main (void)
     employees.insert (make_pair (47000, string("Mary"))); 
     employees.insert (make_pair (47000, string("Barbara"))); 
 
-    typedef multimap<int,string>::const_iterator miter_t;
-    pair<miter_t,miter_t> middles = const_cast<const multimap<int,string>&>(employees).equal_range (47000);
+    empmap_t::range_t middles = employees.equal_range (47000);
     cout << "Employees making $" << middles.first->first << ":";
-    miter_t i;
+    empmap_t::const_iterator i;
     for (i = middles.first; i < middles.second; ++ i)
 	cout << " " << i->second;
     cout << endl;

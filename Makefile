@@ -2,6 +2,9 @@ include Common.mk
 
 SUBDIRS	= bvt
 LIBNAME	= ustl
+MAJOR	= 0
+MINOR	= 3
+BUILD	= 1
 
 SRCS	= cmemlink.cc memlink.cc memblock.cc mstream.cc ustring.cc \
        	uexception.cc sistream.cc sostream.cc fdostream.cc unew.cc ubitset.cc

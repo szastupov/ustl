@@ -44,6 +44,8 @@ public:
     typedef typename vector<pair<K,V> >::iterator		iterator;
     typedef typename vector<pair<K,V> >::reverse_iterator	reverse_iterator;
     typedef typename vector<pair<K,V> >::const_reverse_iterator	const_reverse_iterator;
+    typedef pair<const_iterator,const_iterator>		const_range_t;
+    typedef pair<iterator,iterator>			range_t;
 public:
     				multimap (void);
     explicit			multimap (size_t n);
@@ -53,8 +55,8 @@ public:
     inline void			assign (const_iterator i1, const_iterator i2);
     size_t			count (const_key_ref k) const;
     inline void			push_back (const_reference v);
-    inline pair<const_iterator,const_iterator>	equal_range (const_key_ref k) const;
-    inline pair<iterator,iterator>	equal_range (const_key_ref k);
+    inline const_range_t	equal_range (const_key_ref k) const;
+    inline range_t		equal_range (const_key_ref k);
     inline const_iterator	lower_bound (const_key_ref k) const;
     inline const_iterator	upper_bound (const_key_ref k) const;
     iterator			insert (const_reference v);

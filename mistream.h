@@ -74,8 +74,10 @@ public:
     explicit		istream (const cmemlink& source);
     virtual void	unlink (void);
     inline void		seek (uoff_t newPos);
+    inline void		seek (const_iterator newPos);
     inline void		skip (size_t nBytes);
     inline uoff_t	pos (void) const;
+    inline const_iterator ipos (void) const;
     inline size_t	remaining (void) const;
     inline bool		aligned (size_t grain = c_DefaultAlignment) const;
     inline void		align (size_t grain = c_DefaultAlignment);
@@ -137,11 +139,24 @@ inline uoff_t istream::pos (void) const
     return (m_Pos);
 }
 
+/// Returns the current read position
+inline istream::const_iterator istream::ipos (void) const
+{
+    return (begin() + m_Pos);
+}
+
 /// Sets the current read position to \p newPos
 inline void istream::seek (uoff_t newPos)
 {
     assert (newPos <= size());
     m_Pos = newPos;
+}
+
+/// Sets the current read position to \p newPos
+inline void istream::seek (const_iterator newPos)
+{
+    assert (newPos >= begin() && newPos <= end());
+    m_Pos = distance (begin(), newPos);
 }
 
 /// skips \p nBytes without reading anything.

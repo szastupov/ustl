@@ -62,8 +62,11 @@ public:
     explicit		ostream (const memlink& source);
     virtual void	unlink (void);
     inline void		seek (uoff_t newPos);
+    inline void		seek (const_iterator newPos);
     inline void		skip (size_t nBytes);
     inline uoff_t	pos (void) const;
+    inline iterator	ipos (void);
+    inline const_iterator ipos (void) const;
     inline size_t	remaining (void) const;
     inline bool		aligned (size_t grain = c_DefaultAlignment) const;
     inline void		align (size_t grain = c_DefaultAlignment);
@@ -92,9 +95,9 @@ public:
     typedef value_type*		pointer;
     typedef value_type&		reference;
 public:
-    explicit			ostream_iterator (ostream& os)
+    inline explicit		ostream_iterator (ostream& os)
 				    : m_Os (os) {}
- 				ostream_iterator (const ostream_iterator& i)
+    inline			ostream_iterator (const ostream_iterator& i)
 				    : m_Os (i.m_Os) {} 
     /// Writes \p v into the stream.
     inline ostream_iterator&	operator= (const T& v)
@@ -118,11 +121,30 @@ inline uoff_t ostream::pos (void) const
     return (m_Pos);
 }
 
+/// Returns the current write position
+inline ostream::iterator ostream::ipos (void)
+{
+    return (begin() + m_Pos);
+}
+
+/// Returns the current write position
+inline ostream::const_iterator ostream::ipos (void) const
+{
+    return (begin() + m_Pos);
+}
+
 /// Move the write pointer to \p newPos
 inline void ostream::seek (uoff_t newPos)
 {
     assert (newPos <= size());
     m_Pos = newPos;
+}
+
+/// Sets the current read position to \p newPos
+inline void ostream::seek (const_iterator newPos)
+{
+    assert (newPos >= begin() && newPos <= end());
+    m_Pos = distance (begin(), const_cast<iterator>(newPos));
 }
 
 /// Skips \p nBytes without writing anything.

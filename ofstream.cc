@@ -54,7 +54,7 @@ void fdostringstream::flush (void)
 	if (bw < 0 && errno != EINTR)
 	    throw libc_exception ("write");
     }
-    seek (0);
+    seek (0U);
 }
 
 inline void fdostringstream::flush_if_full (void)
