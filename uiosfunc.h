@@ -28,10 +28,10 @@ namespace ustl {
 namespace ios {
     /// \class align uiosfunc.h ustl.h
     /// \ingroup StreamFunctors
-    /// Stream functor to allow inline align() calls. os << ios::align(sizeof(u_short));
+    /// Stream functor to allow inline align() calls. os << ios::align(sizeof(uint16_t));
     class align {
     public:
-				align (size_t grain = c_DefaultAlignment) : m_Grain(grain) {}
+	inline explicit		align (size_t grain = c_DefaultAlignment) : m_Grain(grain) {}
 	inline istream&		apply (istream& is) const { is.align (m_Grain); return (is); }
 	inline ostream&		apply (ostream& os) const { os.align (m_Grain); return (os); }
 	inline size_t		stream_size (void) const  { return (m_Grain - 1); }
@@ -45,15 +45,15 @@ namespace ios {
     template <typename T>
     class talign : public align {
     public:
-	inline talign (void) : align (sizeof(T)) {}
+	inline explicit talign (void) : align (sizeof(T)) {}
     };
 
     /// \class skip uiosfunc.h ustl.h
     /// \ingroup StreamFunctors
-    /// Stream functor to allow inline skip() calls. os << ios::skip(sizeof(u_short));
+    /// Stream functor to allow inline skip() calls. os << ios::skip(sizeof(uint16_t));
     class skip {
     public:
-				skip (size_t nBytes) : m_nBytes(nBytes) {}
+	inline explicit 	skip (size_t nBytes) : m_nBytes(nBytes) {}
 	inline istream&		apply (istream& is) const { is.skip (m_nBytes); return (is); }
 	inline ostream&		apply (ostream& os) const { os.skip (m_nBytes); return (os); }
 	inline size_t		stream_size (void) const  { return (m_nBytes); }
@@ -66,7 +66,7 @@ namespace ios {
     /// Stream functor to allow inline set_width() calls. os << ios::width(15);
     class width {
     public:
-				width (size_t nBytes) : m_nBytes(nBytes) {}
+	inline explicit		width (size_t nBytes) : m_nBytes(nBytes) {}
 	inline ostringstream&	apply (ostringstream& os) const { os.set_width (m_nBytes); return (os); }
     private:
 	size_t			m_nBytes;
@@ -77,7 +77,7 @@ namespace ios {
     /// Stream functor to allow inline set_base() calls. os << ios::base(15);
     class base {
     public:
-				base (size_t n) : m_Base(n) {}
+	inline explicit		base (size_t n) : m_Base(n) {}
 	inline ostringstream&	apply (ostringstream& os) const { os.set_base (m_Base); return (os); }
     private:
 	size_t			m_Base;
@@ -96,9 +96,9 @@ inline ostringstream& operator<< (ostringstream& os, const ios::base& op)	{ retu
 
 } // namespace ustl
 
-CAST_STREAMABLE(ustl::ios::fmtflags, u_int)
-CAST_STREAMABLE(ustl::ios::openmode, u_int)
-CAST_STREAMABLE(ustl::ios::seekdir, u_int)
+CAST_STREAMABLE(ustl::ios::fmtflags, uint32_t)
+CAST_STREAMABLE(ustl::ios::openmode, uint32_t)
+CAST_STREAMABLE(ustl::ios::seekdir, uint32_t)
 
 #endif
 
