@@ -1,4 +1,5 @@
-Release 0.5-1
+Release 0.6
+	* The library is relicensed under the MIT License (was LGPL)
 	* tuple will no longer align at the end:
 		This affects you if you write tuples with small elements
 		off default grain. For example, writing tuple<2,int16>

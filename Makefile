@@ -73,7 +73,6 @@ uninstall-static: uninstall-incs
 install-incs: ${INCS}
 	@echo "Installing headers to ${INCDIR} ..."
 	@${INSTALLDIR} ${INCDIR}/${LIBNAME}
-	@${INSTALLDIR} ${INCDIR}/${LIBNAME}/locale
 	@for i in ${INCS}; do					\
 	    ${INSTALLDATA} $$i ${INCDIR}/${LIBNAME}/$$i;	\
 	done;
