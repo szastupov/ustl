@@ -237,8 +237,15 @@ inline ostream&	operator<< (ostream& os, int32_t v)	{ os.iwrite(v); return (os);
 inline ostream&	operator<< (ostream& os, uint32_t v)	{ os.iwrite(v); return (os); }
 inline ostream&	operator<< (ostream& os, float v)	{ os.iwrite(v); return (os); }
 inline ostream&	operator<< (ostream& os, double v)	{ os.iwrite(v); return (os); }
-inline ostream&	operator<< (ostream& os, bool v)	{ os.iwrite(v); return (os); }
 inline ostream&	operator<< (ostream& os, wchar_t v)	{ os.iwrite(v); return (os); }
+inline ostream&	operator<< (ostream& os, bool v)
+{
+    if (sizeof(bool) == sizeof(uint8_t))
+	os.iwrite(v);
+    else
+	os.iwrite (uint8_t(v));
+    return (os);
+}
 #if HAVE_THREE_CHAR_TYPES
 inline ostream&	operator<< (ostream& os, char v)	{ os.iwrite(v); return (os); }
 #endif

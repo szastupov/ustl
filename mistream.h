@@ -246,8 +246,18 @@ inline istream&	operator>> (istream& is, int32_t& v)	{ is.iread(v); return (is);
 inline istream&	operator>> (istream& is, uint32_t& v)	{ is.iread(v); return (is); }
 inline istream&	operator>> (istream& is, float& v)	{ is.iread(v); return (is); }
 inline istream&	operator>> (istream& is, double& v)	{ is.iread(v); return (is); }
-inline istream&	operator>> (istream& is, bool& v)	{ is.iread(v); return (is); }
 inline istream&	operator>> (istream& is, wchar_t& v)	{ is.iread(v); return (is); }
+inline istream&	operator>> (istream& is, bool& v)
+{
+    if (sizeof(bool) == sizeof(uint8_t))
+	is.iread(v);
+    else {
+	uint8_t v8;
+	is.iread (v8);
+	v = v8;
+    }
+    return (is);
+}
 #if HAVE_THREE_CHAR_TYPES
 inline istream&	operator>> (istream& is, char& v)	{ is.iread(v); return (is); }
 #endif

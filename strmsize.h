@@ -39,7 +39,7 @@ inline size_t stream_size_of (int32_t)	{ return (sizeof(int32_t));	}
 inline size_t stream_size_of (uint32_t)	{ return (sizeof(uint32_t));	}
 inline size_t stream_size_of (float)	{ return (sizeof(float));	}
 inline size_t stream_size_of (double)	{ return (sizeof(double));	}
-inline size_t stream_size_of (bool)	{ return (sizeof(bool));	}
+inline size_t stream_size_of (bool)	{ return (sizeof(uint8_t));	}
 inline size_t stream_size_of (wchar_t)	{ return (sizeof(wchar_t));	}
 #if HAVE_THREE_CHAR_TYPES
 inline size_t stream_size_of (char)	{ return (sizeof(char));	}

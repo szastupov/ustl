@@ -53,8 +53,6 @@ namespace ustl {
 /// Argument that is used only in debug builds (as in an assert)
 #ifndef NDEBUG
     #define DebugArg(x)	x
-#elif defined(__GNUC__)
-    #define DebugArg(x)	x __attribute__((unused))
 #else
     #define DebugArg(x)
 #endif
@@ -121,6 +119,9 @@ inline size_t alignof (T)
 {
     return (__alignof__(T));
 }
+
+// bool is a big type on some machines (like DEC Alpha), so it's written as a byte.
+template <> inline size_t alignof (bool) { return (sizeof(uint8_t)); }
 
 /// Offsets an iterator
 template <typename T>
