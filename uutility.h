@@ -49,6 +49,19 @@ namespace ustl {
 /// Shorthand for container reverse iteration.
 #define eachfor(type,i,ctr)	for (type i = (ctr).rbegin(); i != (ctr).rend(); ++ i)
 
+/// Macro for passing template types as macro arguments.
+/// \@{
+#define TEMPLATE_FULL_DECL1(d1,t1)		template <d1 t1>
+#define TEMPLATE_FULL_DECL2(d1,t1,d2,t2)	template <d1 t1, d2 t2>
+#define TEMPLATE_FULL_DECL3(d1,t1,d2,t2,d3,t3)	template <d1 t1, d2 t2, d3 t3>
+#define TEMPLATE_DECL1(t1)		TEMPLATE_FULL_DECL1(typename,t1)
+#define TEMPLATE_DECL2(t1,t2)		TEMPLATE_FULL_DECL2(typename,t1,typename,t2)
+#define TEMPLATE_DECL3(t1,t2,t3)	TEMPLATE_FULL_DECL3(typename,t1,typename,t2,typename,t3)
+#define TEMPLATE_TYPE1(type,a1)		type<a1>
+#define TEMPLATE_TYPE2(type,a1,a2)	type<a1,a2>
+#define TEMPLATE_TYPE3(type,a1,a2,a3)	type<a1,a2,a3>
+/// \@}
+
 /// Returns the minimum of \p a and \p b
 template <typename T1, typename T2>
 inline const T1 min (const T1& a, const T2& b)
