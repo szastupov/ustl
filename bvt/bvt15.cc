@@ -1,17 +1,34 @@
 #include <ustl.h>
 using namespace ustl;
 
+typedef multimap<int,string> empmap_t;
+typedef empmap_t::const_iterator citer_t;
+
+void PrintEntries (citer_t first, citer_t last)
+{
+    for (citer_t i = first; i < last; ++ i)
+	cout << i->second << "\t- $" << i->first << endl;
+}
+
+inline void PrintEntries (const empmap_t& m)	{ PrintEntries (m.begin(), m.end()); }
+
 int main (void)
 {
-    typedef multimap<int,string> empmap_t;
     empmap_t employees;
     employees.insert (make_pair (27000, string("Dave"))); 
     employees.insert (make_pair (27000, string("Jim"))); 
     employees.insert (make_pair (99000, string("BigBoss"))); 
     employees.insert (make_pair (47000, string("Gail"))); 
     employees.insert (make_pair (15000, string("Dumb"))); 
-    employees.insert (make_pair (47000, string("Mary"))); 
     employees.insert (make_pair (47000, string("Barbara"))); 
+    employees.insert (make_pair (47000, string("Mary"))); 
+
+    cout << "As-inserted listing:" << endl;
+    PrintEntries (employees);
+
+    cout << "Alphabetical listing:" << endl;
+    sort (employees);
+    PrintEntries (employees);
 
     empmap_t::range_t middles = employees.equal_range (47000);
     cout << "Employees making $" << middles.first->first << ":";
@@ -22,19 +39,13 @@ int main (void)
 
     cout << "There are " << employees.count (27000) << " low-paid employees" << endl;
 
-    cout << "Alphabetical listing:" << endl;
-    for (i = employees.begin(); i < employees.end(); ++ i)
-	cout << i->second << "\t- $" << i->first << endl;
-
     cout << "Firing all low-paid employees:" << endl;
     employees.erase (27000);
-    for (i = employees.begin(); i < employees.end(); ++ i)
-	cout << i->second << "\t- $" << i->first << endl;
+    PrintEntries (employees);
 
     cout << "Firing dumb employees:" << endl;
     employees.erase (employees.begin(), employees.begin() + 1);
-    for (i = employees.begin(); i < employees.end(); ++ i)
-	cout << i->second << "\t- $" << i->first << endl;
+    PrintEntries (employees);
 
     return (0);
 }

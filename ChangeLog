@@ -1,5 +1,24 @@
 Release 0.5-1
-	* tuple will no longer align at the end.
+	* tuple will no longer align at the end:
+		This affects you if you write tuples with small elements
+		off default grain. For example, writing tuple<2,int16>
+		on grain 2 would have aligned prior to this change, causing
+		sub-optimal packing if you wrote an array of such tuples,
+		since each one only needs grain 2 alignment.
+	* Fixed incorrect use of __alignof__ in pair stream operators.
+	* Added size_t ul-or-ui detection code to bsconf and fixed the
+		size_t/pointer overload in uutility to use it.
+	* Added erase(iterator,const_iterator) overload for string
+	* Added alloca_link macro.
+	* cmemlink will now throw bad_alloc if linking to !p && n.
+	* multiset and multimap will insert equal elements in order.
+		I wasn't able to find any guidance concerning the order of
+		equal elements; it appears to be unspecified. Prior to this
+		change equal elements were inserted in reverse order, which
+		is bad idea because it causes a larger copy to make space.
+		(Note that multimap only compares the key, since the mapped
+		value is not required to have an operator<. If you want them
+		sorted, you can use sort() on it.)
 
 2004-11-11 Release 0.5
 	* configure will now properly enable mmx compiler flags.

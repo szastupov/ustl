@@ -171,7 +171,7 @@ inline void multimap<K,V>::push_back (const_reference v)
 template <typename K, typename V>
 typename multimap<K,V>::iterator multimap<K,V>::insert (const_reference v)
 {
-    iterator ip = ::ustl::lower_bound (begin(), end(), v, mem_var_less(&value_type::first));
+    iterator ip = ::ustl::upper_bound (begin(), end(), v, mem_var_less(&value_type::first));
     return (vector<pair<K,V> >::insert (ip, v));
 }
 

@@ -132,7 +132,7 @@ inline void multiset<T>::push_back (const_reference v)
 template <typename T>
 typename multiset<T>::iterator multiset<T>::insert (const_reference v)
 {
-    iterator ip = lower_bound (begin(), end(), v);
+    iterator ip = upper_bound (begin(), end(), v);
     return (vector<T>::insert (ip, v));
 }
 
