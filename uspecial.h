@@ -18,7 +18,7 @@
 #include "mostream.h"
 #include "sostream.h"
 #include "strmsize.h"
-#include <ctype.h>
+#include "ufacets.h"
 
 namespace ustl {
 
@@ -52,7 +52,7 @@ size_t container_stream_size (const Container& v)
 	foreach (viter_t, i, v)
 	    s += stream_size_of(*i);
     }
-    return (Align (s));
+    return (s);
 }
 
 //----{ pair }----------------------------------------------------------
@@ -171,7 +171,7 @@ ostringstream& operator<< (ostringstream& os, const vector<T>& v)
 template <typename T>
 inline size_t stream_size_of (const vector<T>& v)
 {
-    return (stream_size_of(v.size()) + container_stream_size (v));
+    return (Align (stream_size_of(v.size()) + container_stream_size (v)));
 }
 
 //----{ bitset }--------------------------------------------------------
@@ -217,7 +217,6 @@ inline istream& operator>> (istream& is, tuple<N,T>& v)
     typedef typename tuple<N,T>::iterator iter_t;
     foreach (iter_t, i, v)
 	is >> *i;
-    is.align();
     return (is);
 }
 
@@ -228,7 +227,6 @@ inline ostream& operator<< (ostream& os, const tuple<N,T>& v)
     typedef typename tuple<N,T>::const_iterator iter_t;
     foreach (iter_t, i, v)
 	os << *i;
-    os.align();
     return (os);
 }
 
