@@ -45,31 +45,18 @@ public:
 				ostringstream (void* p, size_t n);
     explicit			ostringstream (string& dest);
     explicit			ostringstream (const memlink& dest);
-    inline ostringstream&	operator<< (char v);
-    inline ostringstream&	operator<< (signed char v);
-    inline ostringstream&	operator<< (short v);
-    inline ostringstream&	operator<< (int v);
-    ostringstream&		operator<< (long v);
-    ostringstream&		operator<< (u_char v);
-    inline ostringstream&	operator<< (u_short v);
-    inline ostringstream&	operator<< (u_int v);
-    ostringstream&		operator<< (u_long v);
+    void			iwrite (long v);
+    void			iwrite (u_char v);
+    void			iwrite (u_long v);
 #ifdef __GNUC__
-    ostringstream&		operator<< (long long v);
-    ostringstream&		operator<< (unsigned long long v);
+    void			iwrite (long long v);
+    void			iwrite (unsigned long long v);
 #endif
-    inline ostringstream&	operator<< (float v);
-    ostringstream&		operator<< (double v);
-    ostringstream&		operator<< (bool v);
-    inline ostringstream&	operator<< (wchar_t v);
-    ostringstream&		operator<< (const char* s);
-    inline ostringstream&	operator<< (char* s);
-    inline ostringstream&	operator<< (const u_char* s);
-    inline ostringstream&	operator<< (u_char* s);
-    inline ostringstream&	operator<< (const void* s);
-    inline ostringstream&	operator<< (void* s);
-    ostringstream&		operator<< (const string& v);
-    ostringstream&		operator<< (ios::fmtflags f);
+    void			iwrite (double v);
+    void			iwrite (bool v);
+    void			iwrite (const char* s);
+    void			iwrite (const string& v);
+    void			iwrite (ios::fmtflags f);
     int				format (const char* fmt, ...) __attribute__((__format__(__printf__, 2, 3)));
     inline void			set_base (uint16_t b);
     inline void			set_width (uint16_t w);
@@ -123,95 +110,44 @@ inline void ostringstream::set_precision (u_short precision)
     m_Precision = precision;
 }
 
-/// Writes a single character into the stream.
-inline ostringstream& ostringstream::operator<< (char v)
-{
-    return (operator<< (u_char(v)));
-}
-
-/// Writes a single character into the stream.
-inline ostringstream& ostringstream::operator<< (signed char v)
-{
-    return (operator<< (u_char(v)));
-}
-
-/// Writes number \p v into the stream as text.
-inline ostringstream& ostringstream::operator<< (short v)
-{
-    return (operator<< (long(v)));
-}
-
-/// Writes number \p v into the stream as text.
-inline ostringstream& ostringstream::operator<< (int v)
-{
-    return (operator<< (long(v)));
-}
-
-/// Writes number \p v into the stream as text.
-inline ostringstream& ostringstream::operator<< (u_short v)
-{
-    return (operator<< (u_long(v)));
-}
-
-/// Writes number \p v into the stream as text.
-inline ostringstream& ostringstream::operator<< (u_int v)
-{
-    return (operator<< (u_long(v)));
-}
-
-/// Writes number \p v into the stream as text.
-inline ostringstream& ostringstream::operator<< (float v)
-{
-    return (operator<< (double(v)));
-}
-
-/// Writes number \p v into the stream as text.
-inline ostringstream& ostringstream::operator<< (wchar_t v)
-{
-    return (operator<< (long(v)));
-}
-
-/// Writes text pointed to by \p s into the stream.
-inline ostringstream& ostringstream::operator<< (char* s)
-{
-    return (operator<< (const_cast<const char*>(s)));
-}
-
-/// Writes text pointed to by \p s into the stream.
-inline ostringstream& ostringstream::operator<< (const u_char* s)
-{
-    return (operator<< (reinterpret_cast<const char*>(s)));
-}
-
-/// Writes text pointed to by \p s into the stream.
-inline ostringstream& ostringstream::operator<< (u_char* s)
-{
-    return (operator<< (const_cast<const u_char*>(s)));
-}
-
-/// Writes pointer \p s into the stream as the text of its numeric value.
-inline ostringstream& ostringstream::operator<< (const void* s)
-{
-    return (operator<< (reinterpret_cast<u_long>(s)));
-}
-
-/// Writes pointer \p s into the stream as the text of its numeric value.
-inline ostringstream& ostringstream::operator<< (void* s)
-{
-    return (operator<< (const_cast<const void*>(s)));
-}
-
-template <typename T>
-inline ostringstream& operator<< (ostringstream& os, T* v)
-{
-    os << (void*)(v);
-    return (os);
-}
-
+/// Disallows writing nul characters into the stream.
 inline void ostringstream::write_strz (const char*)
 {
     assert (false && "Writing nul characters into a text stream is not allowed");
 }
+
+#define OSTRSTREAM_OPERATOR(RealT, CastT)			\
+inline ostringstream& operator<< (ostringstream& os, RealT v)	\
+{ os.iwrite ((CastT) v); return (os); }
+
+template <typename T>
+OSTRSTREAM_OPERATOR (T*,		u_long)
+OSTRSTREAM_OPERATOR (long,		long)
+OSTRSTREAM_OPERATOR (u_char,		u_char)
+OSTRSTREAM_OPERATOR (u_long,		u_long)
+OSTRSTREAM_OPERATOR (double,		double)
+OSTRSTREAM_OPERATOR (bool,		bool)
+OSTRSTREAM_OPERATOR (const char*,	const char*)
+OSTRSTREAM_OPERATOR (const string&,	const string&)
+OSTRSTREAM_OPERATOR (ios::fmtflags,	ios::fmtflags)
+OSTRSTREAM_OPERATOR (char,		u_char)
+OSTRSTREAM_OPERATOR (signed char,	u_char)
+OSTRSTREAM_OPERATOR (short,		long)
+OSTRSTREAM_OPERATOR (u_short,		u_long)
+OSTRSTREAM_OPERATOR (int,		long)
+OSTRSTREAM_OPERATOR (u_int,		u_long)
+OSTRSTREAM_OPERATOR (float,		double)
+OSTRSTREAM_OPERATOR (wchar_t,		long)
+OSTRSTREAM_OPERATOR (char*,		const char*)
+OSTRSTREAM_OPERATOR (u_char*,		const char*)
+OSTRSTREAM_OPERATOR (const u_char*,	const char*)
+OSTRSTREAM_OPERATOR (const void*,	u_long)
+OSTRSTREAM_OPERATOR (void*,		u_long)
+#ifdef __GNUC__
+OSTRSTREAM_OPERATOR (long long,		long long)
+OSTRSTREAM_OPERATOR (unsigned long long, unsigned long long)
+#endif
+#undef OSTRSTREAM_OPERATOR
 
 }; // namespace ustl
 

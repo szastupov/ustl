@@ -70,30 +70,29 @@ char istringstream::skip_delimiters (void)
 {
     char c = m_Delimiters[0];
     while (is_delimiter(c) && (remaining() || underflow()))
-	iread (c);
+	istream::iread (c);
     return (c);
 }
 
-istringstream& istringstream::operator>> (u_char& v)
+void istringstream::iread (u_char& v)
 {
     v = skip_delimiters();
-    return (*this);
 }
 
-istringstream& istringstream::operator>> (long& v)
+void istringstream::iread (long& v)
 {
     register long base = m_Base;
     v = 0;
     char c = skip_delimiters();
     bool negative = (c == '-');
     if (negative && (remaining() || underflow()))
-	iread (c);
+	istream::iread (c);
     if (c == '0') {
 	base = 8;
-	iread (c);
+	istream::iread (c);
 	if (c == 'x') {
 	    base = 16;
-	    iread (c);
+	    istream::iread (c);
 	}
     }
     while (true) {
@@ -105,7 +104,7 @@ istringstream& istringstream::operator>> (long& v)
 	else if (c >= 'A' && c <= 'Z' && c < base - 10 + 'a')
 	    digit = c - 'A' + 10;
 	else if (c == m_ThousandSeparator) {
-	    iread (c);
+	    istream::iread (c);
 	    continue;
 	} else
 	    break;
@@ -113,29 +112,28 @@ istringstream& istringstream::operator>> (long& v)
 	v += digit;
 	if (!remaining() && !underflow())
 	    break;
-	iread (c);
+	istream::iread (c);
     }
     ungetc();
     if (negative)
 	v = -v;
-    return (*this);
 }
 
 #ifdef __GNUC__
-istringstream& istringstream::operator>> (long long& v)
+void istringstream::iread (long long& v)
 {
     long long base = m_Base;
     v = 0;
     char c = skip_delimiters();
     bool negative = (c == '-');
     if (negative && (remaining() || underflow()))
-	iread (c);
+	istream::iread (c);
     if (c == '0') {
 	base = 8;
-	iread (c);
+	istream::iread (c);
 	if (c == 'x') {
 	    base = 16;
-	    iread (c);
+	    istream::iread (c);
 	}
     }
     while (true) {
@@ -147,7 +145,7 @@ istringstream& istringstream::operator>> (long long& v)
 	else if (c >= 'A' && c <= 'Z' && c < base - 10 + 'a')
 	    digit = c - 'A' + 10;
 	else if (c == m_ThousandSeparator) {
-	    iread (c);
+	    istream::iread (c);
 	    continue;
 	} else
 	    break;
@@ -155,16 +153,15 @@ istringstream& istringstream::operator>> (long long& v)
 	v += digit;
 	if (!remaining() && !underflow())
 	    break;
-	iread (c);
+	istream::iread (c);
     }
     ungetc();
     if (negative)
 	v = -v;
-    return (*this);
 }
 #endif
 
-istringstream& istringstream::operator>> (double& v)
+void istringstream::iread (double& v)
 {
     register long base = m_Base;
     v = 0;
@@ -182,10 +179,10 @@ istringstream& istringstream::operator>> (double& v)
 	    digit = c - 'A' + 10;
 	else if (c == m_DecimalSeparator) {
 	    beforedot = false;
-	    iread (c);
+	    istream::iread (c);
 	    continue;
 	} else if (c == m_ThousandSeparator) {
-	    iread (c);
+	    istream::iread (c);
 	    continue;
 	} else
 	    break;
@@ -198,35 +195,33 @@ istringstream& istringstream::operator>> (double& v)
 	}
 	if (!remaining() && !underflow())
 	    break;
-	iread (c);
+	istream::iread (c);
     }
     ungetc();
     if (negative)
 	v = -v;
-    return (*this);
 }
 
-istringstream& istringstream::operator>> (bool& v)
+void istringstream::iread (bool& v)
 {
     char c = skip_delimiters();
     v = (c == '1' || c == 't');
     if (c == 't' && (remaining() || underflow())) {
-	iread (c);
+	istream::iread (c);
 	if (c == 'r' && remaining() >= 2 * sizeof(char))
 	    skip (2 * sizeof(char));
 	else
 	    ungetc();
     } else if (c == 'f' && (remaining() || underflow())) {
-	iread (c);
+	istream::iread (c);
 	if (c == 'a' && remaining() >= 3 * sizeof(char))
 	    skip (3 * sizeof(char));
 	else
 	    ungetc();
     }
-    return (*this);
 }
 
-istringstream& istringstream::operator>> (string& v)
+void istringstream::iread (string& v)
 {
     v.clear();
     char prevc, quoteChar = 0, c = skip_delimiters();
@@ -236,7 +231,7 @@ istringstream& istringstream::operator>> (string& v)
 	v += c;
     while (remaining() || underflow()) {
 	prevc = c;
-	iread (c);
+	istream::iread (c);
 	if (!quoteChar && is_delimiter(c))
 	    break;
 	if (prevc == '\\') {
@@ -257,7 +252,6 @@ istringstream& istringstream::operator>> (string& v)
 	    v += c;
 	}
     }
-    return (*this);
 }
 
 void istringstream::read (void* buffer, size_t sz)

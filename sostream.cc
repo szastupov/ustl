@@ -92,15 +92,14 @@ void ostringstream::write_buffer (const char* buf, size_t bufSize)
 }
 
 /// Writes a single character into the stream.
-ostringstream& ostringstream::operator<< (u_char v)
+void ostringstream::iwrite (u_char v)
 {
     if (remaining() >= sizeof(u_char) || overflow() >= sizeof(u_char))
 	ostream::iwrite (v);
-    return (*this);
 }
 
 /// Writes long value \p sv into the stream.
-ostringstream& ostringstream::operator<< (long sv)
+void ostringstream::iwrite (long sv)
 {
     assert (m_Base < VectorSize(c_Digits));
     const bool negative = (sv < 0);
@@ -117,11 +116,10 @@ ostringstream& ostringstream::operator<< (long sv)
 	buffer[i--] = '-';
     ++ i;
     write_buffer (buffer + i, c_BufSize - i - 1);
-    return (*this);
 }
 
 /// Writes number \p v into the stream as text.
-ostringstream& ostringstream::operator<< (u_long v)
+void ostringstream::iwrite (u_long v)
 {
     assert (m_Base < VectorSize(c_Digits));
     const size_t c_BufSize = BitsInType(v) + 1;
@@ -134,12 +132,11 @@ ostringstream& ostringstream::operator<< (u_long v)
     } while (v);
     ++ i;
     write_buffer (buffer + i, c_BufSize - i - 1);
-    return (*this);
 }
 
 #ifdef __GNUC__
 /// Writes number \p v into the stream as text.
-ostringstream& ostringstream::operator<< (long long sv)
+void ostringstream::iwrite (long long sv)
 {
     assert (m_Base < VectorSize(c_Digits));
     const bool negative = (sv < 0);
@@ -156,11 +153,10 @@ ostringstream& ostringstream::operator<< (long long sv)
 	buffer[i--] = '-';
     ++ i;
     write_buffer (buffer + i, c_BufSize - i - 1);
-    return (*this);
 }
 
 /// Writes number \p v into the stream as text.
-ostringstream& ostringstream::operator<< (unsigned long long v)
+void ostringstream::iwrite (unsigned long long v)
 {
     assert (m_Base < VectorSize(c_Digits));
     const size_t c_BufSize = BitsInType(v) + 1;
@@ -173,12 +169,11 @@ ostringstream& ostringstream::operator<< (unsigned long long v)
     } while (v);
     ++ i;
     write_buffer (buffer + i, c_BufSize - i - 1);
-    return (*this);
 }
 #endif
 
 /// Writes number \p iv into the stream as text.
-ostringstream& ostringstream::operator<< (double iv)
+void ostringstream::iwrite (double iv)
 {
     assert (m_Base < VectorSize(c_Digits));
     const size_t c_BufSize = BitsInType(double) + 1;
@@ -192,31 +187,27 @@ ostringstream& ostringstream::operator<< (double iv)
     buffer [c_BufSize - 1] = 0;
     assert (i < c_BufSize);
     write_buffer (buffer, i);
-    return (*this);
 }
 
 /// Writes value \p v into the stream as text.
-ostringstream& ostringstream::operator<< (bool v)
+void ostringstream::iwrite (bool v)
 {
     if (v)
 	write_buffer ("true", 4);
     else
 	write_buffer ("false", 5);
-    return (*this);
 }
 
 /// Writes string \p s into the stream.
-ostringstream& ostringstream::operator<< (const char* s)
+void ostringstream::iwrite (const char* s)
 {
     write_buffer (s, strlen(s));
-    return (*this);
 }
 
 /// Writes string \p v into the stream.
-ostringstream& ostringstream::operator<< (const string& v)
+void ostringstream::iwrite (const string& v)
 {
     write_buffer (v.begin(), v.size());
-    return (*this);
 }
 
 /// Equivalent to a sprintf on the string.
@@ -235,7 +226,7 @@ int ostringstream::format (const char* fmt, ...)
 }
 
 /// Sets the flag \p f in the stream.
-ostringstream& ostringstream::operator<< (ios::fmtflags f)
+void ostringstream::iwrite (ios::fmtflags f)
 {
     switch (f) {
 	case ios::oct:		set_base (8); break;
@@ -265,7 +256,6 @@ ostringstream& ostringstream::operator<< (ios::fmtflags f)
 	    m_Flags |= f;
 	    break;
     }
-    return (*this);
 }
 
 /// Unlinks the stream from its bound buffer.

@@ -45,23 +45,13 @@ public:
     				istringstream (void);
 				istringstream (const void* p, size_t n);
     explicit			istringstream (const cmemlink& source);
-    inline istringstream&	operator>> (signed char& v);
-    inline istringstream&	operator>> (char& v);
-    inline istringstream&	operator>> (short& v);
-    inline istringstream&	operator>> (int& v);
-    istringstream&		operator>> (long& v);
-    istringstream&		operator>> (u_char& v);
-    inline istringstream&	operator>> (u_short& v);
-    inline istringstream&	operator>> (u_int& v);
-    inline istringstream&	operator>> (u_long& v);
-    inline istringstream&	operator>> (wchar_t& v);
-    inline istringstream&	operator>> (float& v);
-    istringstream&		operator>> (double& v);
-    istringstream&		operator>> (bool& v);
-    istringstream&		operator>> (string& v);
+    void			iread (long& v);
+    void			iread (u_char& v);
+    void			iread (double& v);
+    void			iread (bool& v);
+    void			iread (string& v);
 #ifdef __GNUC__
-    istringstream&		operator>> (long long& v);
-    inline istringstream&	operator>> (unsigned long long& v);
+    void			iread (long long& v);
 #endif
     void			set_delimiters (const char* delimiters);
     inline void			set_base (short base);
@@ -101,73 +91,47 @@ inline void istringstream::set_thousand_separator (char s)
     m_ThousandSeparator = s;
 }
 
-/// Reads a single character into \p v.
-inline istringstream& istringstream::operator>> (signed char& v)
-{
-    u_char vl; operator>> (vl); v = vl; return (*this);
-}
-
-/// Reads a single character into \p v.
-inline istringstream& istringstream::operator>> (char& v)
-{
-    u_char vl; operator>> (vl); v = vl; return (*this);
-}
-
-/// Reads a number into \p v.
-inline istringstream& istringstream::operator>> (short& v)
-{
-    long vl; operator>> (vl); v = static_cast<short>(vl); return (*this);
-}
-
-/// Reads a number into \p v.
-inline istringstream& istringstream::operator>> (int& v)
-{
-    long vl; operator>> (vl); v = static_cast<int>(vl); return (*this);
-}
-
-/// Reads a number into \p v.
-inline istringstream& istringstream::operator>> (u_short& v)
-{
-    short vl; operator>> (vl); v = static_cast<u_short>(vl); return (*this);
-}
-
-/// Reads a number into \p v.
-inline istringstream& istringstream::operator>> (u_int& v)
-{
-    int vl; operator>> (vl); v = static_cast<u_int>(vl); return (*this);
-}
-
-/// Reads a number into \p v.
-inline istringstream& istringstream::operator>> (u_long& v)
-{
-    long vl; operator>> (vl); v = vl; return (*this);
-}
-
-#ifdef __GNUC__
-/// Reads a number into \p v.
-inline istringstream& istringstream::operator>> (unsigned long long& v)
-{
-    long long vl; operator>> (vl); v = vl; return (*this);
-}
-#endif
-
-/// Reads a number into \p v.
-inline istringstream& istringstream::operator>> (wchar_t& v)
-{
-    long vl; operator>> (vl); v = static_cast<wchar_t>(vl); return (*this);
-}
-
-/// Reads a floating point number into \p v.
-inline istringstream& istringstream::operator>> (float& v)
-{
-    double vl; operator>> (vl); v = static_cast<float>(vl); return (*this);
-}
-
 /// Reads a null-terminated character stream. This is not allowed in this class.
 inline void istringstream::read_strz (string& str)
 {
     assert (false && "Reading nul characters is not allowed from text streams");
 }
+
+/// Reads one type as another.
+template <typename RealT, typename CastT>
+void _cast_read (istringstream& is, RealT& v)
+{
+    CastT cv;
+    is.iread (cv);
+    v = RealT (cv);
+}
+
+inline istringstream& operator>> (istringstream& is, long& v)	{ is.iread (v); return (is); }
+inline istringstream& operator>> (istringstream& is, u_char& v)	{ is.iread (v); return (is); }
+inline istringstream& operator>> (istringstream& is, double& v)	{ is.iread (v); return (is); }
+inline istringstream& operator>> (istringstream& is, bool& v)	{ is.iread (v); return (is); }
+inline istringstream& operator>> (istringstream& is, string& v)	{ is.iread (v); return (is); }
+#ifdef __GNUC__
+inline istringstream& operator>> (istringstream& is, long long& v) { is.iread (v); return (is); }
+#endif
+
+#define ISTRSTREAM_CAST_OPERATOR(RealT, CastT)			\
+inline istringstream& operator>> (istringstream& is, RealT& v)	\
+{ _cast_read<RealT,CastT>(is, v); return (is); }
+
+ISTRSTREAM_CAST_OPERATOR (signed char,	u_char)
+ISTRSTREAM_CAST_OPERATOR (char,		u_char)
+ISTRSTREAM_CAST_OPERATOR (short,	long)
+ISTRSTREAM_CAST_OPERATOR (int,		long)
+ISTRSTREAM_CAST_OPERATOR (u_short,	long)
+ISTRSTREAM_CAST_OPERATOR (u_int,	long)
+ISTRSTREAM_CAST_OPERATOR (u_long,	long)
+ISTRSTREAM_CAST_OPERATOR (wchar_t,	long)
+ISTRSTREAM_CAST_OPERATOR (float,	double)
+#ifdef __GNUC__
+ISTRSTREAM_CAST_OPERATOR (unsigned long long, long long)
+#endif
+#undef ISTRSTREAM_CAST_OPERATOR
 
 }; // namespace ustl
 
