@@ -105,11 +105,25 @@ inline T absv (T v)
     return (v < 0 ? -v : v);
 }
 
+/// \brief Returns -1 for negative values, 1 for positive, and 0 for 0
+template <typename T>
+inline T sign (T v)
+{
+    return (0 < v ? 1 : (v < 0 ? -1 : 0));
+}
+
 /// Returns the absolute value of the distance i1 and i2
 template <typename T1, typename T2>
 inline size_t abs_distance (T1 i1, T2 i2)
 {
     return (absv (distance(i1, i2)));
+}
+
+/// Returns the size of \p n elements of size \p T
+template <typename T>
+inline size_t size_of_elements (size_t n, const T*)
+{
+    return (n * sizeof(T));
 }
 
 #ifdef __GNUC__
@@ -118,9 +132,7 @@ inline size_t abs_distance (T1 i1, T2 i2)
 #else
     // Old compilers will not be able to evaluate *v on an empty vector.
     // The tradeoff here is that VectorSize will not be able to measure arrays of local structs.
-    template <typename T>
-    inline size_t VectorElementSize (const T[]) { return (sizeof(T)); }
-    #define VectorSize(v)	(sizeof(v) / ustl::VectorElementSize(v))
+    #define VectorSize(v)	(sizeof(v) / ustl::size_of_elements(1, v))
 #endif
 
 /// Returns the number of bits in the given type
@@ -223,6 +235,21 @@ template <typename T>
 inline bool operator>= (const T& x, const T& y)
 {
     return (x == y || y < x);
+}
+
+/// Packs \p s multiple times into \p b. Useful for loop unrolling.
+template <typename TSmall, typename TBig>
+inline void pack_type (TSmall s, TBig& b)
+{
+    const size_t n = sizeof(TBig) / sizeof(TSmall);
+    b = s;
+    // Calls to min are here to avoid warnings for shifts bigger than the type. min will be gone when optimized.
+    if (n < 2) return;
+    b = (b << min (BitsInType(TSmall), BitsInType(TBig))) | b;
+    if (n < 4) return;
+    b = (b << min (BitsInType(TSmall) * 2, BitsInType(TBig))) | b;
+    if (n < 8) return;
+    b = (b << min (BitsInType(TSmall) * 4, BitsInType(TBig))) | b;
 }
 
 } // namespace ustl
