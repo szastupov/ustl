@@ -58,9 +58,9 @@ namespace ustl {
 #endif
 
 /// Shorthand for container iteration.
-#define foreach(type,i,ctr)	for (type i = ctr.begin(); i != ctr.end(); ++ i)
+#define foreach(type,i,ctr)	for (type i = (ctr).begin(); i != (ctr).end(); ++ i)
 /// Shorthand for container reverse iteration.
-#define eachfor(type,i,ctr)	for (type i = ctr.rbegin(); i != ctr.rend(); ++ i)
+#define eachfor(type,i,ctr)	for (type i = (ctr).rbegin(); i != (ctr).rend(); ++ i)
 
 /// The alignment performed by default.
 const size_t c_DefaultAlignment = sizeof(void*);
