@@ -220,16 +220,18 @@ template <typename T> inline T native_to_be (const T& v) { return (bswap (v)); }
 
 /// Template for for_each to call delete
 template <typename T>
-inline void Delete (T* p)
+inline void Delete (T*& p)
 {
     delete p;
+    p = NULL;
 }
 
 /// Template for for_each to call delete
 template <typename T>
-inline void DeleteVector (T* p)
+inline void DeleteVector (T*& p)
 {
     delete [] p;
+    p = NULL;
 }
 
 /// Template of making != from ! and ==
