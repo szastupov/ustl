@@ -83,7 +83,7 @@ public:
     inline size_type		elementBytes (size_type n) const	{ return (n * sizeof(T)); }
 protected:
     virtual void		constructBlock (void* p, size_type s) const;
-    virtual void		destructBlock (void* p, size_type s) const;
+    virtual void		destructBlock (void* p, size_type s) const throw();
 };
 
 /// Initializes empty vector.
@@ -310,7 +310,7 @@ void vector<T>::constructBlock (void* p, size_type s) const
 /// and cannot be called from ~memblock().
 ///
 template <typename T>
-void vector<T>::destructBlock (void* p, size_type s) const
+void vector<T>::destructBlock (void* p, size_type s) const throw()
 {
     assert (s % sizeof(T) == 0);
     T* pt = reinterpret_cast<T*>(p);

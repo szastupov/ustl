@@ -171,7 +171,7 @@ void memlink::constructBlock (void*, size_type DebugArg(n)) const
 }
 
 /// Override to deinitialize malloc'ed space, like calling destructors, for example.
-void memlink::destructBlock (void* DebugArg(p), size_type DebugArg(n)) const
+void memlink::destructBlock (void* DebugArg(p), size_type DebugArg(n)) const throw()
 {
     assert (n % elementSize() == 0 && "You are trying to write an incompatible element type");
 #ifndef NDEBUG

@@ -96,7 +96,7 @@ inline void construct (T* p, const T& value)
 /// \ingroup RawStorageAlgorithms
 ///
 template <typename T>
-inline void destroy (T* p)
+inline void destroy (T* p) throw()
 {
     p->~T();
 }
@@ -105,7 +105,7 @@ inline void destroy (T* p)
 /// \ingroup RawStorageAlgorithms
 ///
 template <typename ForwardIterator>
-inline void destroy (ForwardIterator first, ForwardIterator last)
+inline void destroy (ForwardIterator first, ForwardIterator last) throw()
 {
     while (first < last) {
 	destroy (&*first);

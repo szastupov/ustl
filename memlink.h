@@ -79,7 +79,7 @@ public:
     void		read (istream& is);
 protected:
     virtual void	constructBlock (void*, size_type) const;
-    virtual void	destructBlock (void*, size_type) const;
+    virtual void	destructBlock (void*, size_type) const throw();
 private:
     pointer		m_Data;	///< Pointer to the begin block (non-const)
 };
