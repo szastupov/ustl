@@ -48,7 +48,7 @@ namespace simd {
 template <typename Ctr, typename UnaryOperation>
 inline void packop (Ctr& op1, UnaryOperation op)
 {
-    transform (op1.begin(), op1.end(), op);
+    transform (op1.begin(), op1.end(), op1.begin(), op);
 }
 
 /// Applies \p op to each element in \p op1 and \p op2 and stores in \p op2.
@@ -116,7 +116,7 @@ template <> inline double fpavg<double>::operator()(const double& a, const doubl
 
 #define SIMD_PACKEDOP1(name, operation)		\
 template <typename Ctr>				\
-inline void name (const Ctr& op1)		\
+inline void name (Ctr& op1)			\
 {						\
     typedef typename Ctr::value_type value_t;	\
     packop (op1, operation<value_t>());		\
@@ -234,16 +234,26 @@ template <>					\
 inline void pconvert (const tuple<n,type1>& oin, tuple<n,type2>& oout, optype<type1,type2>)
 
 #if CPU_HAS_MMX
-#define STD_MMX_ARGS(ptr_t)		"=o"(oout.at(0)) : "o"(oin.at(0)) : "mm0", "memory"
+#define STD_MMX_ARGS	"=o"(oout.at(0)) : "o"(oin.at(0)) : "mm0", "memory"
+#define DBL_MMX_ARGS	"=o"(oout.at(0)), "=o"(oout.at(2)) : "o"(oin.at(0)), "o"(oin.at(2)) : "mm0", "mm1", "memory"
 #define MMX_PKOP2_SPEC(n,type,optype,instruction)	\
 SIMD_PKOP2_SPEC(n,type,optype)		\
-{ asm ("movq %0, %%mm0\n\t" #instruction " %1, %%mm0\n\tmovq %%mm0, %0" : STD_MMX_ARGS(v8qi_t)); reset_mmx(); }
+{ asm ("movq %0, %%mm0\n\t" #instruction " %1, %%mm0\n\tmovq %%mm0, %0" : STD_MMX_ARGS); reset_mmx(); }
+#define MMX_DBL_PKOP2_SPEC(n,type,optype,instruction)	\
+SIMD_PKOP2_SPEC(n,type,optype)		\
+{ asm ("movq %0, %%mm0\n\tmovq %1, %%mm1\n\t" #instruction " %2, %%mm0\n\t" #instruction " %3, %%mm1\n\tmovq %%mm0, %0\n\tmovq %%mm1, %1" : DBL_MMX_ARGS); reset_mmx(); }
 #define MMX_PASSIGN_SPEC(n,type)	\
 SIMD_PASSIGN_SPEC(n,type)		\
-{ asm ("movq %1, %%mm0\n\tmovq %%mm0, %0" : STD_MMX_ARGS(v8qi_t)); reset_mmx(); }
+{ asm ("movq %1, %%mm0\n\tmovq %%mm0, %0" : STD_MMX_ARGS); reset_mmx(); }
+#define MMX_DBL_PASSIGN_SPEC(n,type)	\
+SIMD_PASSIGN_SPEC(n,type)		\
+{ asm ("movq %0, %%mm0\n\tmovq %1, %%mm1\n\tmovq %%mm0, %0\n\tmovq %%mm1, %1" : DBL_MMX_ARGS); reset_mmx(); }
 #define MMX_IPASSIGN_SPEC(n,type)	\
 SIMD_IPASSIGN_SPEC(n,type)		\
 { asm ("movq %1, %%mm0\n\tmovq %%mm0, %0" : "=o"(oout.at(0)) : "o"(oin[0]) : "mm0", "memory"); reset_mmx(); }
+#define MMX_DBL_IPASSIGN_SPEC(n,type)	\
+SIMD_IPASSIGN_SPEC(n,type)		\
+{ asm ("movq %0, %%mm0\n\tmovq %1, %%mm1\n\tmovq %%mm0, %0\n\tmovq %%mm1, %1" : "=o"(oout.at(0)), "=o"(oout.at(2)) : "o"(oin[0]), "o"(oin[2]) : "mm0", "mm1", "memory"); reset_mmx(); }
 
 MMX_PASSIGN_SPEC(8,uint8_t)
 MMX_PKOP2_SPEC(8,uint8_t,plus,paddb)
@@ -304,6 +314,22 @@ MMX_PKOP2_SPEC(2,int32_t,bitwise_xor,pxor)
 //MMX_PKOP2_SPEC(2,int32_t,fpshl,pslld)
 //MMX_PKOP2_SPEC(2,int32_t,fpshr,psrld)
 
+MMX_DBL_PKOP2_SPEC(4,uint32_t,plus,paddd)
+MMX_DBL_PKOP2_SPEC(4,uint32_t,minus,psubd)
+MMX_DBL_PKOP2_SPEC(4,uint32_t,bitwise_and,pand)
+MMX_DBL_PKOP2_SPEC(4,uint32_t,bitwise_or,por)
+MMX_DBL_PKOP2_SPEC(4,uint32_t,bitwise_xor,pxor)
+//MMX_DBL_PKOP2_SPEC(2,uint32_t,fpshl,pslld)
+//MMX_DBL_PKOP2_SPEC(2,uint32_t,fpshr,psrld)
+
+MMX_DBL_PKOP2_SPEC(4,int32_t,plus,paddd)
+MMX_DBL_PKOP2_SPEC(4,int32_t,minus,psubd)
+MMX_DBL_PKOP2_SPEC(4,int32_t,bitwise_and,pand)
+MMX_DBL_PKOP2_SPEC(4,int32_t,bitwise_or,por)
+MMX_DBL_PKOP2_SPEC(4,int32_t,bitwise_xor,pxor)
+//MMX_DBL_PKOP2_SPEC(2,int32_t,fpshl,pslld)
+//MMX_DBL_PKOP2_SPEC(2,int32_t,fpshr,psrld)
+
 #if CPU_HAS_SSE || CPU_HAS_3DNOW
 MMX_PKOP2_SPEC(8,uint8_t,fpavg,pavgb)
 MMX_PKOP2_SPEC(8,int8_t,fpavg,pavgb)
@@ -322,12 +348,28 @@ MMX_PKOP2_SPEC(2,float,minus,pfsub)
 MMX_PKOP2_SPEC(2,float,multiplies,pfmul)
 MMX_PKOP2_SPEC(2,float,fpmin,pfmin)
 MMX_PKOP2_SPEC(2,float,fpmax,pfmax)
+#ifndef CPU_HAS_SSE
+MMX_DBL_PKOP2_SPEC(4,float,plus,pfadd)
+MMX_DBL_PKOP2_SPEC(4,float,minus,pfsub)
+MMX_DBL_PKOP2_SPEC(4,float,multiplies,pfmul)
+MMX_DBL_PKOP2_SPEC(4,float,fpmin,pfmin)
+MMX_DBL_PKOP2_SPEC(4,float,fpmax,pfmax)
+#endif
 #endif // CPU_HAS_3DNOW
 
 MMX_IPASSIGN_SPEC(8,uint8_t)
 MMX_IPASSIGN_SPEC(4,uint16_t)
 MMX_IPASSIGN_SPEC(2,uint32_t)
 MMX_IPASSIGN_SPEC(2,float)
+
+#ifndef CPU_HAS_SSE
+MMX_DBL_PASSIGN_SPEC(4,float)
+MMX_DBL_PASSIGN_SPEC(4,uint32_t)
+MMX_DBL_PASSIGN_SPEC(4,int32_t)
+MMX_DBL_IPASSIGN_SPEC(4,float)
+MMX_DBL_IPASSIGN_SPEC(4,uint32_t)
+MMX_DBL_IPASSIGN_SPEC(4,int32_t)
+#endif
 
 #undef MMX_IPASSIGN_SPEC
 #undef MMX_PASSIGN_SPEC
@@ -336,13 +378,13 @@ MMX_IPASSIGN_SPEC(2,float)
 #endif // CPU_HAS_MMX
 
 #if CPU_HAS_SSE
-#define STD_SSE_ARGS(ptr_t)		"=o"(oout.at(0)) : "o"(oin.at(0)) : "xmm0", "memory"
+#define STD_SSE_ARGS	"=o"(oout.at(0)) : "o"(oin.at(0)) : "xmm0", "memory"
 #define SSE_PKOP2_SPEC(n,type,optype,instruction)	\
 SIMD_PKOP2_SPEC(n,type,optype)		\
-{ asm ("movups %0, %%xmm0\n\tmovups %1, %%xmm1\n\t" #instruction " %%xmm1, %%xmm0\n\tmovups %%xmm0, %0" : STD_SSE_ARGS(v4sf_t));	}
+{ asm ("movups %0, %%xmm0\n\tmovups %1, %%xmm1\n\t" #instruction " %%xmm1, %%xmm0\n\tmovups %%xmm0, %0" : STD_SSE_ARGS);	}
 #define SSE_PASSIGN_SPEC(n,type)			\
 SIMD_PASSIGN_SPEC(n,type)		\
-{ asm ("movups %1, %%xmm0\n\tmovups %%xmm0, %0" : STD_SSE_ARGS(v4sf_t));	}
+{ asm ("movups %1, %%xmm0\n\tmovups %%xmm0, %0" : STD_SSE_ARGS);	}
 #define STD_SSE_I_ARGS(ptr_t)		"=o"(oout.at(0)) : "o"(oin[0]) : "xmm0", "memory"
 #define SSE_IPASSIGN_SPEC(n,type)	\
 SIMD_IPASSIGN_SPEC(n,type)		\
