@@ -79,13 +79,20 @@ public:
     inline iterator	end (void) const;
     inline size_type	size (void) const;
     inline size_type	max_size (void) const;
-    virtual size_type	readable_size (void) const;
+    inline size_type	readable_size (void) const		{ return (size()); }
     inline bool		empty (void) const;
     inline void		resize (size_type n);
     inline void		read (istream&);
     void		write (ostream& os) const;
     size_type		stream_size (void) const;
     void		write_file (const char* filename, int mode = 0644) const;
+    inline void		link (const void* p, int n)		{ link (p, size_type(n)); }
+    inline void		link (const void* p, long n)		{ link (p, size_type(n)); }
+#if SIZE_OF_SIZE_T == SIZE_OF_INT // Numbers should NEVER be implicitly cast to a pointer, dammit!
+    inline void		link (const void* p, unsigned long n)	{ link (p, size_type(n)); }
+#else
+    inline void		link (const void* p, unsigned int n)	{ link (p, size_type(n)); }
+#endif
 protected:
     virtual size_type	elementSize (void) const;
     inline size_type	elementBytes (size_type n) const	{ return (n * elementSize()); }

@@ -66,8 +66,8 @@ public:
 			memlink (const memlink& l);
     explicit		memlink (const cmemlink& l);
     inline void		link (const void* p, size_type n);
-    inline void		link (const cmemlink& l);
     inline void		link (void* p, size_type n);
+    inline void		link (const cmemlink& l);
     inline void		link (memlink& l);
     inline void		link (const void* first, const void* last);
     inline void		link (void* first, void* last);
@@ -76,7 +76,7 @@ public:
     inline void		copy (const void* p, size_type n);
     void		copy (iterator offset, const void* p, size_type n);
     inline pointer	data (void);
-    virtual size_type	writable_size (void) const;
+    size_type		writable_size (void) const;
     const memlink&	operator= (const cmemlink& l);
     const memlink&	operator= (const memlink& l);
     inline void		swap (memlink& l);
@@ -88,6 +88,17 @@ public:
     void		insert (iterator start, size_type size);
     void		erase (iterator start, size_type size);
     void		read (istream& is);
+    inline void		link (void* p, int n)			{ link (p, size_type(n)); }
+    inline void		link (const void* p, int n)		{ link (p, size_type(n)); }
+    inline void		link (void* p, long n)			{ link (p, size_type(n)); }
+    inline void		link (const void* p, long n)		{ link (p, size_type(n)); }
+#if SIZE_OF_SIZE_T == SIZE_OF_INT // Numbers should NEVER be implicitly cast to a pointer, dammit!
+    inline void		link (void* p, unsigned long n)		{ link (p, size_type(n)); }
+    inline void		link (const void* p, unsigned long n)	{ link (p, size_type(n)); }
+#else
+    inline void		link (void* p, unsigned int n)		{ link (p, size_type(n)); }
+    inline void		link (const void* p, unsigned int n)	{ link (p, size_type(n)); }
+#endif
 protected:
     virtual void	constructBlock (void*, size_type) const;
     virtual void	destructBlock (void*, size_type) const;

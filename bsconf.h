@@ -87,11 +87,15 @@ static string_t g_Functions [] = {
 
 /*   NAME               WITHOUT TEXT                            WITH TEXT */
 static string_t g_Components [] = {
+    "shared",		"#BUILD_SHARED\t= 1",			"BUILD_SHARED\t= 1 ",
+    "static",		"#BUILD_STATIC\t= 1",			"BUILD_STATIC\t= 1 ",
     "debug",		"#DEBUG\t\t= 1",			"DEBUG\t\t= 1 ",
     "bounds",		"#undef WANT_STREAM_BOUNDS_CHECKING",	"#define WANT_STREAM_BOUNDS_CHECKING 1 ",
     "cout",		"#define WITHOUT_CIN_COUT_CERR 1",	"#undef WITHOUT_CIN_COUT_CERR",
-    "mmx",		"#undef WANT_MMX",			"#define WANT_MMX 1 ",
     "fastcopy",		"#undef WANT_UNROLLED_COPY",		"#define WANT_UNROLLED_COPY 1 ",
+#if __i386__
+    "mmx",		"#undef WANT_MMX",			"#define WANT_MMX 1 ",
+#endif
     "libstdc++",	"#define WITHOUT_LIBSTDCPP 1",		"#undef WITHOUT_LIBSTDCPP",
     "libstdc++",	"STANDALONE\t= -nodefaultlibs ",	"#STANDALONE\t= -nodefaultlibs",
     "diet",		"@CC@ ",				"diet @CC@",
@@ -100,11 +104,15 @@ static string_t g_Components [] = {
 
 /* Parallel to g_Components */
 static SComponentInfo g_ComponentInfos [VectorSize(g_Components) / 3] = {
+    { 1, "Builds the shared library (if supported by the OS)" },
+    { 0, "Builds the static library" },
     { 0, "Compiles the library with debugging information" },
     { 0, "Enable runtime bounds checking on stream reads/writes" },
     { 1, "Removes support for standard cout/cin/cerr streams" },
-    { 0, "Enables use of MMX/SSE/3dNow! instructions (~4k)" },
     { 1, "Adds optimized specializations for copy/fill (<1k)" },
+#if __i386__
+    { 0, "Enables use of MMX/SSE/3dNow! instructions (~4k)" },
+#endif
 #if (__GNUC__ >= 3)
     { 0, "Link with libstdc++" },
     { 0, "" },

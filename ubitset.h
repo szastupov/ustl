@@ -97,7 +97,7 @@ public:
 				BitRef(n) &= ~Mask(n);
 			}
 			// Sets the value of the bitrange \p first through \p last to the equivalent number of bits from \p v.
-    inline void		set (uoff_t first, uoff_t last, value_type v)
+    inline void		set (uoff_t first, uoff_t DebugArg(last), value_type v)
 			{
 			    assert (size_t (distance (first, last)) <= s_HostBits && "Bit ranges must be 32 bits or smaller");
 			    assert (first / s_HostBits == last / s_HostBits && "Bit ranges can not cross dword (4 byte) boundary");

@@ -532,19 +532,20 @@ static void SubstituteHostOptions (void)
 	compare (g_Uname.sysname, "openbsd"))
 	Substitute ("-Wredunant-decls", "-Wno-redundant-decls");
 
-    if (compare (g_Uname.sysname, "linux") ||
-	compare (g_Uname.sysname, "solaris") ||
-	compare (g_Uname.sysname, "sunos"))
-	Substitute ("@BUILD_SHARED_LIBRARIES@", "MAJOR\t\t= @LIB_MAJOR@\nMINOR\t\t= @LIB_MINOR@\nBUILD\t\t= @LIB_BUILD@");
-    else
-	Substitute ("@BUILD_SHARED_LIBRARIES@\n", "");
+    if (!compare (g_Uname.sysname, "linux") &&
+	!compare (g_Uname.sysname, "solaris") &&
+	!compare (g_Uname.sysname, "sunos")) {
+	Substitute ("BUILD_SHARED\t= 1 ", "#BUILD_SHARED\t= 1");
+	Substitute ("#BUILD_STATIC\t= 1", "BUILD_STATIC\t= 1 ");
+    }
 
     if (compare (g_Uname.sysname, "linux"))
 	Substitute ("@SHBLDFL@", "-Wl,-shared,-soname=${LIBSOLNK}");
     else
 	Substitute ("@SHBLDFL@", "-G");
 
-    if (!compare (g_Uname.sysname, "solaris"))
+    if (!compare (g_Uname.sysname, "solaris") &&
+	!compare (g_Uname.sysname, "sunos"))
 	Substitute ("#undef HAVE_THREE_CHAR_TYPES", "#define HAVE_THREE_CHAR_TYPES 1");
 
     Substitute ("#undef RETSIGTYPE", "#define RETSIGTYPE void");
@@ -563,6 +564,8 @@ static void SubstituteHostOptions (void)
     Substitute ("#undef SIZE_OF_LONG ", buf);
     sprintf (buf, "#define SIZE_OF_POINTER %d", sizeof(void*));
     Substitute ("#undef SIZE_OF_POINTER ", buf);
+    sprintf (buf, "#define SIZE_OF_SIZE_T %d", sizeof(size_t));
+    Substitute ("#undef SIZE_OF_SIZE_T ", buf);
 #if defined(__GNUC__) || (__WORDSIZE == 64) || defined(__ia64__)
     if (!compare (g_Uname.sysname, "openbsd"))
 	Substitute ("#undef HAVE_INT64_T", "#define HAVE_INT64_T 1");
@@ -574,6 +577,8 @@ static void SubstituteHostOptions (void)
 #endif
 #if __GNUC__ >= 3
     Substitute ("#undef HAVE_VECTOR_EXTENSIONS", "#define HAVE_VECTOR_EXTENSIONS 1");
+#else
+    Substitute ("-Wshadow ", "");
 #endif
 
     Substitute ("#undef LSTAT_FOLLOWS_SLASHED_SYMLINK", "#define LSTAT_FOLLOWS_SLASHED_SYMLINK 1");

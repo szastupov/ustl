@@ -1,5 +1,7 @@
 LIBNAME		= @LIBNAME@
-@BUILD_SHARED_LIBRARIES@
+MAJOR		= @LIB_MAJOR@
+MINOR		= @LIB_MINOR@
+BUILD		= @LIB_BUILD@
 
 CC		= @CC@ 
 CXX		= @CXX@ 
@@ -26,6 +28,8 @@ CWARNOPTS	= -Werror -Wall -W -Winline -Wpointer-arith -Wno-cast-align \
 		-Wcast-qual -Wwrite-strings -Wshadow -Wredundant-decls @SYSWARNS@
 CXXWARNOPTS	= ${CWARNOPTS} -Wconversion -Wsign-promo -Wsynth -Woverloaded-virtual
 
+#BUILD_SHARED	= 1
+#BUILD_STATIC	= 1
 OPTIMIZE	= -DNDEBUG=1 -fomit-frame-pointer
 #DEBUG		= 1
 #STANDALONE	= -nodefaultlibs

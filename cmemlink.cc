@@ -90,12 +90,6 @@ cmemlink::size_type cmemlink::stream_size (void) const
     return (Align (stream_size_of(m_Size) + size()));
 }
 
-/// Returns the size of the readable area
-cmemlink::size_type cmemlink::readable_size (void) const
-{
-    return (size());
-}
-
 /// Writes the data to file \p "filename".
 void cmemlink::write_file (const char* filename, int mode) const
 {

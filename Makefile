@@ -22,41 +22,53 @@ TOCLEAN	+= config.status config.log
 
 ########################################################################
 
-.PHONY:	install uninstall install-incs uninstall-inst
+.PHONY:	all install uninstall install-incs uninstall-inst
 
-ifdef LIBSOBLD
-TARGET	= ${LIBSOBLD}
-${LIBSOBLD}:	${OBJS}
-	@echo "Linking $@ ..."
-	@${LD} ${LDFLAGS} ${SHBLDFL} -o $@ $^ ${LIBS}
-
-install: ${LIBSOBLD} install-incs
-	@echo "Installing ${LIBSOBLD} to ${LIBDIR} ..."
-	@${INSTALLDIR} ${LIBDIR}
-	@${INSTALLLIB} ${LIBSOBLD} ${LIBDIR}
-	@(cd ${LIBDIR}; ${LN} -sf ${LIBSOBLD} ${LIBSO}; ${LN} -sf ${LIBSOBLD} ${LIBSOLNK})
-
-uninstall: uninstall-incs
-	@echo "Removing ${LIBSOBLD} from ${LIBDIR} ..."
-	@${RM} -f ${LIBDIR}/${LIBSO} ${LIBDIR}/${LIBSOLNK} ${LIBDIR}/${LIBSOBLD}
-
+ifdef BUILD_SHARED
+ifdef BUILD_STATIC
+all:		${LIBA} ${LIBSOBLD}
+install:	install-static install-shared
+uninstall:	uninstall-static uninstall-shared
 else
-TARGET	= ${LIBA}
+all:		${LIBSOBLD}
+install:	install-shared
+uninstall:	uninstall-shared
+endif
+else
+all:		${LIBA}
+install:	install-static
+uninstall:	uninstall-static
+endif
+
 ${LIBA}:	${OBJS}
 	@echo "Linking $@ ..."
 	@${AR} r $@ $?
 	@${RANLIB} $@
 
-install: ${LIBA} install-incs
+${LIBSOBLD}:	${OBJS}
+	@echo "Linking $@ ..."
+	@${LD} ${LDFLAGS} ${SHBLDFL} -o $@ $^ ${LIBS}
+
+.PHONY: install-static install-shared uninstall-static uninstall-shared
+
+install-shared: ${LIBSOBLD} install-incs
+	@echo "Installing ${LIBSOBLD} to ${LIBDIR} ..."
+	@${INSTALLDIR} ${LIBDIR}
+	@${INSTALLLIB} ${LIBSOBLD} ${LIBDIR}
+	@(cd ${LIBDIR}; ${LN} -sf ${LIBSOBLD} ${LIBSO}; ${LN} -sf ${LIBSOBLD} ${LIBSOLNK})
+
+uninstall-shared: uninstall-incs
+	@echo "Removing ${LIBSOBLD} from ${LIBDIR} ..."
+	@${RM} -f ${LIBDIR}/${LIBSO} ${LIBDIR}/${LIBSOLNK} ${LIBDIR}/${LIBSOBLD}
+
+install-static: ${LIBA} install-incs
 	@echo "Installing ${LIBA} to ${LIBDIR} ..."
 	@${INSTALLDIR} ${LIBDIR}
 	@${INSTALLLIB} ${LIBA} ${LIBDIR}
 
-uninstall: uninstall-incs
+uninstall-static: uninstall-incs
 	@echo "Removing ${LIBA} from ${LIBDIR} ..."
 	@${RM} -f ${LIBDIR}/${LIBA}
-
-endif
 
 install-incs: ${INCS}
 	@echo "Installing headers to ${INCDIR} ..."
