@@ -104,13 +104,17 @@ int main (void)
     TestCtr<tuple<4,float> >("float[4]");
     TestCtr<tuple<7,uint32_t> >("uint32_t[7]");
 
-    #define CVT_TEST(size,src,dest,op) \
-    TestConversion<tuple<size,src>, tuple<size,dest>, op<src,dest> > (#op " " #src " -> " #dest)
-    CVT_TEST(4,int32_t,float,fround);
-    CVT_TEST(4,int32_t,double,fround);
-    CVT_TEST(4,float,int32_t,fround);
-    CVT_TEST(4,double,int32_t,fround);
-    CVT_TEST(4,float,int32_t,fcast);
+    #if HAVE_MATH_H
+	#define CVT_TEST(size,src,dest,op) \
+	TestConversion<tuple<size,src>, tuple<size,dest>, op<src,dest> > (#op " " #src " -> " #dest)
+	CVT_TEST(4,int32_t,float,fround);
+	CVT_TEST(4,int32_t,double,fround);
+	CVT_TEST(4,float,int32_t,fround);
+	CVT_TEST(4,double,int32_t,fround);
+	CVT_TEST(4,float,int32_t,fcast);
+    #else
+	cout << "CAN'T TEST: math.h functions are not available on this platform." << endl;
+    #endif
 
     return (0);
 }
