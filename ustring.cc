@@ -355,11 +355,13 @@ string::const_iterator string::find (const string& s, const_iterator pos) const
 /// Returns the offset of the last occurence of character \p c after \p pos.
 string::const_iterator string::rfind (const_reference c, const_iterator pos) const
 {
-    if (!pos) pos = end() - 1;
+    if (!pos) pos = begin();
     assert (pos >= begin() && pos <= end());
-    /// \bug This assumes that the string is 0-terminated.
-    const_pointer found = strrchr (pos, c);
-    return (found ? found : begin());
+    const_iterator found (end());
+    for (const_iterator first = pos; first < end(); ++ first)
+	if (*first == c)
+	    found = first;
+    return (found);
 }
 
 /// Returns the offset of the last occurence of substring \p s of size \p n after \p pos.

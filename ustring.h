@@ -32,6 +32,8 @@ namespace ustl {
 ///
 /// An STL container for string manipulation.
 /// Differences from C++ standard:
+///	string is a class, not a template. Wide characters are assumed to be
+///		encoded with utf8 at all times except when rendering or editing.
 ///	all functions work with iterators instead of indexes. This makes for
 ///		a cleaner syntax in most cases, and, of course, a cleaner
 ///		implementation. The exception to expression clarity is the
@@ -430,6 +432,45 @@ inline string::iterator string::erase (iterator ep, size_t n)
 inline void string::replace (iterator first, iterator last, const_reference c, size_t n)
 {
     replace (first, last, &c, &c + 1, n);
+}
+
+//----------------------------------------------------------------------
+// Operators needed to avoid comparing pointer to pointer
+
+/// Returns true if \p s1 is equal to \p s2
+inline bool operator== (const char* s1, const string& s2)
+{
+    return (s2 == s1);
+}
+
+/// Returns true if \p s1 is not equal to \p s2
+inline bool operator!= (const char* s1, const string& s2)
+{
+    return (s2 != s1);
+}
+
+/// Returns true if \p s1 is equal to \p s2
+inline bool operator< (const char* s1, const string& s2)
+{
+    return (s2 > s1);
+}
+
+/// Returns true if \p s1 is less than or equal to \p s2
+inline bool operator<= (const char* s1, const string& s2)
+{
+    return (s2 >= s1);
+}
+
+/// Returns true if \p s1 is equal to \p s2
+inline bool operator> (const char* s1, const string& s2)
+{
+    return (s2 < s1);
+}
+
+/// Returns true if \p s1 is greater than or equal to \p s2
+inline bool operator>= (const char* s1, const string& s2)
+{
+    return (s2 <= s1);
 }
 
 }; // namespace ustl
