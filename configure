@@ -1,0 +1,49 @@
+#! /bin/sh
+#
+# This file is part of bsconf - a configure replacement.
+# Copyright (c) 2003 by Mike Sharov <msharov@talentg.com>
+#
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Library General Public
+# License as published by the Free Software Foundation; either
+# version 2 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Library General Public License for more details.
+#
+# You should have received a copy of the GNU Library General Public
+# License along with this library; if not, write to the 
+# Free Software Foundation, Inc., 59 Temple Place - Suite 330, 
+# Boston, MA  02111-1307  USA.
+#
+
+if [ -z "${CC}" ]; then
+    OLDIFS=${IFS}
+    IFS="${IFS}:"
+    for i in cc gcc c++ g++ c89 c99; do
+	for dir in ${PATH}; do
+	    if [ -x "$dir/$i" ]; then
+		CC=$i;
+		break;
+	    fi;
+	done;
+	if [ ! -z "${CC}" ]; then
+	    break;
+	fi;
+    done
+    if [ -z "${CC}" ]; then
+	echo "Please set the CC environment variable to your C compiler";
+	exit;
+    fi
+    export CC
+fi
+if [ ! -x bsconf ]; then
+    ${CC} -o bsconf ${CFLAGS} bsconf.c
+fi
+if [ -x ./bsconf ]; then
+    ./bsconf $*;
+else
+    echo "Build of the configurator program failed. Ensure you have an ANSI C compiler.";
+fi
