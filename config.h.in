@@ -181,6 +181,7 @@
 #undef SIZE_OF_LONG_LONG
 #undef SIZE_OF_POINTER 
 #undef SIZE_OF_SIZE_T 
+#undef SIZE_T_IS_LONG
 
 /* Extended CPU capabilities */
 #undef CPU_HAS_FPU
