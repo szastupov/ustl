@@ -84,6 +84,7 @@ public:
     inline const_iterator ipos (void) const;
     inline size_t	remaining (void) const;
     inline bool		aligned (size_t grain = c_DefaultAlignment) const;
+    inline size_t	align_size (size_t grain = c_DefaultAlignment) const;
     inline void		align (size_t grain = c_DefaultAlignment);
     void		swap (istream& is);
     void		read (void* buffer, size_t size);
@@ -154,15 +155,19 @@ inline istream::const_iterator istream::ipos (void) const
 /// Sets the current read position to \p newPos
 inline void istream::seek (uoff_t newPos)
 {
+#ifdef WANT_STREAM_BOUNDS_CHECKING
+    if (newPos > size())
+	throw stream_bounds_exception ("seek", "", pos(), newPos - pos(), size());
+#else
     assert (newPos <= size());
+#endif
     m_Pos = newPos;
 }
 
 /// Sets the current read position to \p newPos
 inline void istream::seek (const_iterator newPos)
 {
-    assert (newPos >= begin() && newPos <= end());
-    m_Pos = distance (begin(), newPos);
+    seek (distance (begin(), newPos));
 }
 
 /// skips \p nBytes without reading anything.
@@ -175,6 +180,12 @@ inline void istream::skip (size_t nBytes)
 inline size_t istream::remaining (void) const
 {
     return (size() - pos());
+}
+
+/// Returns the number of bytes to skip to be aligned on \p grain.
+inline size_t istream::align_size (size_t grain) const
+{
+    return (Align (pos(), grain) - pos());
 }
 
 /// Returns \c true if the read position is aligned on \p grain

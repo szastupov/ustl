@@ -57,13 +57,14 @@ make install
 %{_prefix}/include/ustl/ubitset.h
 %{_prefix}/include/ustl/uctralgo.h
 %{_prefix}/include/ustl/uexception.h
+%{_prefix}/include/ustl/ufacets.h
 %{_prefix}/include/ustl/ufunction.h
-%{_prefix}/include/ustl/uhash.h
 %{_prefix}/include/ustl/uios.h
 %{_prefix}/include/ustl/uiosfunc.h
 %{_prefix}/include/ustl/uiterator.h
 %{_prefix}/include/ustl/ulimits.h
 %{_prefix}/include/ustl/ulist.h
+%{_prefix}/include/ustl/ulocale.h
 %{_prefix}/include/ustl/umap.h
 %{_prefix}/include/ustl/umemory.h
 %{_prefix}/include/ustl/umultimap.h

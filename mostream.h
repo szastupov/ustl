@@ -72,6 +72,7 @@ public:
     inline const_iterator ipos (void) const;
     inline size_t	remaining (void) const;
     inline bool		aligned (size_t grain = c_DefaultAlignment) const;
+    inline size_t	align_size (size_t grain = c_DefaultAlignment) const;
     inline void		align (size_t grain = c_DefaultAlignment);
     void		write (const void* buffer, size_t size);
     inline void		write (const cmemlink& buf);
@@ -141,15 +142,19 @@ inline ostream::const_iterator ostream::ipos (void) const
 /// Move the write pointer to \p newPos
 inline void ostream::seek (uoff_t newPos)
 {
+#ifdef WANT_STREAM_BOUNDS_CHECKING
+    if (newPos > size())
+	throw stream_bounds_exception ("seek", "", pos(), newPos - pos(), size());
+#else
     assert (newPos <= size());
+#endif
     m_Pos = newPos;
 }
 
 /// Sets the current read position to \p newPos
 inline void ostream::seek (const_iterator newPos)
 {
-    assert (newPos >= begin() && newPos <= end());
-    m_Pos = distance (begin(), const_cast<iterator>(newPos));
+    seek (distance (begin(), const_cast<iterator>(newPos)));
 }
 
 /// Skips \p nBytes without writing anything.
@@ -168,6 +173,12 @@ inline size_t ostream::remaining (void) const
 inline bool ostream::aligned (size_t grain) const
 {
     return (pos() % grain == 0);
+}
+
+/// Returns the number of bytes to skip to be aligned on \p grain.
+inline size_t ostream::align_size (size_t grain) const
+{
+    return (Align (pos(), grain) - pos());
 }
 
 /// Aligns the write pointer on \p grain. Nothing is written to the skipped bytes.

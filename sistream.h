@@ -23,6 +23,7 @@
 #define SISTREAM_H
 
 #include "mistream.h"
+#include "ufacets.h"
 
 namespace ustl {
 
@@ -53,8 +54,11 @@ public:
     inline void			set_base (short base);
     inline void			set_decimal_separator (char s);
     inline void			set_thousand_separator (char s);
+    void			read (void* buffer, size_t size);
+    void			read (memlink& buf);
+    inline void			read_strz (string& str);
 protected:
-    inline virtual size_t	underflow (void)	{ return (0); }
+    inline virtual size_t	underflow (size_t = 1)	{ return (0); }
     inline void			ungetc (void)		{ seek (pos() - sizeof(char)); }
     char			skip_delimiters (void);
 private:
@@ -136,6 +140,11 @@ inline istringstream& istringstream::operator>> (wchar_t& v)
 inline istringstream& istringstream::operator>> (float& v)
 {
     double vl; operator>> (vl); v = static_cast<float>(vl); return (*this);
+}
+
+inline void istringstream::read_strz (string& str)
+{
+    assert (false && "Reading nul characters is not allowed from text streams");
 }
 
 }; // namespace ustl

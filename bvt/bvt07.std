@@ -20,6 +20,8 @@ replace(0,5,@)
 @12345#678901234567890
 8 found at 7
 9 found at 8
+7 rfound at 26
+X rfound at 30
 [456] found at 3
 [456] last found at 25
 s2 is empty [], capacity 5 bytes

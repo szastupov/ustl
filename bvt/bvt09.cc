@@ -29,7 +29,7 @@ int main (void)
     double d = magic_Double;
     bool bv = magic_Bool;
 
-    string b (256);
+    string b;
     ostringstream os (b);
 
     os << c << endl;

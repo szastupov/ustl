@@ -28,20 +28,17 @@
 
 namespace ustl {
 
-#define USTL_COUT_BUFFER_SIZE		2048
-#define USTL_CIN_BUFFER_SIZE		2048
-
 class string;
 
 /// A string stream that writes to an fd. Implements cout and cerr.
 class fdostringstream : public ostringstream {
 public:
-    explicit			fdostringstream (int fd, size_t bufSize = USTL_COUT_BUFFER_SIZE);
+    explicit			fdostringstream (int fd);
     virtual		       ~fdostringstream (void);
     void			flush (void);
     int				format (const char* fmt, ...) __attribute__((__format__(__printf__, 2, 3)));
 protected:
-    virtual size_t		overflow (void);
+    virtual size_t		overflow (size_t n = 1);
 private:
     memblock			m_Buffer;
     int				m_Fd;
@@ -71,10 +68,10 @@ private:
 ///
 class fdistringstream : public istringstream {
 public:
-    explicit			fdistringstream (int fd, size_t bufSize = USTL_CIN_BUFFER_SIZE);
+    explicit			fdistringstream (int fd);
     virtual		       ~fdistringstream (void);
 protected:
-    virtual size_t		underflow (void);
+    virtual size_t		underflow (size_t n = 1);
 private:
     memblock			m_Buffer;
     int				m_Fd;

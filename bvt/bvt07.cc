@@ -78,6 +78,8 @@ int main (void)
     s1 = c_TestString1;
     cout << "8 found at " << s1.find ('8') - s1.begin() << endl;
     cout << "9 found at " << s1.find ("9") - s1.begin() << endl;
+    cout << "7 rfound at " << s1.rfind ('7') - s1.begin() << endl;
+    cout << "X rfound at " << s1.rfind ('X') - s1.begin() << endl;
     string::const_iterator poundfound = s1.find ("#");
     if (poundfound != s1.end())
 	cout << "# found at " << poundfound - s1.begin() << endl;

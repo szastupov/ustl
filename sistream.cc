@@ -217,5 +217,27 @@ istringstream& istringstream::operator>> (string& v)
     return (*this);
 }
 
+void istringstream::read (void* buffer, size_t sz)
+{
+    if (remaining() < sz && underflow(sz) < sz)
+#ifdef WANT_STREAM_BOUNDS_CHECKING
+	throw stream_bounds_exception ("read", "", pos(), sz - pos(), remaining());
+#else
+	assert (remaining() >= size());
+#endif
+    istream::read (buffer, sz);
+}
+
+void istringstream::read (memlink& buf)
+{
+    if (remaining() < buf.size() && underflow(buf.size()) < buf.size())
+#ifdef WANT_STREAM_BOUNDS_CHECKING
+	throw stream_bounds_exception ("read", "", pos(), buf.size() - pos(), remaining());
+#else
+	assert (remaining() >= buf.size());
+#endif
+    istream::read (buf);
+}
+
 }; // namespace ustl
 

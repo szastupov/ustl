@@ -44,13 +44,14 @@ public:
     typedef u_int	category;
 public:
     class facet {
+    public:
+	virtual	       ~facet (void);
     protected:
 	typedef char*		iterator;
 	typedef const char*	const_iterator;
 	typedef uint32_t	iosflags_t;
     protected:
 	explicit	facet (const locale& loc);
-	virtual	       ~facet (void);
 	inline const locale&	getloc (void) const { return (m_Locale); }
     private:
 	inline		facet (const facet& v) : m_Locale (v.m_Locale) {}
@@ -73,7 +74,9 @@ public:
 			locale (void);
 			locale (const locale& l);
 			locale (const locale& l, const char* std_name, category cat);
-    const bool		operator== (const locale& l);
+    virtual	       ~locale (void);
+    const locale&	operator= (const locale& l);
+    const bool		operator== (const locale& l) const;
     bool		operator() (const string& s1, const string& s2) const;
     inline bool		has_facet (category_bit f) const;
     const facet&	get_facet (category_bit f) const;
@@ -82,6 +85,7 @@ private:
 private:
     facetvec_t		m_Facets;
     string		m_Name;
+    bool		m_bFacetOwner;
 };
 
 inline bool locale::has_facet (category_bit f) const

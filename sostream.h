@@ -23,6 +23,7 @@
 #define SOSTREAM_H
 
 #include "mostream.h"
+#include "ufacets.h"
 #include "uios.h"
 
 namespace ustl {
@@ -33,7 +34,8 @@ class ostringstream : public ostream {
 public:
     				ostringstream (void);
 				ostringstream (void* p, size_t n);
-    explicit			ostringstream (const memlink& source);
+    explicit			ostringstream (string& dest);
+    explicit			ostringstream (const memlink& dest);
     inline ostringstream&	operator<< (char v);
     inline ostringstream&	operator<< (signed char v);
     inline ostringstream&	operator<< (short v);
@@ -61,16 +63,21 @@ public:
     inline void			set_decimal_separator (char s);
     inline void			set_thousand_separator (char s);
     inline void			set_precision (u_short precision);
+    virtual void		unlink (void);
+    void			write (const void* buffer, size_t size);
+    void			write (const cmemlink& buf);
+    inline void			write_strz (const char* str);
 protected:
-    inline virtual size_t	overflow (void)	{ return (0); }
+    virtual size_t		overflow (size_t n = 1);
     void			write_buffer (const char* buf, size_t bufSize);
 private:
-    char			m_DecimalSeparator;	///< Period by default.
-    char			m_ThousandSeparator;	///< Comma by default.
+    string*			m_pResizable;		///< Pointer to the buffer, if resizable.
+    uint32_t			m_Flags;		///< See ios::fmtflags.
     uint16_t			m_Base;			///< Numeric base for writing numbers.
     uint16_t			m_Precision;		///< Number of digits after the decimal separator.
     uint16_t			m_Width;		///< Field width.
-    uint32_t			m_Flags;		///< See ios::fmtflags.
+    char			m_DecimalSeparator;	///< Period by default.
+    char			m_ThousandSeparator;	///< Comma by default.
 };
 
 /// Sets the numeric base for writing numbers.
@@ -179,6 +186,18 @@ inline ostringstream& ostringstream::operator<< (const void* s)
 inline ostringstream& ostringstream::operator<< (void* s)
 {
     return (operator<< (const_cast<const void*>(s)));
+}
+
+template <typename T>
+inline ostringstream& operator<< (ostringstream& os, T* v)
+{
+    os << (void*)(v);
+    return (os);
+}
+
+inline void ostringstream::write_strz (const char*)
+{
+    assert (false && "Writing nul characters into a text stream is not allowed");
 }
 
 }; // namespace ustl

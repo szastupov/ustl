@@ -19,8 +19,9 @@
 // ulocale.cc
 //
 
-#include "ulocale.h"
+#include "ufacets.h"
 #include "uexception.h"
+#include "uutility.h"
 
 namespace ustl {
 
@@ -32,28 +33,56 @@ locale locale::global;
 
 locale::locale (void)
 : m_Facets (),
-  m_Name ()
+  m_Name (),
+  m_bFacetOwner (true)
 {
+    m_Facets [ctype_bit]	= new ustl::ctype (*this);
+    m_Facets [numeric_bit]	= new ustl::num_put (*this);
+    m_Facets [collate_bit]	= new ustl::collate (*this);
+    m_Facets [time_bit]		= new ustl::time_put (*this);
+    m_Facets [monetary_bit]	= new ustl::money_put (*this);
+    m_Facets [messages_bit]	= new ustl::messages (*this);
+    m_Facets [numpunct_bit]	= new ustl::numpunct (*this);
 }
 
 locale::locale (const locale& l)
 : m_Facets (l.m_Facets),
-  m_Name (l.m_Name)
+  m_Name (l.m_Name),
+  m_bFacetOwner (false)
 {
 }
 
-locale::locale (const locale&, const char*, category)
+locale::locale (const locale& l, const char* name, category)
+: m_Facets (l.m_Facets),
+  m_Name (name),
+  m_bFacetOwner (false)
 {
 }
 
-const bool locale::operator== (const locale&)
+locale::~locale (void)
 {
-    return (true);
+    if (m_bFacetOwner)
+	for_each (m_Facets.begin(), m_Facets.end(), &Delete<facet>);
 }
 
-bool locale::operator() (const string&, const string&) const
+const locale& locale::operator= (const locale& l)
 {
-    return (true);
+    if (m_bFacetOwner)
+	for_each (m_Facets.begin(), m_Facets.end(), &Delete<facet>);
+    m_bFacetOwner = false;
+    m_Facets = l.m_Facets;
+    m_Name = l.m_Name;
+    return (*this);
+}
+
+const bool locale::operator== (const locale& l) const
+{
+    return (m_Name == l.m_Name);
+}
+
+bool locale::operator() (const string& s1, const string& s2) const
+{
+    return (use_facet<ustl::collate>(*this).compare (s1.begin(), s1.end(), s2.begin(), s2.end()));
 }
 
 const locale::facet& locale::get_facet (category_bit f) const

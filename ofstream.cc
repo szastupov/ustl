@@ -37,25 +37,29 @@ fdostringstream cerr (STDERR_FILENO);
 
 //----------------------------------------------------------------------
 
-fdostringstream::fdostringstream (int fd, size_t bufSize)
+/// Constructs a stream for writing to \p fd.
+fdostringstream::fdostringstream (int fd)
 : ostringstream (m_Buffer),
-  m_Buffer (bufSize),
+  m_Buffer (256),
   m_Fd (fd)
 {
     link (m_Buffer);
 }
 
+/// Default destructor.
 fdostringstream::~fdostringstream (void)
 {
     flush();
 }
 
+/// Flushes the buffer to the file.
 void fdostringstream::flush (void)
 {
     while (pos() && overflow());
 }
 
-size_t fdostringstream::overflow (void)
+/// Called when more buffer space (\p n bytes) is needed.
+size_t fdostringstream::overflow (size_t n)
 {
     size_t bw = 0;
     while (!bw) {
@@ -70,6 +74,12 @@ size_t fdostringstream::overflow (void)
 	    bw += bwn;
     }
     erase (begin(), bw);
+    if (remaining() < n) {
+	uoff_t oldPos = pos();
+	m_Buffer.resize (oldPos + n);
+	link (m_Buffer);
+	seek (oldPos);
+    }
     return (remaining());
 }
 
@@ -90,23 +100,29 @@ int fdostringstream::format (const char* fmt, ...)
 
 //----------------------------------------------------------------------
 
-fdistringstream::fdistringstream (int fd, size_t bufSize)
+/// Constructs a stream to read from \p fd.
+fdistringstream::fdistringstream (int fd)
 : istringstream (m_Buffer),
-  m_Buffer (bufSize),
+  m_Buffer (256),
   m_Fd (fd)
 {
     link (m_Buffer.data(), 0);
 }
 
+/// Default destructor.
 fdistringstream::~fdistringstream (void)
 {
 }
 
-size_t fdistringstream::underflow (void)
+size_t fdistringstream::underflow (size_t n)
 {
     m_Buffer.erase (m_Buffer.begin(), pos());
     size_t br = 0;
-    while (!br) {
+    if (m_Buffer.size() - pos() < n) {
+	m_Buffer.resize (pos() + n);
+	link (m_Buffer.data(), 0);
+    }
+    while (br < n) {
 	errno = 0;
 	ssize_t brn = ::read (m_Fd, m_Buffer.begin() + br, m_Buffer.size() - br);
 	if (brn < 0) {
