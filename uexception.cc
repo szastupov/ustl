@@ -266,8 +266,6 @@ size_t file_exception::stream_size (void) const
 
 //----------------------------------------------------------------------
 
-#ifdef WANT_STREAM_BOUNDS_CHECKING
-
 /// Initializes the empty object. \p operation is the function that returned the error code.
 stream_bounds_exception::stream_bounds_exception (const char* operation, const char* type, uoff_t offset, size_t expected, size_t remaining) throw()
 : libc_exception (operation),
@@ -315,8 +313,6 @@ size_t stream_bounds_exception::stream_size (void) const
 	    stream_size_of(m_Expected) +
 	    stream_size_of(m_Remaining));
 }
-
-#endif
 
 } // namespace ustl
 

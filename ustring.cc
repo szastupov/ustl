@@ -45,7 +45,7 @@ const char string::empty_string[string::size_Terminator] = "";
 string::string (void)
 : memblock ()
 {
-    link (empty_string, sizeof(empty_string));
+    link (empty_string, VectorSize (empty_string));
 }
 
 /// Assigns itself the value of string \p s
@@ -100,6 +100,20 @@ void string::resize (size_t n)
 {
     memblock::resize (n + size_Terminator);
     at(n) = c_Terminator;
+}
+
+/// Returns the size of the readable area.
+size_t string::readable_size (void) const
+{
+    const size_t realSize = memblock::readable_size();
+    return (realSize ? realSize - size_Terminator : 0);
+}
+
+/// Returns the size of the writable area.
+size_t string::writable_size (void) const
+{
+    const size_t realSize = memblock::writable_size();
+    return (realSize ? realSize - size_Terminator : 0);
 }
 
 /// Returns the length of the string in characters.
@@ -483,15 +497,6 @@ void string::write (ostream& os) const
 	throw stream_bounds_exception ("write", "ustl::string", os.pos(), size(), os.remaining());
 #endif
     os.write (cdata(), size());
-}
-
-/// Writes the data to file \p "filename".
-void string::write_file (const char* filename, int mode) const
-{
-    // Kinda ugly, but the size really is preserved.
-    const_cast<string&>(*this).cmemlink::resize (size());
-    memblock::write_file (filename, mode);
-    const_cast<string&>(*this).cmemlink::resize (cmemlink::size() + size_Terminator);
 }
 
 } // namespace ustl

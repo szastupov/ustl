@@ -1,7 +1,4 @@
-#include <mistream.h>
-#include <mostream.h>
-#include <strmsize.h>
-#include <fdostream.h>
+#include <ustl.h>
 using namespace ustl;
 
 int main (void)

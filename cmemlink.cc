@@ -96,8 +96,9 @@ void cmemlink::write_file (const char* filename, int mode) const
     int fd = open (filename, O_WRONLY | O_CREAT | O_TRUNC, mode);
     if (fd < 0)
 	throw file_exception ("open", filename);
-    ssize_t bw = ::write (fd, cdata(), size());
-    if (size_t(bw) != size()) {
+    const size_t btw = readable_size();
+    ssize_t bw = ::write (fd, cdata(), btw);
+    if (size_t(bw) != btw) {
 	close (fd);
 	throw file_exception ("write", filename);
     }
@@ -108,6 +109,7 @@ void cmemlink::write_file (const char* filename, int mode) const
 /// Copies values from l
 const cmemlink& cmemlink::operator= (const cmemlink& l)
 {
+    unlink();
     m_CData = l.m_CData;
     m_Size = l.m_Size;
     assert (size() % elementSize() == 0 && "You are trying to link to a block of different element type.");

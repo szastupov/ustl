@@ -79,6 +79,12 @@ const memlink& memlink::operator= (const memlink& l)
     return (*this);
 }
 
+/// Returns the size of the writable area
+size_t memlink::writable_size (void) const
+{
+    return (m_Data ? size() : 0);
+}
+
 /// Reads the object from stream \p s
 void memlink::read (istream& is)
 {

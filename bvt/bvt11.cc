@@ -1,9 +1,4 @@
-#include <uset.h>
-#include <umultiset.h>
-#include <fdostream.h>
-#include <mistream.h>
-#include <uios.h>
-#include <uctralgo.h>
+#include <ustl.h>
 using namespace ustl;
 
 void PrintVector (const int* first, const int* last)

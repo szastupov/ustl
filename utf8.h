@@ -87,19 +87,9 @@ inline size_t Utf8SequenceBytes (u_char c)
 /// misformatted character and the one after it, making it very difficult to
 /// detect by the user. It is better to write some strange characters and let
 /// the user know his file is corrupted. Another problem is overflow on bad
-/// encodings (like a 0xFF on the end of a string). You may be tempted to
-/// put an end-of-buffer check in here by, for example, passing the end
-/// iterator to the constructor. That is a bad idea because encoding errors
-/// should occur in only one place: unprocessed user data freshly received
-/// from the disk or the keyboard where it was either physically damaged, or
-/// maliciously altered. Encoding validation should be done in the input
-/// layer, as soon as you discover the relevant format, in order to be able
-/// to correct it properly. If you throw an exception from here, you would
-/// have a hard time finding a place for the error-correcting code, since
-/// your reading layer probably reads many different objects with various
-/// formats, and you might make the horrible mistake of showing that awful
-/// "File is corrupt" dialog instead of actually fixing the problem or at
-/// least telling the user where the error is. So do it right, ok?
+/// encodings (like a 0xFF on the end of a string). This is checked through
+/// the end-of-string nul character, which will always be there as long as
+/// you are using the string class.
 ///
 template <typename Iterator, typename WChar = wchar_t>
 class utf8in_iterator {
@@ -134,7 +124,7 @@ WChar utf8in_iterator<Iterator,WChar>::operator* (void) const
     u_char c = *i++;
     size_t nBytes = Utf8SequenceBytes (c);
     v = c & (0xFF >> nBytes);	// First byte contains bits after the header.
-    while (--nBytes)		// Each subsequent byte has 6 bits.
+    while (--nBytes && *i)	// Each subsequent byte has 6 bits.
 	v = (v << 6) | (*i++ & 0x3F);
     return (v);
 }

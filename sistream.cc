@@ -39,20 +39,22 @@ istringstream::istringstream (void)
 }
 
 istringstream::istringstream (const void* p, size_t n)
-: istream (p, n),
+: istream (),
   m_Base (10),
   m_DecimalSeparator ('.'),
   m_ThousandSeparator ('\0')
 {
+    link (p, n);
     set_delimiters (ios::c_DefaultDelimiters);
 }
 
 istringstream::istringstream (const cmemlink& source)
-: istream (source),
+: istream (),
   m_Base (10),
   m_DecimalSeparator ('.'),
   m_ThousandSeparator ('\0')
 {
+    link (source);
     set_delimiters (ios::c_DefaultDelimiters);
 }
 

@@ -41,7 +41,7 @@ ostringstream::ostringstream (void)
 
 /// Creates a stream for writing into \p p of size \p n.
 ostringstream::ostringstream (void* p, size_t n)
-: ostream (p, n),
+: ostream (),
   m_pResizable (NULL),
   m_Flags (0),
   m_Base (10),
@@ -50,6 +50,7 @@ ostringstream::ostringstream (void* p, size_t n)
   m_DecimalSeparator ('.'),
   m_ThousandSeparator (',')
 {
+    link (p, n);
 }
 
 /// Creates a stream for writing into string \p dest.
@@ -57,7 +58,7 @@ ostringstream::ostringstream (void* p, size_t n)
 /// dest may be resized by the stream if insufficient space is available.
 ///
 ostringstream::ostringstream (string& dest)
-: ostream (dest.begin(), dest.size()),
+: ostream (),
   m_pResizable (&dest),
   m_Flags (0),
   m_Base (10),
@@ -66,11 +67,12 @@ ostringstream::ostringstream (string& dest)
   m_DecimalSeparator ('.'),
   m_ThousandSeparator (',')
 {
+    link (dest);
 }
 
 /// Creates a stream for writing into fixed block \p dest.
-ostringstream::ostringstream (const memlink& dest)
-: ostream (dest),
+ostringstream::ostringstream (memlink& dest)
+: ostream (),
   m_pResizable (NULL),
   m_Flags (0),
   m_Base (10),
@@ -79,6 +81,7 @@ ostringstream::ostringstream (const memlink& dest)
   m_DecimalSeparator ('.'),
   m_ThousandSeparator (',')
 {
+    link (dest);
 }
 
 const char c_Digits[] = "0123456789ABCDEF";
@@ -256,6 +259,13 @@ void ostringstream::iwrite (ios::fmtflags f)
 	    m_Flags |= f;
 	    break;
     }
+}
+
+/// Links to string \p l as resizable.
+void ostringstream::link (string& l)
+{
+    ostream::link (l);
+    m_pResizable = &l;
 }
 
 /// Unlinks the stream from its bound buffer.

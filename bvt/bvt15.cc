@@ -1,8 +1,4 @@
-#include <ualgo.h>
-#include <umultimap.h>
-#include <ustring.h>
-#include <fdostream.h>
-#include <uios.h>
+#include <ustl.h>
 using namespace ustl;
 
 int main (void)

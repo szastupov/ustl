@@ -23,6 +23,7 @@
 #define UFACETS_H_265F2577462E4C3C468F674E7F4E11E1
 
 #include "ulocale.h"
+#include <time.h>
 
 namespace ustl {
 
@@ -156,8 +157,6 @@ class time_base {
 public:
     enum dateorder { no_order, dmy, mdy, ymd, ydm };
 };
-
-struct tm;
 
 class time_get : public locale::facet, public time_base {
 public:

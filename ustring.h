@@ -91,10 +91,12 @@ public:
     inline pointer		data (void);
     inline const_pointer	c_str (void) const;
     inline size_t		max_size (void) const;
+    virtual size_t		readable_size (void) const;
+    virtual size_t		writable_size (void) const;
     inline bool			empty (void) const;
     inline size_t		capacity (void) const;
     inline void			reserve (size_t n);
-    void			resize (size_t n);
+    virtual void		resize (size_t n);
     inline const_iterator	begin (void) const;
     inline iterator		begin (void);
     inline const_iterator	end (void) const;
@@ -161,7 +163,6 @@ public:
     void			read (istream&);
     void			write (ostream& os) const;
     size_t			stream_size (void) const;
-    void			write_file (const char* filename, int mode = 0644) const;
 };
 
 /// Returns the number of characters in the string, not including the terminator.

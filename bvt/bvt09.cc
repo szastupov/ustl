@@ -1,10 +1,4 @@
-#include <sistream.h>
-#include <sostream.h>
-#include <uios.h>
-#include <ustring.h>
-#include <fdostream.h>
-#include <mistream.h>
-#include <uios.h>
+#include <ustl.h>
 using namespace ustl;
 
 int main (void)

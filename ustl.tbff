@@ -1,0 +1,14 @@
+<type name=pointer format=pointer/>
+<type name=int32_t format=signedIntegral/>
+<type name=uint32_t format=integral/>
+<type name=utf8 format=integral/>
+<type name=char format=signedIntegral/>
+
+<namespace name=ustl>
+    <type name=string format=struct>
+	<type name=string_data_t format=array type=char size=string_size />
+	<var name=string_size type=utf8 />
+	<var name=string_data type=string_data_t />
+    </type>
+</namespace>
+

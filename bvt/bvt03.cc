@@ -1,11 +1,4 @@
-#include <mistream.h>
-#include <mostream.h>
-#include <uios.h>
-#include <memblock.h>
-#include <fdostream.h>
-#include <mistream.h>
-#include <strmsize.h>
-#include <uiosfunc.h>
+#include <ustl.h>
 using namespace ustl;
 
 int main (void)

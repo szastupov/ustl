@@ -1,14 +1,10 @@
-#include <upair.h>
-#include <ualgo.h>
-#include <umap.h>
-#include <ustring.h>
-#include <fdostream.h>
-#include <uios.h>
+#include <ustl.h>
 using namespace ustl;
 
 int main (void)
 {
-    map<string,int> months;
+    typedef map<string,int> monthmap_t;
+    monthmap_t months;
     months["january"] = 31;
     months["february"] = 28;
     months["march"] = 31;
@@ -21,20 +17,20 @@ int main (void)
     months["october"] = 31;
     months["november"] = 30;
     months["december"] = 31;
-
-    const map<string,int>& cmonths = months;
+    
+    const monthmap_t& cmonths = months;
     cout << "There are " << cmonths["january"] << " days in january." << endl;
     cout << "There are " << cmonths["september"] << " days in september." << endl;
     cout << "There are " << cmonths["december"] << " days in december." << endl;
-    map<string,int>::const_iterator found_may = months.find ("may");
+    monthmap_t::const_iterator found_may = months.find ("may");
     cout << found_may->first << " found at index " << found_may - months.begin() << endl;
     cout << "Alphabetical listing:" << endl;
 
-    map<string,int>::const_iterator i;
+    monthmap_t::const_iterator i;
     for (i = months.begin(); i < months.end(); ++ i)
 	cout << i->first << " has " << i->second << " days." << endl;
 
-    map<string,int> mcopy (months);
+    monthmap_t mcopy (months);
     mcopy.erase ("may");
     cout << "After erasing may:" << endl;
     for (i = mcopy.begin(); i < mcopy.end(); ++ i)
@@ -49,7 +45,7 @@ int main (void)
     cout << endl;
 
     mcopy = months;
-    map<string,int>::iterator frob = mcopy.insert (make_pair (string("frobuary"), 42));
+    monthmap_t::iterator frob = mcopy.insert (make_pair (string("frobuary"), 42));
     cout << "After inserting " << frob->first << "," << frob->second << ":" << endl;
     for (i = mcopy.begin(); i < mcopy.end(); ++ i)
 	cout << i->first << " ";

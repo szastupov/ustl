@@ -1,7 +1,4 @@
-#include <uvector.h>
-#include <fdostream.h>
-#include <mistream.h>
-#include <uios.h>
+#include <ustl.h>
 using namespace ustl;
 
 void PrintBlock (const cmemlink& l)

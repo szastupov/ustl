@@ -182,6 +182,7 @@
 #include "ustl/umap.h"
 #include "ustl/umultimap.h"
 #include "ustl/ustack.h"
+#include "ustl/uqueue.h"
 #ifndef WITHOUT_CIN_COUT_CERR
     #include "ustl/fdostream.h"
 #else

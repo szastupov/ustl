@@ -74,6 +74,7 @@ public:
     inline void		copy (const void* p, size_t n);
     void		copy (iterator offset, const void* p, size_t n);
     inline pointer	data (void);
+    virtual size_t	writable_size (void) const;
     const memlink&	operator= (const cmemlink& l);
     const memlink&	operator= (const memlink& l);
     inline void		swap (memlink& l);

@@ -78,8 +78,9 @@ public:
     inline iterator	end (void) const;
     inline size_t	size (void) const;
     inline size_t	max_size (void) const;
+  inline virtual size_t	readable_size (void) const;
     inline bool		empty (void) const;
-    inline void		resize (size_t n);
+    inline virtual void	resize (size_t n);
     inline void		read (istream&);
     void		write (ostream& os) const;
     size_t		stream_size (void) const;
@@ -107,6 +108,12 @@ inline size_t cmemlink::size (void) const
 inline size_t cmemlink::max_size (void) const
 {
     return (m_Size);
+}
+
+/// Returns the size of the readable area
+inline size_t cmemlink::readable_size (void) const
+{
+    return (size());
 }
 
 /// true if size() == 0

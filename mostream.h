@@ -65,7 +65,6 @@ public:
 			ostream (void);
 			ostream (void* p, size_t n);
     explicit		ostream (const memlink& source);
-    virtual void	unlink (void);
     inline void		seek (uoff_t newPos);
     inline void		seek (const_iterator newPos);
     inline void		skip (size_t nBytes);
@@ -87,6 +86,9 @@ public:
     inline size_t	stream_size (void) const;
     template <typename T>
     inline void		iwrite (const T& v);
+    virtual void	unlink (void);
+    inline void		link (void* p, size_t n)	{ memlink::link (p, n); }
+    inline void		link (memlink& l)		{ memlink::link (l.data(), l.writable_size()); }
 private:
     uoff_t		m_Pos;	///< Current write position.
 };

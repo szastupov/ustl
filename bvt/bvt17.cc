@@ -1,5 +1,4 @@
-#include <uspecial.h>
-#include <fdostream.h>
+#include <ustl.h>
 using namespace ustl;
 
 int main (void)

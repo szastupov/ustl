@@ -45,9 +45,7 @@ static const xfmt_t	xfmt_Exception			= 0;
 static const xfmt_t	xfmt_BadAlloc			= 1;
 static const xfmt_t	xfmt_LibcException		= 12;
 static const xfmt_t	xfmt_FileException		= 13;
-#ifdef WANT_STREAM_BOUNDS_CHECKING
 static const xfmt_t	xfmt_StreamBoundsException	= 14;
-#endif
 
 /// \class exception uexception.h ustl.h
 /// \ingroup Exceptions
@@ -151,7 +149,6 @@ protected:
     char		m_Filename [PATH_MAX];	///< Name of the file causing the error.
 };
 
-#ifdef WANT_STREAM_BOUNDS_CHECKING
 /// \class stream_bounds_exception uexception.h ustl.h
 /// \ingroup Exceptions
 ///
@@ -174,7 +171,6 @@ protected:
     size_t		m_Expected;
     size_t		m_Remaining;
 };
-#endif
 
 } // namespace ustl
 

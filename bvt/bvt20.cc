@@ -1,11 +1,4 @@
-#include <mistream.h>
-#include <mostream.h>
-#include <strmsize.h>
-#include <fdostream.h>
-#include <uvector.h>
-#include <ustack.h>
-#include <uqueue.h>
-#include <uspecial.h>
+#include <ustl.h>
 using namespace ustl;
 
 int main (void)

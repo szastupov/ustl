@@ -14,7 +14,7 @@ ifdef STANDALONE
 LIBS	+= -lgcc_s
 endif
 
-CXXFLAGS	+= -I ${INCDIR} -I ..
+CXXFLAGS	+= -I ${INCDIR}
 LDFLAGS		+= -L ${LIBDIR}
 TOCLEAN		+= ${BVTS}
 

@@ -1,9 +1,4 @@
-#include <memblock.h>
-#include <stdlib.h>
-#include <memory.h>
-#include <fdostream.h>
-#include <mistream.h>
-#include <uios.h>
+#include <ustl.h>
 using namespace ustl;
 
 void WriteCML (const memblock& l)

@@ -80,6 +80,8 @@ public:
 			istream (const void* p, size_t n);
     explicit		istream (const cmemlink& source);
     explicit		istream (const ostream& source);
+    inline void		link (const void* p, size_t n)	{ cmemlink::link (p, n); }
+    inline void		link (const cmemlink& l)	{ cmemlink::link (l.cdata(), l.readable_size()); }
     virtual void	unlink (void);
     inline void		seek (uoff_t newPos);
     inline void		seek (const_iterator newPos);

@@ -1,9 +1,7 @@
 // Tests functions from uutility.h
 //
 
-#include <ustring.h>
-#include <fdostream.h>
-#include <uios.h>
+#include <ustl.h>
 using namespace ustl;
 
 int main (void)

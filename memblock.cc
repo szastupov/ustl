@@ -152,7 +152,8 @@ memblock::iterator memblock::insert (iterator start, size_t n)
 {
     const uoff_t ip = start - begin();
     assert (ip <= size());
-    resize (size() + n, false);
+    reserve (size() + n, false);
+    memlink::resize (size() + n);
     memlink::insert (begin() + ip, n);
     return (begin() + ip);
 }
@@ -163,7 +164,8 @@ memblock::iterator memblock::erase (iterator start, size_t n)
     const uoff_t ep = start - begin();
     assert (ep + n <= size());
     memlink::erase (begin() + ep, n);
-    resize (size() - n, false);
+    reserve (size() - n, false);
+    memlink::resize (size() - n);
     return (begin() + ep);
 }
 
@@ -187,7 +189,7 @@ void memblock::read (istream& is)
 #endif
     if (n <= is.remaining()) {
 	resize (n);
-	is.read (data(), size());
+	is.read (data(), writable_size());
     }
     is.align();
 }
@@ -202,8 +204,9 @@ void memblock::read_file (const char* filename)
     int fd = open (filename, O_RDONLY);
     if (fd < 0)
 	throw file_exception ("open", filename);
-    ssize_t br = ::read (fd, data(), size());
-    if (size_t(br) != size()) {
+    const size_t btr = writable_size();
+    ssize_t br = ::read (fd, data(), btr);
+    if (size_t(br) != btr) {
 	close (fd);
 	throw file_exception ("read", filename);
     }

@@ -1,11 +1,4 @@
-#include <uvector.h>
-#include <upair.h>
-#include <ualgo.h>
-#include <uctralgo.h>
-#include <ustring.h>
-#include <fdostream.h>
-#include <mistream.h>
-#include <uios.h>
+#include <ustl.h>
 using namespace ustl;
 
 inline void PrintString (const string& str)

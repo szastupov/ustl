@@ -40,7 +40,7 @@ fdostringstream cerr (STDERR_FILENO);
 
 /// Constructs a stream for writing to \p fd.
 fdostringstream::fdostringstream (int fd)
-: ostringstream (m_Buffer),
+: ostringstream (),
   m_Buffer (256),
   m_Fd (fd)
 {
@@ -103,7 +103,7 @@ int fdostringstream::format (const char* fmt, ...)
 
 /// Constructs a stream to read from \p fd.
 fdistringstream::fdistringstream (int fd)
-: istringstream (m_Buffer),
+: istringstream (),
   m_Buffer (256),
   m_Fd (fd)
 {

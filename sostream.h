@@ -42,7 +42,7 @@ public:
 				ostringstream (void);
 				ostringstream (void* p, size_t n);
     explicit			ostringstream (string& dest);
-    explicit			ostringstream (const memlink& dest);
+    explicit			ostringstream (memlink& dest);
     void			iwrite (long v);
     void			iwrite (u_char v);
     void			iwrite (u_long v);
@@ -61,6 +61,9 @@ public:
     inline void			set_decimal_separator (char s);
     inline void			set_thousand_separator (char s);
     inline void			set_precision (u_short precision);
+    inline void			link (void* p, size_t n)	{ ostream::link (p, n); }
+    inline void			link (memlink& l)		{ ostream::link (l); }
+    void			link (string& l);
     virtual void		unlink (void);
     void			write (const void* buffer, size_t size);
     void			write (const cmemlink& buf);

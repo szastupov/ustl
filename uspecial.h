@@ -276,12 +276,12 @@ inline hashvalue_t hash_value (const string::const_pointer& v)
 } // namespace ustl
 
 // This is here because there really is no other place to put it.
-STD_STREAMABLE(ustl::cmemlink)
-STD_STREAMABLE(ustl::istream)
-STD_STREAMABLE(ustl::ostream)
-STD_STREAMABLE(ustl::string)
-STD_STREAMABLE(ustl::exception)
-TEXT_STREAMABLE(ustl::exception)
+STD_STREAMABLE(cmemlink)
+STD_STREAMABLE(istream)
+STD_STREAMABLE(ostream)
+STD_STREAMABLE(string)
+STD_STREAMABLE(exception)
+TEXT_STREAMABLE(exception)
 
 #endif
 

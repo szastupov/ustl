@@ -54,7 +54,7 @@ public:
     inline void		assign (const cmemlink& l);
     inline void		swap (memblock& l);
     void		reserve (size_t newSize, bool bExact = true);
-    inline void		resize (size_t newSize, bool bExact = true);
+    inline virtual void	resize (size_t newSize);
     iterator		insert (iterator start, size_t size);
     iterator		erase (iterator start, size_t size);
     inline void		clear (void);
@@ -74,7 +74,7 @@ private:
 /// Copies data from \p l.
 inline void memblock::assign (const cmemlink& l)
 {
-    assign (l.cdata(), l.size());
+    assign (l.cdata(), l.readable_size());
 }
 
 /// Allocates enough space and copies the contents of \p b.
@@ -130,9 +130,9 @@ inline void memblock::swap (memblock& l)
 }
 
 /// resizes the block to \p newSize bytes, reallocating if necessary.
-inline void memblock::resize (size_t newSize, bool bExact)
+inline void memblock::resize (size_t newSize)
 {
-    reserve (newSize, bExact);
+    reserve (newSize);
     memlink::resize (newSize);
 }
 

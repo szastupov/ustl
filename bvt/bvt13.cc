@@ -1,9 +1,6 @@
 // "Testing string reads" 12345678 4321 0x78675645 1.234567890123456
 
-#include <fdostream.h>
-#include <mistream.h>
-#include <uios.h>
-#include <ustring.h>
+#include <ustl.h>
 using namespace ustl;
 
 int main (void)
