@@ -22,14 +22,14 @@ namespace ustl {
 /// Allocates 0 bytes for the internal block.
 memblock::memblock (void)
 : memlink (),
-  m_AllocatedSize (0)
+  m_Capacity (0)
 {
 }
 
 /// Allocates \p n bytes for the internal block.
 memblock::memblock (size_type n)
 : memlink (),
-  m_AllocatedSize (0)
+  m_Capacity (0)
 {
     resize (n);
 }
@@ -37,7 +37,7 @@ memblock::memblock (size_type n)
 /// links to \p p, \p n. Data can not be modified and will not be freed.
 memblock::memblock (const void* p, size_type n)
 : memlink (),
-  m_AllocatedSize (0)
+  m_Capacity (0)
 {
     assign (p, n);
 }
@@ -45,7 +45,7 @@ memblock::memblock (const void* p, size_type n)
 /// Links to what \p b is linked to.
 memblock::memblock (const cmemlink& b)
 : memlink (),
-  m_AllocatedSize (0)
+  m_Capacity (0)
 {
     assign (b);
 }
@@ -53,7 +53,7 @@ memblock::memblock (const cmemlink& b)
 /// Links to what \p b is linked to.
 memblock::memblock (const memlink& b)
 : memlink (),
-  m_AllocatedSize (0)
+  m_Capacity (0)
 {
     assign (b);
 }
@@ -61,7 +61,7 @@ memblock::memblock (const memlink& b)
 /// Links to what \p b is linked to.
 memblock::memblock (const memblock& b)
 : memlink (),
-  m_AllocatedSize (0)
+  m_Capacity (0)
 {
     assign (b);
 }
@@ -81,10 +81,10 @@ memblock::~memblock (void)
 /// Frees internal data.
 void memblock::deallocate (void)
 {
-    if (m_AllocatedSize) {
+    if (m_Capacity) {
 	assert (cdata() && "Internal error: space allocated, but the pointer is NULL");
 	assert (data() && "Internal error: read-only block is marked as allocated space");
-	destructBlock (data(), m_AllocatedSize);
+	destructBlock (data(), m_Capacity);
 	free (data());
     }
     memblock::unlink();
@@ -95,10 +95,10 @@ void memblock::deallocate (void)
 void memblock::manage (void* p, size_type n)
 {
     assert (p || !n);
-    assert (!data() || !m_AllocatedSize);	// Can't link to an allocated block.
+    assert (!data() || !m_Capacity);	// Can't link to an allocated block.
     assert (n % elementSize() == 0 && "You are trying to manage a block with an incompatible element type");
     link (p, n);
-    m_AllocatedSize = n;
+    m_Capacity = n;
 }
 
 /// Copies data from \p p, \p n.
@@ -122,7 +122,7 @@ void memblock::assign (const void* p, size_type n)
 void memblock::reserve (size_type newSize, bool bExact)
 {
     newSize += minimumFreeCapacity();
-    if (m_AllocatedSize >= newSize)
+    if (m_Capacity >= newSize)
 	return;
     void* oldBlock (is_linked() ? NULL : data());
     if (!bExact)
@@ -131,11 +131,11 @@ void memblock::reserve (size_type newSize, bool bExact)
     pointer newBlock = (pointer) realloc (oldBlock, newSize);
     if (!newBlock)
 	throw bad_alloc (newSize);
-    constructBlock (advance (newBlock, m_AllocatedSize), newSize - m_AllocatedSize);
+    constructBlock (advance (newBlock, m_Capacity), newSize - m_Capacity);
     if (!oldBlock && cdata())
 	copy_n (cdata(), min (size() + 1, newSize), newBlock);
     link (newBlock, size());
-    m_AllocatedSize = newSize;
+    m_Capacity = newSize;
 }
 
 /// \warning Do not use or override this! It exists only for implementing #string
@@ -148,7 +148,7 @@ memblock::size_type memblock::minimumFreeCapacity (void) const
 void memblock::swap (memblock& l)
 {
     memlink::swap (l);
-    ::ustl::swap (m_AllocatedSize, l.m_AllocatedSize);
+    ::ustl::swap (m_Capacity, l.m_Capacity);
 }
 
 /// Shifts the data in the linked block from \p start to \p start + \p n.
@@ -182,7 +182,7 @@ void memblock::pop_back (void)
 void memblock::unlink (void)
 {
     memlink::unlink();
-    m_AllocatedSize = 0;
+    m_Capacity = 0;
 }
 
 /// Reads the object from stream \p s

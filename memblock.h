@@ -58,7 +58,7 @@ public:
 protected:
     virtual size_type		minimumFreeCapacity (void) const;
 private:
-    size_type			m_AllocatedSize;	///< Number of bytes allocated by Resize.
+    size_type			m_Capacity;	///< Number of bytes allocated by Resize.
 };
 
 /// Copies data from \p l.
@@ -91,13 +91,13 @@ inline const memblock& memblock::operator= (const memblock& l)
 /// Returns the number of bytes allocated.
 inline memblock::size_type memblock::capacity (void) const
 {
-    return (m_AllocatedSize);
+    return (m_Capacity);
 }
 
 /// resizes the block to \p newSize bytes, reallocating if necessary.
 inline void memblock::resize (size_type newSize, bool bExact)
 {
-    if (m_AllocatedSize < newSize + 1)
+    if (m_Capacity < newSize + 1)
 	reserve (newSize, bExact);
     memlink::resize (newSize);
 }
@@ -117,7 +117,7 @@ inline memblock::size_type memblock::max_size (void) const
 /// Returns true if the storage is linked, false if allocated.
 inline bool memblock::is_linked (void) const
 {
-    return (!m_AllocatedSize && cdata());
+    return (!m_Capacity && cdata());
 }
 
 /// Resizes the block to 0
