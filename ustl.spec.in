@@ -49,6 +49,7 @@ make install
 %{_prefix}/include/ustl/memlink.h
 %{_prefix}/include/ustl/mistream.h
 %{_prefix}/include/ustl/mostream.h
+%{_prefix}/include/ustl/simd.h
 %{_prefix}/include/ustl/sistream.h
 %{_prefix}/include/ustl/sostream.h
 %{_prefix}/include/ustl/strmsize.h
@@ -62,10 +63,12 @@ make install
 %{_prefix}/include/ustl/uios.h
 %{_prefix}/include/ustl/uiosfunc.h
 %{_prefix}/include/ustl/uiterator.h
+%{_prefix}/include/ustl/ulaalgo.h
 %{_prefix}/include/ustl/ulimits.h
 %{_prefix}/include/ustl/ulist.h
 %{_prefix}/include/ustl/ulocale.h
 %{_prefix}/include/ustl/umap.h
+%{_prefix}/include/ustl/umatrix.h
 %{_prefix}/include/ustl/umemory.h
 %{_prefix}/include/ustl/umultimap.h
 %{_prefix}/include/ustl/umultiset.h
@@ -73,11 +76,13 @@ make install
 %{_prefix}/include/ustl/unumeric.h
 %{_prefix}/include/ustl/upair.h
 %{_prefix}/include/ustl/upredalgo.h
+%{_prefix}/include/ustl/uqueue.h
 %{_prefix}/include/ustl/uset.h
 %{_prefix}/include/ustl/uspecial.h
 %{_prefix}/include/ustl/ustack.h
 %{_prefix}/include/ustl/ustdxept.h
 %{_prefix}/include/ustl/ustl.h
+%{_prefix}/include/ustl/ustl.tbff
 %{_prefix}/include/ustl/ustring.h
 %{_prefix}/include/ustl/utf8.h
 %{_prefix}/include/ustl/utuple.h
