@@ -127,14 +127,14 @@ STD_TEMPLATE_CTR_STREAMABLE (TEMPLATE_TYPE1 (vector,T), TEMPLATE_DECL1 (T))
 template <size_t Size>
 inline istream& operator>> (istream& is, bitset<Size>& v)
 {
-    return (nr_container_read (v));
+    return (nr_container_read (is, v));
 }
 
 /// Writes bitset \p v into stream \p os.
 template <size_t Size>
 inline ostream& operator<< (ostream& os, const bitset<Size>& v)
 {
-    return (nr_container_write (v));
+    return (nr_container_write (os, v));
 }
 
 /// Writes bitset \p v into stream \p os.

@@ -78,13 +78,20 @@ memblock::~memblock (void)
 	deallocate();
 }
 
+/// resizes the block to \p newSize bytes, reallocating if necessary.
+void memblock::resize (size_type newSize, bool bExact)
+{
+    if (m_Capacity < newSize + minimumFreeCapacity())
+	reserve (newSize, bExact);
+    memlink::resize (newSize);
+}
+
 /// Frees internal data.
 void memblock::deallocate (void)
 {
     if (m_Capacity) {
 	assert (cdata() && "Internal error: space allocated, but the pointer is NULL");
 	assert (data() && "Internal error: read-only block is marked as allocated space");
-	destructBlock (data(), m_Capacity);
 	free (data());
     }
     memblock::unlink();
@@ -96,7 +103,6 @@ void memblock::manage (void* p, size_type n)
 {
     assert (p || !n);
     assert (!data() || !m_Capacity);	// Can't link to an allocated block.
-    assert (n % elementSize() == 0 && "You are trying to manage a block with an incompatible element type");
     link (p, n);
     m_Capacity = n;
 }
@@ -126,12 +132,10 @@ void memblock::reserve (size_type newSize, bool bExact)
 	return;
     void* oldBlock (is_linked() ? NULL : data());
     if (!bExact)
-	newSize = Align (newSize, Align (c_PageSize, elementSize()));
-    assert (newSize % elementSize() == 0 && "reserve can only allocate units of elementType.");
+	newSize = Align (newSize, c_PageSize);
     pointer newBlock = (pointer) realloc (oldBlock, newSize);
     if (!newBlock)
 	throw bad_alloc (newSize);
-    constructBlock (advance (newBlock, m_Capacity), newSize - m_Capacity);
     if (!oldBlock && cdata())
 	copy_n (cdata(), min (size() + 1, newSize), newBlock);
     link (newBlock, size());
@@ -169,13 +173,6 @@ memblock::iterator memblock::erase (iterator start, size_type n)
     memlink::erase (begin() + ep, n);
     memlink::resize (size() - n);
     return (begin() + ep);
-}
-
-/// Removes the last element (elementSize() bytes)
-void memblock::pop_back (void)
-{
-    assert (writable_size() >= elementSize() && "pop_back called on an empty vector");
-    erase (end() - elementSize(), elementSize());
 }
 
 /// Unlinks object.

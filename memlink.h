@@ -52,67 +52,34 @@ public:
 			memlink (const void* p, size_type n);
 			memlink (const memlink& l);
     explicit		memlink (const cmemlink& l);
-    inline void		link (const void* p, size_type n)	{ cmemlink::link (p, n); }
+    inline void		link (const void* p, size_type n)		{ cmemlink::link (p, n); }
     void		link (void* p, size_type n);
-    inline void		link (const cmemlink& l);
+    inline void		link (const cmemlink& l)			{ cmemlink::link (l); }
     inline void		link (memlink& l);
-    inline void		link (const void* first, const void* last);
-    inline void		link (void* first, void* last);
+    inline void		link (const void* first, const void* last)	{ link (first, distance (first, last)); }
+    inline void		link (void* first, void* last)			{ link (first, distance (first, last)); }
 			OVERLOAD_POINTER_AND_SIZE_T_V2(link, void*)
 			OVERLOAD_POINTER_AND_SIZE_T_V2(link, const void*)
     virtual void	unlink (void);
     inline void		copy (const cmemlink& l);
     inline void		copy (const void* p, size_type n);
     void		copy (iterator offset, const void* p, size_type n);
-    inline pointer	data (void);
     size_type		writable_size (void) const;
     const memlink&	operator= (const cmemlink& l);
     const memlink&	operator= (const memlink& l);
     void		swap (memlink& l);
-    inline iterator	begin (void);
-    inline iterator	end (void);
-    inline const_iterator	begin (void) const;
-    inline const_iterator	end (void) const;
+    inline pointer	data (void)			{ return (m_Data); }
+    inline iterator	begin (void)			{ return (iterator (m_Data)); }
+    inline iterator	end (void)			{ return (begin() + size()); }
+    inline const_iterator	begin (void) const	{ return (cmemlink::begin()); }
+    inline const_iterator	end (void) const	{ return (cmemlink::end()); }
     void		fill (iterator start, const void* p, size_type elsize, size_type elCount = 1);
     void		insert (iterator start, size_type size);
     void		erase (iterator start, size_type size);
     void		read (istream& is);
-protected:
-    virtual void	constructBlock (void*, size_type) const;
-    virtual void	destructBlock (void*, size_type) const throw();
 private:
     pointer		m_Data;	///< Pointer to the begin block (non-const)
 };
-
-/// Returns a modifiable pointer to the block
-inline memlink::pointer memlink::data (void)
-{
-    return (m_Data);
-}
-
-/// Returns a modifiable pointer to the block
-inline memlink::iterator memlink::begin (void)
-{
-    return (iterator (m_Data));
-}
-
-/// Returns a const pointer to the block
-inline memlink::const_iterator memlink::begin (void) const
-{
-    return (cmemlink::begin());
-}
-
-/// Returns a modifiable pointer to the end of the block
-inline memlink::iterator memlink::end (void)
-{
-    return (begin() + size());
-}
-
-/// Returns a const pointer to the end of the block
-inline memlink::const_iterator memlink::end (void) const
-{
-    return (cmemlink::end());
-}
 
 /// Copies from \p l.
 inline void memlink::copy (const cmemlink& l)
@@ -129,28 +96,10 @@ inline void memlink::copy (const void* p, size_type n)
 }
 
 /// Links to \p l
-inline void memlink::link (const cmemlink& l)
-{
-    cmemlink::link (l);
-}
-
-/// Links to \p l
 inline void memlink::link (memlink& l)
 {
     cmemlink::link (l);
     m_Data = l.data();
-}
-
-/// Links to iterator range \p first - \p last
-inline void memlink::link (const void* first, const void* last)
-{
-    link (first, distance (first, last));
-}
-
-/// Links to iterator range \p first - \p last
-inline void memlink::link (void* first, void* last)
-{
-    link (first, distance (first, last));
 }
 
 /// Reads object \p l from stream \p is
@@ -160,8 +109,8 @@ inline istream& operator>> (istream& is, memlink& l)
     return (is);
 }
 
-/// Use with memlink-derived classes to allocate and link to stack space. \p n is in elements, not bytes!
-#define alloca_link(m,n)	(m).link (alloca ((m).elementBytes (n)), (n))
+/// Use with memlink-derived classes to allocate and link to stack space.
+#define alloca_link(m,n)	(m).link (alloca (n), (n))
 
 } // namespace ustl
 

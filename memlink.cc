@@ -98,7 +98,6 @@ void memlink::read (istream& is)
 {
     size_type n;
     is >> n;
-    assert (n % elementSize() == 0 && "You are trying to read a block with different element type.");
     const size_type btr = min (n, size());
     if (is.remaining() < btr)
 	throw stream_bounds_exception ("read", "ustl::memlink", is.pos(), btr, is.remaining());
@@ -114,7 +113,6 @@ void memlink::copy (iterator start, const void* p, size_type n)
     assert (m_Data || !n);
     assert (p || !n);
     assert (start >= begin() && start + n <= end());
-    assert (n % elementSize() == 0 && "You are trying to write an incompatible element type");
     if (p && n && p != m_Data)
 	copy_n (const_iterator(p), n, start);
 }
@@ -130,7 +128,6 @@ void memlink::fill (iterator start, const void* p, size_type elSize, size_type e
 {
     assert (m_Data || !elCount || !elSize);
     assert (start >= begin() && start + elSize * elCount <= end());
-    assert (elSize % elementSize() == 0 && "You are trying to write an incompatible element type");
     if (elSize == 1)
 	fill_n (start, elCount, *reinterpret_cast<const uint8_t*>(p));
     else {
@@ -146,8 +143,6 @@ void memlink::insert (iterator start, size_type n)
     assert (m_Data || !n);
     assert (cmemlink::begin() || !n);
     assert (start >= begin() && start + n <= end());
-    assert (n % elementSize() == 0 && "You are trying to write an incompatible element type");
-    assert (distance(begin(), start) % elementSize() == 0 && "You are trying to write in the middle of an element");
     rotate (start, end() - n, end());
 }
 
@@ -158,25 +153,7 @@ void memlink::erase (iterator start, size_type n)
     assert (m_Data || !n);
     assert (cmemlink::begin() || !n);
     assert (start >= begin() && start + n <= end());
-    assert (n % elementSize() == 0 && "You are trying to write an incompatible element type");
-    assert (distance(begin(), start) % elementSize() == 0 && "You are trying to write in the middle of an element");
     rotate (start, start + n, end());
-}
-
-/// Override to initialize malloc'ed space, like calling constructors, for example.
-void memlink::constructBlock (void*, size_type DebugArg(n)) const
-{
-    assert (elementSize() && "You can't create an array of empty types");
-    assert (n % elementSize() == 0 && "You are trying to write an incompatible element type");
-}
-
-/// Override to deinitialize malloc'ed space, like calling destructors, for example.
-void memlink::destructBlock (void* DebugArg(p), size_type DebugArg(n)) const throw()
-{
-    assert (n % elementSize() == 0 && "You are trying to write an incompatible element type");
-#ifndef NDEBUG
-    fill_n (p, n, uint8_t(0xCD));
-#endif
 }
 
 } // namespace ustl

@@ -25,7 +25,7 @@ namespace ustl {
 /// having no pointers into itself.
 ///
 template <typename T>
-class vector : private memblock {
+class vector {
 public:
     typedef T				value_type;
     typedef value_type*			pointer;
@@ -44,19 +44,19 @@ public:
 				vector (size_type n, const T& v);
 				vector (const vector<T>& v);
 				vector (const_iterator i1, const_iterator i2);
-    inline virtual	       ~vector (void);
+    inline		       ~vector (void);
     inline const vector<T>&	operator= (const vector<T>& v);
-    inline bool			operator== (const vector<T>& v)	{ return (memblock::operator== (v)); }
-    inline void			reserve (size_type n);
-    inline void			resize (size_type n);
-    inline size_type		capacity (void) const		{ return (memblock::capacity() / sizeof(T));	}
-    inline size_type		size (void) const		{ return (memblock::size() / sizeof(T));	}
-    inline size_type		max_size (void) const		{ return (memblock::max_size());		}
-    inline bool			empty (void) const		{ return (memblock::empty());			}
-    inline iterator		begin (void)			{ return (iterator (memblock::begin()));	}
-    inline const_iterator	begin (void) const		{ return (const_iterator (memblock::begin()));	}
-    inline iterator		end (void)			{ return (iterator (memblock::end()));		}
-    inline const_iterator	end (void) const		{ return (const_iterator (memblock::end()));	}
+    inline bool			operator== (const vector<T>& v)	{ return (m_Data == v.m_Data); }
+    inline void			reserve (size_type n, bool bExact = true);
+    inline void			resize (size_type n, bool bExact = true);
+    inline size_type		capacity (void) const		{ return (m_Data.capacity() / sizeof(T));	}
+    inline size_type		size (void) const		{ return (m_Data.size() / sizeof(T));	}
+    inline size_type		max_size (void) const		{ return (m_Data.max_size() / sizeof(T));	}
+    inline bool			empty (void) const		{ return (m_Data.empty());			}
+    inline iterator		begin (void)			{ return (iterator (m_Data.begin()));	}
+    inline const_iterator	begin (void) const		{ return (const_iterator (m_Data.begin()));	}
+    inline iterator		end (void)			{ return (iterator (m_Data.end()));		}
+    inline const_iterator	end (void) const		{ return (const_iterator (m_Data.end()));	}
     inline reverse_iterator		rbegin (void)		{ return (reverse_iterator (end()));		}
     inline const_reverse_iterator	rbegin (void) const	{ return (const_reverse_iterator (end()));	}
     inline reverse_iterator		rend (void)		{ return (reverse_iterator (begin()));		}
@@ -70,46 +70,74 @@ public:
     inline reference		back (void);
     inline const_reference	back (void) const;
     inline void			push_back (const T& v = T());
-    inline void			pop_back (void)			{ memblock::pop_back(); }
-    inline void			clear (void)			{ memblock::clear(); }
-    inline void			deallocate (void)		{ memblock::deallocate(); }
+    inline void			pop_back (void)			{ m_Data.memlink::resize (m_Data.size() - sizeof(T)); }
+    inline void			clear (void)			{ m_Data.clear(); }
+    void			deallocate (void);
     inline void			assign (const_iterator i1, const_iterator i2);
     inline void			assign (size_type n, const T& v);
-    inline void			swap (vector<T>& v)		{ memblock::swap (v); }
+    inline void			swap (vector<T>& v)		{ m_Data.swap (v.m_Data); }
     inline iterator		insert (iterator ip, const T& v = T());
     inline iterator		insert (iterator ip, size_type n, const T& v);
     inline iterator		insert (iterator ip, const_iterator i1, const_iterator i2);
     inline iterator		erase (iterator ep, size_type n = 1);
     inline iterator		erase (iterator ep1, iterator ep2);
-    inline void			manage (pointer p, size_type n)		{ memblock::manage (p, n * sizeof(T)); }
-    inline bool			is_linked (void) const			{ return (memblock::is_linked()); }
-    inline void			unlink (void)				{ memblock::unlink(); }
-    inline void			link (const_pointer p, size_type n)	{ memblock::link (p, n * sizeof(T)); }
-    inline void			link (pointer p, size_type n)		{ memblock::link (p, n * sizeof(T)); }
-    inline void			link (const vector<T>& v)		{ memblock::link (v); }
-    inline void			link (vector<T>& v)			{ memblock::link (v); }
-    inline void			link (const_pointer first, const_pointer last)	{ memblock::link (first, last); }
-    inline void			link (pointer first, pointer last)		{ memblock::link (first, last); }
+    inline void			manage (pointer p, size_type n)		{ m_Data.manage (p, n * sizeof(T)); }
+    inline bool			is_linked (void) const			{ return (m_Data.is_linked()); }
+    inline void			unlink (void)				{ m_Data.unlink(); }
+    inline void			link (const_pointer p, size_type n)	{ m_Data.link (p, n * sizeof(T)); }
+    inline void			link (pointer p, size_type n)		{ m_Data.link (p, n * sizeof(T)); }
+    inline void			link (const vector<T>& v)		{ m_Data.link (v); }
+    inline void			link (vector<T>& v)			{ m_Data.link (v); }
+    inline void			link (const_pointer first, const_pointer last)	{ m_Data.link (first, last); }
+    inline void			link (pointer first, pointer last)		{ m_Data.link (first, last); }
 				OVERLOAD_POINTER_AND_SIZE_T_V2(link, pointer)
 				OVERLOAD_POINTER_AND_SIZE_T_V2(link, const_pointer)
-    inline virtual size_type	elementSize (void) const		{ return (sizeof(T)); }
-    inline size_type		elementBytes (size_type n) const	{ return (n * sizeof(T)); }
-protected:
-    virtual void		constructBlock (void* p, size_type s) const;
-    virtual void		destructBlock (void* p, size_type s) const throw();
+private:
+    inline iterator		insert_space (iterator ip, size_type n);
+private:
+    memblock			m_Data;
 };
+
+/// Allocates space for at least \p n elements.
+template <typename T>
+void vector<T>::reserve (size_type n, bool bExact)
+{
+    const size_type oldCapacity = capacity();
+    m_Data.reserve (n * sizeof(T), bExact);
+    const size_type newCapacity = capacity();
+    if (newCapacity > oldCapacity)
+	construct (begin() + oldCapacity, begin() + newCapacity);
+}
+
+/// Resizes the vector to contain \p n elements.
+template <typename T>
+inline void vector<T>::resize (size_type n, bool bExact)
+{
+    if (m_Data.capacity() < n * sizeof(T))
+	reserve (n, bExact);
+    m_Data.memlink::resize (n * sizeof(T));
+}
+
+/// Calls element destructors and frees storage.
+template <typename T>
+void vector<T>::deallocate (void)
+{
+    if (capacity())
+	destroy (begin(), begin() + capacity());
+    m_Data.deallocate();
+}
 
 /// Initializes empty vector.
 template <typename T>
 inline vector<T>::vector (void)
-: memblock()
+: m_Data ()
 {
 }
 
 /// Initializes a vector of size \p n.
 template <typename T>
 inline vector<T>::vector (size_type n)
-: memblock ()
+: m_Data ()
 {
     resize (n);
 }
@@ -117,7 +145,7 @@ inline vector<T>::vector (size_type n)
 /// Copies \p n elements from \p v.
 template <typename T>
 vector<T>::vector (size_type n, const T& v)
-: memblock ()
+: m_Data ()
 {
     resize (n);
     ::ustl::fill (begin(), end(), v);
@@ -126,7 +154,7 @@ vector<T>::vector (size_type n, const T& v)
 /// Copies \p v.
 template <typename T>
 vector<T>::vector (const vector<T>& v)
-: memblock ()
+: m_Data ()
 {
     resize (v.size());
     ::ustl::copy (v.begin(), v.end(), begin());
@@ -135,43 +163,17 @@ vector<T>::vector (const vector<T>& v)
 /// Copies range [\p i1, \p i2]
 template <typename T>
 vector<T>::vector (const_iterator i1, const_iterator i2)
-: memblock ()
+: m_Data ()
 {
     resize (distance (i1, i2));
     ::ustl::copy (i1, i2, begin());
 }
 
 /// Destructor
-/// Here the class must call deallocate, which is overloaded in this
-/// template to call destructors on all the elements. ~memblock does this too,
-/// but by the time the code gets there, the destructBlock overload is gone.
-///
 template <typename T>
 inline vector<T>::~vector (void)
 {
     deallocate();
-}
-
-/// Copies contents of \p v.
-template <typename T>
-inline const vector<T>& vector<T>::operator= (const vector<T>& v)
-{
-    assign (v.begin(), v.end());
-    return (*this);
-}
-
-/// Allocates space for at least \p n elements.
-template <typename T>
-inline void vector<T>::reserve (size_type n)
-{
-    memblock::reserve (elementBytes(n));
-}
-
-/// Resizes the vector to contain \p n elements.
-template <typename T>
-inline void vector<T>::resize (size_type n)
-{
-    memblock::resize (elementBytes(n));
 }
 
 /// Returns the reference to the i'th element.
@@ -241,7 +243,7 @@ template <typename T>
 inline void vector<T>::assign (const_iterator i1, const_iterator i2)
 {
     assert (i1 <= i2);
-    vector<T>::resize (i2 - i1);
+    resize (distance (i1, i2));
     ::ustl::copy (i1, i2, begin());
 }
 
@@ -249,15 +251,32 @@ inline void vector<T>::assign (const_iterator i1, const_iterator i2)
 template <typename T>
 inline void vector<T>::assign (size_type n, const T& v)
 {
-    vector<T>::resize (n);
+    resize (n);
     ::ustl::fill (begin(), end(), v);
+}
+
+/// Copies contents of \p v.
+template <typename T>
+inline const vector<T>& vector<T>::operator= (const vector<T>& v)
+{
+    assign (v.begin(), v.end());
+    return (*this);
+}
+
+/// Inserts \p n uninitialized elements at \p ip.
+template <typename T>
+typename vector<T>::iterator vector<T>::insert_space (iterator ip, size_type n)
+{
+    const uoff_t ipi = distance (begin(), ip);
+    reserve (size() + n, false);
+    return (iterator (m_Data.insert (memblock::iterator(begin() + ipi), n * sizeof(T))));
 }
 
 /// Inserts \p n elements with value \p v at offsets \p ip.
 template <typename T>
-inline typename vector<T>::iterator vector<T>::insert (iterator ip, size_type n, const T& v)
+typename vector<T>::iterator vector<T>::insert (iterator ip, size_type n, const T& v)
 {
-    ip = iterator (memblock::insert (memblock::iterator(ip), elementBytes(n)));
+    ip = insert_space (ip, n);
     ::ustl::fill (ip, ip + n, v);
     return (ip);
 }
@@ -266,17 +285,17 @@ inline typename vector<T>::iterator vector<T>::insert (iterator ip, size_type n,
 template <typename T>
 inline typename vector<T>::iterator vector<T>::insert (iterator ip, const T& v)
 {
-    ip = iterator (memblock::insert (memblock::iterator(ip), sizeof(T)));
+    ip = insert_space (ip, 1);
     *ip = v;
     return (ip);
 }
 
 /// Inserts range [\p i1, \p i2] at offset \p ip.
 template <typename T>
-inline typename vector<T>::iterator vector<T>::insert (iterator ip, const_iterator i1, const_iterator i2)
+typename vector<T>::iterator vector<T>::insert (iterator ip, const_iterator i1, const_iterator i2)
 {
     assert (i1 <= i2);
-    ip = iterator (memblock::insert (memblock::iterator(ip), elementBytes(distance(i1, i2))));
+    ip = insert_space (ip, distance (i1, i2));
     ::ustl::copy (i1, i2, ip);
     return (ip);
 }
@@ -285,7 +304,7 @@ inline typename vector<T>::iterator vector<T>::insert (iterator ip, const_iterat
 template <typename T>
 inline typename vector<T>::iterator vector<T>::erase (iterator ep, size_type n)
 {
-    return (iterator (memblock::erase (memblock::iterator(ep), elementBytes(n))));
+    return (iterator (m_Data.erase (memblock::iterator(ep), n * sizeof(T))));
 }
 
 /// Removes elements from \p ep1 to \p ep2.
@@ -300,37 +319,8 @@ inline typename vector<T>::iterator vector<T>::erase (iterator ep1, iterator ep2
 template <typename T>
 inline void vector<T>::push_back (const T& v)
 {
-    memblock::resize (elementBytes (size() + 1), false);
+    resize (size() + 1, false);
     *(end() - 1) = v;
-}
-
-/// \brief Calls T() for every element.
-/// Because storage is allocated by malloc() in memblock::Reserve(),
-/// the constructors must be explicitly called here.
-///
-template <typename T>
-void vector<T>::constructBlock (void* p, size_type s) const
-{
-    assert (s % sizeof(T) == 0);
-    T* pt = reinterpret_cast<T*>(p);
-    construct (pt, pt + s / sizeof(T));
-}
-
-/// \brief Calls ~T() for every element.
-/// Because storage is deallocated by free() in memblock::Link(),
-/// the destructors must be explicitly called here. This function must
-/// also be called from the destructor of this class because it is virtual
-/// and cannot be called from ~memblock().
-///
-template <typename T>
-void vector<T>::destructBlock (void* p, size_type s) const throw()
-{
-    assert (s % sizeof(T) == 0);
-    T* pt = reinterpret_cast<T*>(p);
-    destroy (pt, pt + s / sizeof(T));
-    #ifndef NDEBUG
-	memblock::destructBlock (p, s);
-    #endif
 }
 
 /// Use with vector classes to allocate and link to stack space. \p n is in elements.

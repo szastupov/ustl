@@ -32,7 +32,7 @@ int main (void)
     cout << s3 << endl;
     cout << "s3.size() = " << s3.size();
     cout << ", max_size() = ";
-    if (s3.max_size() == SIZE_MAX / s3.elementSize() - 1)
+    if (s3.max_size() == SIZE_MAX - 1)
 	cout << "(SIZE_MAX/elsize)-1";
     else
 	cout << s3.max_size();

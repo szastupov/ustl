@@ -34,97 +34,31 @@ public:
     explicit			memblock (const memlink& b);
 				memblock (const memblock& b);
     virtual		       ~memblock (void);
-    inline const memblock&	operator= (const cmemlink& b);
-    inline const memblock&	operator= (const memlink& b);
-    inline const memblock&	operator= (const memblock& b);
+    inline void			assign (const cmemlink& l)	{ assign (l.cdata(), l.readable_size()); }
+    inline const memblock&	operator= (const cmemlink& l)	{ assign (l); return (*this); }
+    inline const memblock&	operator= (const memlink& l)	{ assign (l); return (*this); }
+    inline const memblock&	operator= (const memblock& l)	{ assign (l); return (*this); }
     void			assign (const void* p, size_type n);
-    inline void			assign (const cmemlink& l);
     void			swap (memblock& l);
     void			reserve (size_type newSize, bool bExact = true);
-    inline void			resize (size_type newSize, bool bExact = true);
+    void			resize (size_type newSize, bool bExact = true);
     iterator			insert (iterator start, size_type size);
     iterator			erase (iterator start, size_type size);
-    void			pop_back (void);
-    inline void			clear (void);
+    inline void			clear (void)			{ resize (0); }
+    inline size_type		max_size (void) const		{ return (SIZE_MAX); }
+    inline bool			is_linked (void) const		{ return (!m_Capacity && cdata()); }
+    inline size_type		capacity (void) const		{ return (m_Capacity); }
+    inline void			manage (memlink& l)		{ manage (l.begin(), l.size()); }
     void			deallocate (void);
     void			manage (void* p, size_type n);
-    inline void			manage (memlink& l);
-    inline size_type		capacity (void) const;
     virtual void		unlink (void);
-    inline size_type		max_size (void) const;
     void			read (istream& is);
     void			read_file (const char* filename);
-    inline bool			is_linked (void) const;
 protected:
     virtual size_type		minimumFreeCapacity (void) const;
 private:
     size_type			m_Capacity;	///< Number of bytes allocated by Resize.
 };
-
-/// Copies data from \p l.
-inline void memblock::assign (const cmemlink& l)
-{
-    assign (l.cdata(), l.readable_size());
-}
-
-/// Allocates enough space and copies the contents of \p b.
-inline const memblock& memblock::operator= (const cmemlink& l)
-{
-    assign (l);
-    return (*this);
-}
-
-/// Allocates enough space and copies the contents of \p b.
-inline const memblock& memblock::operator= (const memlink& l)
-{
-    assign (l);
-    return (*this);
-}
-
-/// Allocates enough space and copies the contents of \p b.
-inline const memblock& memblock::operator= (const memblock& l)
-{
-    assign (l);
-    return (*this);
-}
-
-/// Returns the number of bytes allocated.
-inline memblock::size_type memblock::capacity (void) const
-{
-    return (m_Capacity);
-}
-
-/// resizes the block to \p newSize bytes, reallocating if necessary.
-inline void memblock::resize (size_type newSize, bool bExact)
-{
-    if (m_Capacity < newSize + 1)
-	reserve (newSize, bExact);
-    memlink::resize (newSize);
-}
-
-/// Assumes control over block pointed to by \p l
-inline void memblock::manage (memlink& l)
-{
-    manage (l.begin(), l.size());
-}
-
-/// Returns the maximum possible size of the block
-inline memblock::size_type memblock::max_size (void) const
-{
-    return (SIZE_MAX / elementSize());
-}
-
-/// Returns true if the storage is linked, false if allocated.
-inline bool memblock::is_linked (void) const
-{
-    return (!m_Capacity && cdata());
-}
-
-/// Resizes the block to 0
-inline void memblock::clear (void)
-{
-    resize (0);
-}
 
 /// Reads object \p l from stream \p is
 inline istream& operator>> (istream& is, memblock& l)

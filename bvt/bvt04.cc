@@ -39,7 +39,7 @@ int main (void)
     v.reserve (20);
     cout << "Reserved to capacity() == " << v.capacity();
     cout << " (" << v.size() << " used, ";
-    if (v.max_size() == SIZE_MAX / v.elementSize())
+    if (v.max_size() == SIZE_MAX / sizeof(int))
 	cout << "SIZE_MAX/elsize";
     else
 	cout << v.max_size();

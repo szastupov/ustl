@@ -38,7 +38,7 @@ int main (void)
     cout << "---" << endl;
     cout << "size() = " << v.size();
     cout << ", max_size() = ";
-    if (v.max_size() == SIZE_MAX / v.elementSize())
+    if (v.max_size() == SIZE_MAX / sizeof(memblock))
 	cout << "SIZE_MAX/elsize";
     else
 	cout << v.max_size();

@@ -28,9 +28,9 @@
 /// less code, and although it does not completely "disappear", due to the
 /// requirement for calling placement constructors on the allocated memory,
 /// most of it does, being replaced by calls to memblock methods. A vector<T>
-/// template instance, for instance, implements virtuals constructBlock
-/// (simply a call to placement new[]) and destructBlock (iterates over all
-/// elements to manually call the destructor) and two algorithms copy and
+/// template instance, for instance, overrides resize and deallocate, the
+/// former being a call to placement new[] and the latter iterates over all
+/// elements to manually call the destructor, and two algorithms copy and
 /// fill (which most STL programs use anyway); everything else melts away at
 /// compile time as if you were using only unstructured storage in the first
 /// place. ustl::string is implemented as a static class, not a template,
