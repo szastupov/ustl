@@ -228,6 +228,15 @@ inline void generate (Container& ctr, Generator gen)
     generate (ctr.begin(), ctr.end(), gen);
 }
 
+/// Randomly permute the elements of the container.
+/// \ingroup MutatingAlgorithms
+///
+template <typename Container>
+inline void random_shuffle (Container& ctr)
+{
+    random_shuffle (ctr.begin(), ctr.end());
+}
+
 /// Remove_copy copies elements that are not equal to value from the range
 /// [first, last) to a range beginning at result. The return value is the
 /// end of the resulting range. This operation is stable, meaning that the

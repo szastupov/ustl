@@ -49,7 +49,7 @@ inline void swap (Assignable& a, Assignable& b)
 /// \ingroup SwapAlgorithms
 ///
 template <typename Iterator> 
-inline void iterator_swap (Iterator& a, Iterator& b)
+inline void iterator_swap (Iterator a, Iterator b)
 {
     swap (*a, *b);
 }

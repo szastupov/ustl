@@ -79,6 +79,13 @@ const memlink& memlink::operator= (const memlink& l)
     return (*this);
 }
 
+/// Exchanges the contents with \p l
+void memlink::swap (memlink& l)
+{
+    cmemlink::swap (l);
+    ::ustl::swap (m_Data, l.m_Data);
+}
+
 /// Returns the size of the writable area
 memlink::size_type memlink::writable_size (void) const
 {

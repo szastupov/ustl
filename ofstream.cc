@@ -87,7 +87,7 @@ int fdostringstream::format (const char* fmt, ...)
 	flush();
     va_list args;
     va_start (args, fmt);
-    char* dest = reinterpret_cast<char*>(begin()) + pos();
+    char* dest = reinterpret_cast<char*>(ipos());
     int rv = vsnprintf (dest, remaining(), fmt, args);
     if (rv > 0)
 	skip (rv);

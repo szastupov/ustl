@@ -1,13 +1,20 @@
 Release 0.4-4
 	* configure will now properly enable mmx compiler flags.
+	* configure has a --with-profile option.
 	* Fixed a bug in ostringstream format inserting extra '\0'
 	* Fixed a bug in string find which sometimes did not match at the
 		beginning of the text.
+	* ostringstream will now use faster paged allocation.
 	* New alignof specializations for cmemlink(size_t) and string(1)
 	* Fixed tuple's value constructors to zero unspecified values.
 	* Added parentheses around ctr argument in foreach for computed vars.
 	* General simd interface for tuple optimization.
 	* Proper link interface in vector, that takes element count.
+	* set_terminate and set_unxpected prototypes are now available.
+	* LOOKUP_TEXT_STREAMABLE macro for printing through name arrays.
+	* Fixed iterator_swap to take iterators by value (reference& swap bad)
+	* Container random_shuffle.
+	* vformat method for string to allow implementation of custom printfs.
 
 2004-07-28 Release 0.4-3
 	* A ChangeLog! After all these years...

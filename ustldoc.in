@@ -1,4 +1,4 @@
-# Doxyfile 1.3.8
+# Doxyfile 1.3.9
 
 # This file describes the settings to be used by the documentation system
 # doxygen (www.doxygen.org) for a project
@@ -367,6 +367,12 @@ MAX_INITIALIZER_LINES  = 30
 
 SHOW_USED_FILES        = YES
 
+# If the sources in your project are distributed over multiple directories 
+# then setting the SHOW_DIRECTORIES tag to YES will show the directory hierarchy 
+# in the documentation.
+
+SHOW_DIRECTORIES       = YES
+
 #---------------------------------------------------------------------------
 # configuration options related to warning and progress messages
 #---------------------------------------------------------------------------
@@ -426,7 +432,8 @@ INPUT                  =
 # *.c *.cc *.cxx *.cpp *.c++ *.java *.ii *.ixx *.ipp *.i++ *.inl *.h *.hh *.hxx *.hpp 
 # *.h++ *.idl *.odl *.cs *.php *.php3 *.inc *.m *.mm
 
-FILE_PATTERNS          = *.cc *.h
+FILE_PATTERNS          = *.cc \
+                         *.h
 
 # The RECURSIVE tag can be used to turn specify whether or not subdirectories 
 # should be searched for input files as well. Possible values are YES and NO. 
@@ -948,9 +955,12 @@ INCLUDE_FILE_PATTERNS  =
 # are defined before the preprocessor is started (similar to the -D option of 
 # gcc). The argument of the tag is a list of macros of the form: name 
 # or name=definition (no spaces). If the definition and the = are 
-# omitted =1 is assumed.
+# omitted =1 is assumed. To prevent a macro definition from being 
+# undefined via #undef or recursively expanded use the := operator 
+# instead of the = operator.
 
-PREDEFINED             = DOXYGEN_SHOULD_SKIP_THIS __GNUC__
+PREDEFINED             = DOXYGEN_SHOULD_SKIP_THIS \
+                         __GNUC__
 
 # If the MACRO_EXPANSION and EXPAND_ONLY_PREDEF tags are set to YES then 
 # this tag can be used to specify a list of macro names that should be expanded. 

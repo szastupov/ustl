@@ -131,7 +131,8 @@ istream& operator>> (istream& is, vector<T>& v)
     if (expectedSize > is.remaining())
 	throw stream_bounds_exception ("read", typeid(v).name(), is.pos(), expectedSize, is.remaining());
     v.resize (n);
-    copy_n (istream_iterator<T>(is), n, v.begin());
+    foreach (typename vector<T>::iterator, i, v)
+	is >> *i;
     is.align();
     return (is);
 }

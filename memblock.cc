@@ -151,6 +151,19 @@ void memblock::reserve (size_type newSize, bool bExact)
     m_AllocatedSize = newSize;
 }
 
+/// \warning Do not use or override this! It exists only for implementing #string
+memblock::size_type memblock::minimumFreeCapacity (void) const
+{
+    return (0);
+}
+
+/// Swaps the contents with \p l
+void memblock::swap (memblock& l)
+{
+    memlink::swap (l);
+    ::ustl::swap (m_AllocatedSize, l.m_AllocatedSize);
+}
+
 /// Shifts the data in the linked block from \p start to \p start + \p n.
 memblock::iterator memblock::insert (iterator start, size_type n)
 {

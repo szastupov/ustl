@@ -38,7 +38,7 @@ static const xfmt_t	xfmt_RuntimeError	= 3;
 class logic_error : public exception {
 public:
     explicit		logic_error (const string& arg) throw();
-    inline virtual     ~logic_error (void) throw() {}
+    virtual	       ~logic_error (void) throw();
     virtual const char*	what (void) const throw();
     virtual void	info (string& msgbuf, const char* fmt = NULL) const throw();
     virtual void	read (istream& is);

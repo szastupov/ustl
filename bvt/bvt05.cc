@@ -257,6 +257,7 @@ int main (void)
     cout << "sort" << endl;
     reverse (v);
     PrintVector (v);
+    random_shuffle (v);
     sort (v);
     PrintVector (v);
     v.assign (first, last);

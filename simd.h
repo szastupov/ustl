@@ -279,7 +279,7 @@ MMX_PKOP2_SPEC(4,uint16_t,minus,psubw)
 MMX_PKOP2_SPEC(4,uint16_t,bitwise_and,pand)
 MMX_PKOP2_SPEC(4,uint16_t,bitwise_or,por)
 MMX_PKOP2_SPEC(4,uint16_t,bitwise_xor,pxor)
-/// \fixme psllw does not work like other operations, it uses the first element for shift count.
+/// \todo psllw does not work like other operations, it uses the first element for shift count.
 //MMX_PKOP2_SPEC(4,uint16_t,fpshl,psllw)
 //MMX_PKOP2_SPEC(4,uint16_t,fpshr,psrlw)
 MMX_PKOP2_SPEC(4,uint16_t,fpadds,paddusw)

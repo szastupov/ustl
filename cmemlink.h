@@ -152,7 +152,7 @@ inline void cmemlink::link (const void* first, const void* last)
 /// Reads the object from stream \p os
 inline void cmemlink::read (istream&)
 {
-    assert (false && "ustl::cmemlink is a read-only object.");
+    assert (!"ustl::cmemlink is a read-only object.");
 }
 
 // Specialization for stream alignment

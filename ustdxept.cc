@@ -38,6 +38,11 @@ logic_error::logic_error (const string& arg) throw()
     set_format (xfmt_LogicError);
 }
 
+/// Virtual destructor
+logic_error::~logic_error (void) throw()
+{
+}
+
 const char* logic_error::what (void) const throw()
 {
     return ("logic error");

@@ -81,7 +81,7 @@ public:
     size_type		writable_size (void) const;
     const memlink&	operator= (const cmemlink& l);
     const memlink&	operator= (const memlink& l);
-    inline void		swap (memlink& l);
+    void		swap (memlink& l);
     inline iterator	begin (void);
     inline iterator	end (void);
     inline const_iterator	begin (void) const;
@@ -96,13 +96,6 @@ protected:
 private:
     pointer		m_Data;	///< Pointer to the begin block (non-const)
 };
-
-/// Exchanges the contents with \p l
-inline void memlink::swap (memlink& l)
-{
-    cmemlink::swap (l);
-    ::ustl::swap (m_Data, l.m_Data);
-}
 
 /// Initializes both links to point to \p p, \p n
 inline void memlink::link (void* p, size_type n)
