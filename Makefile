@@ -11,29 +11,22 @@ INCS	= cmemlink.h memblock.h memlink.h mistream.h mostream.h ustdxept.h \
 	umultiset.h uspecial.h uios.h fdostream.h umap.h umultimap.h \
 	umemory.h uiosfunc.h utf8.h config.h ubitset.h unumeric.h utuple.h \
 	ulocale.h ufacets.h ulist.h upredalgo.h ustl.tbff
+DOCT	= ustldoc.in
+
 ifdef STANDALONE
 SRCS	+= unew.cc ulocale.cc ufacets.cc
 OBJS	+= unew.o ulocale.o ufacets.o
 INCS	+= unew.h ulocale.h ufacets.h
 endif
-DOCT	= ustldoc.in
-TOCLEAN	= config.status config.log
+TOCLEAN	+= config.status config.log
 
 ########################################################################
-
-LIBA		= lib${LIBNAME}.a
-LIBSO		= lib${LIBNAME}.so
-ifdef MAJOR
-LIBSOLNK	= ${LIBSO}.${MAJOR}
-LIBSOBLD	= ${LIBSO}.${MAJOR}.${MINOR}.${BUILD}
-endif
-TOCLEAN		+= ${LIBSO} ${LIBA} ${LIBSOBLD}
 
 ifdef LIBSOBLD
 TARGET	= ${LIBSOBLD}
 ${LIBSOBLD}:	${OBJS}
 	@echo "Linking $@ ..."
-	@${LD} ${LDFLAGS} -o $@ -Wl,-shared,-soname=${LIBSOLNK} $^ ${LIBS}
+	@${LD} ${LDFLAGS} ${SHBLDFL} -o $@ $^ ${LIBS}
 
 install: ${LIBSOBLD} install-incs
 	@echo "Installing ${LIBSOBLD} to ${LIBDIR} ..."
@@ -103,17 +96,16 @@ dox:
 	@${DOXYGEN} ${DOCT}
 
 TMPDIR	= /tmp
-RHATDIR	= ${HOME}/rpm
-DISTDIR	= ustl-${MAJOR}.${MINOR}
-DISTTAR	= ${DISTDIR}-${BUILD}.tar.bz2
+DISTDIR	= ${HOME}/stored
+DISTNAM	= ustl-${MAJOR}.${MINOR}
+DISTTAR	= ${DISTNAM}-${BUILD}.tar.bz2
 
 dist:
-	mkdir ${TMPDIR}/${DISTDIR}
-	cp -r . ${TMPDIR}/${DISTDIR}
-	+make -C ${TMPDIR}/${DISTDIR} dox dist-clean
-	(cd ${TMPDIR}/${DISTDIR}; rm -rf CVS; cd bvt; rm -rf CVS; cd ../docs; rm -rf CVS)
-	(cd ${TMPDIR}; tar jcf ${RHATDIR}/SOURCES/${DISTTAR} ${DISTDIR}; rm -rf ${DISTDIR})
-	cp ustl.spec ${RHATDIR}/SPECS
+	mkdir ${TMPDIR}/${DISTNAM}
+	cp -r . ${TMPDIR}/${DISTNAM}
+	+make -C ${TMPDIR}/${DISTNAM} dox dist-clean
+	(cd ${TMPDIR}/${DISTNAM}; rm -rf CVS; cd bvt; rm -rf CVS; cd ../docs; rm -rf CVS)
+	(cd ${TMPDIR}; tar jcf ${DISTDIR}/${DISTTAR} ${DISTNAM}; rm -rf ${DISTNAM})
 
 dist-clean:	clean
 	@rm -f Common.mk config.h ustl.spec bsconf.o bsconf .depend bvt/.depend

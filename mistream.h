@@ -221,7 +221,7 @@ inline size_t istream::stream_size (void) const
 template <typename T>
 inline void istream::iread (T& v)
 {
-    assert (aligned (sizeof(T) < c_DefaultAlignment ? sizeof(T) : c_DefaultAlignment));
+    assert (aligned (DefaultGrain (v)));
 #ifdef WANT_STREAM_BOUNDS_CHECKING
     if (remaining() < sizeof(T))
 	throw stream_bounds_exception ("read", typeid(v).name(), pos(), sizeof(T), remaining());
@@ -235,21 +235,23 @@ inline void istream::iread (T& v)
 
 template <typename T>
 inline istream& operator>> (istream& is, T*& v)		{ is.iread(v); return (is); }
-inline istream&	operator>> (istream& is, char& v)	{ is.iread(v); return (is); }
 inline istream&	operator>> (istream& is, int8_t& v)	{ is.iread(v); return (is); }
 inline istream&	operator>> (istream& is, uint8_t& v)	{ is.iread(v); return (is); }
 inline istream&	operator>> (istream& is, int16_t& v)	{ is.iread(v); return (is); }
 inline istream&	operator>> (istream& is, uint16_t& v)	{ is.iread(v); return (is); }
 inline istream&	operator>> (istream& is, int32_t& v)	{ is.iread(v); return (is); }
 inline istream&	operator>> (istream& is, uint32_t& v)	{ is.iread(v); return (is); }
-#if HAVE_INT64_T
-inline istream&	operator>> (istream& is, int64_t& v)	{ is.iread(v); return (is); }
-inline istream&	operator>> (istream& is, uint64_t& v)	{ is.iread(v); return (is); }
-#endif
 inline istream&	operator>> (istream& is, float& v)	{ is.iread(v); return (is); }
 inline istream&	operator>> (istream& is, double& v)	{ is.iread(v); return (is); }
 inline istream&	operator>> (istream& is, bool& v)	{ is.iread(v); return (is); }
 inline istream&	operator>> (istream& is, wchar_t& v)	{ is.iread(v); return (is); }
+#if HAVE_THREE_CHAR_TYPES
+inline istream&	operator>> (istream& is, char& v)	{ is.iread(v); return (is); }
+#endif
+#if HAVE_INT64_T
+inline istream&	operator>> (istream& is, int64_t& v)	{ is.iread(v); return (is); }
+inline istream&	operator>> (istream& is, uint64_t& v)	{ is.iread(v); return (is); }
+#endif
 #if SIZE_OF_LONG == SIZE_OF_INT
 inline istream&	operator>> (istream& is, long& v)		{ is.iread(v); return (is); }
 inline istream&	operator>> (istream& is, unsigned long& v)	{ is.iread(v); return (is); }

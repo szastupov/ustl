@@ -212,7 +212,7 @@ inline size_t ostream::stream_size (void) const
 template <typename T>
 inline void ostream::iwrite (const T& v)
 {
-    assert (aligned (sizeof(T) < c_DefaultAlignment ? sizeof(T) : c_DefaultAlignment));
+    assert (aligned (DefaultGrain (v)));
 #ifdef WANT_STREAM_BOUNDS_CHECKING
     if (remaining() < sizeof(T))
 	throw stream_bounds_exception ("write", typeid(v).name(), pos(), sizeof(T), remaining());
@@ -226,21 +226,23 @@ inline void ostream::iwrite (const T& v)
 
 template <typename T>
 inline ostream&	operator<< (ostream& os, T* v)		{ os.iwrite(v); return (os); }
-inline ostream&	operator<< (ostream& os, char v)	{ os.iwrite(v); return (os); }
 inline ostream&	operator<< (ostream& os, int8_t v)	{ os.iwrite(v); return (os); }
 inline ostream&	operator<< (ostream& os, uint8_t v)	{ os.iwrite(v); return (os); }
 inline ostream&	operator<< (ostream& os, int16_t v)	{ os.iwrite(v); return (os); }
 inline ostream&	operator<< (ostream& os, uint16_t v)	{ os.iwrite(v); return (os); }
 inline ostream&	operator<< (ostream& os, int32_t v)	{ os.iwrite(v); return (os); }
 inline ostream&	operator<< (ostream& os, uint32_t v)	{ os.iwrite(v); return (os); }
-#if HAVE_INT64_T
-inline ostream&	operator>> (ostream& os, int64_t v)	{ os.iwrite(v); return (os); }
-inline ostream&	operator>> (ostream& os, uint64_t v)	{ os.iwrite(v); return (os); }
-#endif
 inline ostream&	operator<< (ostream& os, float v)	{ os.iwrite(v); return (os); }
 inline ostream&	operator<< (ostream& os, double v)	{ os.iwrite(v); return (os); }
 inline ostream&	operator<< (ostream& os, bool v)	{ os.iwrite(v); return (os); }
 inline ostream&	operator<< (ostream& os, wchar_t v)	{ os.iwrite(v); return (os); }
+#if HAVE_THREE_CHAR_TYPES
+inline ostream&	operator<< (ostream& os, char v)	{ os.iwrite(v); return (os); }
+#endif
+#if HAVE_INT64_T
+inline ostream&	operator<< (ostream& os, int64_t v)	{ os.iwrite(v); return (os); }
+inline ostream&	operator<< (ostream& os, uint64_t v)	{ os.iwrite(v); return (os); }
+#endif
 #if SIZE_OF_LONG == SIZE_OF_INT
 inline ostream&	operator<< (ostream& os, long v)		{ os.iwrite(v); return (os); }
 inline ostream&	operator<< (ostream& os, unsigned long v)	{ os.iwrite(v); return (os); }

@@ -58,8 +58,9 @@ int main (void)
 
     ws.insert (0, wchar_t(1234));
     ws.insert (3, wchar_t(2345));
-    ws.insert (4, wchar_t(3456));
-    ws.insert (ws.length(), wchar_t(4567));
+    const wchar_t c_WChars[2] = { 3456, 4567 };
+    ws.insert (3, c_WChars, c_WChars + VectorSize(c_WChars), 2);
+    ws.insert (ws.length(), wchar_t(5678));
     cout << "Values[" << ws.length() << "]:";
     for (uoff_t j = 0; j < ws.length(); ++ j)
 	cout << ' ' << (uint32_t) ws.char_at(j);

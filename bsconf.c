@@ -44,7 +44,7 @@
 #define BUFSIZE		0x10000
 #define VectorSize(v)	(sizeof(v) / sizeof(*v))
 
-//#define const
+/*#define const*/
 typedef const char string_t [64];
 typedef char strbuf_t [64];
 
@@ -89,6 +89,7 @@ static void SubstituteCustomVars (void);
 static void DetermineHost (void);
 static void DefaultConfigVarValue (EVV v, EVV root, const char* suffix);
 static void Substitute (const char *matchStr, const char *replaceStr);
+static void ExecuteSubstitutionList (void);
 static void MakeSubstString (const char *str, char *substString);
 static const char* CopyPathEntry (const char* pi, char* dest);
 static int  IsBadInstallDir (const char* match);
@@ -174,6 +175,9 @@ static const SCpuCaps g_CpuCaps [] = {
 
 static string_t g_LibSuffixes[] = { ".a", ".so", ".la" };
 
+static unsigned int g_nSubs = 0;
+static strbuf_t g_Subs [MAX_SUBSTITUTIONS * 2];
+
 /*--------------------------------------------------------------------*/
 
 int main (int argc, const char* const* argv)
@@ -183,23 +187,25 @@ int main (int argc, const char* const* argv)
 
     GetConfigVarValues (--argc, ++argv);
     FillInDefaultConfigVarValues();
+
     FindPrograms();
+    SubstituteComponents();
+    SubstituteHostOptions();
+    SubstituteCpuCaps();
+    SubstitutePaths();
+    SubstituteEnvironment (0);
+    SubstitutePrograms();
+    SubstituteHeaders();
+    SubstituteLibs();
+    SubstituteFunctions();
+    SubstituteCustomVars();
+    SubstituteEnvironment (1);
 
     for (f = 0; f < VectorSize(g_Files); ++ f) {
 	copy (g_Files[f], srcFile);
-	copy_n (".in", srcFile + StrLen(g_Files[f]), 4);
+	append (".in", srcFile);
 	ReadFile (srcFile);
-	SubstituteComponents();
-	SubstituteHostOptions();
-	SubstituteCpuCaps();
-	SubstitutePaths();
-	SubstituteEnvironment (0);
-	SubstitutePrograms();
-	SubstituteHeaders();
-	SubstituteLibs();
-	SubstituteFunctions();
-	SubstituteCustomVars();
-	SubstituteEnvironment (1);
+	ExecuteSubstitutionList();
 	WriteFile (g_Files[f]);
     }
     return (0);
@@ -281,24 +287,24 @@ static void GetConfigVarValues (int argc, const char* const* argv)
 	fill_n (g_ConfigVV[cv], sizeof(strbuf_t), 0);
     /* --var=VALUE */
     for (a = 0; a < argc; ++ a) {
-	if (compare (argv[a], "--"))
+	if (!compare (argv[a], "--"))
 	    continue;
 	apos = 2;
-	if (!compare (argv[a] + apos, "help"))
+	if (compare (argv[a] + apos, "help"))
 	    PrintHelp();
-	else if (!compare (argv[a] + apos, "version"))
+	else if (compare (argv[a] + apos, "version"))
 	    PrintVersion();
-	else if (!compare (argv[a] + apos, "with")) {
+	else if (compare (argv[a] + apos, "with")) {
 	    apos += 4;
-	    if (!compare (argv[a] + apos, "out"))
+	    if (compare (argv[a] + apos, "out"))
 		apos += 3;
 	    ++ apos;
 	    for (cv = 0; cv < VectorSize(g_ComponentInfos); ++ cv)
-		if (!compare (argv[a] + apos, g_Components[cv * 3]))
+		if (compare (argv[a] + apos, g_Components[cv * 3]))
 		    g_ComponentInfos[cv].m_bDefaultOn = (apos == 7);
 	} else {
 	    for (cv = 0; cv < vv_last; ++ cv)
-		if (!compare (argv[a] + apos, g_ConfigV[cv]))
+		if (compare (argv[a] + apos, g_ConfigV[cv]))
 		    break;
 	    if (cv == vv_last)
 		continue;
@@ -383,14 +389,14 @@ static const char* CopyPathEntry (const char* pi, char* dest)
 
 static int IsBadInstallDir (const char* match)
 {
-    return (!compare (match, "/etc/") ||
-	    !compare (match, "/usr/sbin/") ||
-	    !compare (match, "/c/") ||
-	    !compare (match, "/C/") ||
-	    !compare (match, "/usr/etc/") ||
-	    !compare (match, "/sbin/") ||
-	    !compare (match, "/usr/ucb/") ||
-	    !compare (match, "/usr/afsws/bin/"));
+    return (compare (match, "/etc/") ||
+	    compare (match, "/usr/sbin/") ||
+	    compare (match, "/c/") ||
+	    compare (match, "/C/") ||
+	    compare (match, "/usr/etc/") ||
+	    compare (match, "/sbin/") ||
+	    compare (match, "/usr/ucb/") ||
+	    compare (match, "/usr/afsws/bin/"));
 }
 
 static void FindPrograms (void)
@@ -410,7 +416,7 @@ static void FindPrograms (void)
 	for (pi = path; pi; pi = CopyPathEntry (pi, match)) {
 	    append ("/", match);
 	    /* Ignore "bad" versions of install, like autoconf does. */
-	    if (!compare (g_ProgVars[i * 4 + 1], "install") && IsBadInstallDir (match))
+	    if (compare (g_ProgVars[i * 4 + 1], "install") && IsBadInstallDir (match))
 		continue;
 	    append (g_ProgVars[i * 4 + 1], match);
 	    if (access (match, X_OK) == 0) {
@@ -418,7 +424,7 @@ static void FindPrograms (void)
 		break;
 	    }
 	}
-	if (count && !compare (g_ProgVars[i * 4 + 1], "install"))
+	if (count && compare (g_ProgVars[i * 4 + 1], "install"))
 	    copy (match, g_ProgLocs[i]);
 	else
 	    copy (g_ProgVars[i * 4 + 2 + !count], g_ProgLocs[i]);
@@ -479,7 +485,7 @@ static unsigned int cpuid (void)
 	"jz 0f\n\t"
 	"xor %%eax, %%eax\n\t"		/* Ask whether feature list is supported */
 	"cpuid\n\t"
-	"test %%al,%%al\n\t"
+	"test %%eax,%%eax\n\t"
 	"jz 0f\n\t"			/* This is how gcc says to declare local labels */
 	"xor %%eax, %%eax\n\t"
 	"inc %%eax\n\t"			/* Ask for feature list */
@@ -516,19 +522,30 @@ static void SubstituteHostOptions (void)
 {
     strbuf_t buf;
 
-    if (!compare (g_Uname.sysname, "osx") ||
-	!compare (g_Uname.sysname, "darwin"))
+    if (compare (g_Uname.sysname, "osx") ||
+	compare (g_Uname.sysname, "darwin"))
 	Substitute ("@SYSWARNS@", "-Wno-long-double");
-    else if (!compare (g_Uname.sysname, "sun") ||
-	     !compare (g_Uname.sysname, "solaris"))
-	Substitute ("@SYSWARNS@", "-Wno-redundant-decls");
     else
 	Substitute ("@SYSWARNS@", "");
+    if (compare (g_Uname.sysname, "sun") ||
+	compare (g_Uname.sysname, "solaris") ||
+	compare (g_Uname.sysname, "openbsd"))
+	Substitute ("-Wredunant-decls", "-Wno-redundant-decls");
 
-    if (!compare (g_Uname.sysname, "linux"))
+    if (compare (g_Uname.sysname, "linux") ||
+	compare (g_Uname.sysname, "solaris") ||
+	compare (g_Uname.sysname, "sunos"))
 	Substitute ("@BUILD_SHARED_LIBRARIES@", "MAJOR\t\t= @LIB_MAJOR@\nMINOR\t\t= @LIB_MINOR@\nBUILD\t\t= @LIB_BUILD@");
     else
 	Substitute ("@BUILD_SHARED_LIBRARIES@\n", "");
+
+    if (compare (g_Uname.sysname, "linux"))
+	Substitute ("@SHBLDFL@", "-Wl,-shared,-soname=${LIBSOLNK}");
+    else
+	Substitute ("@SHBLDFL@", "-G");
+
+    if (!compare (g_Uname.sysname, "solaris"))
+	Substitute ("#undef HAVE_THREE_CHAR_TYPES", "#define HAVE_THREE_CHAR_TYPES 1");
 
     Substitute ("#undef RETSIGTYPE", "#define RETSIGTYPE void");
     Substitute ("#undef const", "/* #define const */");
@@ -547,7 +564,8 @@ static void SubstituteHostOptions (void)
     sprintf (buf, "#define SIZE_OF_POINTER %d", sizeof(void*));
     Substitute ("#undef SIZE_OF_POINTER ", buf);
 #if defined(__GNUC__) || (__WORDSIZE == 64) || defined(__ia64__)
-    Substitute ("#undef HAVE_INT64_T", "#define HAVE_INT64_T 1");
+    if (!compare (g_Uname.sysname, "openbsd"))
+	Substitute ("#undef HAVE_INT64_T", "#define HAVE_INT64_T 1");
 #endif
 #if defined(__GNUC__) || defined(__GLIBC_HAVE_LONG_LONG)
     Substitute ("#undef HAVE_LONG_LONG", "#define HAVE_LONG_LONG 1");
@@ -620,8 +638,10 @@ static void SubstituteLibs (void)
 		    ok = 1;
 	    }
 	}
-	if (!ok)
-	    Substitute (g_Libs [i * 3 + 2], g_Libs [i * 3 + 1]);
+	copy ("@lib", match);
+	append (g_Libs[i * 3], match);
+	append ("@", match);
+	Substitute (match, g_Libs [i * 3 + 1 + ok]);
     }
 }
 
@@ -645,21 +665,35 @@ static void SubstituteComponents (void)
 
 static void Substitute (const char* matchStr, const char* replaceStr)
 {
-    int rsl = StrLen (replaceStr);
-    int taill, delta = rsl - StrLen (matchStr);
-    char *cp = g_Buf;
-    for (; cp < g_Buf + g_BufSize; ++ cp) {
-	if (compare (cp, matchStr))
-	    continue;
-	if (g_BufSize + delta >= BUFSIZE)
-	    FatalError ("buffer overflow");
-	g_BufSize += delta;
-	taill = g_BufSize - (cp - g_Buf);
-	if (delta > 0)
-	    copy_backward (cp, cp + delta, taill);
-	else if (delta < 0)
-	    copy_n (cp + (-delta), cp, taill);
-	cp = copy_n (replaceStr, cp, rsl);
+    if (g_nSubs >= MAX_SUBSTITUTIONS)
+	FatalError ("substitution list is too long, increase MAX_SUBSTITUTIONS");
+    copy (matchStr, g_Subs[g_nSubs * 2]);
+    copy (replaceStr, g_Subs[g_nSubs * 2 + 1]);
+    ++ g_nSubs;
+}
+
+static void ExecuteSubstitutionList (void)
+{
+    unsigned int i;
+    int rsl, taill, delta;
+    char *cp;
+
+    for (i = 0; i < g_nSubs; ++ i) {
+	rsl = StrLen (g_Subs[i * 2 + 1]);
+	delta = rsl - StrLen (g_Subs[i * 2]);
+	for (cp = g_Buf; cp < g_Buf + g_BufSize; ++ cp) {
+	    if (!compare (cp, g_Subs[i * 2]))
+		continue;
+	    if (g_BufSize + delta >= BUFSIZE)
+		FatalError ("buffer overflow");
+	    g_BufSize += delta;
+	    taill = g_BufSize - (cp - g_Buf);
+	    if (delta > 0)
+		copy_backward (cp, cp + delta, taill);
+	    else if (delta < 0)
+		copy_n (cp + (-delta), cp, taill);
+	    cp = copy_n (g_Subs[i * 2 + 1], cp, rsl);
+	}
     }
 }
 
@@ -696,7 +730,7 @@ static int compare (const char* str1, const char* str2)
 {
     while (*str1 && *str2 && *str1 == *str2)
 	++ str1, ++ str2;
-    return (*str2);
+    return (!*str2);
 }
 
 static char* copy (const char* src, char* dest)

@@ -148,7 +148,6 @@ OSTRSTREAM_OPERATOR (uint8_t*,		const char*)
 OSTRSTREAM_OPERATOR (const uint8_t*,	const char*)
 OSTRSTREAM_OPERATOR (const string&,	const string&)
 OSTRSTREAM_OPERATOR (ios::fmtflags,	ios::fmtflags)
-OSTRSTREAM_OPERATOR (char,		uint8_t)
 OSTRSTREAM_OPERATOR (int8_t,		uint8_t)
 OSTRSTREAM_OPERATOR (uint8_t,		uint8_t)
 OSTRSTREAM_OPERATOR (int16_t,		int32_t)
@@ -159,6 +158,9 @@ OSTRSTREAM_OPERATOR (float,		double)
 OSTRSTREAM_OPERATOR (double,		double)
 OSTRSTREAM_OPERATOR (bool,		bool)
 OSTRSTREAM_OPERATOR (wchar_t,		wchar_t)
+#if HAVE_THREE_CHAR_TYPES
+OSTRSTREAM_OPERATOR (char,		uint8_t)
+#endif
 #if SIZE_OF_LONG == SIZE_OF_INT
 OSTRSTREAM_OPERATOR (long,		int32_t)
 OSTRSTREAM_OPERATOR (unsigned long,	uint32_t)

@@ -30,6 +30,8 @@
     #ifndef __attribute__
 	#define __attribute__(p) /* nothing */
     #endif
+#endif
+#if !defined(__GNUC__) || (__GNUC__ < 3)
     /* GCC supports the prefetch directive, which some CPUs use to improve caching */
     #ifndef __builtin_prefetch
 	#define __builtin_prefetch(p,rw,loc)
@@ -129,6 +131,10 @@
    slash. */
 #undef LSTAT_FOLLOWS_SLASHED_SYMLINK
 
+/* Define to 1 if your compiler treats char as a separate type along with
+   signed char and unsigned char. This will create overloads for char. */
+#undef HAVE_THREE_CHAR_TYPES
+
 /* Define to the address where bug reports for this package should be sent. */
 #undef PACKAGE_BUGREPORT
 
@@ -150,16 +156,16 @@
 /* Define to 1 if you have the ANSI C header files. */
 #undef STDC_HEADERS
 
-/* Uncomment if you have 64 bit types available */
+/* Define to 1 if you have 64 bit types available */
 #undef HAVE_INT64_T
 
-/* Uncomment if you have the long long type */
+/* Define to 1 if you have the long long type */
 #undef HAVE_LONG_LONG
 
-/* Uncomment if you want unrolled specializations for fill and copy */
+/* Define to 1 if you want unrolled specializations for fill and copy */
 #undef WANT_UNROLLED_COPY
 
-/* Uncomment if you want to use MMX/SSE/3dNow! processor instructions */
+/* Define to 1 if you want to use MMX/SSE/3dNow! processor instructions */
 #undef WANT_MMX
 
 /* Define to byte sizes of types */

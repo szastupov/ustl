@@ -60,6 +60,20 @@ namespace ustl {
 /// The alignment performed by default.
 const size_t c_DefaultAlignment = sizeof(void*);
 
+/// Returns the minimum of \p a and \p b
+template <typename T1, typename T2>
+inline const T1 min (const T1& a, const T2& b)
+{
+    return (a < b ? a : b);
+}
+
+/// Returns the maximum of \p a and \p b
+template <typename T1, typename T2>
+inline const T1 max (const T1& a, const T2& b)
+{
+    return (b < a ? a : b);
+}
+
 /// Divides \p n1 by \p n2 and rounds the result up (regular division rounds down).
 /// Negative numbers are rounded down because they are an unusual case, supporting
 /// which would require a branch. Since this is frequently used in graphics, the
@@ -77,6 +91,17 @@ inline T Align (T n, T grain = c_DefaultAlignment)
 {
     const T remainder = n % grain;
     return (remainder ? n + (grain - remainder) : n);
+}
+
+/// Returns the recommended alignment for the type of \p v.
+template <typename T>
+inline size_t DefaultGrain (T v)
+{
+#ifdef __GNUC__
+    return (__alignof__(v));
+#else
+    return (min (sizeof(v), c_DefaultAlignment));
+#endif
 }
 
 /// Offsets an iterator
@@ -109,13 +134,9 @@ inline ptrdiff_t distance (T1 i1, T2 i2)
     return (i2 - i1);
 }
 
-#define UNVOID_DISTANCE(T1const,T2const)			\
-template <>							\
-inline ptrdiff_t distance (T1const void* p1, T2const void* p2)	\
-{								\
-    return (reinterpret_cast<T2const uint8_t*>(p2) -		\
-	    reinterpret_cast<T1const uint8_t*>(p1));		\
-}
+#define UNVOID_DISTANCE(T1const,T2const)				   \
+template <> inline ptrdiff_t distance (T1const void* p1, T2const void* p2) \
+{ return ((T2const uint8_t*)(p2) - (T1const uint8_t*)(p1)); }
 UNVOID_DISTANCE(,)
 UNVOID_DISTANCE(const,const)
 UNVOID_DISTANCE(,const)
@@ -193,20 +214,6 @@ template <typename T>
 inline void DeleteVector (T* p)
 {
     delete [] p;
-}
-
-/// Returns the minimum of \p a and \p b
-template <typename T1, typename T2>
-inline const T1 min (const T1& a, const T2& b)
-{
-    return (a < b ? a : b);
-}
-
-/// Returns the maximum of \p a and \p b
-template <typename T1, typename T2>
-inline const T1 max (const T1& a, const T2& b)
-{
-    return (b < a ? a : b);
 }
 
 /// Template of making != from ! and ==

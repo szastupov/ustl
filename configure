@@ -21,7 +21,7 @@
 
 if [ -z "${CC}" ]; then
     IFS="${IFS}:"
-    for i in cc gcc c++ g++ c89 c99; do
+    for i in gcc g++ cc c++ c89 c99; do
 	for dir in ${PATH}; do
 	    if [ -x "$dir/$i" ]; then
 		export CC=$i;
@@ -53,3 +53,4 @@ if [ -x bsconf ]; then
 else
     echo "Build of the configurator program failed. Ensure you have an ANSI C compiler.";
 fi
+

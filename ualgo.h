@@ -33,6 +33,7 @@
 #include "uiterator.h"
 #include "ufunction.h"
 #include "upredalgo.h"
+#include "umemory.h"
 #include <stdlib.h>	// for rand()
 
 namespace ustl {

@@ -31,21 +31,23 @@ namespace ustl {
 template <typename T>
 inline size_t stream_size_of (T*)	{ return (sizeof(T*));		}
 #ifndef DOXYGEN_SHOULD_IGNORE_THIS
-inline size_t stream_size_of (char)	{ return (sizeof(char));	}
 inline size_t stream_size_of (int8_t)	{ return (sizeof(int8_t));	}
 inline size_t stream_size_of (uint8_t)	{ return (sizeof(uint8_t));	}
 inline size_t stream_size_of (int16_t)	{ return (sizeof(int16_t));	}
 inline size_t stream_size_of (uint16_t)	{ return (sizeof(uint16_t));	}
 inline size_t stream_size_of (int32_t)	{ return (sizeof(int32_t));	}
 inline size_t stream_size_of (uint32_t)	{ return (sizeof(uint32_t));	}
-#if HAVE_INT64_T
-inline size_t stream_size_of (int64_t)	{ return (sizeof(int64_t));	}
-inline size_t stream_size_of (uint64_t)	{ return (sizeof(uint64_t));	}
-#endif
 inline size_t stream_size_of (float)	{ return (sizeof(float));	}
 inline size_t stream_size_of (double)	{ return (sizeof(double));	}
 inline size_t stream_size_of (bool)	{ return (sizeof(bool));	}
 inline size_t stream_size_of (wchar_t)	{ return (sizeof(wchar_t));	}
+#if HAVE_THREE_CHAR_TYPES
+inline size_t stream_size_of (char)	{ return (sizeof(char));	}
+#endif
+#if HAVE_INT64_T
+inline size_t stream_size_of (int64_t)	{ return (sizeof(int64_t));	}
+inline size_t stream_size_of (uint64_t)	{ return (sizeof(uint64_t));	}
+#endif
 #if SIZE_OF_LONG == SIZE_OF_INT
 inline size_t stream_size_of (long v)			{ return (sizeof (v));	}
 inline size_t stream_size_of (unsigned long v)		{ return (sizeof (v));	}

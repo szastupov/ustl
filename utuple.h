@@ -48,7 +48,7 @@ public:
 public:
     inline			tuple (void)			{ fill_n (m_v, N, T()); }
     template <typename T2>
-    inline			tuple (const tuple<N,T2>& t)	{ copy_n (t.begin(), N, m_v); }
+    inline			tuple (const tuple<N,T2>& t)	{ for (uoff_t i = 0; i < N; ++ i) m_v[i] = T(t.at(i)); }
     inline			tuple (const tuple<N,T>& t)	{ copy_n (t.begin(), N, m_v); }
     inline			tuple (const_pointer v)		{ copy_n (v, N, m_v); }
     inline			tuple (const_reference v0);
@@ -68,25 +68,25 @@ public:
     inline reference		operator[] (size_t i)		{ return (m_v[i]); }
     template <typename T2>
     inline const tuple&		operator= (const tuple<N,T2>& src)
-				    { copy_n (src.begin(), N, begin()); return (*this); }
+				    { for (uoff_t i = 0; i < N; ++ i) m_v[i] = T(src.at(i)); return (*this); }
     inline const tuple&		operator= (const tuple<N,T>& src)
 				    { copy_n (src.begin(), N, begin()); return (*this); }
     inline const tuple&		operator+= (const_reference v)
-				    { for (size_t i = 0; i != N; ++ i) m_v[i] += v; return (*this); }
+				    { for (size_t i = 0; i < N; ++ i) m_v[i] += v; return (*this); }
     inline const tuple&		operator-= (const_reference v)
-				    { for (size_t i = 0; i != N; ++ i) m_v[i] -= v; return (*this); }
+				    { for (size_t i = 0; i < N; ++ i) m_v[i] -= v; return (*this); }
     inline const tuple&		operator*= (const_reference v)
-				    { for (size_t i = 0; i != N; ++ i) m_v[i] *= v; return (*this); }
+				    { for (size_t i = 0; i < N; ++ i) m_v[i] *= v; return (*this); }
     inline const tuple&		operator/= (const_reference v)
-				    { for (size_t i = 0; i != N; ++ i) m_v[i] /= v; return (*this); }
+				    { for (size_t i = 0; i < N; ++ i) m_v[i] /= v; return (*this); }
     inline const tuple		operator+ (const_reference v) const
-				    { tuple result; for (size_t i = 0; i != N; ++ i) result[i] = m_v[i] + v; return (result); }
+				    { tuple result; for (size_t i = 0; i < N; ++ i) result[i] = m_v[i] + v; return (result); }
     inline const tuple		operator- (const_reference v) const
-				    { tuple result; for (size_t i = 0; i != N; ++ i) result[i] = m_v[i] - v; return (result); }
+				    { tuple result; for (size_t i = 0; i < N; ++ i) result[i] = m_v[i] - v; return (result); }
     inline const tuple		operator* (const_reference v) const
-				    { tuple result; for (size_t i = 0; i != N; ++ i) result[i] = m_v[i] * v; return (result); }
+				    { tuple result; for (size_t i = 0; i < N; ++ i) result[i] = m_v[i] * v; return (result); }
     inline const tuple		operator/ (const_reference v) const
-				    { tuple result; for (size_t i = 0; i != N; ++ i) result[i] = m_v[i] / v; return (result); }
+				    { tuple result; for (size_t i = 0; i < N; ++ i) result[i] = m_v[i] / v; return (result); }
 private:
     T				m_v [N];
 };
@@ -109,34 +109,43 @@ inline tuple<N,T>::tuple (const_reference v0, const_reference v1, const_referenc
 
 template <size_t N, typename T1, typename T2>
 inline bool operator== (const tuple<N,T1>& t1, const tuple<N,T2>& t2)
-    { return (equal (t1.begin(), t1.end(), t2.begin())); }
+{
+    for (uoff_t i = 0; i < N; ++ i)
+	if (t1[i] != t2[i])
+	    return (false);
+    return (true);
+}
 
 template <size_t N, typename T1, typename T2>
 inline bool operator< (const tuple<N,T1>& t1, const tuple<N,T2>& t2)
-    { const pair<const T1*,const T2*> fne = mismatch (t1.begin(), t1.end(), t2.begin());
-      return (fne.first != t1.end() && *fne.first < *fne.second); }
+{
+    for (uoff_t i = 0; i < N && t1[i] <= t2[i]; ++ i)
+	if (t1[i] < t2[i])
+	    return (true);
+    return (false);
+}
 
 template <size_t N, typename T1, typename T2>
 inline const tuple<N,T1>& operator+= (tuple<N,T1>& t1, const tuple<N,T2>& t2)
-    { transform (t1.begin(), t1.end(), t2.begin(), t1.begin(), plus<T1>()); return (t1); }
+    { for (uoff_t i = 0; i < N; ++ i) t1[i] = T1(t1[i] + t2[i]); return (t1); }
 
 template <size_t N, typename T1, typename T2>
 inline const tuple<N,T1>& operator-= (tuple<N,T1>& t1, const tuple<N,T2>& t2)
-    { transform (t1.begin(), t1.end(), t2.begin(), t1.begin(), minus<T1>()); return (t1); }
+    { for (uoff_t i = 0; i < N; ++ i) t1[i] = T1(t1[i] - t2[i]); return (t1); }
 
 template <size_t N, typename T1, typename T2>
 inline const tuple<N,T1>& operator*= (tuple<N,T1>& t1, const tuple<N,T2>& t2)
-    { transform (t1.begin(), t1.end(), t2.begin(), t1.begin(), multiplies<T1>()); return (t1); }
+    { for (uoff_t i = 0; i < N; ++ i) t1[i] = T1(t1[i] * t2[i]); return (t1); }
 
 template <size_t N, typename T1, typename T2>
 inline const tuple<N,T1>& operator/= (tuple<N,T1>& t1, const tuple<N,T2>& t2)
-    { transform (t1.begin(), t1.end(), t2.begin(), t1.begin(), divides<T1>()); return (t1); }
+    { for (uoff_t i = 0; i < N; ++ i) t1[i] = T1(t1[i] / t2[i]); return (t1); }
 
 template <size_t N, typename T1, typename T2>
 inline const tuple<N,T1> operator+ (const tuple<N,T1>& t1, const tuple<N,T2>& t2)
 {
     tuple<N,T1> result;
-    transform (t1.begin(), t1.end(), t2.begin(), result.begin(), plus<T1>());
+    for (uoff_t i = 0; i < N; ++ i) result[i] = T1(t1[i] + t2[i]);
     return (result);
 }
 
@@ -144,7 +153,7 @@ template <size_t N, typename T1, typename T2>
 inline const tuple<N,T1> operator- (const tuple<N,T1>& t1, const tuple<N,T2>& t2)
 {
     tuple<N,T1> result;
-    transform (t1.begin(), t1.end(), t2.begin(), result.begin(), minus<T1>());
+    for (uoff_t i = 0; i < N; ++ i) result[i] = T1(t1[i] - t2[i]);
     return (result);
 }
 
@@ -152,7 +161,7 @@ template <size_t N, typename T1, typename T2>
 inline const tuple<N,T1> operator* (const tuple<N,T1>& t1, const tuple<N,T2>& t2)
 {
     tuple<N,T1> result;
-    transform (t1.begin(), t1.end(), t2.begin(), result.begin(), multiplies<T1>());
+    for (uoff_t i = 0; i < N; ++ i) result[i] = T1(t1[i] * t2[i]);
     return (result);
 }
 
@@ -160,7 +169,7 @@ template <size_t N, typename T1, typename T2>
 inline const tuple<N,T1> operator/ (const tuple<N,T1>& t1, const tuple<N,T2>& t2)
 {
     tuple<N,T1> result;
-    transform (t1.begin(), t1.end(), t2.begin(), result.begin(), divides<T1>());
+    for (uoff_t i = 0; i < N; ++ i) result[i] = T1(t1[i] / t2[i]);
     return (result);
 }
 

@@ -456,25 +456,25 @@ inline bool operator!= (const char* s1, const string& s2)
 /// Returns true if \p s1 is equal to \p s2
 inline bool operator< (const char* s1, const string& s2)
 {
-    return (s2 > string(s1));
+    return (s2 > s1);
 }
 
 /// Returns true if \p s1 is less than or equal to \p s2
 inline bool operator<= (const char* s1, const string& s2)
 {
-    return (s2 >= string(s1));
+    return (s2 >= s1);
 }
 
 /// Returns true if \p s1 is equal to \p s2
 inline bool operator> (const char* s1, const string& s2)
 {
-    return (s2 < string(s1));
+    return (s2 < s1);
 }
 
 /// Returns true if \p s1 is greater than or equal to \p s2
 inline bool operator>= (const char* s1, const string& s2)
 {
-    return (s2 <= string(s1));
+    return (s2 <= s1);
 }
 
 } // namespace ustl

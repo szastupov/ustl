@@ -29,6 +29,10 @@
 #define __STDC_CONSTANT_MACROS	// For UINT??_C macros to avoid using L and UL suffixes on constants.
 #ifdef HAVE_STDINT_H
     #include <stdint.h>
+#elif HAVE_INTTYPES_H
+    #include <inttypes.h>
+#else
+    #error Need standard integer types definitions, usually in stdint.h
 #endif
 #include <stddef.h>		// For ptrdiff_t, size_t
 #include <limits.h>

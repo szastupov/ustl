@@ -261,16 +261,22 @@ bool string::operator== (const_pointer s) const
 void string::insert (const uoff_t ip, wchar_t c, size_t n)
 {
     iterator ipp = ichar (ip);
-    insert (ipp, ' ', Utf8Bytes(c) * n);
+    ipp = iterator (memblock::insert (memblock::iterator(ipp), n * Utf8Bytes(c)));
     fill_n (utf8out (ipp), n, c);
 }
 
 /// Inserts sequence of wide characters at \p ip.
 void string::insert (const uoff_t ip, const wchar_t* first, const wchar_t* last, const size_t n)
 {
-    for (uoff_t i = ip; i < ip + n; ++ i)
-	for (; first < last; ++ first)
-	    insert (i, *first);
+    iterator ipp = ichar (ip);
+    size_t nti = distance (first, last), bti = 0;
+    for (uoff_t i = 0; i < nti; ++ i)
+	bti += Utf8Bytes(first[i]);
+    ipp = iterator (memblock::insert (memblock::iterator(ipp), n * bti));
+    utf8out_iterator<iterator> uout (utf8out (ipp));
+    for (uoff_t j = 0; j < n; ++ j)
+	for (uoff_t k = 0; k < nti; ++ k, ++ uout)
+	    *uout = first[k];
 }
 
 /// Inserts character \p c into this string at \p start.

@@ -62,7 +62,9 @@ Clean builds have been thus obtained on (SourceForge compile farm):
 	* Sun Sparc (Sun Ultra60 system, sparc64) - Linux OS kernel version 2.2 (Debian GNU/Linux 2.2)
 	* Sun Ultra Enterprise 220R - Sun Solaris (version 8)
 	* StrongArm 10000 host.
-	My own development platform is a dual-proc Athlon-MP 1GHz with Debian 3.1
+	My own development platform is a dual-proc Athlon-MP 1GHz, Debian
+	with the latest kernel and GCC, both of which I upgrade promptly as
+	they become available.
 
 make install
 	This copies the shared library libustl.so to your lib directory,
@@ -135,15 +137,16 @@ stream manipulation that is advocated in most STL examples.
 
 The other problem you may run into is the lack of error checking in many
 places. My philosophy is that programmer errors do not throw exceptions,
-but cause asserts instead. An example: a buggy utf8 encoder that you
-just wrote causes a crash when you try to use the utf8in_iterator and
-get an overflow due to a 0xFF at the end of the string. This will not
-throw an exception because you should correct the code before the user
-ever sees it. This means you need to actually test your code before
-shipping it. Most code is written to silently ignore such errors and
-continue as much as possible, since that is what the user wants. (See
-comments in utf8.h for reasons why the iterator overflows). Exceptions
-are thrown when the user has somehow caused the error.
+but cause asserts instead. An example: a buggy utf8 encoder that you just
+wrote causes a crash when you try to use the utf8in_iterator and get an
+overflow due to a 0xFF at the end of the string (this will not happen if
+you use the string class as the text repository, because it guarantees
+a null terminator, which stops the utf8 iterator) This will not throw
+an exception because you should correct the code before the user ever
+sees it. This means you need to actually test your code before shipping
+it. Most code is written to silently ignore such errors in non-debug
+builds and continue as much as possible, since that is what the user
+wants. Exceptions are thrown when the user has somehow caused the error.
 
 Data corruption is almost never caused by the user, but either by
 hardware failures or by haphazard editing, and should be detected

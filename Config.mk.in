@@ -29,6 +29,7 @@ CXXWARNOPTS	= ${CWARNOPTS} -Wconversion -Wsign-promo -Wsynth -Woverloaded-virtua
 OPTIMIZE	= -DNDEBUG=1 -fomit-frame-pointer
 #DEBUG		= 1
 #STANDALONE	= -nodefaultlibs
+
 ifdef DEBUG
     CFLAGS	= -ggdb3 ${CWARNOPTS} ${STANDALONE}
     CXXFLAGS	= -ggdb3 ${CXXWARNOPTS} ${STANDALONE}
@@ -39,6 +40,15 @@ else
     LDFLAGS	= -s ${STANDALONE}
 endif
 ifdef STANDALONE
-    LIBS	+= -lsupc++ -lgcc -lgcc_eh -lc
+    LIBS	+= @libsupc++@ @libgcc@ @libgcc_eh@ @libc@
 endif
+SHBLDFL		= @SHBLDFL@
+
+LIBA		= lib${LIBNAME}.a
+LIBSO		= lib${LIBNAME}.so
+ifdef MAJOR
+LIBSOLNK	= ${LIBSO}.${MAJOR}
+LIBSOBLD	= ${LIBSO}.${MAJOR}.${MINOR}.${BUILD}
+endif
+TOCLEAN		+= ${LIBSO} ${LIBA} ${LIBSOBLD}
 

@@ -1,7 +1,7 @@
 #define PACKAGE_NAME		"ustl"
 #define LIB_MAJOR		"0"
 #define LIB_MINOR		"4"
-#define LIB_BUILD		"2"
+#define LIB_BUILD		"3"
 
 #define PACKAGE_VERSION		LIB_MAJOR "." LIB_MINOR
 #define PACKAGE_TARNAME		PACKAGE_NAME
@@ -28,7 +28,9 @@ static string_t g_EnvVars [] = {
 
 /*  VARIABLE	PROGRAM		HOW TO CALL	IF NOT FOUND */
 static string_t g_ProgVars [] = {
+    "CC",	"gcc",		"gcc",		"@CC@",
     "CC",	"cc",		"cc",		"gcc",
+    "CXX",	"g++",		"g++",		"@CXX@",
     "CXX",	"c++",		"c++",		"g++",
     "LD",	"ld",		"ld",		"ld",
     "AR",	"ar",		"ar",		"echo",
@@ -39,6 +41,7 @@ static string_t g_ProgVars [] = {
     "LN",	"ln",		"ln -sf",	"cp"
 };
 
+/*   NAME               IF NOT FOUND                    IF FOUND */
 static string_t	g_Headers [] = {
     "fcntl.h",		"#undef HAVE_FCNTL_H",		"#define HAVE_FCNTL_H 1",
     "float.h",		"#undef HAVE_FLOAT_H",		"#define HAVE_FLOAT_H 1",
@@ -60,12 +63,15 @@ static string_t	g_Headers [] = {
     "stdlib.h",		"#undef STDC_HEADERS",		"#define STDC_HEADERS 1"
 };
 
+/*   NAME               IF NOT FOUND                    IF FOUND */
 static string_t g_Libs [] = {
-    "supc++",		"",				"-lsupc++ ",
-    "gcc",		"",				"-lgcc ",
-    "gcc_eh",		"",				"-lgcc_eh "
+    "supc++",		"",				"-lsupc++",
+    "gcc",		"",				"-lgcc",
+    "gcc_eh",		"-lgcc_s",			"-lgcc_eh",
+    "c",		"",				"-lc"
 };
 
+/*   NAME               IF NOT FOUND                    IF FOUND */
 static string_t g_Functions [] = {
     "atexit",		"#undef HAVE_ATEXIT",		"#define HAVE_ATEXIT 1",
     "malloc",		"#undef HAVE_MALLOC\n",		"#define HAVE_MALLOC 1\n",
@@ -79,6 +85,7 @@ static string_t g_Functions [] = {
     "strrchr",		"#undef HAVE_STRRCHR",		"#define HAVE_STRRCHR 1"
 };
 
+/*   NAME               WITHOUT TEXT                            WITH TEXT */
 static string_t g_Components [] = {
     "debug",		"#DEBUG\t\t= 1",			"DEBUG\t\t= 1 ",
     "bounds",		"#undef WANT_STREAM_BOUNDS_CHECKING",	"#define WANT_STREAM_BOUNDS_CHECKING 1 ",
@@ -91,6 +98,7 @@ static string_t g_Components [] = {
     "diet",		"@CXX@ ",				"diet @CXX@"
 };
 
+/* Parallel to g_Components */
 static SComponentInfo g_ComponentInfos [VectorSize(g_Components) / 3] = {
     { 0, "Compiles the library with debugging information" },
     { 0, "Enable runtime bounds checking on stream reads/writes" },
@@ -119,4 +127,7 @@ static string_t g_CustomVars [] = {
     "LIB_MINOR",		LIB_MINOR,
     "LIB_BUILD",		LIB_BUILD
 };
+
+/* Maximum size of the subsititution list. bsconf warns on overflow. */
+#define MAX_SUBSTITUTIONS	256
 
