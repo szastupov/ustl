@@ -92,6 +92,13 @@ memlink::size_type memlink::writable_size (void) const
     return (m_Data ? size() : 0);
 }
 
+/// Initializes both links to point to \p p, \p n
+void memlink::link (void* p, size_type n)
+{
+    cmemlink::link (p, n);
+    m_Data = reinterpret_cast<pointer>(p);
+}
+
 /// Resets all members to 0
 void memlink::unlink (void)
 {

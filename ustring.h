@@ -196,6 +196,18 @@ inline string::operator string::value_type* (void)
     return (begin());
 }
 
+/// Assigns itself the value of the range [\p i1, \p i2]
+inline void string::assign (const_iterator i1, const_iterator i2)
+{
+    assign (i1, distance (i1, i2));
+}
+
+/// Appends to itself the value of the range [\p i1, \p i2]
+inline void string::append (const_iterator i1, const_iterator i2)
+{
+    append (i1, distance (i1, i2));
+}
+
 /// Assigns itself the value of string \p s
 inline const string& string::operator= (const string& s)
 {
@@ -251,18 +263,6 @@ inline string string::operator+ (const string& s) const
     string result (*this);
     result += s;
     return (result);
-}
-
-/// Assigns itself the value of the range [\p i1, \p i2]
-inline void string::assign (const_iterator i1, const_iterator i2)
-{
-    assign (i1, distance (i1, i2));
-}
-
-/// Appends to itself the value of the range [\p i1, \p i2]
-inline void string::append (const_iterator i1, const_iterator i2)
-{
-    append (i1, distance (i1, i2));
 }
 
 /// \brief Returns comparison value regarding string \p s.

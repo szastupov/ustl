@@ -65,8 +65,8 @@ public:
 			memlink (const void* p, size_type n);
 			memlink (const memlink& l);
     explicit		memlink (const cmemlink& l);
-    inline void		link (const void* p, size_type n);
-    inline void		link (void* p, size_type n);
+    inline void		link (const void* p, size_type n)	{ cmemlink::link (p, n); }
+    void		link (void* p, size_type n);
     inline void		link (const cmemlink& l);
     inline void		link (memlink& l);
     inline void		link (const void* first, const void* last);
@@ -96,13 +96,6 @@ protected:
 private:
     pointer		m_Data;	///< Pointer to the begin block (non-const)
 };
-
-/// Initializes both links to point to \p p, \p n
-inline void memlink::link (void* p, size_type n)
-{
-    cmemlink::link (p, n);
-    m_Data = reinterpret_cast<pointer>(p);
-}
 
 /// Returns a modifiable pointer to the block
 inline memlink::pointer memlink::data (void)
@@ -146,12 +139,6 @@ inline void memlink::copy (const void* p, size_type n)
 {
     assert ((begin() || !n) && "Can't copy into a constant link.");
     copy (begin(), p, n);
-}
-
-/// Links to \p p of size \p n
-inline void memlink::link (const void* p, size_type n)
-{
-    cmemlink::link (p, n);
 }
 
 /// Links to \p l

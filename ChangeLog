@@ -1,4 +1,4 @@
-Release 0.5
+2004-11-11 Release 0.5
 	* configure will now properly enable mmx compiler flags.
 	* configure has a --with-profile option.
 	* Fixed a bug in ostringstream format inserting extra '\0'

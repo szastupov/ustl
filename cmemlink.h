@@ -80,7 +80,7 @@ public:
     inline iterator	end (void) const;
     inline size_type	size (void) const;
     inline size_type	max_size (void) const;
-    inline size_type	readable_size (void) const		{ return (size()); }
+    inline size_type	readable_size (void) const;
     inline bool		empty (void) const;
     inline void		resize (size_type n);
     inline void		read (istream&);
@@ -111,6 +111,12 @@ inline cmemlink::size_type cmemlink::size (void) const
 inline cmemlink::size_type cmemlink::max_size (void) const
 {
     return (m_Size);
+}
+
+/// Returns the readable size of the block.
+inline cmemlink::size_type cmemlink::readable_size (void) const
+{
+    return (size());
 }
 
 /// true if size() == 0
