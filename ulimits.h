@@ -17,9 +17,9 @@ namespace ustl {
 template <typename T> 
 struct numeric_limits {
     /// Returns the minimum value for type T.
-    static inline T min (void)		{ return (T()); }
+    static inline T min (void)		{ return (T(0)); }
     /// Returns the minimum value for type T.
-    static inline T max (void)		{ return (T()); }
+    static inline T max (void)		{ return (T(0)); }
     static const bool is_signed = false;	///< True if the type is signed.
     static const bool is_integer = false;	///< True if stores an exact value.
     static const bool is_integral = false;	///< True if fixed size and cast-copyable.

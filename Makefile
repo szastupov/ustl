@@ -55,7 +55,7 @@ install-shared: ${LIBSOBLD} install-incs
 	@echo "Installing ${LIBSOBLD} to ${LIBDIR} ..."
 	@${INSTALLDIR} ${LIBDIR}
 	@${INSTALLLIB} ${LIBSOBLD} ${LIBDIR}
-	@(cd ${LIBDIR}; ${LN} -sf ${LIBSOBLD} ${LIBSO}; ${LN} -sf ${LIBSOBLD} ${LIBSOLNK})
+	@(cd ${LIBDIR}; ${RM} ${LIBSO} ${LIBSOLNK}; ${LN} -sf ${LIBSOBLD} ${LIBSO}; ${LN} -sf ${LIBSOBLD} ${LIBSOLNK})
 
 uninstall-shared: uninstall-incs
 	@echo "Removing ${LIBSOBLD} from ${LIBDIR} ..."
@@ -114,12 +114,14 @@ TMPDIR	= /tmp
 DISTDIR	= ${HOME}/stored
 DISTNAM	= ${LIBNAME}-${MAJOR}.${MINOR}
 DISTTAR	= ${DISTNAM}-${BUILD}.tar.bz2
+DDOCTAR	= ${LIBNAME}-docs-${MAJOR}.${MINOR}-${BUILD}.tar.bz2
 
 dist:
 	mkdir ${TMPDIR}/${DISTNAM}
 	cp -r . ${TMPDIR}/${DISTNAM}
 	+make -C ${TMPDIR}/${DISTNAM} dox dist-clean
-	(cd ${TMPDIR}/${DISTNAM}; rm -rf CVS; cd bvt; rm -rf CVS; cd ../docs; rm -rf CVS)
+	(cd ${TMPDIR}; tar jcf ${DISTDIR}/${DDOCTAR} ${DISTNAM}/docs/html)
+	(cd ${TMPDIR}/${DISTNAM}; rm -rf CVS; cd bvt; rm -rf CVS; cd ../docs; rm -rf CVS html)
 	(cd ${TMPDIR}; tar jcf ${DISTDIR}/${DISTTAR} ${DISTNAM}; rm -rf ${DISTNAM})
 
 dist-clean:	clean

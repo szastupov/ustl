@@ -5,6 +5,15 @@ Release 0.6-1
 	* memblock will no longer zero newly allocated storage.
 	* Inlined empty constructors on map,multimap,set,multiset.
 	* NUMERIC_LIMITS macros to facilitate specialization.
+	* Fixed string vformat problem crashing on x86_64
+		Because vsnprintf is called twice, need to copy arglist.
+	* Added an rm before ln in install to avoid "already exists" errors.
+		SunOS still doesn't know about the -f flag...
+	* Split the distribution into ustl and ustl-docs
+	* New SIZE_OF_BOOL system substitution in bsconf
+		Only Alpha has bool as a long, so a define is better.
+	* Fixed configure being confused with multiple gcc versions.
+	* Reduced Align code for nonstandard values.
 
 2005-01-17 Release 0.6
 	* The library is relicensed under the MIT License (was LGPL)

@@ -23,7 +23,8 @@ if [ -z "${CC}" ]; then
 	exit;
     fi
 fi
-STDDEFPATH=`find /usr/lib/gcc* -name stddef.h 2> /dev/null | head -n 1`
+GCCVERSION=`${CC} --version`
+STDDEFPATH=`find /usr/lib/gcc* -name stddef.h 2> /dev/null | grep ${GCCVERSION}`
 if [ ! -z ${STDDEFPATH} ]; then
     GINCDIR=`dirname ${STDDEFPATH}`
     GLIBDIR=`dirname ${GINCDIR}`

@@ -636,6 +636,10 @@ static void SubstituteHostOptions (void)
     Substitute ("#undef SIZE_OF_POINTER ", buf);
     sprintf (buf, "#define SIZE_OF_SIZE_T %d", sizeof(size_t));
     Substitute ("#undef SIZE_OF_SIZE_T ", buf);
+    if (compare (g_Uname.machine, "alpha"))
+	Substitute ("#undef SIZE_OF_BOOL ", "#define SIZE_OF_BOOL SIZE_OF_LONG");
+    else
+	Substitute ("#undef SIZE_OF_BOOL ", "#define SIZE_OF_BOOL SIZE_OF_CHAR");
     if ((sizeof(size_t) == sizeof(unsigned long) &&
 	 sizeof(size_t) != sizeof(unsigned int)) ||
 	compare (g_Uname.sysname, "osx") ||

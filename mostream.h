@@ -54,9 +54,9 @@ public:
     inline void		seek (uoff_t newPos);
     inline void		seek (const_iterator newPos);
     inline void		skip (size_type nBytes);
-    inline uoff_t	pos (void) const;
-    inline iterator	ipos (void);
-    inline const_iterator ipos (void) const;
+    inline uoff_t	pos (void) const	{ return (m_Pos); }
+    inline iterator	ipos (void)		{ return (begin() + pos()); }
+    inline const_iterator ipos (void) const	{ return (begin() + pos()); }
     inline size_type	remaining (void) const;
     inline bool		aligned (size_type grain = c_DefaultAlignment) const;
     inline size_type	align_size (size_type grain = c_DefaultAlignment) const;
@@ -117,24 +117,6 @@ private:
 };
 
 //----------------------------------------------------------------------
-
-/// Returns the current write position. Usually this is also the number of bytes written.
-inline uoff_t ostream::pos (void) const
-{
-    return (m_Pos);
-}
-
-/// Returns the current write position
-inline ostream::iterator ostream::ipos (void)
-{
-    return (begin() + m_Pos);
-}
-
-/// Returns the current write position
-inline ostream::const_iterator ostream::ipos (void) const
-{
-    return (begin() + m_Pos);
-}
 
 /// Move the write pointer to \p newPos
 inline void ostream::seek (uoff_t newPos)
@@ -202,44 +184,44 @@ inline void ostream::iwrite (const T& v)
 #else
     assert (remaining() >= sizeof(T));
 #endif
-    void* pv = begin() + pos();
-    *reinterpret_cast<T*>(pv) = v;
+    *reinterpret_cast<T*>(ipos()) = v;
     skip (sizeof(T));
 }
 
+#define OSTREAM_OPERATOR(type)	\
+inline ostream&	operator<< (ostream& os, type v)	{ os.iwrite(v); return (os); }
+
 template <typename T>
-inline ostream&	operator<< (ostream& os, T* v)		{ os.iwrite(v); return (os); }
-inline ostream&	operator<< (ostream& os, int8_t v)	{ os.iwrite(v); return (os); }
-inline ostream&	operator<< (ostream& os, uint8_t v)	{ os.iwrite(v); return (os); }
-inline ostream&	operator<< (ostream& os, int16_t v)	{ os.iwrite(v); return (os); }
-inline ostream&	operator<< (ostream& os, uint16_t v)	{ os.iwrite(v); return (os); }
-inline ostream&	operator<< (ostream& os, int32_t v)	{ os.iwrite(v); return (os); }
-inline ostream&	operator<< (ostream& os, uint32_t v)	{ os.iwrite(v); return (os); }
-inline ostream&	operator<< (ostream& os, float v)	{ os.iwrite(v); return (os); }
-inline ostream&	operator<< (ostream& os, double v)	{ os.iwrite(v); return (os); }
-inline ostream&	operator<< (ostream& os, wchar_t v)	{ os.iwrite(v); return (os); }
+OSTREAM_OPERATOR(T*)
+OSTREAM_OPERATOR(int8_t)
+OSTREAM_OPERATOR(uint8_t)
+OSTREAM_OPERATOR(int16_t)
+OSTREAM_OPERATOR(uint16_t)
+OSTREAM_OPERATOR(int32_t)
+OSTREAM_OPERATOR(uint32_t)
+OSTREAM_OPERATOR(float)
+OSTREAM_OPERATOR(double)
+OSTREAM_OPERATOR(wchar_t)
+#if SIZE_OF_BOOL == SIZE_OF_CHAR
+OSTREAM_OPERATOR(bool)
+#else
 inline ostream&	operator<< (ostream& os, bool v)
-{
-    if (sizeof(bool) == sizeof(uint8_t))
-	os.iwrite(v);
-    else
-	os.iwrite (uint8_t(v));
-    return (os);
-}
+{ os.iwrite (uint8_t(v)); return (os); }
+#endif
 #if HAVE_THREE_CHAR_TYPES
-inline ostream&	operator<< (ostream& os, char v)	{ os.iwrite(v); return (os); }
+OSTREAM_OPERATOR(char)
 #endif
 #if HAVE_INT64_T
-inline ostream&	operator<< (ostream& os, int64_t v)	{ os.iwrite(v); return (os); }
-inline ostream&	operator<< (ostream& os, uint64_t v)	{ os.iwrite(v); return (os); }
+OSTREAM_OPERATOR(int64_t)
+OSTREAM_OPERATOR(uint64_t)
 #endif
 #if SIZE_OF_LONG == SIZE_OF_INT
-inline ostream&	operator<< (ostream& os, long v)		{ os.iwrite(v); return (os); }
-inline ostream&	operator<< (ostream& os, unsigned long v)	{ os.iwrite(v); return (os); }
+OSTREAM_OPERATOR(long)
+OSTREAM_OPERATOR(unsigned long)
 #endif
 #if HAVE_LONG_LONG && (!HAVE_INT64_T || SIZE_OF_LONG_LONG > 8)
-inline ostream&	operator<< (ostream& os, long long v)		{ os.iwrite(v); return (os); }
-inline ostream&	operator<< (ostream& os, unsigned long long v)	{ os.iwrite(v); return (os); }
+OSTREAM_OPERATOR(long long)
+OSTREAM_OPERATOR(unsigned long long)
 #endif
 
 } // namespace ustl

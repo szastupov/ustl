@@ -49,13 +49,6 @@ namespace ustl {
 /// Shorthand for container reverse iteration.
 #define eachfor(type,i,ctr)	for (type i = (ctr).rbegin(); i != (ctr).rend(); ++ i)
 
-/// The alignment performed by default.
-#if defined(__GNUC__) && (__GNUC__ >= 3)
-    const size_t c_DefaultAlignment = __alignof__(void*);
-#else
-    const size_t c_DefaultAlignment = sizeof(void*);
-#endif
-
 /// Returns the minimum of \p a and \p b
 template <typename T1, typename T2>
 inline const T1 min (const T1& a, const T2& b)
@@ -82,22 +75,25 @@ inline T1 DivRU (T1 n1, T2 n2)
     return (n1 / n2 + (n1 % n2 > 0));
 }
 
+/// The alignment performed by default.
+#if defined(__GNUC__) && (__GNUC__ >= 3)
+    const size_t c_DefaultAlignment = __alignof__(void*);
+#else
+    const size_t c_DefaultAlignment = sizeof(void*);
+#endif
+
 /// \brief Rounds \p n up to be divisible by \p grain
 template <typename T>
 inline T Align (T n, T grain = c_DefaultAlignment)
 {
-    if (grain == 4)
-	return (n % 4 ? (n & ~3) + 4 : n);
-    else if (grain == 2)
-	return (n % 2 ? ++n : n);
-    else if (grain == 8)
-	return (n % 8 ? (n & ~7) + 8 : n);
-    else if (grain == 16)
-	return (n % 16 ? (n & ~15) + 16 : n);
-    else {
-	const T remainder = n % grain;
-	return (remainder ? n + (grain - remainder) : n);
-    }
+    switch (grain) {
+	case 2:	return (n + n % 2);
+	case 4: case 8: case 16:
+	    return (n % grain ? (n & ~(grain - 1)) + grain : n);
+	default: {
+	    const T r = n % grain;
+	    return (r ? n + (grain - r) : n); }
+    };
 }
 
 /// Returns the recommended alignment for type \p T.
@@ -107,8 +103,10 @@ inline size_t alignof (T)
     return (__alignof__(T));
 }
 
+#if SIZE_OF_BOOL != SIZE_OF_CHAR
 // bool is a big type on some machines (like DEC Alpha), so it's written as a byte.
 template <> inline size_t alignof (bool) { return (sizeof(uint8_t)); }
+#endif
 
 /// Offsets an iterator
 template <typename T>

@@ -72,12 +72,12 @@ public:
     inline void		link (const void* f, const void* l)	{ cmemlink::link (f, l); }
 			OVERLOAD_POINTER_AND_SIZE_T_V2(link, const void*)
     virtual void	unlink (void);
+    inline uoff_t	pos (void) const	{ return (m_Pos); }
+    inline const_iterator ipos (void) const	{ return (begin() + pos()); }
+    inline size_type	remaining (void) const	{ return (size() - pos()); }
     inline void		seek (uoff_t newPos);
     inline void		seek (const_iterator newPos);
     inline void		skip (size_type nBytes);
-    inline uoff_t	pos (void) const;
-    inline const_iterator ipos (void) const;
-    inline size_type	remaining (void) const;
     inline bool		aligned (size_type grain = c_DefaultAlignment) const;
     inline size_type	align_size (size_type grain = c_DefaultAlignment) const;
     inline void		align (size_type grain = c_DefaultAlignment);
@@ -140,18 +140,6 @@ private:
 
 //----------------------------------------------------------------------
 
-/// Returns the current read position
-inline uoff_t istream::pos (void) const
-{
-    return (m_Pos);
-}
-
-/// Returns the current read position
-inline istream::const_iterator istream::ipos (void) const
-{
-    return (begin() + m_Pos);
-}
-
 /// Sets the current read position to \p newPos
 inline void istream::seek (uoff_t newPos)
 {
@@ -170,16 +158,10 @@ inline void istream::seek (const_iterator newPos)
     seek (distance (begin(), newPos));
 }
 
-/// skips \p nBytes without reading anything.
+/// Skips \p nBytes without reading them.
 inline void istream::skip (size_type nBytes)
 {
     seek (pos() + nBytes);
-}
-
-/// Returns the number of bytes remaining in the input buffer.
-inline istream::size_type istream::remaining (void) const
-{
-    return (size() - pos());
 }
 
 /// Returns the number of bytes to skip to be aligned on \p grain.
@@ -218,47 +200,44 @@ inline void istream::iread (T& v)
 #else
     assert (remaining() >= sizeof(T));
 #endif
-    const void* pv = begin() + pos();
-    v = *reinterpret_cast<const T*>(pv);
+    v = *reinterpret_cast<const T*>(ipos());
     skip (sizeof(T));
 }
 
+#define ISTREAM_OPERATOR(type)	\
+inline istream&	operator>> (istream& is, type& v)	{ is.iread(v); return (is); }
+
 template <typename T>
-inline istream& operator>> (istream& is, T*& v)		{ is.iread(v); return (is); }
-inline istream&	operator>> (istream& is, int8_t& v)	{ is.iread(v); return (is); }
-inline istream&	operator>> (istream& is, uint8_t& v)	{ is.iread(v); return (is); }
-inline istream&	operator>> (istream& is, int16_t& v)	{ is.iread(v); return (is); }
-inline istream&	operator>> (istream& is, uint16_t& v)	{ is.iread(v); return (is); }
-inline istream&	operator>> (istream& is, int32_t& v)	{ is.iread(v); return (is); }
-inline istream&	operator>> (istream& is, uint32_t& v)	{ is.iread(v); return (is); }
-inline istream&	operator>> (istream& is, float& v)	{ is.iread(v); return (is); }
-inline istream&	operator>> (istream& is, double& v)	{ is.iread(v); return (is); }
-inline istream&	operator>> (istream& is, wchar_t& v)	{ is.iread(v); return (is); }
+ISTREAM_OPERATOR(T*)
+ISTREAM_OPERATOR(int8_t)
+ISTREAM_OPERATOR(uint8_t)
+ISTREAM_OPERATOR(int16_t)
+ISTREAM_OPERATOR(uint16_t)
+ISTREAM_OPERATOR(int32_t)
+ISTREAM_OPERATOR(uint32_t)
+ISTREAM_OPERATOR(float)
+ISTREAM_OPERATOR(double)
+ISTREAM_OPERATOR(wchar_t)
+#if SIZE_OF_BOOL == SIZE_OF_CHAR
+ISTREAM_OPERATOR(bool)
+#else
 inline istream&	operator>> (istream& is, bool& v)
-{
-    if (sizeof(bool) == sizeof(uint8_t))
-	is.iread(v);
-    else {
-	uint8_t v8;
-	is.iread (v8);
-	v = v8;
-    }
-    return (is);
-}
+{ uint8_t v8; is.iread (v8); v = v8; return (is); }
+#endif
 #if HAVE_THREE_CHAR_TYPES
-inline istream&	operator>> (istream& is, char& v)	{ is.iread(v); return (is); }
+ISTREAM_OPERATOR(char)
 #endif
 #if HAVE_INT64_T
-inline istream&	operator>> (istream& is, int64_t& v)	{ is.iread(v); return (is); }
-inline istream&	operator>> (istream& is, uint64_t& v)	{ is.iread(v); return (is); }
+ISTREAM_OPERATOR(int64_t)
+ISTREAM_OPERATOR(uint64_t)
 #endif
 #if SIZE_OF_LONG == SIZE_OF_INT
-inline istream&	operator>> (istream& is, long& v)		{ is.iread(v); return (is); }
-inline istream&	operator>> (istream& is, unsigned long& v)	{ is.iread(v); return (is); }
+ISTREAM_OPERATOR(long)
+ISTREAM_OPERATOR(unsigned long)
 #endif
 #if HAVE_LONG_LONG && (!HAVE_INT64_T || SIZE_OF_LONG_LONG > 8)
-inline istream&	operator>> (istream& is, long long& v)		{ is.iread(v); return (is); }
-inline istream&	operator>> (istream& is, unsigned long long& v)	{ is.iread(v); return (is); }
+ISTREAM_OPERATOR(long long)
+ISTREAM_OPERATOR(unsigned long long)
 #endif
 
 } // namespace ustl

@@ -441,13 +441,14 @@ string::const_iterator string::find_last_not_of (const string& s, const_iterator
 /// Equivalent to a vsprintf on the string.
 int string::vformat (const char* fmt, va_list args)
 {
-    if (is_linked() || !data() || !capacity())
-	reserve (strlen (fmt));
+    va_list args2;
+    __va_copy (args2, args);	// Because vsnprintf will iterate over args, changing them.
+    reserve (size());		// To instantiate the buffer, if linked.
     int rv = vsnprintf (data(), memblock::capacity(), fmt, args);
     if (rv >= 0) {
 	if (size_t(rv) > capacity()) {
 	    reserve (rv);
-	    rv = vsnprintf (data(), memblock::capacity(), fmt, args);
+	    rv = vsnprintf (data(), memblock::capacity(), fmt, args2);
 	}
 	resize (rv);
     }
