@@ -1,6 +1,6 @@
 /* This file is part of bsconf - a configure replacement.
  *
- * Copyright (C) 2005 by Mike Sharov <msharov@talentg.com>
+ * Copyright (C) 2005 by Mike Sharov <msharov@users.sourceforge.net>
  * This file is free software, distributed under the MIT License.
  *
  * bsconf was written to replace autoconf-made configure scripts, which
@@ -277,7 +277,7 @@ static void PrintVersion (void)
 {
     printf (PACKAGE_NAME " configure " PACKAGE_VERSION "\n"
 	    "\nUsing bsconf package version 0.1\n"
-	    "Copyright (c) 2003-2005, Mike Sharov <msharov@talentg.com>\n"
+	    "Copyright (c) 2003-2005, Mike Sharov <msharov@users.sourceforge.net>\n"
 	    "This configure script and the bsconf package are free software.\n"
 	    "Unlimited permission to copy, distribute, and modify is granted.\n");
     exit (0);

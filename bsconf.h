@@ -21,7 +21,7 @@
 #define PACKAGE_VERSION		LIB_MAJOR "." LIB_MINOR
 #define PACKAGE_TARNAME		PACKAGE_NAME
 #define PACKAGE_STRING		PACKAGE_NAME " " PACKAGE_VERSION
-#define PACKAGE_BUGREPORT	"Mike Sharov <msharov@talentg.com>"
+#define PACKAGE_BUGREPORT	"Mike Sharov <msharov@users.sourceforge.net>"
 
 static cpchar_t g_Files [] = {
     "Common.mk",

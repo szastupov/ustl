@@ -1,6 +1,6 @@
 // This file is part of the ustl library, an STL implementation.
 //
-// Copyright (C) 2005 by Mike Sharov <msharov@talentg.com>
+// Copyright (C) 2005 by Mike Sharov <msharov@users.sourceforge.net>
 // This file is free software, distributed under the MIT License.
 //
 // memlink.cc
