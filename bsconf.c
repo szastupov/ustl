@@ -59,6 +59,7 @@ typedef enum {
     vv_sharedstatedir,
     vv_localstatedir,
     vv_libdir,
+    vv_gcclibdir,
     vv_includedir,
     vv_oldincludedir,
     vv_gccincludedir,
@@ -80,6 +81,7 @@ static void SubstitutePrograms (void);
 static void SubstituteCpuCaps (void);
 static void SubstituteHostOptions (void);
 static void SubstituteHeaders (void);
+static void SubstituteLibs (void);
 static void SubstituteFunctions (void);
 static void SubstituteComponents (void);
 static void SubstituteCustomVars (void);
@@ -127,6 +129,7 @@ static string_t g_ConfigV [vv_last] = {
     "sharedstatedir",
     "localstatedir",
     "libdir",
+    "gcclibdir",
     "includedir",
     "oldincludedir",
     "gccincludedir",
@@ -169,6 +172,8 @@ static const SCpuCaps g_CpuCaps [] = {
     { 31, "3dNow!",	"#undef CPU_HAS_3DNOW",		"#define CPU_HAS_3DNOW 1"	}
 };
 
+static string_t g_LibSuffixes[] = { ".a", ".so", ".la" };
+
 /*--------------------------------------------------------------------*/
 
 int main (int argc, const char* const* argv)
@@ -184,14 +189,15 @@ int main (int argc, const char* const* argv)
 	copy (g_Files[f], srcFile);
 	copy_n (".in", srcFile + StrLen(g_Files[f]), 4);
 	ReadFile (srcFile);
+	SubstituteComponents();
 	SubstituteHostOptions();
 	SubstituteCpuCaps();
 	SubstitutePaths();
 	SubstituteEnvironment (0);
 	SubstitutePrograms();
 	SubstituteHeaders();
+	SubstituteLibs();
 	SubstituteFunctions();
-	SubstituteComponents();
 	SubstituteCustomVars();
 	SubstituteEnvironment (1);
 	WriteFile (g_Files[f]);
@@ -238,9 +244,9 @@ static void PrintHelp (void)
 	    if (!g_ComponentInfos[i].m_Description[0])
 		continue;
 	    if (g_ComponentInfos[i].m_bDefaultOn)
-		printf ("  --without-%s\t%s\n", g_Components[i * 3], g_ComponentInfos[i].m_Description);
+		printf ("  --without-%-12s%s\n", g_Components[i * 3], g_ComponentInfos[i].m_Description);
 	    else
-		printf ("  --with-%s\t\t%s\n", g_Components[i * 3], g_ComponentInfos[i].m_Description);
+		printf ("  --with-%-15s%s\n", g_Components[i * 3], g_ComponentInfos[i].m_Description);
 	}
 	printf ("\n");
     }
@@ -333,6 +339,7 @@ static void FillInDefaultConfigVarValues (void)
     DefaultConfigVarValue (vv_sharedstatedir,	vv_prefix,	"/com");
     DefaultConfigVarValue (vv_localstatedir,	vv_prefix,	"/var");
     DefaultConfigVarValue (vv_libdir,		vv_exec_prefix,	"/lib");
+    DefaultConfigVarValue (vv_gcclibdir,	vv_exec_prefix,	"/lib");
     DefaultConfigVarValue (vv_includedir,	vv_prefix,	"/include");
     DefaultConfigVarValue (vv_gccincludedir,	vv_prefix,	"/include");
     DefaultConfigVarValue (vv_infodir,		vv_prefix,	"/info");
@@ -457,36 +464,49 @@ static void SubstitutePrograms (void)
 }
 
 #if defined(__GNUC__) && defined(__i386__)
-    #define AMD_SPECIFIC_BITS	0xC1480000
-    static unsigned cpuid (void)
-    {
-	unsigned eax, ebx, ecx, edx, caps;
-	__asm__("cpuid" : "=a" (eax), "=b" (ebx), "=c" (ecx), "=d" (edx) : "0" (0x00000000));
-	if (eax > 0) {
-	    __asm__("cpuid" : "=a" (eax), "=b" (ebx), "=c" (ecx), "=d" (edx) : "0" (0x00000001));
-	    caps = edx & ~AMD_SPECIFIC_BITS;
-	}
-	__asm__("cpuid" : "=a" (eax), "=b" (ebx), "=c" (ecx), "=d" (edx) : "0" (0x80000000));
-	if (eax > 0) {
-	    __asm__("cpuid" : "=a" (eax), "=b" (ebx), "=c" (ecx), "=d" (edx) : "0" (0x80000001));
-	    caps |= edx & AMD_SPECIFIC_BITS;
-	}
-	return (caps);
-    }
+static unsigned int cpuid (void)
+{
+    unsigned caps = 0;
+    asm ("pushf\n\t"			/* First, test if cpuid instruction works */
+	"popl %%eax\n\t"
+	"mov %%eax, %%ecx\n\t"
+	"xor $0x200000, %%eax\n\t"	/* Toggle the ID bit in one copy of eflags */
+	"pushl %%eax\n\t"
+	"popf\n\t"
+	"pushf\n\t"
+	"popl %%eax\n\t"		/* If the the flags are unchanged, cpuid is not supported */
+	"test %%eax, %%ecx\n\t"
+	"jz 0f\n\t"
+	"xor %%eax, %%eax\n\t"		/* Ask whether feature list is supported */
+	"cpuid\n\t"
+	"test %%al,%%al\n\t"
+	"jz 0f\n\t"			/* This is how gcc says to declare local labels */
+	"xor %%eax, %%eax\n\t"
+	"inc %%eax\n\t"			/* Ask for feature list */
+	"cpuid\n\t"
+	"and $0x3EB7FFFF, %%edx\n\t"	/* The inverse of the AMD bit constant below */
+	"mov %%edx, %0\n\t"
+	"mov $0x80000000, %%eax\n\t"
+	"cpuid\n\t"
+	"test $0x80000000, %%eax\n\t"	/* Test for extended feature support */
+	"jz 0f\n\t"
+	"mov $0x80000001, %%eax\n\t"	/* AMD extensions */
+	"cpuid\n\t"
+	"and $0xC1480000, %%edx\n\t"	/* Take only AMD specific bits */
+	"or %%edx, %0\n\t"
+	"0:\n\t"
+	: "=m"(caps)
+	:
+	: "cc", "%eax", "%ebx", "%ecx", "%edx");
+    return (caps);
+}
 #else
     #define cpuid()	0
 #endif
 
 static void SubstituteCpuCaps (void)
 {
-    unsigned int caps = 0, i;
-    if (!compare (g_Uname.sysname, "i386"))
-	return;
-    else if (!compare (g_Uname.sysname, "i486"))
-	caps = 1;	/* FPU available */
-    else {
-	caps = cpuid();
-    }
+    unsigned int caps = cpuid(), i;
     for (i = 0; i < VectorSize(g_CpuCaps); ++ i)
 	if (caps & (1 << g_CpuCaps[i].m_Bit))
 	    Substitute (g_CpuCaps[i].m_Disabled, g_CpuCaps[i].m_Enabled);
@@ -524,6 +544,8 @@ static void SubstituteHostOptions (void)
     Substitute ("#undef SIZE_OF_INT", buf);
     sprintf (buf, "#define SIZE_OF_LONG %d", sizeof(long));
     Substitute ("#undef SIZE_OF_LONG ", buf);
+    sprintf (buf, "#define SIZE_OF_POINTER %d", sizeof(void*));
+    Substitute ("#undef SIZE_OF_POINTER ", buf);
 #if defined(__GNUC__) || (__WORDSIZE == 64) || defined(__ia64__)
     Substitute ("#undef HAVE_INT64_T", "#define HAVE_INT64_T 1");
 #endif
@@ -532,7 +554,7 @@ static void SubstituteHostOptions (void)
     sprintf (buf, "#define SIZE_OF_LONG_LONG %d", sizeof(long long));
     Substitute ("#undef SIZE_OF_LONG_LONG", buf);
 #endif
-#if __GNUC__ > 2
+#if __GNUC__ > 3
     Substitute ("#undef HAVE_VECTOR_EXTENSIONS", "#define HAVE_VECTOR_EXTENSIONS 1");
 #endif
 
@@ -573,6 +595,33 @@ static void SubstituteHeaders (void)
 	    if (access (match, R_OK) == 0)
 		Substitute (g_Headers [i * 3 + 1], g_Headers [i * 3 + 2]);
 	}
+    }
+}
+
+static void SubstituteLibs (void)
+{
+    unsigned int i, j, k, ok;
+    strbuf_t match, paths [4];
+
+    copy ("/usr/local/lib", paths[0]);
+    copy ("/usr/lib", paths[1]);
+    copy (g_ConfigVV [vv_libdir], paths[2]);
+    copy (g_ConfigVV [vv_gcclibdir], paths[3]);
+
+    for (i = 0; i < VectorSize(g_Libs) / 3; ++ i) {
+	ok = 0;
+	for (j = 0; j < VectorSize(paths); ++ j) {
+	    for (k = 0; k < VectorSize(g_LibSuffixes); ++ k) {
+		copy (paths[j], match);
+		append ("/lib", match);
+		append (g_Libs [i * 3], match);
+		append (g_LibSuffixes [k], match);
+		if (access (match, R_OK) == 0)
+		    ok = 1;
+	    }
+	}
+	if (!ok)
+	    Substitute (g_Libs [i * 3 + 2], g_Libs [i * 3 + 1]);
     }
 }
 

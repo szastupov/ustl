@@ -60,6 +60,12 @@ static string_t	g_Headers [] = {
     "stdlib.h",		"#undef STDC_HEADERS",		"#define STDC_HEADERS 1"
 };
 
+static string_t g_Libs [] = {
+    "supc++",		"",				"-lsupc++ ",
+    "gcc",		"",				"-lgcc ",
+    "gcc_eh",		"",				"-lgcc_eh "
+};
+
 static string_t g_Functions [] = {
     "atexit",		"#undef HAVE_ATEXIT",		"#define HAVE_ATEXIT 1",
     "malloc",		"#undef HAVE_MALLOC\n",		"#define HAVE_MALLOC 1\n",
@@ -74,23 +80,32 @@ static string_t g_Functions [] = {
 };
 
 static string_t g_Components [] = {
-    "debug",		"#DEBUG\t\t= 1 ",			"DEBUG\t\t= 1",
+    "debug",		"#DEBUG\t\t= 1",			"DEBUG\t\t= 1 ",
     "bounds",		"#undef WANT_STREAM_BOUNDS_CHECKING",	"#define WANT_STREAM_BOUNDS_CHECKING 1 ",
     "cout",		"#define WITHOUT_CIN_COUT_CERR 1",	"#undef WITHOUT_CIN_COUT_CERR",
+    "mmx",		"#undef WANT_MMX",			"#define WANT_MMX 1 ",
+    "fastcopy",		"#undef WANT_UNROLLED_COPY",		"#define WANT_UNROLLED_COPY 1 ",
     "libstdc++",	"#define WITHOUT_LIBSTDCPP 1",		"#undef WITHOUT_LIBSTDCPP",
-    "libstdc++",	"STANDALONE\t= -nodefaultlibs ",	"#STANDALONE\t= -nodefaultlibs"
+    "libstdc++",	"STANDALONE\t= -nodefaultlibs ",	"#STANDALONE\t= -nodefaultlibs",
+    "diet",		"@CC@ ",				"diet @CC@",
+    "diet",		"@CXX@ ",				"diet @CXX@"
 };
 
 static SComponentInfo g_ComponentInfos [VectorSize(g_Components) / 3] = {
     { 0, "Compiles the library with debugging information" },
     { 0, "Enable runtime bounds checking on stream reads/writes" },
     { 1, "Removes support for standard cout/cin/cerr streams" },
+    { 0, "Enables use of MMX/SSE/3dNow! instructions (~10k)" },
+    { 1, "Adds optimized specializations for copy/fill (~4k)" },
 #if (__GNUC__ >= 3)
-    { 1, "Allows user programs to not link with libstdc++" },
+    { 0, "Link with libstdc++" },
+    { 0, "" },
 #else
     { 1, "" },
+    { 1, "" },
 #endif
-    { 1, "" }
+    { 0, "" },	/* Can't compile with dietlibc for now; broken includes and gcc libs would need recompiling */
+    { 0, "" },
 };
 
 static string_t g_CustomVars [] = {

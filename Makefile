@@ -19,10 +19,6 @@ endif
 DOCT	= ustldoc.in
 TOCLEAN	= config.status config.log
 
-ifdef STANDALONE
-LIBS	= -lsupc++ -lgcc -lgcc_eh -lc
-endif
-
 ########################################################################
 
 LIBA		= lib${LIBNAME}.a

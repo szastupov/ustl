@@ -1,9 +1,9 @@
 LIBNAME		= @LIBNAME@
 @BUILD_SHARED_LIBRARIES@
 
-CC		= @CC@
-CXX		= @CXX@
-LD		= @CXX@
+CC		= @CC@ 
+CXX		= @CXX@ 
+LD		= @CXX@ 
 AR		= @AR@
 RANLIB		= @RANLIB@
 DOXYGEN		= @DOXYGEN@
@@ -37,5 +37,8 @@ else
     CFLAGS	= @CFLAGS@ ${CWARNOPTS} ${OPTIMIZE} ${STANDALONE}
     CXXFLAGS	= @CXXFLAGS@ ${CXXWARNOPTS} ${OPTIMIZE} ${STANDALONE}
     LDFLAGS	= -s ${STANDALONE}
+endif
+ifdef STANDALONE
+    LIBS	+= -lsupc++ -lgcc -lgcc_eh -lc
 endif
 
