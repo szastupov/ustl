@@ -1,22 +1,33 @@
 /* This file is part of bsconf - a configure replacement.
-** Copyright (c) 2003 by Mike Sharov <msharov@talentg.com>
-**
-** This library is free software; you can redistribute it and/or
-** modify it under the terms of the GNU Library General Public
-** License as published by the Free Software Foundation; either
-** version 2 of the License, or (at your option) any later version.
-**
-** This library is distributed in the hope that it will be useful,
-** but WITHOUT ANY WARRANTY; without even the implied warranty of
-** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-** Library General Public License for more details.
-**
-** You should have received a copy of the GNU Library General Public
-** License along with this library; if not, write to the 
-** Free Software Foundation, Inc., 59 Temple Place - Suite 330, 
-** Boston, MA  02111-1307  USA.
+ * Copyright (c) 2003 by Mike Sharov <msharov@talentg.com>
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Library General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Library General Public License for more details.
+ *
+ * You should have received a copy of the GNU Library General Public
+ * License along with this library; if not, write to the 
+ * Free Software Foundation, Inc., 59 Temple Place - Suite 330, 
+ * Boston, MA  02111-1307  USA.
+ *
+ * Special licensing note: it is a common misconception that using an LGPL
+ * file in your project necessarily forces the project to adopt LGPL too.
+ * You can, by all means, include bsconf.c and all its supporting files,
+ * with any commercial project. If you do not modify bsconf.c you have
+ * no obligations to release it. If you modify it, but distribute your
+ * application only in binary form, you have no obligations because bsconf
+ * is not run by your customers, but only by you in order to build your
+ * application, making you the end user. Having it in your source tree
+ * is entirely irrelevant. However, if you modify bsconf.c and are selling
+ * your source code, you have to include the modified bsconf.c with it at
+ * no additional cost to the customer. That's it.
 */
-
 /*
  * This file was written to replace the autoconf-made configure script,
  * which by its prohibitively large size has fallen out of favor with
@@ -42,11 +53,16 @@
 /*--------------------------------------------------------------------*/
 
 #define BUFSIZE		0x10000
+#define MAX_LIB_DIRS	16
+#define MAX_INC_DIRS	16
+
+/*--------------------------------------------------------------------*/
+
 #define VectorSize(v)	(sizeof(v) / sizeof(*v))
 
 /*#define const*/
 typedef const char string_t [64];
-typedef char strbuf_t [64];
+typedef char strbuf_t [128];
 
 typedef enum {
     vv_prefix,
@@ -63,6 +79,8 @@ typedef enum {
     vv_includedir,
     vv_oldincludedir,
     vv_gccincludedir,
+    vv_custominclude,
+    vv_customlib,
     vv_infodir,
     vv_mandir,
     vv_build,
@@ -79,6 +97,7 @@ static void SubstitutePaths (void);
 static void SubstituteEnvironment (int bForce);
 static void SubstitutePrograms (void);
 static void SubstituteCpuCaps (void);
+static void SubstituteCFlags (void);
 static void SubstituteHostOptions (void);
 static void SubstituteHeaders (void);
 static void SubstituteLibs (void);
@@ -101,6 +120,7 @@ static int   compare (const char *str1, const char *str2);
 static char* copy (const char *src, char *dest);
 static char* copy_n (const char *src, char *dest, int n);
 static char* append (const char* src, char* dest);
+static char* append2 (const char* src1, const char* src2, char* dest);
 static void  fill_n (char *str, int n, char v);
 static char* copy_backward (const char *src, char *dest, int n);
 static void  ReadFile (const char *filename);
@@ -134,6 +154,8 @@ static string_t g_ConfigV [vv_last] = {
     "includedir",
     "oldincludedir",
     "gccincludedir",
+    "custominclude",
+    "customlib",
     "infodir",
     "mandir",
     "build",
@@ -142,6 +164,10 @@ static string_t g_ConfigV [vv_last] = {
 
 static strbuf_t g_ConfigVV [vv_last];
 static strbuf_t g_ProgLocs [VectorSize (g_ProgVars) / 4];
+static strbuf_t g_CustomLibDirs [MAX_LIB_DIRS];
+static strbuf_t g_CustomIncDirs [MAX_INC_DIRS];
+static int g_nCustomLibDirs = 0;
+static int g_nCustomIncDirs = 0;
 
 static struct utsname g_Uname;
 
@@ -172,6 +198,7 @@ static const SCpuCaps g_CpuCaps [] = {
     { 30, "3dNow!+",	"#undef CPU_HAS_EXT_3DNOW",	"#define CPU_HAS_EXT_3DNOW 1"	},
     { 31, "3dNow!",	"#undef CPU_HAS_3DNOW",		"#define CPU_HAS_3DNOW 1"	}
 };
+static unsigned int g_CpuCapBits = 0;
 
 static string_t g_LibSuffixes[] = { ".a", ".so", ".la" };
 
@@ -192,6 +219,7 @@ int main (int argc, const char* const* argv)
     SubstituteComponents();
     SubstituteHostOptions();
     SubstituteCpuCaps();
+    SubstituteCFlags();
     SubstitutePaths();
     SubstituteEnvironment (0);
     SubstitutePrograms();
@@ -215,9 +243,9 @@ static void PrintHelp (void)
 {
     unsigned i;
     printf (
-"`configure' configures " PACKAGE_STRING " to adapt to many kinds of systems.\n"
+"This program configures " PACKAGE_STRING " to adapt to many kinds of systems.\n"
 "\n"
-"Usage: configure [OPTION]... \n"
+"Usage: configure [OPTION] ...\n"
 "\n"
 "Configuration:\n"
 "  --help\t\tdisplay this help and exit\n"
@@ -237,6 +265,8 @@ static void PrintHelp (void)
 "  --includedir=DIR\tC header files [PREFIX/include]\n"
 "  --oldincludedir=DIR\tC header files for non-gcc [/usr/include]\n"
 "  --gccincludedir=DIR\tGCC internal header files [PREFIX/include]\n"
+"  --custominclude=DIR\tNonstandard header file location (cumulative)\n"
+"  --customlib=DIR\tNonstandard library file location (cumulative)\n"
 "  --infodir=DIR\t\tinfo documentation [PREFIX/info]\n"
 "  --mandir=DIR\t\tman documentation [PREFIX/man]\n"
 "\n"
@@ -271,7 +301,7 @@ static void PrintVersion (void)
 {
     printf (PACKAGE_NAME " configure " PACKAGE_VERSION "\n"
 	    "\nUsing bsconf package version 0.1\n"
-	    "Copyright 2003, Mike Sharov <msharov@talentg.com>\n"
+	    "Copyright (c) 2003-2005, Mike Sharov <msharov@talentg.com>\n"
 	    "This configure script and the bsconf package are free software.\n"
 	    "Unlimited permission to copy, distribute, and modify is granted.\n");
     exit (0);
@@ -309,9 +339,14 @@ static void GetConfigVarValues (int argc, const char* const* argv)
 	    if (cv == vv_last)
 		continue;
 	    apos += StrLen (g_ConfigV[cv]) + 1;
-	    cvl = StrLen (argv[a]) - apos;
-	    if (cvl > 0)
-		copy_n (argv[a] + apos, g_ConfigVV[cv], cvl + 1);
+	    cvl = StrLen (argv[a]) - apos + 1;
+	    if (cvl > 1) {
+		copy_n (argv[a] + apos, g_ConfigVV[cv], cvl);
+		if (cv == vv_customlib)
+		    copy_n (argv[a] + apos, g_CustomLibDirs [g_nCustomLibDirs++], cvl);
+		else if (cv == vv_custominclude)
+		    copy_n (argv[a] + apos, g_CustomIncDirs [g_nCustomIncDirs++], cvl);
+	    }
 	}
     }
 }
@@ -375,8 +410,7 @@ static void DetermineHost (void)
 #else
     append ("unknown", g_ConfigVV [vv_host]);
 #endif
-    append ("-", g_ConfigVV [vv_host]);
-    append (g_Uname.sysname, g_ConfigVV [vv_host]);
+    append2 ("-", g_Uname.sysname, g_ConfigVV [vv_host]);
 }
 
 static const char* CopyPathEntry (const char* pi, char* dest)
@@ -389,14 +423,14 @@ static const char* CopyPathEntry (const char* pi, char* dest)
 
 static int IsBadInstallDir (const char* match)
 {
-    return (compare (match, "/etc/") ||
-	    compare (match, "/usr/sbin/") ||
-	    compare (match, "/c/") ||
-	    compare (match, "/C/") ||
-	    compare (match, "/usr/etc/") ||
-	    compare (match, "/sbin/") ||
-	    compare (match, "/usr/ucb/") ||
-	    compare (match, "/usr/afsws/bin/"));
+    return (compare (match, "/etc") ||
+	    compare (match, "/usr/sbin") ||
+	    compare (match, "/c") ||
+	    compare (match, "/C") ||
+	    compare (match, "/usr/etc") ||
+	    compare (match, "/sbin") ||
+	    compare (match, "/usr/ucb") ||
+	    compare (match, "/usr/afsws/bin"));
 }
 
 static void FindPrograms (void)
@@ -414,11 +448,10 @@ static void FindPrograms (void)
 	fill_n (match, sizeof(strbuf_t), 0);
 	count = 0;
 	for (pi = path; pi; pi = CopyPathEntry (pi, match)) {
-	    append ("/", match);
 	    /* Ignore "bad" versions of install, like autoconf does. */
 	    if (compare (g_ProgVars[i * 4 + 1], "install") && IsBadInstallDir (match))
 		continue;
-	    append (g_ProgVars[i * 4 + 1], match);
+	    append2 ("/", g_ProgVars[i * 4 + 1], match);
 	    if (access (match, X_OK) == 0) {
 		++ count;
 		break;
@@ -439,6 +472,42 @@ static void SubstitutePaths (void)
 	MakeSubstString (g_ConfigV [cv], match);
 	Substitute (match, g_ConfigVV [cv]);
     }
+}
+
+static void SubstituteCFlags (void)
+{
+    strbuf_t syscflags, cflagbuf, ssbuf;
+    const char* cflagvars[] = { "CFLAGS", "CXXFLAGS" };
+    const char* pevv;
+    int i, j;
+
+    for (i = 0; i < VectorSize(cflagvars); ++ i) {
+	pevv = getenv (cflagvars[i]);
+	copy (pevv ? pevv : "-Wall -O2", cflagbuf);
+	for (j = 0; j < g_nCustomIncDirs; ++ j)
+	    append2 (" -I", g_CustomIncDirs[j], cflagbuf);
+#if __GNUC__ >= 3
+	if (g_CpuCapBits & (1 << 23))
+	    append (" -mmmx", cflagbuf);
+	if (g_CpuCapBits & ((1 << 22) | (1 << 25)))
+	    append (" -msse -mfpmath=sse", cflagbuf);
+	if (g_CpuCapBits & (1 << 26))
+	    append (" -msse2", cflagbuf);
+	if (g_CpuCapBits & (1 << 27))
+	    append (" -msse3", cflagbuf);
+	if (g_CpuCapBits & ((1 << 30) | (1 << 31)))
+	    append (" -m3dnow", cflagbuf);
+#endif
+	copy ("@", ssbuf);
+	append2 (cflagvars[i], "@", ssbuf);
+	Substitute (ssbuf, cflagbuf);
+    }
+
+    pevv = getenv ("LDFLAGS");
+    copy (pevv ? pevv : "", cflagbuf);
+    for (j = 0; j < g_nCustomLibDirs; ++ j)
+	append2 (" -L", g_CustomLibDirs[j], cflagbuf);
+    Substitute ("@LDFLAGS@", cflagbuf);
 }
 
 static void SubstituteEnvironment (int bForce)
@@ -512,9 +581,11 @@ static unsigned int cpuid (void)
 
 static void SubstituteCpuCaps (void)
 {
-    unsigned int caps = cpuid(), i;
+    unsigned int i;
+    g_CpuCapBits = cpuid();
+    strbuf_t mmxopts = "";
     for (i = 0; i < VectorSize(g_CpuCaps); ++ i)
-	if (caps & (1 << g_CpuCaps[i].m_Bit))
+	if (g_CpuCapBits & (1 << g_CpuCaps[i].m_Bit))
 	    Substitute (g_CpuCaps[i].m_Disabled, g_CpuCaps[i].m_Enabled);
 }
 
@@ -604,17 +675,18 @@ static void SubstituteCustomVars (void)
 static void SubstituteHeaders (void)
 {
     unsigned int i, j;
-    strbuf_t match, paths [3];
+    const char* pi;
+    strbuf_t defaultPath;
+    strbuf_t match;
 
-    copy (g_ConfigVV [vv_includedir], paths[0]);
-    copy (g_ConfigVV [vv_oldincludedir], paths[1]);
-    copy (g_ConfigVV [vv_gccincludedir], paths[2]);
-
+    copy (g_ConfigVV [vv_includedir], defaultPath);
+    append2 (":", g_ConfigVV [vv_oldincludedir], defaultPath);
+    append2 (":", g_ConfigVV [vv_gccincludedir], defaultPath);
+    for (i = 0; i < g_nCustomIncDirs; ++ i)
+	append2 (":", g_CustomIncDirs [i], defaultPath);
     for (i = 0; i < VectorSize(g_Headers) / 3; ++ i) {
-	for (j = 0; j < VectorSize(paths); ++ j) {
-	    copy (paths[j], match);
-	    append ("/", match);
-	    append (g_Headers [i * 3], match);
+	for (pi = defaultPath; pi; pi = CopyPathEntry (pi, match)) {
+	    append2 ("/", g_Headers [i * 3], match);
 	    if (access (match, R_OK) == 0)
 		Substitute (g_Headers [i * 3 + 1], g_Headers [i * 3 + 2]);
 	}
@@ -624,28 +696,31 @@ static void SubstituteHeaders (void)
 static void SubstituteLibs (void)
 {
     unsigned int i, j, k, ok;
-    strbuf_t match, paths [4];
+    const char *pi;
+    strbuf_t defaultPath = "/lib:/usr/lib:/usr/local/lib";
+    strbuf_t match;
 
-    copy ("/usr/local/lib", paths[0]);
-    copy ("/usr/lib", paths[1]);
-    copy (g_ConfigVV [vv_libdir], paths[2]);
-    copy (g_ConfigVV [vv_gcclibdir], paths[3]);
+    pi = getenv ("LD_LIBRARY_PATH");
+    if (pi)
+	copy (pi, defaultPath);
+    append2 (":", g_ConfigVV [vv_libdir], defaultPath);
+    append2 (":", g_ConfigVV [vv_gcclibdir], defaultPath);
+    for (i = 0; i < g_nCustomLibDirs; ++ i)
+	append2 (":", g_CustomLibDirs [i], defaultPath);
 
     for (i = 0; i < VectorSize(g_Libs) / 3; ++ i) {
 	ok = 0;
-	for (j = 0; j < VectorSize(paths); ++ j) {
+	for (pi = defaultPath; pi; pi = CopyPathEntry (pi, match)) {
 	    for (k = 0; k < VectorSize(g_LibSuffixes); ++ k) {
-		copy (paths[j], match);
-		append ("/lib", match);
-		append (g_Libs [i * 3], match);
+		CopyPathEntry (pi, match);
+		append2 ("/lib", g_Libs [i * 3], match);
 		append (g_LibSuffixes [k], match);
 		if (access (match, R_OK) == 0)
 		    ok = 1;
 	    }
 	}
 	copy ("@lib", match);
-	append (g_Libs[i * 3], match);
-	append ("@", match);
+	append2 (g_Libs[i * 3], "@", match);
 	Substitute (match, g_Libs [i * 3 + 1 + ok]);
     }
 }
@@ -705,8 +780,7 @@ static void ExecuteSubstitutionList (void)
 static void MakeSubstString (const char* str, char* substString)
 {
     copy ("@", substString);
-    append (str, substString);
-    append ("@", substString);
+    append2 (str, "@", substString);
 }
 
 /*--------------------------------------------------------------------*/
@@ -756,6 +830,11 @@ static char* append (const char* src, char* dest)
 {
     while (*dest) ++ dest;
     return (copy (src, dest));
+}
+
+static char* append2 (const char* src1, const char* src2, char* dest)
+{
+    return (append (src2, append (src1, dest)));
 }
 
 static void fill_n (char* str, int n, char v)

@@ -1,3 +1,18 @@
+/* This file is part of bsconf - a configure replacement.
+ *
+ * This is the configuration file used by bsconf.c to specify information
+ * specific to your project that it needs to substitute into files listed
+ * in g_Files. Being a configuration file, this file can be used or
+ * modified entirely without restriction. You should change all values
+ * appropriately to the name of your project and its requirements. The
+ * LGPL does not apply to this file. It can and should be treated as a
+ * template for the creation of your own configuration file.
+ *
+ * All substituted variable names are given without enclosing @@. For
+ * example: "CC" will match "@CC@" in config.h.in and replace it with
+ * "gcc" in config.h.
+*/
+
 #define PACKAGE_NAME		"ustl"
 #define LIB_MAJOR		"0"
 #define LIB_MINOR		"4"
@@ -14,6 +29,7 @@ static string_t g_Files [] = {
     "ustl.spec"
 };
 
+/* Values substitute @VARNAME@ */
 static string_t g_EnvVars [] = {
     "CC",
     "LD",
@@ -95,7 +111,6 @@ static string_t g_Components [] = {
     "fastcopy",		"#undef WANT_UNROLLED_COPY",		"#define WANT_UNROLLED_COPY 1 ",
 #if __i386__
     "mmx",		"#undef WANT_MMX",			"#define WANT_MMX 1 ",
-    "mmx",		"#MMXOPTS\t=",				"MMXOPTS\t\t= -mmmx -msse -m3dnow",
 #endif
     "libstdc++",	"#define WITHOUT_LIBSTDCPP 1",		"#undef WITHOUT_LIBSTDCPP",
     "libstdc++",	"STANDALONE\t= -nodefaultlibs ",	"#STANDALONE\t= -nodefaultlibs",
@@ -125,6 +140,7 @@ static SComponentInfo g_ComponentInfos [VectorSize(g_Components) / 3] = {
     { 0, "" },
 };
 
+/* Substitutes names like @PACKAGE_NAME@ with the second field */
 static string_t g_CustomVars [] = {
     "PACKAGE_NAME",		PACKAGE_NAME,
     "PACKAGE_VERSION",		PACKAGE_VERSION,
