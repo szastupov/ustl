@@ -612,13 +612,16 @@ static void SubstituteHostOptions (void)
 	Substitute ("@SYSWARNS@", "");
     #if __GNUC__ >= 3
     if (compare (g_Uname.sysname, "sun") ||
-	compare (g_Uname.sysname, "solaris") ||
-	compare (g_Uname.sysname, "openbsd"))
+	compare (g_Uname.sysname, "solaris"))
     #endif
 	Substitute ("-Wredundant-decls", "-Wno-redundant-decls");
 
-    if (compare (g_Uname.sysname, "openbsd"))
+    if (compare (g_Uname.sysname, "openbsd") ||
+	compare (g_Uname.sysname, "netbsd") ||
+	compare (g_Uname.sysname, "freebsd")) {
+	Substitute ("-Wredundant-decls", "-Wno-redundant-decls");
 	Substitute ("-Winline", "-Wno-inline");
+    }
 
     if (!compare (g_Uname.sysname, "linux") &&
 	!compare (g_Uname.sysname, "solaris") &&
@@ -654,6 +657,11 @@ static void SubstituteHostOptions (void)
     Substitute ("#undef SIZE_OF_POINTER ", buf);
     sprintf (buf, "#define SIZE_OF_SIZE_T %d", sizeof(size_t));
     Substitute ("#undef SIZE_OF_SIZE_T ", buf);
+    if ((sizeof(size_t) == sizeof(unsigned long) &&
+	 sizeof(size_t) != sizeof(unsigned int)) ||
+	compare (g_Uname.sysname, "osx") ||
+	compare (g_Uname.sysname, "darwin"))
+	Substitute ("#undef SIZE_T_IS_LONG", "#define SIZE_T_IS_LONG 1");
 #if defined(__GNUC__) || (__WORDSIZE == 64) || defined(__ia64__)
     if (!compare (g_Uname.sysname, "openbsd"))
 	Substitute ("#undef HAVE_INT64_T", "#define HAVE_INT64_T 1");
