@@ -86,7 +86,7 @@ inline size_t stream_size_of (const pair<T1,T2>&)
     return (2 * max(sizeof(T1), sizeof(T2)));
 }
 
-/// Takes a pair and returns pair.first
+/// \brief Takes a pair and returns pair.first
 /// This is an extension, available in uSTL and the SGI STL.
 template <typename Pair> struct select1st : public unary_function<Pair,typename Pair::first_type> {
     typedef typename Pair::first_type result_type;
@@ -94,13 +94,27 @@ template <typename Pair> struct select1st : public unary_function<Pair,typename 
     inline result_type&		operator()(Pair& a) const { return (a.first); }
 };
 
-/// Takes a pair and returns pair.second
+/// \brief Takes a pair and returns pair.second
 /// This is an extension, available in uSTL and the SGI STL.
 template <typename Pair> struct select2nd : public unary_function<Pair,typename Pair::second_type> {
     typedef typename Pair::second_type result_type;
     inline const result_type&	operator()(const Pair& a) const { return (a.second); }
     inline result_type&		operator()(Pair& a) const { return (a.second); }
 };
+
+/// \brief Converts a const_iterator pair into an iterator pair
+/// Useful for converting pair ranges returned by equal_range, for instance.
+/// This is an extension, available in uSTL.
+template <typename Container>
+inline pair<typename Container::iterator, typename Container::iterator>
+unconst (const pair<typename Container::const_iterator, typename Container::const_iterator>& i, Container& ctr)
+{
+    assert (i.first >= ctr.begin() && i.first <= ctr.end() && "unconst algorithm must be given iterators from the argument container");
+    pair<typename Container::iterator, typename Container::iterator> result;
+    result.first = ctr.begin() + (i.first - ctr.begin());
+    result.second = ctr.begin() + (i.second - ctr.begin());
+    return (result);
+}
 
 //----{ vector }--------------------------------------------------------
 
