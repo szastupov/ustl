@@ -102,17 +102,23 @@ template <class T> struct fpshr	: public binary_function<T,T,T> { inline T opera
 template <class T> struct fpmin	: public binary_function<T,T,T> { inline T operator()(const T& a, const T& b) const { return (min (a, b)); } };
 template <class T> struct fpmax	: public binary_function<T,T,T> { inline T operator()(const T& a, const T& b) const { return (max (a, b)); } };
 template <class T> struct fpavg	: public binary_function<T,T,T> { inline T operator()(const T& a, const T& b) const { return ((a + b + 1) / 2); } };
+template <class T, class D> struct fcast : public unary_function<T,D> { inline D operator()(const T& a) const { return (D(a)); } };
+template <> inline float fpavg<float>::operator()(const float& a, const float& b) const { return ((a + b) / 2); }
+template <> inline double fpavg<double>::operator()(const double& a, const double& b) const { return ((a + b) / 2); }
+#if HAVE_MATH_H
 template <class T> struct fpreciprocal	: public unary_function<T,T> { inline T operator()(const T& a) const { return (1 / a); } };
 template <class T> struct fpsqrt	: public unary_function<T,T> { inline T operator()(const T& a) const { reset_mmx(); return (T (sqrt (a))); } };
 template <class T> struct fprecipsqrt	: public unary_function<T,T> { inline T operator()(const T& a) const { reset_mmx(); return (1 / T(sqrt (a))); } };
 template <class T> struct fsin		: public unary_function<T,T> { inline T operator()(const T& a) const { reset_mmx(); return (T (sin (a))); } };
 template <class T> struct fcos		: public unary_function<T,T> { inline T operator()(const T& a) const { reset_mmx(); return (T (cos (a))); } };
 template <class T> struct ftan		: public unary_function<T,T> { inline T operator()(const T& a) const { reset_mmx(); return (T (tan (a))); } };
-template <class T, class D> struct fcast : public unary_function<T,D> { inline D operator()(const T& a) const { return (D(a)); } };
-template <class T, class D> struct fround : public unary_function<T,D> { inline D operator()(const T& a) const { reset_mmx(); return (D(roundf(a))); } };
-template <> inline int32_t fround<double,int32_t>::operator()(const double& a) const { reset_mmx(); return (int32_t(round(a))); }
-template <> inline float fpavg<float>::operator()(const float& a, const float& b) const { return ((a + b) / 2); }
-template <> inline double fpavg<double>::operator()(const double& a, const double& b) const { return ((a + b) / 2); }
+#if HAVE_RINTF
+template <class T, class D> struct fround : public unary_function<T,D> { inline D operator()(const T& a) const { reset_mmx(); return (D(rintf(a))); } };
+#else
+template <class T, class D> struct fround : public unary_function<T,D> { inline D operator()(const T& a) const { reset_mmx(); return (D(rint(a))); } };
+#endif
+template <> inline int32_t fround<double,int32_t>::operator()(const double& a) const { reset_mmx(); return (int32_t(rint(a))); }
+#endif
 
 #define SIMD_PACKEDOP1(name, operation)		\
 template <typename Ctr>				\
@@ -139,7 +145,8 @@ inline void name (const Ctr& op1, const Ctr& op2, Ctr& result)	\
 template <typename T>				\
 inline T name (T op)				\
 {						\
-    return (operation<T>()(op));		\
+    operation<T> obj;				\
+    return (obj(op));				\
 }
 #define SIMD_CONVERTOP(name, operation)		\
 template <typename Ctr1, typename Ctr2>		\
@@ -164,13 +171,6 @@ SIMD_PACKEDOP2 (pmin, fpmin)
 SIMD_PACKEDOP2 (pmax, fpmax)
 SIMD_PACKEDOP2 (pavg, fpavg)
 
-SIMD_PACKEDOP1 (precip, fpreciprocal)
-SIMD_PACKEDOP1 (psqrt, fpsqrt)
-SIMD_PACKEDOP1 (precipsqrt, fprecipsqrt)
-SIMD_PACKEDOP1 (psin, fsin)
-SIMD_PACKEDOP1 (pcos, fcos)
-SIMD_PACKEDOP1 (ptan, ftan)
-
 SIMD_PACKEDOP3 (padd, plus)
 SIMD_PACKEDOP3 (psub, minus)
 SIMD_PACKEDOP3 (pmul, multiplies)
@@ -186,6 +186,14 @@ SIMD_PACKEDOP3 (pmin, fpmin)
 SIMD_PACKEDOP3 (pmax, fpmax)
 SIMD_PACKEDOP3 (pavg, fpavg)
 
+#if HAVE_MATH_H
+SIMD_PACKEDOP1 (precip, fpreciprocal)
+SIMD_PACKEDOP1 (psqrt, fpsqrt)
+SIMD_PACKEDOP1 (precipsqrt, fprecipsqrt)
+SIMD_PACKEDOP1 (psin, fsin)
+SIMD_PACKEDOP1 (pcos, fcos)
+SIMD_PACKEDOP1 (ptan, ftan)
+
 SIMD_SINGLEOP1 (srecip, fpreciprocal)
 SIMD_SINGLEOP1 (ssqrt, fpsqrt)
 SIMD_SINGLEOP1 (srecipsqrt, fprecipsqrt)
@@ -195,7 +203,8 @@ SIMD_SINGLEOP1 (stan, ftan)
 
 SIMD_CONVERTOP (pround, fround)
 
-template <typename T> inline int32_t sround (T op) { return (fround<T,int32_t>()(op)); }
+template <typename T> inline int32_t sround (T op) { const fround<T,int32_t> obj; return (obj (op)); }
+#endif
 
 #undef SIMD_SINGLEOP1
 #undef SIMD_PACKEDOP3
@@ -206,15 +215,21 @@ template <typename T> inline int32_t sround (T op) { return (fround<T,int32_t>()
 // Vector types to cast tuple data to
 //----------------------------------------------------------------------
 
-typedef uintmax_t v8qi_t __attribute__((mode(V8QI)));
-typedef uintmax_t v4hi_t __attribute__((mode(V4HI)));
-typedef uintmax_t v8hi_t __attribute__((mode(V8HI)));
-typedef uintmax_t v2si_t __attribute__((mode(V2SI)));
-typedef uintmax_t v4si_t __attribute__((mode(V4SI)));
-typedef uintmax_t v1di_t __attribute__((mode(V1DI)));
-typedef uintmax_t v2sf_t __attribute__((mode(V2SF)));
-typedef uintmax_t v4sf_t __attribute__((mode(V4SF)));
-typedef uintmax_t v2df_t __attribute__((mode(V2DF)));
+#if HAVE_VECTOR_EXTENSIONS
+#define VECTOR_ATTRIBUTE(x)	__attribute__((mode(x)))
+#else
+#define VECTOR_ATTRIBUTE(x)
+#endif
+typedef int v8qi_t VECTOR_ATTRIBUTE (V8QI);
+typedef int v4hi_t VECTOR_ATTRIBUTE (V4HI);
+typedef int v8hi_t VECTOR_ATTRIBUTE (V8HI);
+typedef int v2si_t VECTOR_ATTRIBUTE (V2SI);
+typedef int v4si_t VECTOR_ATTRIBUTE (V4SI);
+typedef int v1di_t VECTOR_ATTRIBUTE (V1DI);
+typedef int v2sf_t VECTOR_ATTRIBUTE (V2SF);
+typedef int v4sf_t VECTOR_ATTRIBUTE (V4SF);
+typedef int v2df_t VECTOR_ATTRIBUTE (V2DF);
+#undef VECTOR_ATTRIBUTE
 
 //----------------------------------------------------------------------
 // Hardware accelerated specializations
@@ -403,10 +418,10 @@ SSE_PKOP2_SPEC(4,float,fpmax,maxps)
 SSE_PKOP2_SPEC(4,float,fpmin,minps)
 
 // For some reason SSE rounds to the nearest _even_ value
-//SIMD_CONVERT_SPEC(4,float,int32_t,fround) { asm ("movups (%2), %%xmm0\n\tcvtps2pi %%xmm0, %0\n\tshufps $0x4E,%%xmm0,%%xmm0\n\tcvtps2pi %%xmm0, %1" : "=&y"(*(v2si_t*)oout.begin()), "=y"(*(v2si_t*)(oout.begin() + 2)) : "g"(oin.begin()) : "xmm0"); }
-//SIMD_CONVERT_SPEC(4,int32_t,float,fround) { asm ("cvtpi2ps %2, %%xmm0\n\tshufps $0x4E,%%xmm0,%%xmm0\n\tcvtpi2ps %1, %%xmm0\n\tmovups %%xmm0, (%0)" : : "g"(oout.begin()), "y"(*(const v2si_t*)oin.begin()), "y"(*(const v2si_t*)(oin.begin() + 2)) : "xmm0", "memory"); }
+SIMD_CONVERT_SPEC(4,float,int32_t,fround) { asm ("movups (%2), %%xmm0\n\tcvtps2pi %%xmm0, %0\n\tshufps $0x4E,%%xmm0,%%xmm0\n\tcvtps2pi %%xmm0, %1" : "=&y"(*(v2si_t*)oout.begin()), "=y"(*(v2si_t*)(oout.begin() + 2)) : "g"(oin.begin()) : "xmm0"); }
+SIMD_CONVERT_SPEC(4,int32_t,float,fround) { asm ("cvtpi2ps %2, %%xmm0\n\tshufps $0x4E,%%xmm0,%%xmm0\n\tcvtpi2ps %1, %%xmm0\n\tmovups %%xmm0, (%0)" : : "g"(oout.begin()), "y"(*(const v2si_t*)oin.begin()), "y"(*(const v2si_t*)(oin.begin() + 2)) : "xmm0", "memory"); }
 
-//template <> inline int32_t fround<float,int32_t>::operator()(const float& a) const { register int32_t rv; asm ("movss %1, %%xmm0; cvtss2si %%xmm0, %0" : "=r"(rv) : "m"(a) : "xmm0" ); return (rv); }
+template <> inline int32_t fround<float,int32_t>::operator()(const float& a) const { register int32_t rv; asm ("movss %1, %%xmm0; cvtss2si %%xmm0, %0" : "=r"(rv) : "m"(a) : "xmm0" ); return (rv); }
 
 SSE_IPASSIGN_SPEC(4,float)
 SSE_IPASSIGN_SPEC(4,int32_t)
