@@ -26,8 +26,10 @@
 
 namespace ustl {
 
-void convert_to_bitstring (const u_int* v, size_t n, string& buf);
-void convert_from_bitstring (const string& buf, u_int* v, size_t n);
+typedef uint_fast32_t	bitset_value_type;
+
+void convert_to_bitstring (const bitset_value_type* v, size_t n, string& buf);
+void convert_from_bitstring (const string& buf, bitset_value_type* v, size_t n);
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 template <class T> struct bitwise_or	: public binary_function<T,T,T> { inline T operator()(const T& a, const T& b) const { return (a | b); } };
@@ -48,7 +50,7 @@ template <class T> struct bitwise_not	: public unary_function<T,T>    { inline T
 template <size_t Size>
 class bitset {
 public:
-    typedef u_int		value_type;
+    typedef bitset_value_type	value_type;
     typedef value_type*		pointer;
     typedef const value_type*	const_pointer;
     typedef pointer		iterator;
@@ -78,8 +80,8 @@ public:
     inline iterator	begin (void)			{ return (m_Bits); }
   inline const_iterator	end (void) const		{ return (m_Bits + s_nHosts); }
     inline iterator	end (void)			{ return (m_Bits + s_nHosts); }
- 			/// Returns the u_long with the equivalent bits. If size() > sizeof(u_long), you'll get only the first BitsInType(value_type) bits.
-    inline const u_long	to_ulong (void) const		{ return (m_Bits[0]); }
+ 			/// Returns the value_type with the equivalent bits. If size() > 1, you'll get only the first BitsInType(value_type) bits.
+    inline const value_type	to_value (void) const		{ return (m_Bits[0]); }
     			/// Flips all the bits in the set.
     inline void		flip (void) { transform (begin(), end(), begin(), bitwise_not<value_type>()); }
 			/// Sets or clears bit \p n.
