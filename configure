@@ -39,14 +39,17 @@ if [ -z "${CC}" ]; then
 fi
 STDDEFPATH=`find /usr/lib/gcc* -name stddef.h 2> /dev/null | head -n 1`
 if [ ! -z ${STDDEFPATH} ]; then
-    GCCLIBDIR="--gccincludedir=`dirname ${STDDEFPATH}`"
+    GINCDIR=`dirname ${STDDEFPATH}`
+    GLIBDIR=`dirname ${GINCDIR}`
+    GCCINCDIR="--gccincludedir=${GINCDIR}"
+    GCCLIBDIR="--gcclibdir=${GLIBDIR}"
 fi
 
 if [ ! -x bsconf ]; then
     ${CC} -o bsconf bsconf.c
 fi
 if [ -x bsconf ]; then
-    ./bsconf ${GCCLIBDIR} $*;
+    ./bsconf ${GCCINCDIR} ${GCCLIBDIR} $*;
 else
     echo "Build of the configurator program failed. Ensure you have an ANSI C compiler.";
 fi
