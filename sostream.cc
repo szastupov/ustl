@@ -61,7 +61,7 @@ ostringstream::ostringstream (void* p, size_type n)
 ///
 ostringstream::ostringstream (string& dest)
 : ostream (),
-  m_pResizable (&dest),
+  m_pResizable (NULL),
   m_Flags (0),
   m_Base (10),
   m_Precision (2),
@@ -207,10 +207,11 @@ int ostringstream::format (const char* fmt, ...)
     va_list args;
     va_start (args, fmt);
     const bool bIsString = m_pResizable;
+    assert (ipos());
     int rv = vsnprintf (ipos(), remaining() + bIsString, fmt, args);
     if (rv > 0) {
-	if (rv >= remaining())
-	    rv = (rv > overflow(rv) ? 0 : vsnprintf (ipos(), remaining() + bIsString, fmt, args));
+	if (rv > remaining() + bIsString)
+	    rv = (rv < overflow(rv) ? 0 : vsnprintf (ipos(), remaining() + bIsString, fmt, args));
 	skip (rv);
     }
     va_end (args);
@@ -241,6 +242,9 @@ void ostringstream::iwrite (ios::fmtflags f)
 /// Links to string \p l as resizable.
 void ostringstream::link (string& l)
 {
+    if (l.is_linked())
+	l.reserve (l.capacity());
+    assert (l.data() && "The output string buffer must not be read-only");
     ostream::link (l);
     m_pResizable = &l;
 }
@@ -274,13 +278,13 @@ ostringstream::size_type ostringstream::overflow (size_type n)
     assert (n > remaining() && "Don't call overflow if you don't need to");
     if (m_pResizable) {
 	const uoff_t oldPos (pos());
-	m_pResizable->resize (pos() + n);
+	m_pResizable->resize (oldPos + n);
 	link (*m_pResizable);
 	seek (oldPos);
     }
     if (remaining() < n)
 #ifdef WANT_STREAM_BOUNDS_CHECKING
-	throw stream_bounds_exception ("write", "binary data", pos(), n, remaining());
+	throw stream_bounds_exception ("write", "text", pos(), n, remaining());
 #else
 	assert (remaining() >= n && "Buffer overrun. Check your stream size calculations.");
 #endif

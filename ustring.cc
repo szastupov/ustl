@@ -452,16 +452,9 @@ int string::format (const char* fmt, ...)
 {
     va_list args;
     va_start (args, fmt);
-    char nullbuf [size_Terminator] = ""; // On SunOS and Darwin vsnprintf can't handle NULL pointers, and this is faster than calling malloc.
-    int rv = vsnprintf (memblock::capacity() ? data() : nullbuf, memblock::capacity(), fmt, args);
-    //
-    // glibc 2.0.6 or later required for reallocation to work.
-    // 		earlier versions will require the string to already
-    // 		be allocated to the correct size.
-    // 		vsnprintf should return the number of characters that
-    // 		would have been written without truncation, as per C99 spec.
-    // 		See vsnprintf man page for additional information.
-    //
+    if (is_linked() || !data() || !capacity())
+	reserve (strlen (fmt));
+    int rv = vsnprintf (data(), memblock::capacity(), fmt, args);
     if (rv >= 0) {
 	if (size_t(rv) > capacity()) {
 	    reserve (rv);
