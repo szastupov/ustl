@@ -32,6 +32,27 @@
     #include <new>
 #endif
 
+#ifdef WITHOUT_LIBSTDCPP	// This code is copied from <exception>
+namespace std {
+/// If you write a replacement terminate handler, it must be of this type.
+typedef void (*terminate_handler) (void);
+/// If you write a replacement unexpected handler, it must be of this type.
+typedef void (*unexpected_handler) (void);
+/// Takes a new handler function as an argument, returns the old function.
+terminate_handler set_terminate (terminate_handler pHandler) throw();
+/// The runtime will call this function if exception handling must be
+/// abandoned for any reason.  It can also be called by the user.
+void terminate (void) __attribute__ ((__noreturn__));
+/// Takes a new handler function as an argument, returns the old function.
+unexpected_handler set_unexpected (unexpected_handler pHandler) throw();
+/// The runtime will call this function if an exception is thrown which
+/// violates the function's exception specification.
+void unexpected (void) __attribute__ ((__noreturn__));
+/// Returns true when the caught exception violates the throw specification.
+bool uncaught_exception() throw();
+} // namespace std
+#endif
+
 namespace ustl {
 
 class string;
