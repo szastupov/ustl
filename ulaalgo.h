@@ -1,6 +1,6 @@
 // This file is part of the ustl library, an STL implementation.
 //
-// Copyright (C) 2005 by Mike Sharov <msharov@talentg.com>
+// Copyright (C) 2005 by Mike Sharov <msharov@users.sourceforge.net>
 // This file is free software, distributed under the MIT License.
 //
 // ulaalgo.h
@@ -131,13 +131,13 @@ inline matrix<4,4,float> operator* (const matrix<4,4,float>& m1, const matrix<4,
 {
     matrix<4,4,float> result;
     _sse_load_matrix (m2.begin());
-    asm volatile ("movups (%0), %%xmm0	\n\t" : : "p"(m1.begin()) : "xmm0");
+    asm volatile ("movups %0, %%xmm0\n\t" : : "m"(m1[0][0]) : "xmm0");
     _sse_transform_to_vector (result[0]);
-    asm volatile ("movups 16(%0), %%xmm0\n\t" : : "p"(m1.begin()) : "xmm0");
+    asm volatile ("movups %0, %%xmm0\n\t" : : "m"(m1[1][0]) : "xmm0");
     _sse_transform_to_vector (result[1]);
-    asm volatile ("movups 32(%0), %%xmm0\n\t" : : "p"(m1.begin()) : "xmm0");
+    asm volatile ("movups %0, %%xmm0\n\t" : : "m"(m1[2][0]) : "xmm0");
     _sse_transform_to_vector (result[2]);
-    asm volatile ("movups 48(%0), %%xmm0\n\t" : : "p"(m1.begin()) : "xmm0");
+    asm volatile ("movups %0, %%xmm0\n\t" : : "m"(m1[3][0]) : "xmm0");
     _sse_transform_to_vector (result[3]);
     return (result);
 }
