@@ -34,7 +34,8 @@ int main (void)
     v.push_back (1);
     PrintVector (v);
     v.reserve (20);
-    cout.format ("Reserved to capacity() == %d (%d used, %d max)\n", v.capacity(), v.size(), v.max_size());
+    cout << "Reserved to capacity() == " << v.capacity()
+	 << " (" << v.size() << " used, " << v.max_size() << " max)" << endl;
     v.insert (v.begin() + 1, c_TestNumbers + 1, c_TestNumbers + VectorSize(c_TestNumbers));
     PrintVector (v);
     cout.format ("front() = %d, back() = %d\n", v.front(), v.back());

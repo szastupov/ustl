@@ -25,10 +25,15 @@
 #include "memblock.h"
 #include "ualgo.h"
 #include "uexception.h"
-#include <malloc.h>
 #include <memory.h>
 #include <fcntl.h>
 #include <unistd.h>
+#ifdef HAVE_MALLOC_H
+    #include <malloc.h>
+#else
+    #include <stdlib.h>
+#endif
+#include <sys/stat.h>
 
 namespace ustl {
 
@@ -193,9 +198,10 @@ void memblock::resize (size_t newSize, bool bExact)
 /// Shifts the data in the linked block from \p start to \p start + \p n.
 memblock::iterator memblock::insert (iterator start, size_t n)
 {
+    assert (start >= begin() && start <= end());
     const uoff_t ip = start - begin();
-    assert (ip <= size());
-    resize (size() + n, false);
+    if (!is_linked())
+	resize (size() + n, false);
     memlink::insert (begin() + ip, n);
     return (begin() + ip);
 }
@@ -203,26 +209,33 @@ memblock::iterator memblock::insert (iterator start, size_t n)
 /// Shifts the data in the linked block from \p start + \p n to \p start.
 memblock::iterator memblock::erase (iterator start, size_t n)
 {
+    assert (start >= begin() && start + n <= end());
     const uoff_t ep = start - begin();
-    assert (ep <= size());
     memlink::erase (begin() + ep, n);
-    resize (size() - n, false);
+    if (!is_linked())
+	resize (size() - n, false);
     return (begin() + ep);
 }
 
 /// Reads the object from stream \p s
 void memblock::read (istream& is)
 {
-    size_t n;
-    is >> n;
-    resize (n);
-    is.read (data(), size());
-    is.align();
+    if (is_linked())
+	memlink::read (is);
+    else {
+	size_t n;
+	is >> n;
+	resize (n);
+	is.read (data(), size());
+	is.align();
+    }
 }
 
 /// Reads the entire file \p "filename".
 void memblock::read_file (const char* filename)
 {
+    if (is_linked())
+	unlink();
     struct stat st;
     if (stat (filename, &st))
 	throw file_exception ("stat", filename);

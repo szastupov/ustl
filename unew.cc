@@ -20,7 +20,7 @@
 //
 
 #include "unew.h"
-#include <malloc.h>
+#include <stdlib.h>
 
 void* operator new (size_t n) throw (ustl::bad_alloc)
 {

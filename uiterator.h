@@ -68,9 +68,7 @@ public:
     typedef typename iterator_traits<Iterator>::reference	reference;
 public:
     				reverse_iterator (void) : m_i() {}
-    explicit			reverse_iterator (Iterator i) : m_i (i) {}
-    				reverse_iterator (const reverse_iterator& i) : m_i (i.m_i) {}
-    reverse_iterator&		operator= (const reverse_iterator& i) { m_i = i.m_i; return (*this); }
+    explicit			reverse_iterator (Iterator iter) : m_i (iter) {}
     inline bool			operator== (const reverse_iterator& i) const { return (m_i == i.m_i); }
     inline bool			operator< (const reverse_iterator& i) const { return (i.m_i < m_i); }
     inline Iterator		base (void) const { return (m_i); }
@@ -132,8 +130,6 @@ public:
 public:
     				index_iterate (void) : m_Base(), m_i() {}
 				index_iterate (RandomAccessIterator ibase, IndexIterator iindex) : m_Base (ibase), m_i (iindex) {}
-				index_iterate (const index_iterate& v) : m_Base (v.m_Base), m_i (v.m_i) {}
-    index_iterate&		operator= (const index_iterate& i) { m_Base = i.m_Base; m_i = i.m_i; return (*this); }
     inline bool			operator== (const index_iterate& i) const { return (m_i == i.m_i); }
     inline bool			operator< (const index_iterate& i) const { return (m_i < i.m_i); }
     inline bool			operator== (const RandomAccessIterator& i) const { return (m_Base == i); }

@@ -152,7 +152,7 @@ int main (void)
 
     vector<A>::iterator found = find_if (av, mem_var_equal_to(&A::m_v, 14));
     cout << "14 found at position " << found - av.begin() << endl;
-    found = lower_bound (av, 18, mem_var_less(&A::m_v));
+    found = lower_bound (av.begin(), av.end(), 18, mem_var_less(&A::m_v));
     cout << "18 found at position " << found - av.begin() << endl;
 
     cout << "add next:\t\t";

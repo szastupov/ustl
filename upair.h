@@ -36,9 +36,7 @@ public:
 public:
    	 		pair (void);
 			pair (const T1& a, const T2& b);
-			pair (const pair<T1,T2>& p);
     inline size_t	stream_size (void) const;
-    const pair<T1,T2>&	operator= (const pair<T1,T2>& p);
 public:
     first_type		first;
     second_type		second;
@@ -58,23 +56,6 @@ pair<T1,T2>::pair (const T1& a, const T2& b)
 : first (a),
   second (b)
 {
-}
-
-/// Copies contents of \p p.
-template <typename T1, typename T2>
-pair<T1,T2>::pair (const pair<T1,T2>& p)
-: first (p.first),
-  second (p.second)
-{
-}
-
-/// Copies contents of \p p.
-template <typename T1, typename T2>
-const pair<T1,T2>& pair<T1,T2>::operator= (const pair<T1,T2>& p)
-{
-    first = p.first;
-    second = p.second;
-    return (*this);
 }
 
 /// Compares both values of \p p1 to those of \p p2.

@@ -19,9 +19,10 @@ int main (void)
     s3.reserve (48);
     s3.resize (20);
 
-    for (uoff_t i = 0; i < s3.length(); ++ i)
+    uoff_t i;
+    for (i = 0; i < s3.length(); ++ i)
 	s3.at(i) = s3.at(i);
-    for (uoff_t i = 0; i < s3.length(); ++ i)
+    for (i = 0; i < s3.length(); ++ i)
 	s3[i] = s3[i];
     cout << s3 << endl;
     cout << "s3.size() = " << s3.size();

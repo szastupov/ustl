@@ -329,22 +329,6 @@ inline OutputIterator unique_copy (const Container& ctr, OutputIterator result)
 }
 
 ///
-/// The reason there are two different versions of unique_copy is that there
-/// are two different definitions of what it means for a consecutive group of
-/// elements to be duplicates. In the first version, the test is simple
-/// equality: the elements in a range [f, l) are duplicates if, for every
-/// iterator i in the range, either i == f or else *i == *(i-1). In the second,
-/// the test is an arbitrary Binary Predicate binary_pred: the elements in
-/// [f, l) are duplicates if, for every iterator i in the range, either
-/// i == f or else binary_pred(*i, *(i-1)) is true.
-///
-template <class Container, class OutputIterator, class BinaryPredicate>
-inline OutputIterator unique_copy (const Container& ctr, OutputIterator result, BinaryPredicate binary_pred)
-{
-    return (unique_copy (ctr.begin(), ctr.end(), result, binary_pred));
-}
-
-///
 /// Every time a consecutive group of duplicate elements appears in the range
 /// [first, last), the algorithm unique removes all but the first element.
 /// That is, unique returns an iterator new_last such that the range [first,
@@ -393,7 +377,7 @@ inline void reverse (Container& ctr)
 template <class Container>
 inline void rotate (Container& ctr, off_t offset)
 {
-    assert ((offset > 0 ? offset : -offset) < ctr.size());
+    assert (size_t(offset > 0 ? offset : -offset) < ctr.size());
     if (offset > 0)
 	rotate (ctr.begin(), ctr.end() - offset, ctr.end());
     else
@@ -417,22 +401,6 @@ inline typename Container::iterator lower_bound (Container& ctr, const LessThanC
 }
 
 ///
-/// Returns the furthermost iterator i in [first, last) such that,
-/// for every iterator j in [first, i), comp(*j, value) is true.
-/// Assumes the range is sorted.
-///
-template <class Container, class T, class StrictWeakOrdering>
-inline typename Container::const_iterator lower_bound (const Container& ctr, const T& value, StrictWeakOrdering comp)
-{
-    return (lower_bound (ctr.begin(), ctr.end(), value, comp));
-}
-template <class Container, class T, class StrictWeakOrdering>
-inline typename Container::iterator lower_bound (Container& ctr, const T& value, StrictWeakOrdering comp)
-{
-    return (lower_bound (ctr.begin(), ctr.end(), value, comp));
-}
-
-///
 /// Returns the furthermost iterator i in [first,last) such that for
 /// every iterator j in [first,i), value < *j is false.
 ///
@@ -445,21 +413,6 @@ template <class Container, class LessThanComparable>
 inline typename Container::iterator upper_bound (Container& ctr, const LessThanComparable& value)
 {
     return (upper_bound (ctr.begin(), ctr.end(), value));
-}
-
-///
-/// Returns the furthermost iterator i in [first,last) such that for
-/// every iterator j in [first,i), comp(value,*j) is false.
-///
-template <class Container, class T, class StrictWeakOrdering>
-inline typename Container::const_iterator upper_bound (const Container& ctr, const T& value, StrictWeakOrdering comp)
-{
-    return (upper_bound (ctr.begin(), ctr.end(), value, comp));
-}
-template <class Container, class T, class StrictWeakOrdering>
-inline typename Container::iterator upper_bound (Container& ctr, const T& value, StrictWeakOrdering comp)
-{
-    return (upper_bound (ctr.begin(), ctr.end(), value, comp));
 }
 
 ///
@@ -478,21 +431,6 @@ inline typename Container::iterator binary_search (Container& ctr, const typenam
 }
 
 ///
-/// Performs a binary search for \p value.
-/// Assumes the range is sorted.
-///
-template <class Container, class StrictWeakOrdering>
-inline typename Container::const_iterator binary_search (const Container& ctr, const typename Container::value_type& value, StrictWeakOrdering comp)
-{
-    return (binary_search (ctr.begin(), ctr.end(), value, comp));
-}
-template <class Container, class StrictWeakOrdering>
-inline typename Container::iterator binary_search (Container& ctr, const typename Container::value_type& value, StrictWeakOrdering comp)
-{
-    return (binary_search (ctr.begin(), ctr.end(), value, comp));
-}
-
-///
 /// Returns pair<lower_bound,upper_bound>
 ///
 template <class Container, class LessThanComparable>
@@ -504,20 +442,6 @@ template <class Container, class LessThanComparable>
 inline pair<typename Container::iterator,typename Container::iterator> equal_range (Container& ctr, const LessThanComparable& value)
 {
     return (equal_range (ctr.begin(), ctr.end(), value));
-}
-
-///
-/// Returns pair<lower_bound,upper_bound>
-///
-template <class Container, class T, class StrictWeakOrdering>
-inline pair<typename Container::const_iterator,typename Container::const_iterator> equal_range (const Container& ctr, const T& value, StrictWeakOrdering comp)
-{
-    return (equal_range (ctr.begin(), ctr.end(), value, comp));
-}
-template <class Container, class T, class StrictWeakOrdering>
-inline pair<typename Container::iterator,typename Container::iterator> equal_range (Container& ctr, const T& value, StrictWeakOrdering comp)
-{
-    return (equal_range (ctr.begin(), ctr.end(), value, comp));
 }
 
 ///

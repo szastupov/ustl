@@ -8,7 +8,7 @@
 
 clean:	subdirs-clean
 	@echo "Removing generated files ..."
-	@${RM} -f ${OBJS} ${TOCLEAN} *.rpo
+	@${RM} -f ${OBJS} ${TOCLEAN} *.rpo .depend
 
 depend: ${SRCS} subdirs-depend
 	@if [ "${SRCS}" != "" ]; then			\

@@ -106,7 +106,7 @@ void memlink::read (istream& is)
     size_t n;
     is >> n;
     assert (n % elementSize() == 0 && "You are trying to read a block with different element type.");
-    size_t btr = min (size_t(n), size());
+    size_t btr = min (n, size());
     is.read (data(), btr);
     resize (btr);
     is.skip (n - btr);

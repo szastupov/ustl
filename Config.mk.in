@@ -14,16 +14,17 @@ BINDIR		= ${prefix}/bin
 INCDIR		= ${prefix}/include
 LIBDIR		= ${exec_prefix}/lib
 
-INSTALLDIR	= ${INSTALL} -C -d
-INSTALLLIB	= ${INSTALL} -p -C -m 644
-INSTALLEXE	= ${INSTALL} -p -C -m 755
-INSTALLDATA	= ${INSTALL} -p -C -m 644
+INSTALLDIR	= ${INSTALL} -d
+INSTALLLIB	= ${INSTALL} -p -m 644
+INSTALLEXE	= ${INSTALL} -p -m 755
+INSTALLDATA	= ${INSTALL} -p -m 644
 
 CWARNOPTS	= -Werror -Wall -W -Winline -Wpointer-arith -Wcast-qual \
-		-Wno-cast-align -Wwrite-strings -Wmissing-prototypes \
-		-Wconversion -Wshadow -Wredundant-decls
-CXXWARNOPTS	= ${CWARNOPTS} -Wsign-promo -Weffc++ -Wsynth -Woverloaded-virtual
-OPTIMIZE	= -DNDEBUG=1 -fomit-frame-pointer -fmerge-all-constants
+		-Wno-cast-align -Wwrite-strings -Wshadow -Wredundant-decls
+CXXWARNOPTS	= ${CWARNOPTS} -Wmissing-prototypes -Wconversion -Wsign-promo \
+		-Wsynth -Woverloaded-virtual
+
+OPTIMIZE	= -DNDEBUG=1 -fomit-frame-pointer
 #DEBUG		= 1
 ifdef DEBUG
     CFLAGS	= -ggdb3 ${CWARNOPTS}

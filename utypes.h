@@ -26,7 +26,9 @@
 
 #include "config.h"
 #define __STDC_LIMIT_MACROS	// For WCHAR_MIN and WCHAR_MAX in stdint.
-#include <stdint.h>
+#ifdef HAVE_STDINT_H
+    #include <stdint.h>
+#endif
 #include <stddef.h>		// For ptrdiff_t, size_t
 #include <limits.h>
 #include <float.h>

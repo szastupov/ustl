@@ -87,21 +87,21 @@ public:
     template <typename T>
     inline void		iread (T& v);
     template <typename T>
-    inline istream&	operator>> (T*& v)	{ iread(v); return (*this); }
+    inline istream&	operator>> (T*& v);
     template <typename T>
-    inline istream&	operator>> (const T*& v){ iread(v); return (*this); }
-    inline istream&	operator>> (char& v)	{ iread(v); return (*this); }
-    inline istream&	operator>> (short& v)	{ iread(v); return (*this); }
-    inline istream&	operator>> (int& v)	{ iread(v); return (*this); }
-    inline istream&	operator>> (long& v)	{ iread(v); return (*this); }
-    inline istream&	operator>> (u_char& v)	{ iread(v); return (*this); }
-    inline istream&	operator>> (u_short& v)	{ iread(v); return (*this); }
-    inline istream&	operator>> (u_int& v)	{ iread(v); return (*this); }
-    inline istream&	operator>> (u_long& v)	{ iread(v); return (*this); }
-    inline istream&	operator>> (float& v)	{ iread(v); return (*this); }
-    inline istream&	operator>> (double& v)	{ iread(v); return (*this); }
-    inline istream&	operator>> (bool& v)	{ iread(v); return (*this); }
-    inline istream&	operator>> (wchar_t& v)	{ iread(v); return (*this); }
+    inline istream&	operator>> (const T*& v);
+    inline istream&	operator>> (char& v);
+    inline istream&	operator>> (short& v);
+    inline istream&	operator>> (int& v);
+    inline istream&	operator>> (long& v);
+    inline istream&	operator>> (u_char& v);
+    inline istream&	operator>> (u_short& v);
+    inline istream&	operator>> (u_int& v);
+    inline istream&	operator>> (u_long& v);
+    inline istream&	operator>> (float& v);
+    inline istream&	operator>> (double& v);
+    inline istream&	operator>> (bool& v);
+    inline istream&	operator>> (wchar_t& v);
 private:
     uoff_t		m_Pos;		///< The current read position.
 };
@@ -146,17 +146,17 @@ private:
 
 //----------------------------------------------------------------------
 
+/// Returns the current read position
+inline uoff_t istream::pos (void) const
+{
+    return (m_Pos);
+}
+
 /// Sets the current read position to \p newPos
 inline void istream::seek (uoff_t newPos)
 {
     assert (newPos <= size());
     m_Pos = newPos;
-}
-
-/// Returns the current read position
-inline uoff_t istream::pos (void) const
-{
-    return (m_Pos);
 }
 
 /// skips \p nBytes without reading anything.
@@ -205,6 +205,23 @@ inline void istream::iread (T& v)
     v = *reinterpret_cast<const T*>(pv);
     skip (sizeof(T));
 }
+
+template <typename T>
+inline istream& istream::operator>> (T*& v)		{ iread(v); return (*this); }
+template <typename T>
+inline istream& istream::operator>> (const T*& v)	{ iread(v); return (*this); }
+inline istream&	istream::operator>> (char& v)		{ iread(v); return (*this); }
+inline istream&	istream::operator>> (short& v)		{ iread(v); return (*this); }
+inline istream&	istream::operator>> (int& v)		{ iread(v); return (*this); }
+inline istream&	istream::operator>> (long& v)		{ iread(v); return (*this); }
+inline istream&	istream::operator>> (u_char& v)		{ iread(v); return (*this); }
+inline istream&	istream::operator>> (u_short& v)	{ iread(v); return (*this); }
+inline istream&	istream::operator>> (u_int& v)		{ iread(v); return (*this); }
+inline istream&	istream::operator>> (u_long& v)		{ iread(v); return (*this); }
+inline istream&	istream::operator>> (float& v)		{ iread(v); return (*this); }
+inline istream&	istream::operator>> (double& v)		{ iread(v); return (*this); }
+inline istream&	istream::operator>> (bool& v)		{ iread(v); return (*this); }
+inline istream&	istream::operator>> (wchar_t& v)	{ iread(v); return (*this); }
 
 } // namespace ustl
 

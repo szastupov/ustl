@@ -47,7 +47,9 @@ install-incs: ${INCS}
 		${INSTALLDATA} $$i ${INCDIR}/${LIBNAME}/$$i;	\
 	    done;						\
 	fi
-	@${INSTALLDATA} ${LIBNAME}.h ${INCDIR}
+	@if [ -f "${LIBNAME}.h" ]; then				\
+	    ${INSTALLDATA} ${LIBNAME}.h ${INCDIR};		\
+	fi
 
 uninstall-incs:
 	@echo "Removing headers from ${INCDIR} ..."

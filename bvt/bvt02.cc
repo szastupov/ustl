@@ -45,7 +45,8 @@ void TestMB (void)
     if (a.begin() == b.begin())
 	cout << "Assignment does not copy a link" << endl;
     a.deallocate();
-    a.link (strTest, strTestLen);
+    a.resize (strTestLen);
+    a.copy (strTest, strTestLen);
     WriteCML (a);
     a.insert (a.begin() + 5, 9);
     a.fill (a.begin() + 5, "-", 1, 9);
@@ -56,10 +57,6 @@ void TestMB (void)
     a.fill (a.begin() + 5, "TEST", 4, 3); 
     WriteCML (a);
 
-    a.unlink();
-    a.resize (a.size() + strTestLen);
-    a.copy (cstrTest, strTestLen);
-    WriteCML (a);
     a.resize (a.size() + strTestLen);
     a.fill (a.begin() + strTestLen, "-+=", 3, strTestLen / 3);
     WriteCML (a);

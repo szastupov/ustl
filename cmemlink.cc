@@ -22,7 +22,6 @@
 //
 
 #include "cmemlink.h"
-#include <stdlib.h>
 #include <memory.h>
 #include "mostream.h"
 #include "strmsize.h"
@@ -55,11 +54,6 @@ cmemlink::cmemlink (const cmemlink& l)
   m_Size (l.m_Size)
 {
     assert (size() % elementSize() == 0 && "You are trying to link to a block of different element type.");
-}
-
-/// Destructor does nothing
-cmemlink::~cmemlink (void)
-{
 }
 
 /// Attaches the object to pointer \p p of size \p n.

@@ -386,7 +386,9 @@ void vector<T>::constructBlock (void* p, size_t s) const
 {
     memblock::constructBlock (p, s);
     assert (s % sizeof(T) == 0);
-    new (p) T [s / sizeof(T)];
+    T* pfirst = reinterpret_cast<T*>(p);
+    for (T* plast = pfirst + s / sizeof(T); pfirst < plast; ++ pfirst)
+	new (pfirst) T;
 }
 
 /// Calls ~T() for every element.

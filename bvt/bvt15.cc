@@ -18,24 +18,25 @@ int main (void)
     typedef multimap<int,string>::const_iterator miter_t;
     pair<miter_t,miter_t> middles = const_cast<const multimap<int,string>&>(employees).equal_range (47000);
     cout << "Employees making $" << middles.first->first << ":";
-    for (miter_t i = middles.first; i < middles.second; ++ i)
+    miter_t i;
+    for (i = middles.first; i < middles.second; ++ i)
 	cout << " " << i->second;
     cout << endl;
 
     cout << "There are " << employees.count (27000) << " low-paid employees" << endl;
 
     cout << "Alphabetical listing:" << endl;
-    for (miter_t i = employees.begin(); i < employees.end(); ++ i)
+    for (i = employees.begin(); i < employees.end(); ++ i)
 	cout << i->second << "\t- $" << i->first << endl;
 
     cout << "Firing all low-paid employees:" << endl;
     employees.erase (27000);
-    for (miter_t i = employees.begin(); i < employees.end(); ++ i)
+    for (i = employees.begin(); i < employees.end(); ++ i)
 	cout << i->second << "\t- $" << i->first << endl;
 
     cout << "Firing dumb employees:" << endl;
     employees.erase (employees.begin(), employees.begin() + 1);
-    for (miter_t i = employees.begin(); i < employees.end(); ++ i)
+    for (i = employees.begin(); i < employees.end(); ++ i)
 	cout << i->second << "\t- $" << i->first << endl;
 
     return (0);

@@ -67,8 +67,6 @@ public:
 	typedef void		reference;
     public:
 				iterator (pointer p = NULL) : m_p (p) {}
-				iterator (const iterator& i) : m_p (i.m_p) {}
-	inline const iterator&	operator= (const iterator& i) { m_p = i.m_p; return (*this); }
 	inline 			operator const void* (void) const { return (m_p); }
 	inline pointer		base (void) const { return (m_p); }
 	inline const iterator&	operator++ (void) { m_p = advance (m_p, 1); return (*this); }
@@ -90,7 +88,7 @@ public:
 			cmemlink (void);
 			cmemlink (const void* p, size_t n);
 			cmemlink (const cmemlink& l);
-    virtual	       ~cmemlink (void);
+    virtual	       ~cmemlink (void) {}
     void		link (const void* p, size_t n);
     inline void		link (const cmemlink& l);
     virtual void	unlink (void);
@@ -116,12 +114,6 @@ private:
     size_t		m_Size;		///< size of the data block
 };
 
-/// Links to \p l
-inline void cmemlink::link (const cmemlink& l)
-{
-    link (l.begin(), l.size());
-}
-
 /// Returns the pointer to the internal data
 inline const void* cmemlink::cdata (void) const
 {
@@ -132,18 +124,6 @@ inline const void* cmemlink::cdata (void) const
 inline cmemlink::operator const void* (void) const
 {
     return (m_CData);
-}
-
-/// Returns the pointer to the internal data
-inline cmemlink::iterator cmemlink::begin (void) const
-{
-    return (iterator (m_CData));
-}
-
-/// Returns the pointer to the end of the internal data
-inline cmemlink::iterator cmemlink::end (void) const
-{
-    return (begin() + size());
 }
 
 /// Returns the size of the block
@@ -168,6 +148,24 @@ inline bool cmemlink::empty (void) const
 inline void cmemlink::resize (size_t n)
 {
     m_Size = n;
+}
+
+/// Returns the pointer to the internal data
+inline cmemlink::iterator cmemlink::begin (void) const
+{
+    return (iterator (m_CData));
+}
+
+/// Returns the pointer to the end of the internal data
+inline cmemlink::iterator cmemlink::end (void) const
+{
+    return (begin() + size());
+}
+
+/// Links to \p l
+inline void cmemlink::link (const cmemlink& l)
+{
+    link (l.begin(), l.size());
 }
 
 /// Reads the object from stream \p os

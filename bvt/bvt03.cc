@@ -41,7 +41,7 @@ int main (void)
     os << li;
     os << uli;
     os << f;
-    os << d;
+    os << ios::align(sizeof(double)) << d;
     os << si;
     os << usi;
     b.resize (os.pos());
@@ -63,7 +63,7 @@ int main (void)
     is >> li;
     is >> uli;
     is >> f;
-    is >> d;
+    is >> ios::align(sizeof(double)) >> d;
     is >> si;
     is >> usi;
     if (is.pos() != b.size())

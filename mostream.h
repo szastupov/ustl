@@ -78,21 +78,21 @@ public:
     template <typename T>
     inline void		iwrite (const T& v);
     template <typename T>
-    inline ostream&	operator<< (T* v)	{ iwrite(v); return (*this); }
+    inline ostream&	operator<< (T* v);
     template <typename T>
-    inline ostream&	operator<< (const T* v)	{ iwrite(v); return (*this); }
-    inline ostream&	operator<< (char v)	{ iwrite(v); return (*this); }
-    inline ostream&	operator<< (short v)	{ iwrite(v); return (*this); }
-    inline ostream&	operator<< (int v)	{ iwrite(v); return (*this); }
-    inline ostream&	operator<< (long v)	{ iwrite(v); return (*this); }
-    inline ostream&	operator<< (u_char v)	{ iwrite(v); return (*this); }
-    inline ostream&	operator<< (u_short v)	{ iwrite(v); return (*this); }
-    inline ostream&	operator<< (u_int v)	{ iwrite(v); return (*this); }
-    inline ostream&	operator<< (u_long v)	{ iwrite(v); return (*this); }
-    inline ostream&	operator<< (float v)	{ iwrite(v); return (*this); }
-    inline ostream&	operator<< (double v)	{ iwrite(v); return (*this); }
-    inline ostream&	operator<< (bool v)	{ iwrite(v); return (*this); }
-    inline ostream&	operator<< (wchar_t v)	{ iwrite(v); return (*this); }
+    inline ostream&	operator<< (const T* v);
+    inline ostream&	operator<< (char v);
+    inline ostream&	operator<< (short v);
+    inline ostream&	operator<< (int v);
+    inline ostream&	operator<< (long v);
+    inline ostream&	operator<< (u_char v);
+    inline ostream&	operator<< (u_short v);
+    inline ostream&	operator<< (u_int v);
+    inline ostream&	operator<< (u_long v);
+    inline ostream&	operator<< (float v);
+    inline ostream&	operator<< (double v);
+    inline ostream&	operator<< (bool v);
+    inline ostream&	operator<< (wchar_t v);
 private:
     uoff_t		m_Pos;	///< Current write position.
 };
@@ -128,17 +128,17 @@ private:
 
 //----------------------------------------------------------------------
 
+/// Returns the current write position. Usually this is also the number of bytes written.
+inline uoff_t ostream::pos (void) const
+{
+    return (m_Pos);
+}
+
 /// Move the write pointer to \p newPos
 inline void ostream::seek (uoff_t newPos)
 {
     assert (newPos <= size());
     m_Pos = newPos;
-}
-
-/// Returns the current write position. Usually this is also the number of bytes written.
-inline uoff_t ostream::pos (void) const
-{
-    return (m_Pos);
 }
 
 /// Skips \p nBytes without writing anything.
@@ -187,6 +187,23 @@ inline void ostream::iwrite (const T& v)
     *reinterpret_cast<T*>(pv) = v;
     skip (sizeof(T));
 }
+
+template <typename T>
+inline ostream&	ostream::operator<< (T* v)	{ iwrite(v); return (*this); }
+template <typename T>
+inline ostream&	ostream::operator<< (const T* v){ iwrite(v); return (*this); }
+inline ostream&	ostream::operator<< (char v)	{ iwrite(v); return (*this); }
+inline ostream&	ostream::operator<< (short v)	{ iwrite(v); return (*this); }
+inline ostream&	ostream::operator<< (int v)	{ iwrite(v); return (*this); }
+inline ostream&	ostream::operator<< (long v)	{ iwrite(v); return (*this); }
+inline ostream&	ostream::operator<< (u_char v)	{ iwrite(v); return (*this); }
+inline ostream&	ostream::operator<< (u_short v)	{ iwrite(v); return (*this); }
+inline ostream&	ostream::operator<< (u_int v)	{ iwrite(v); return (*this); }
+inline ostream&	ostream::operator<< (u_long v)	{ iwrite(v); return (*this); }
+inline ostream&	ostream::operator<< (float v)	{ iwrite(v); return (*this); }
+inline ostream&	ostream::operator<< (double v)	{ iwrite(v); return (*this); }
+inline ostream&	ostream::operator<< (bool v)	{ iwrite(v); return (*this); }
+inline ostream&	ostream::operator<< (wchar_t v)	{ iwrite(v); return (*this); }
 
 } // namespace ustl
 

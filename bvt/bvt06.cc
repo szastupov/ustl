@@ -23,10 +23,10 @@ int main (void)
     for (size_t i = 0; i < nNumbers; ++ i)
 	numbers[i] = i;
     uoff_t offset = 0;
-    for (size_t i = 0; i < nLinks; ++ i) {
-	links[i].link (numbers + offset, i * sizeof(int));
-	offset += i;
-	v.push_back (memblock(links[i]));
+    for (size_t l = 0; l < nLinks; ++ l) {
+	links[l].link (numbers + offset, l * sizeof(int));
+	offset += l;
+	v.push_back (memblock(links[l]));
     }
     cout << "---" << endl;
     cout << "vector<memblock> of " << v.size() << " elements:" << endl;

@@ -55,6 +55,17 @@ COMPILATION:
 ./configure
 	(you may edit Common.mk at this point to adjust compiler flags)
 
+On Solaris, remove the -Wredunant-decls flag due to errors in system files.
+On Darwin, add the -Wno-long-double to remove the braindead warning.
+Clean builds have been thus obtained on (SourceForge compile farm):
+	*  x86 architecture (dual-processor SMP Intel Pentium III) - Linux OS kernel version 2.2 (Debian GNU/Linux 2.2)
+	* PowerPC architecture (Apple Mac G4 systems) - MacOS X (version 10.1)
+	* DEC Alpha architecture (EV67) - Linux OS kernel version 2.2 (Debian GNU/Linux 2.2)
+	* PowerPC architecture (IBM RS/6000 with PPC processor) - Linux OS kernel version 2.2 (Debian GNU/Linux 2.2)
+	* Sun Sparc (Sun Ultra60 system, sparc64) - Linux OS kernel version 2.2 (Debian GNU/Linux 2.2)
+	* Sun Ultra Enterprise 220R - Sun Solaris (version 8)
+	* StrongArm 10000 host.
+
 make install
 	This copies the static library libustl.a to your lib directory,
 	(usually /usr/local/lib) and the headers to your include directory

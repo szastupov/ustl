@@ -105,12 +105,14 @@ struct numeric_limits<u_long> {
     static inline bool is_signed (void)	{ return (false); }
 };
 
+#ifdef WCHAR_MAX
 template <>
 struct numeric_limits<wchar_t> {
-    static inline wchar_t min (void){ return (WCHAR_MIN); }
+    static inline wchar_t min (void){ return (0); }
     static inline wchar_t max (void){ return (WCHAR_MAX); }
-    static inline bool is_signed (void)	{ return (true); }
+    static inline bool is_signed (void)	{ return (false); }
 };
+#endif
 
 template <>
 struct numeric_limits<float> {
@@ -134,21 +136,25 @@ struct numeric_limits<long double> {
 };
 
 #ifdef __GNUC__
-typedef long long llong;
-typedef unsigned long long u_llong;
+
+#ifndef LONG_LONG_MIN
+#define ULONG_LONG_MAX	0xFFFFFFFFFFFFFFFFLL
+#define LONG_LONG_MAX	0x7FFFFFFFFFFFFFFFLL
+#define LONG_LONG_MIN	ULONG_LONG_MAX
+#endif
 
 template <>
-struct numeric_limits<llong> {
-    static inline llong min (void)	{ return (LONG_LONG_MIN); }
-    static inline llong max (void)	{ return (LONG_LONG_MAX); }
+struct numeric_limits<long long> {
+    static inline long long min (void)	{ return (LONG_LONG_MIN); }
+    static inline long long max (void)	{ return (LONG_LONG_MAX); }
     static inline bool is_signed (void)	{ return (true); }
 };
 
 template <>
-struct numeric_limits<u_llong> {
-    static inline u_llong min (void)	{ return (0); }
-    static inline u_llong max (void)	{ return (ULONG_LONG_MAX); }
-    static inline bool is_signed (void)	{ return (false); }
+struct numeric_limits<unsigned long long> {
+    static inline unsigned long long min (void)	{ return (0); }
+    static inline unsigned long long max (void)	{ return (ULONG_LONG_MAX); }
+    static inline bool is_signed (void)		{ return (false); }
 };
 #endif
 #endif // DOXYGEN_SHOULD_SKIP_THIS

@@ -67,8 +67,6 @@ public:
 	typedef void		reference;
     public:
 				iterator (pointer p = NULL) : m_p (p) {}
-				iterator (const iterator& i) : m_p (i.m_p) {}
-	inline const iterator&	operator= (const iterator& i) { m_p = i.m_p; return (*this); }
 	inline 			operator void* (void) const { return (m_p); }
 	inline pointer		base (void) const { return (m_p); }
 	inline const iterator&	operator++ (void) { m_p = advance (m_p, 1); return (*this); }
@@ -159,12 +157,14 @@ inline memlink::const_iterator memlink::end (void) const
 /// Copies from \p l.
 inline void memlink::copy (const cmemlink& l)
 {
+    assert ((begin() || !l.size()) && "Can't copy into a constant link.");
     copy (begin(), l.cdata(), l.size());
 }
 
 /// Copies begin from \p p, \p n to the linked block.
 inline void memlink::copy (const void* p, size_t n)
 {
+    assert ((begin() || !n) && "Can't copy into a constant link.");
     copy (begin(), p, n);
 }
 

@@ -30,7 +30,7 @@
 namespace ustl {
 
 /// The alignment performed by default.
-const size_t c_DefaultAlignment = sizeof(u_long);
+const size_t c_DefaultAlignment = sizeof(u_int);
 
 /// Divides \p n1 by \p n2 and rounds the result up (regular division rounds down).
 template <class T>

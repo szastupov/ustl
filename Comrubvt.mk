@@ -4,8 +4,8 @@
 # LIBS variable should list required libraries.
 #
 
-CXXFLAGS	+= -I ..
-LDFLAGS		+= -L ..
+CXXFLAGS	+= -I..
+LDFLAGS		+= -L..
 TOCLEAN		+= ${BVTS}
 
 all:	${BVTS}
