@@ -20,7 +20,7 @@ void Widen (const string& str, vector<wchar_t>& result)
 void DumpWchars (const vector<wchar_t>& v)
 {
     foreach (vector<wchar_t>::const_iterator, i, v)
-	cout << ' ' << *i;
+	cout << ' ' << (uint32_t) *i;
 }
 
 int main (void)
@@ -29,7 +29,7 @@ int main (void)
     vector<wchar_t> srcChars;
     srcChars.resize (0xFFFF);
     generate (srcChars, Linear<wchar_t>(0));
-    cout << srcChars[0] << " - " << srcChars.back() << endl;
+    cout << size_t(srcChars[0]) << " - " << size_t(srcChars.back()) << endl;
 
     cout << "Encoding to utf8." << endl;
     string encoded;
@@ -62,7 +62,7 @@ int main (void)
     ws.insert (ws.length(), wchar_t(4567));
     cout << "Values[" << ws.length() << "]:";
     for (uoff_t j = 0; j < ws.length(); ++ j)
-	cout << ' ' << ws.char_at(j);
+	cout << ' ' << (uint32_t) ws.char_at(j);
     cout << endl;
 
     cout << "Character offsets:";

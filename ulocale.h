@@ -41,7 +41,7 @@ public:
 	numpunct_bit,
 	all_categories
     };
-    typedef u_int	category;
+    typedef uint32_t	category;
 public:
     class facet {
     public:

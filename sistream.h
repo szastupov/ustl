@@ -43,12 +43,16 @@ public:
     				istringstream (void);
 				istringstream (const void* p, size_t n);
     explicit			istringstream (const cmemlink& source);
-    void			iread (long& v);
-    void			iread (u_char& v);
+    void			iread (int8_t& v);
+    void			iread (int32_t& v);
     void			iread (double& v);
     void			iread (bool& v);
+    void			iread (wchar_t& v);
     void			iread (string& v);
-#ifdef HAVE_LONG_LONG
+#ifdef HAVE_INT64_T
+    void			iread (int64_t& v);
+#endif
+#if HAVE_LONG_LONG && (!HAVE_INT64_T || SIZE_OF_LONG_LONG > 8)
     void			iread (long long& v);
 #endif
     void			set_delimiters (const char* delimiters);
@@ -66,7 +70,7 @@ private:
     inline bool			is_delimiter (char c) const;
 private:
     char			m_Delimiters [c_MaxDelimiters];
-    u_short			m_Base;
+    uint16_t			m_Base;
     char			m_DecimalSeparator;
     char			m_ThousandSeparator;
 };
@@ -104,12 +108,16 @@ void _cast_read (istringstream& is, RealT& v)
     v = RealT (cv);
 }
 
-inline istringstream& operator>> (istringstream& is, long& v)	{ is.iread (v); return (is); }
-inline istringstream& operator>> (istringstream& is, u_char& v)	{ is.iread (v); return (is); }
+inline istringstream& operator>> (istringstream& is, int8_t& v)	{ is.iread (v); return (is); }
+inline istringstream& operator>> (istringstream& is, int32_t& v){ is.iread (v); return (is); }
 inline istringstream& operator>> (istringstream& is, double& v)	{ is.iread (v); return (is); }
 inline istringstream& operator>> (istringstream& is, bool& v)	{ is.iread (v); return (is); }
+inline istringstream& operator>> (istringstream& is, wchar_t& v){ is.iread (v); return (is); }
 inline istringstream& operator>> (istringstream& is, string& v)	{ is.iread (v); return (is); }
-#ifdef HAVE_LONG_LONG
+#if HAVE_INT64_T
+inline istringstream& operator>> (istringstream& is, int64_t& v){ is.iread (v); return (is); }
+#endif
+#if HAVE_LONG_LONG && (!HAVE_INT64_T || SIZE_OF_LONG_LONG > 8)
 inline istringstream& operator>> (istringstream& is, long long& v) { is.iread (v); return (is); }
 #endif
 
@@ -117,16 +125,17 @@ inline istringstream& operator>> (istringstream& is, long long& v) { is.iread (v
 inline istringstream& operator>> (istringstream& is, RealT& v)	\
 { _cast_read<RealT,CastT>(is, v); return (is); }
 
-ISTRSTREAM_CAST_OPERATOR (signed char,	u_char)
-ISTRSTREAM_CAST_OPERATOR (char,		u_char)
-ISTRSTREAM_CAST_OPERATOR (short,	long)
-ISTRSTREAM_CAST_OPERATOR (int,		long)
-ISTRSTREAM_CAST_OPERATOR (u_short,	long)
-ISTRSTREAM_CAST_OPERATOR (u_int,	long)
-ISTRSTREAM_CAST_OPERATOR (u_long,	long)
-ISTRSTREAM_CAST_OPERATOR (wchar_t,	long)
+ISTRSTREAM_CAST_OPERATOR (char,		int8_t)
+ISTRSTREAM_CAST_OPERATOR (uint8_t,	int8_t)
+ISTRSTREAM_CAST_OPERATOR (int16_t,	int32_t)
+ISTRSTREAM_CAST_OPERATOR (uint16_t,	int32_t)
+ISTRSTREAM_CAST_OPERATOR (uint32_t,	int32_t)
 ISTRSTREAM_CAST_OPERATOR (float,	double)
-#ifdef HAVE_LONG_LONG
+#if SIZE_OF_LONG == SIZE_OF_INT
+ISTRSTREAM_CAST_OPERATOR (long,		int32_t)
+ISTRSTREAM_CAST_OPERATOR (unsigned long,int32_t)
+#endif
+#if HAVE_LONG_LONG && (!HAVE_INT64_T || SIZE_OF_LONG_LONG > 8)
 ISTRSTREAM_CAST_OPERATOR (unsigned long long, long long)
 #endif
 #undef ISTRSTREAM_CAST_OPERATOR

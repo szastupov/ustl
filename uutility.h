@@ -91,7 +91,7 @@ template <>
 inline const void* advance (const void* p, ssize_t offset)
 {
     assert (p || !offset);
-    return (reinterpret_cast<const u_char*>(p) + offset);
+    return (reinterpret_cast<const uint8_t*>(p) + offset);
 }
 
 /// Offsets a void pointer
@@ -99,7 +99,7 @@ template <>
 inline void* advance (void* p, ssize_t offset)
 {
     assert (p || !offset);
-    return (reinterpret_cast<u_char*>(p) + offset);
+    return (reinterpret_cast<uint8_t*>(p) + offset);
 }
 
 /// Returns the difference \p p1 - \p p2
@@ -113,8 +113,8 @@ inline ptrdiff_t distance (T1 i1, T2 i2)
 template <>							\
 inline ptrdiff_t distance (T1const void* p1, T2const void* p2)	\
 {								\
-    return (reinterpret_cast<T2const u_char*>(p2) -		\
-	    reinterpret_cast<T1const u_char*>(p1));		\
+    return (reinterpret_cast<T2const uint8_t*>(p2) -		\
+	    reinterpret_cast<T1const uint8_t*>(p1));		\
 }
 UNVOID_DISTANCE(,)
 UNVOID_DISTANCE(const,const)

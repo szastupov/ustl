@@ -88,17 +88,23 @@ public:
 public:
     explicit		num_get (const locale& loc);
     const_iterator	get (const_iterator first, const_iterator last, iosflags_t flags, bool& v) const;
-    const_iterator	get (const_iterator first, const_iterator last, iosflags_t flags, short& v) const;
-    const_iterator	get (const_iterator first, const_iterator last, iosflags_t flags, int& v) const;
-    const_iterator	get (const_iterator first, const_iterator last, iosflags_t flags, long& v) const;
-    const_iterator	get (const_iterator first, const_iterator last, iosflags_t flags, u_short& v) const;
-    const_iterator	get (const_iterator first, const_iterator last, iosflags_t flags, u_int& v) const;
-    const_iterator	get (const_iterator first, const_iterator last, iosflags_t flags, u_long& v) const;
+    const_iterator	get (const_iterator first, const_iterator last, iosflags_t flags, int16_t& v) const;
+    const_iterator	get (const_iterator first, const_iterator last, iosflags_t flags, uint16_t& v) const;
+    const_iterator	get (const_iterator first, const_iterator last, iosflags_t flags, int32_t& v) const;
+    const_iterator	get (const_iterator first, const_iterator last, iosflags_t flags, uint32_t& v) const;
     const_iterator	get (const_iterator first, const_iterator last, iosflags_t flags, float& v) const;
     const_iterator	get (const_iterator first, const_iterator last, iosflags_t flags, double& v) const;
     const_iterator	get (const_iterator first, const_iterator last, iosflags_t flags, long double& v) const;
     const_iterator	get (const_iterator first, const_iterator last, iosflags_t flags, void*& v) const;
-#ifdef HAVE_LONG_LONG
+#if HAVE_INT64_T
+    const_iterator	get (const_iterator first, const_iterator last, iosflags_t flags, int64_t& v) const;
+    const_iterator	get (const_iterator first, const_iterator last, iosflags_t flags, uint64_t& v) const;
+#endif
+#if SIZE_OF_LONG == SIZE_OF_INT
+    const_iterator	get (const_iterator first, const_iterator last, iosflags_t flags, long& v) const;
+    const_iterator	get (const_iterator first, const_iterator last, iosflags_t flags, unsigned long& v) const;
+#endif
+#if HAVE_LONG_LONG && (!HAVE_INT64_T || SIZE_OF_LONG_LONG > 8)
     const_iterator	get (const_iterator first, const_iterator last, iosflags_t flags, long long& v) const;
     const_iterator	get (const_iterator first, const_iterator last, iosflags_t flags, unsigned long long& v) const;
 #endif
@@ -112,13 +118,21 @@ public:
 public:
     explicit		num_put (const locale& loc);
     iterator		put (iterator first, iterator last, iosflags_t flags, bool v, wchar_t filler = ' ') const;
-    iterator		put (iterator first, iterator last, iosflags_t flags, long v, wchar_t filler = ' ') const;
-    iterator		put (iterator first, iterator last, iosflags_t flags, u_long v, wchar_t filler = ' ') const;
+    iterator		put (iterator first, iterator last, iosflags_t flags, int32_t v, wchar_t filler = ' ') const;
+    iterator		put (iterator first, iterator last, iosflags_t flags, uint32_t v, wchar_t filler = ' ') const;
     iterator		put (iterator first, iterator last, iosflags_t flags, float v, wchar_t filler = ' ') const;
     iterator		put (iterator first, iterator last, iosflags_t flags, double v, wchar_t filler = ' ') const;
     iterator		put (iterator first, iterator last, iosflags_t flags, long double v, wchar_t filler = ' ') const;
     iterator		put (iterator first, iterator last, iosflags_t flags, void* v, wchar_t filler = ' ') const;
-#ifdef HAVE_LONG_LONG
+#if HAVE_INT64_T
+    iterator		put (iterator first, iterator last, iosflags_t flags, int64_t v, wchar_t filler = ' ') const;
+    iterator		put (iterator first, iterator last, iosflags_t flags, uint64_t v, wchar_t filler = ' ') const;
+#endif
+#if SIZE_OF_LONG == SIZE_OF_INT
+    iterator		put (iterator first, iterator last, iosflags_t flags, long v, wchar_t filler = ' ') const;
+    iterator		put (iterator first, iterator last, iosflags_t flags, unsigned long v, wchar_t filler = ' ') const;
+#endif
+#if HAVE_LONG_LONG && (!HAVE_INT64_T || SIZE_OF_LONG_LONG > 8)
     iterator		put (iterator first, iterator last, iosflags_t flags, long long v, wchar_t filler = ' ') const;
     iterator		put (iterator first, iterator last, iosflags_t flags, unsigned long long v, wchar_t filler = ' ') const;
 #endif

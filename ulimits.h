@@ -47,8 +47,8 @@ struct numeric_limits<bool> {
 
 template <>
 struct numeric_limits<char> {
-    static inline char min (void)	{ return (CHAR_MIN); }
-    static inline char max (void)	{ return (CHAR_MAX); }
+    static inline char min (void)	{ return (SCHAR_MIN); }
+    static inline char max (void)	{ return (SCHAR_MAX); }
     static inline bool is_signed (void)	{ return (true); }
 };
 
@@ -74,39 +74,39 @@ struct numeric_limits<long> {
 };
 
 template <>
-struct numeric_limits<u_char> {
-    static inline u_char min (void)	{ return (0); }
-    static inline u_char max (void)	{ return (UCHAR_MAX); }
-    static inline bool is_signed (void)	{ return (false); }
+struct numeric_limits<unsigned char> {
+    static inline unsigned char min (void)	{ return (0); }
+    static inline unsigned char max (void)	{ return (UCHAR_MAX); }
+    static inline bool is_signed (void)		{ return (false); }
 };
 
 template <>
-struct numeric_limits<u_int> {
-    static inline u_int min (void)	{ return (0); }
-    static inline u_int max (void)	{ return (UINT_MAX); }
-    static inline bool is_signed (void)	{ return (false); }
+struct numeric_limits<unsigned int> {
+    static inline unsigned int min (void)	{ return (0); }
+    static inline unsigned int max (void)	{ return (UINT_MAX); }
+    static inline bool is_signed (void)		{ return (false); }
 };
 
 template <>
-struct numeric_limits<u_short> {
-    static inline u_short min (void)	{ return (0); }
-    static inline u_short max (void)	{ return (USHRT_MAX); }
-    static inline bool is_signed (void)	{ return (false); }
+struct numeric_limits<unsigned short> {
+    static inline unsigned short min (void)	{ return (0); }
+    static inline unsigned short max (void)	{ return (USHRT_MAX); }
+    static inline bool is_signed (void)		{ return (false); }
 };
 
 template <>
-struct numeric_limits<u_long> {
-    static inline u_long min (void)	{ return (0); }
-    static inline u_long max (void)	{ return (ULONG_MAX); }
-    static inline bool is_signed (void)	{ return (false); }
+struct numeric_limits<unsigned long> {
+    static inline unsigned long min (void)	{ return (0); }
+    static inline unsigned long max (void)	{ return (ULONG_MAX); }
+    static inline bool is_signed (void)		{ return (false); }
 };
 
 #ifdef WCHAR_MAX
 template <>
 struct numeric_limits<wchar_t> {
-    static inline wchar_t min (void){ return (0); }
-    static inline wchar_t max (void){ return (WCHAR_MAX); }
-    static inline bool is_signed (void)	{ return (false); }
+    static inline wchar_t min (void)		{ return (0); }
+    static inline wchar_t max (void)		{ return (WCHAR_MAX); }
+    static inline bool is_signed (void)		{ return (false); }
 };
 #endif
 

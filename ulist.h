@@ -71,9 +71,9 @@ public:
 template <typename T>
 void list<T>::merge (list& l)
 {
-    resize (size() + l.size());
+    list<T>::resize (size() + l.size());
     iterator me = merge (begin(), end(), l.begin(), l.end(), begin());
-    resize (distance (begin(), me));
+    list<T>::resize (distance (begin(), me));
 }
 
 /// Moves the range [first, last) from \p l to this list at \p ip.

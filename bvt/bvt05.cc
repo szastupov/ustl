@@ -59,7 +59,7 @@ void TestBigFill (const size_t size, const T magic)
 	cout << "works";
     else {
 	cout << "does not work: mismatch at " << distance(vbig.begin(), iMismatch);
-	cout << ", value = 0x" << ios::hex << u_long(*iMismatch) << ios::dec;
+	cout << ", value = 0x" << ios::hex << uintptr_t(*iMismatch) << ios::dec;
     }
     cout << endl;
 }
@@ -77,9 +77,9 @@ void TestBigCopy (const size_t size, const T magic)
 	cout << "works";
     else {
 	cout << "does not work: mismatch at " << distance(vbig1.begin(), iMismatch.first);
-	cout << ios::hex << ", 0x" << u_long(*iMismatch.first);
+	cout << ios::hex << ", 0x" << uintptr_t(*iMismatch.first);
 	assert (iMismatch.second < vbig2.end());
-	cout << " != 0x" << u_long(*iMismatch.second) << ios::dec;
+	cout << " != 0x" << uintptr_t(*iMismatch.second) << ios::dec;
     }
     cout << endl;
 }

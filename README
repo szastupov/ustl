@@ -73,28 +73,30 @@ make install
 	in Common.mk.
 
 You may also chdir to the bvt subdirectory and 'make run' to verify that
-	the library works correctly on your system. This works only after
-	you installed the library, because ld.so will not load anything
-	from .. for security reasons.
-	I pretty much assume an ANSI-compliant system, and have no
-	desire whatsoever to support some weird architecture that lacks
-	regular libc headers or something.  GNU extensions may be used
-	(like long long), but are not required and if you are failing
-	the build because of them it is a bug.
+	the library works correctly on your system. This works only
+	after you installed the library, because ld.so will not load
+	anything from .. for security reasons.	I pretty much assume
+	an ANSI-compliant system, and have no desire whatsoever to
+	support some weird architecture that lacks regular libc headers
+	or something.  GNU extensions may be used (like long long),
+	but are not required and if you are failing the build because
+	of them it is a bug.
 Documentation may be built with doxygen by typing 'make dox'.
 
-If you have g++ 3.3 or later, you can remove linkage to libstdc++
-by uncommenting the STANDALONE= line in Common.mk . This will add the
--nodefaultlibs flag to CXXFLAGS and LDFLAGS. You will have to compile
+If you have g++ 3.3 or later (libsupc++.a and gcc_eh.a are first
+mentioned in the gcc changelogs around Dec 2001), you can remove linkage
+to libstdc++ by passing --without-libstdc++ to configure. This will add
+the -nodefaultlibs flag to CXXFLAGS and LDFLAGS. You will have to compile
 all your code with that flag as well, passed in to both the compiler
-and the linker. You may also need to link with -lsupc++ -lgcc_s -lc to
-get definitions not used by ustl. This is a great way to reduce your
-memory footprint; libstdc++.so.5 is 860k, standalone libustl is 85k. The
-former also links to libm, which you most likely do not need, saving an
-additional 130k. This leaves only libc and libgcc_s, both unavoidable.
-Unfortunately, the linking procedure is not too user friendly, and can be
-inconvenient unless you can factor out all that stuff into some common
-make include file, like I do.
+and the linker. You may also need to link with -lsupc++ -lgcc -lgcc_eh
+-lc to get definitions not used by ustl. This is a great way to reduce
+your memory footprint; standalone libustl is 170k, while libstdc++.so.6
+is 952k by itself and also links to libgcc_s.so.1 (794k), and to libm
+(205k), which you most likely do not need. This leaves only libc and
+ld-linux.so.2, both unavoidable, with a whopping 1.7 megabytes of saved
+memory, a nearly tenfold reduction! Unfortunately, the linking procedure
+is not too user friendly, and can be inconvenient unless you can factor
+out all that stuff into some common make include file, like I do.
 
 ------
 USAGE:

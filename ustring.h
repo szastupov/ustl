@@ -83,7 +83,7 @@ public:
 				string (const_pointer s);
 				string (const_pointer s, size_t len);
 				string (const_pointer s1, const_pointer s2);
-				string (size_t n, value_type c = c_Terminator);
+    explicit			string (size_t n, value_type c = c_Terminator);
     inline size_t		size (void) const;
     size_t			length (void) const;
     const_iterator		ichar (uoff_t c) const;
@@ -456,25 +456,25 @@ inline bool operator!= (const char* s1, const string& s2)
 /// Returns true if \p s1 is equal to \p s2
 inline bool operator< (const char* s1, const string& s2)
 {
-    return (s2 > s1);
+    return (s2 > string(s1));
 }
 
 /// Returns true if \p s1 is less than or equal to \p s2
 inline bool operator<= (const char* s1, const string& s2)
 {
-    return (s2 >= s1);
+    return (s2 >= string(s1));
 }
 
 /// Returns true if \p s1 is equal to \p s2
 inline bool operator> (const char* s1, const string& s2)
 {
-    return (s2 < s1);
+    return (s2 < string(s1));
 }
 
 /// Returns true if \p s1 is greater than or equal to \p s2
 inline bool operator>= (const char* s1, const string& s2)
 {
-    return (s2 <= s1);
+    return (s2 <= string(s1));
 }
 
 } // namespace ustl

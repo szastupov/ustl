@@ -359,7 +359,7 @@ string::const_iterator string::find (const string& s, const_iterator pos) const
 	i = ::ustl::find (i, end(), endchar);
 	if (!i)
 	    break;
-	if (memcmp (i - endi, s, s.size()) == 0)
+	if (memcmp (i - endi, s.c_str(), s.size()) == 0)
 	    return (i - endi);
 	i += skip;
     }

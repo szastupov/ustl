@@ -35,15 +35,13 @@
 #include <float.h>
 #ifdef HAVE_SYS_TYPES_H
     #include <sys/types.h>
-#else
-    typedef unsigned char	u_char;
-    typedef unsigned short	u_short;
-    typedef unsigned int	u_int;
-    typedef unsigned long	u_long;
+#endif
+#ifndef SIZE_MAX		// This is occasionally not present
+    #define SIZE_MAX	UINT_MAX
 #endif
 
-typedef size_t	uoff_t;		///< A type for storing offsets into blocks measured by size_t.
-typedef u_long	hashvalue_t;	///< Value type returned by the hash functions.
+typedef size_t		uoff_t;		///< A type for storing offsets into blocks measured by size_t.
+typedef uint32_t	hashvalue_t;	///< Value type returned by the hash functions.
 
 #endif
 

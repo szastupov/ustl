@@ -24,6 +24,7 @@
 #include "mostream.h"
 #include "uios.h"
 #include "utf8.h"
+#include "ulimits.h"
 
 namespace ustl {
 
@@ -105,7 +106,7 @@ const char* ctype::widen (const char* first, const char* last, wchar_t* result) 
 
 char ctype::narrow (wchar_t c, char dfault) const
 {
-    return (c < CHAR_MAX ? c : dfault);
+    return (c < numeric_limits<char>::max() ? c : dfault);
 }
 
 const wchar_t* ctype::narrow (const wchar_t* first, const wchar_t* last, char dfault, char* result) const
@@ -134,17 +135,17 @@ wchar_t numpunct::thousands_sep (void) const
 
 string numpunct::grouping (void) const
 {
-    return ("");
+    return (string (""));
 }
 
 string numpunct::truename (void) const
 {
-    return ("true");
+    return (string ("true"));
 }
 
 string numpunct::falsename (void) const
 {
-    return ("false");
+    return (string ("false"));
 }
 
 //----------------------------------------------------------------------
@@ -159,12 +160,12 @@ num_get::const_iterator num_get::get (const_iterator first, const_iterator, iosf
     return (first);
 }
 
-num_get::const_iterator num_get::get (const_iterator first, const_iterator, iosflags_t, long&) const
+num_get::const_iterator num_get::get (const_iterator first, const_iterator, iosflags_t, int32_t&) const
 {
     return (first);
 }
 
-num_get::const_iterator num_get::get (const_iterator first, const_iterator, iosflags_t, u_long&) const
+num_get::const_iterator num_get::get (const_iterator first, const_iterator, iosflags_t, uint32_t&) const
 {
     return (first);
 }
@@ -179,8 +180,31 @@ num_get::const_iterator num_get::get (const_iterator first, const_iterator, iosf
     return (first);
 }
 
-#ifdef HAVE_LONG_LONG
+#if HAVE_INT64_T
+num_get::const_iterator num_get::get (const_iterator first, const_iterator, iosflags_t, int64_t&) const
+{
+    return (first);
+}
 
+num_get::const_iterator num_get::get (const_iterator first, const_iterator, iosflags_t, uint64_t&) const
+{
+    return (first);
+}
+#endif
+
+#if SIZE_OF_LONG == SIZE_OF_INT
+num_get::const_iterator num_get::get (const_iterator first, const_iterator, iosflags_t, long&) const
+{
+    return (first);
+}
+
+num_get::const_iterator num_get::get (const_iterator first, const_iterator, iosflags_t, unsigned long&) const
+{
+    return (first);
+}
+#endif
+
+#if HAVE_LONG_LONG && (!HAVE_INT64_T || SIZE_OF_LONG_LONG > 8)
 num_get::const_iterator num_get::get (const_iterator first, const_iterator, iosflags_t, long long&) const
 {
     return (first);
@@ -190,38 +214,21 @@ num_get::const_iterator num_get::get (const_iterator first, const_iterator, iosf
 {
     return (first);
 }
-
 #endif
 
-num_get::const_iterator num_get::get (const_iterator first, const_iterator last, iosflags_t flags, short& v) const
+num_get::const_iterator num_get::get (const_iterator first, const_iterator last, iosflags_t flags, int16_t& v) const
 {
-    long vl;
+    int32_t vl;
     const_iterator result = get (first, last, flags, vl);
-    v = static_cast<short>(vl);
+    v = static_cast<int16_t>(vl);
     return (result);
 }
 
-num_get::const_iterator num_get::get (const_iterator first, const_iterator last, iosflags_t flags, int& v) const
+num_get::const_iterator num_get::get (const_iterator first, const_iterator last, iosflags_t flags, uint16_t& v) const
 {
-    long vl;
+    uint32_t vl;
     const_iterator result = get (first, last, flags, vl);
-    v = static_cast<int>(vl);
-    return (result);
-}
-
-num_get::const_iterator num_get::get (const_iterator first, const_iterator last, iosflags_t flags, u_short& v) const
-{
-    u_long vl;
-    const_iterator result = get (first, last, flags, vl);
-    v = static_cast<u_short>(vl);
-    return (result);
-}
-
-num_get::const_iterator num_get::get (const_iterator first, const_iterator last, iosflags_t flags, u_int& v) const
-{
-    u_long vl;
-    const_iterator result = get (first, last, flags, vl);
-    v = static_cast<u_int>(vl);
+    v = static_cast<uint32_t>(vl);
     return (result);
 }
 
@@ -235,7 +242,7 @@ num_get::const_iterator num_get::get (const_iterator first, const_iterator last,
 
 num_get::const_iterator num_get::get (const_iterator first, const_iterator last, iosflags_t flags, void*& v) const
 {
-    u_long vl;
+    uintptr_t vl;
     const_iterator result = get (first, last, flags, vl);
     v = reinterpret_cast<void*>(vl);
     return (result);
@@ -270,75 +277,9 @@ num_put::iterator num_put::put (iterator first, iterator last, iosflags_t, bool 
     return (write_buffer (name.begin(), name.size(), first, last));
 }
 
-num_put::iterator num_put::put (iterator first, iterator last, iosflags_t flags, long sv, wchar_t) const
+num_put::iterator num_put::put (iterator first, iterator, iosflags_t, double, wchar_t) const
 {
-    long base = base_from_flags (flags);
-    const bool negative = (sv < 0);
-    u_long v (negative ? -sv : sv);
-    const size_t c_BufSize = BitsInType(v) + 1;
-    char buffer [c_BufSize];
-    uoff_t i = c_BufSize - 1;
-    buffer [i--] = 0;
-    do {
-	buffer[i--] = c_Digits[v % base];
-	v /= base;
-    } while (v);
-    if (negative)
-	buffer[i--] = '-';
-    ++ i;
-    return (write_buffer (buffer + i, c_BufSize - i - 1, first, last));
-}
-
-num_put::iterator num_put::put (iterator first, iterator last, iosflags_t flags, u_long v, wchar_t) const
-{
-    u_long base = base_from_flags (flags);
-    const size_t c_BufSize = BitsInType(v) + 1;
-    char buffer [c_BufSize];
-    uoff_t i = c_BufSize - 1;
-    buffer [i--] = 0;
-    do {
-	buffer[i--] = c_Digits[v % base];
-	v /= base;
-    } while (v);
-    ++ i;
-    return (write_buffer (buffer + i, c_BufSize - i - 1, first, last));
-}
-
-num_put::iterator num_put::put (iterator first, iterator last, iosflags_t flags, double iv, wchar_t) const
-{
-    u_int base = base_from_flags (flags);
-    assert (base < VectorSize(c_Digits));
-    const size_t c_BufSize = BitsInType(double) + 1;
-    char buffer [c_BufSize];
-    buffer [c_BufSize - 1] = 0;
-    const u_short stdPrecision = 2;
-    assert (stdPrecision < c_BufSize / 2);
-    uoff_t i = c_BufSize - 2 - (stdPrecision + 1);
-    assert (i < c_BufSize);
-    double v = iv;
-    bool negative = (v < 0);
-    if (negative)
-	v = -v;
-    if (v < 1.0)
-	buffer[i--] = c_Digits[0];
-    while (v >= 1.0 && i) {
-	buffer[i--] = c_Digits[u_long(v) % base];
-	v /= base;
-    }
-    if (negative)
-	buffer[i--] = '-';
-    ++ i;
-    if (stdPrecision > 0) {
-	v = iv;
-	uoff_t di = c_BufSize - 2 - stdPrecision;
-	buffer [di] = '.';
-	u_short precision = stdPrecision;
-	while (precision--) {
-	    v *= base;
-	    buffer[++di] = c_Digits[u_long(v) % base];
-	}
-    }
-    return (write_buffer (buffer + i, c_BufSize - i - 1, first, last));
+    return (first);
 }
 
 num_put::iterator num_put::put (iterator first, iterator last, iosflags_t flags, long double v, wchar_t filler) const
@@ -353,45 +294,53 @@ num_put::iterator num_put::put (iterator first, iterator last, iosflags_t flags,
 
 num_put::iterator num_put::put (iterator first, iterator last, iosflags_t flags, void* v, wchar_t filler) const
 {
-    return (put (first, last, flags, reinterpret_cast<u_long>(v), filler));
+    return (put (first, last, flags, reinterpret_cast<uintptr_t>(v), filler));
 }
 
-#ifdef HAVE_LONG_LONG
-
-num_put::iterator num_put::put (iterator first, iterator last, iosflags_t flags, long long sv, wchar_t) const
+num_put::iterator num_put::put (iterator first, iterator, iosflags_t, int32_t, wchar_t) const
 {
-    long base = base_from_flags (flags);
-    const bool negative = (sv < 0);
-    unsigned long long v (negative ? -sv : sv);
-    const size_t c_BufSize = BitsInType(v) + 1;
-    char buffer [c_BufSize];
-    uoff_t i = c_BufSize - 1;
-    buffer [i--] = 0;
-    do {
-	buffer[i--] = c_Digits[v % base];
-	v /= base;
-    } while (v);
-    if (negative)
-	buffer[i--] = '-';
-    ++ i;
-    return (write_buffer (buffer + i, c_BufSize - i - 1, first, last));
+    return (first);
 }
 
-num_put::iterator num_put::put (iterator first, iterator last, iosflags_t flags, unsigned long long v, wchar_t) const
+num_put::iterator num_put::put (iterator first, iterator, iosflags_t, uint32_t, wchar_t) const
 {
-    u_long base = base_from_flags (flags);
-    const size_t c_BufSize = BitsInType(v) + 1;
-    char buffer [c_BufSize];
-    uoff_t i = c_BufSize - 1;
-    buffer [i--] = 0;
-    do {
-	buffer[i--] = c_Digits[v % base];
-	v /= base;
-    } while (v);
-    ++ i;
-    return (write_buffer (buffer + i, c_BufSize - i - 1, first, last));
+    return (first);
 }
 
+#if HAVE_INT64_T
+num_put::iterator num_put::put (iterator first, iterator, iosflags_t, int64_t, wchar_t) const
+{
+    return (first);
+}
+
+num_put::iterator num_put::put (iterator first, iterator, iosflags_t, uint64_t, wchar_t) const
+{
+    return (first);
+}
+#endif
+
+#if SIZE_OF_LONG == SIZE_OF_INT
+num_put::iterator num_put::put (iterator first, iterator, iosflags_t, long, wchar_t) const
+{
+    return (first);
+}
+
+num_put::iterator num_put::put (iterator first, iterator, iosflags_t, unsigned long, wchar_t) const
+{
+    return (first);
+}
+#endif
+
+#if HAVE_LONG_LONG && (!HAVE_INT64_T || SIZE_OF_LONG_LONG > 8)
+num_put::iterator num_put::put (iterator first, iterator, iosflags_t, long long, wchar_t) const
+{
+    return (first);
+}
+
+num_put::iterator num_put::put (iterator first, iterator, iosflags_t, unsigned long long, wchar_t) const
+{
+    return (first);
+}
 #endif
 
 //----------------------------------------------------------------------
@@ -415,7 +364,7 @@ string collate::transform (const char* f1, const char* l1) const
 hashvalue_t collate::hash (const char* first, const char* last) const
 {
     hashvalue_t h = 0;
-    // This has the bits flowing into each other from both sides of the u_long
+    // This has the bits flowing into each other from both sides of the number
     for (; first < last; ++ first)
 	h = *first + ((h << 7) | (h >> BitsInType(hashvalue_t) - 7));
     return (h);
@@ -490,22 +439,22 @@ wchar_t money_punct::thousands_sep (void) const
 
 string money_punct::grouping (void) const
 {
-    return ("");
+    return (string (""));
 }
 
 string money_punct::curr_symbol (void) const
 {
-    return ("$");
+    return (string ("$"));
 }
 
 string money_punct::positive_sign (void) const
 {
-    return ("+");
+    return (string ("+"));
 }
 
 string money_punct::negative_sign (void) const
 {
-    return ("-");
+    return (string ("-"));
 }
 
 int money_punct::frac_digits (void) const
@@ -575,7 +524,7 @@ messages::catalog messages::open (const string&, const locale&)
 
 string messages::get (catalog, int, int) const
 {
-    return ("");
+    return (string (""));
 }
 
 void messages::close (catalog)

@@ -55,7 +55,7 @@ class string;
 ///     os.align (sizeof(int));
 ///     os << intVar << floatVar;
 ///     os.write (binaryData, binaryDataSize);
-///     os.align (sizeof(u_long));
+///     os.align ();
 ///     b.resize (os.pos());
 ///     write (fd, b, b.size());
 /// \endcode
@@ -180,7 +180,7 @@ inline size_t ostream::remaining (void) const
 /// Returns \c true if the write pointer is aligned on \p grain
 inline bool ostream::aligned (size_t grain) const
 {
-    assert (u_long(begin()) % grain == 0 && "Streams should be attached aligned at the maximum element grain to avoid bus errors.");
+    assert (uintptr_t(begin()) % grain == 0 && "Streams should be attached aligned at the maximum element grain to avoid bus errors.");
     return (pos() % grain == 0);
 }
 
@@ -226,21 +226,27 @@ inline void ostream::iwrite (const T& v)
 
 template <typename T>
 inline ostream&	operator<< (ostream& os, T* v)		{ os.iwrite(v); return (os); }
-inline ostream&	operator<< (ostream& os, signed char v)	{ os.iwrite(v); return (os); }
 inline ostream&	operator<< (ostream& os, char v)	{ os.iwrite(v); return (os); }
-inline ostream&	operator<< (ostream& os, short v)	{ os.iwrite(v); return (os); }
-inline ostream&	operator<< (ostream& os, int v)		{ os.iwrite(v); return (os); }
-inline ostream&	operator<< (ostream& os, long v)	{ os.iwrite(v); return (os); }
-inline ostream&	operator<< (ostream& os, u_char v)	{ os.iwrite(v); return (os); }
-inline ostream&	operator<< (ostream& os, u_short v)	{ os.iwrite(v); return (os); }
-inline ostream&	operator<< (ostream& os, u_int v)	{ os.iwrite(v); return (os); }
-inline ostream&	operator<< (ostream& os, u_long v)	{ os.iwrite(v); return (os); }
+inline ostream&	operator<< (ostream& os, int8_t v)	{ os.iwrite(v); return (os); }
+inline ostream&	operator<< (ostream& os, uint8_t v)	{ os.iwrite(v); return (os); }
+inline ostream&	operator<< (ostream& os, int16_t v)	{ os.iwrite(v); return (os); }
+inline ostream&	operator<< (ostream& os, uint16_t v)	{ os.iwrite(v); return (os); }
+inline ostream&	operator<< (ostream& os, int32_t v)	{ os.iwrite(v); return (os); }
+inline ostream&	operator<< (ostream& os, uint32_t v)	{ os.iwrite(v); return (os); }
+#if HAVE_INT64_T
+inline ostream&	operator>> (ostream& os, int64_t v)	{ os.iwrite(v); return (os); }
+inline ostream&	operator>> (ostream& os, uint64_t v)	{ os.iwrite(v); return (os); }
+#endif
 inline ostream&	operator<< (ostream& os, float v)	{ os.iwrite(v); return (os); }
 inline ostream&	operator<< (ostream& os, double v)	{ os.iwrite(v); return (os); }
 inline ostream&	operator<< (ostream& os, bool v)	{ os.iwrite(v); return (os); }
 inline ostream&	operator<< (ostream& os, wchar_t v)	{ os.iwrite(v); return (os); }
-#ifdef HAVE_LONG_LONG
-inline ostream&	operator<< (ostream& os, long long v)	{ os.iwrite(v); return (os); }
+#if SIZE_OF_LONG == SIZE_OF_INT
+inline ostream&	operator<< (ostream& os, long v)		{ os.iwrite(v); return (os); }
+inline ostream&	operator<< (ostream& os, unsigned long v)	{ os.iwrite(v); return (os); }
+#endif
+#if HAVE_LONG_LONG && (!HAVE_INT64_T || SIZE_OF_LONG_LONG > 8)
+inline ostream&	operator<< (ostream& os, long long v)		{ os.iwrite(v); return (os); }
 inline ostream&	operator<< (ostream& os, unsigned long long v)	{ os.iwrite(v); return (os); }
 #endif
 

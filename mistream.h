@@ -51,25 +51,25 @@ class string;
 /// to five instructions each.
 /// 
 /// Alignment rules for your objects:
-///	\li Assume your writes start off u_long aligned.
-///	\li After completion, align the stream to u_long.
-///	\li Non-u_long alignment is allowed if you plan to frequently write this
+///	\li Assume your writes start off aligned.
+///	\li After completion, align the stream.
+///	\li Non-default alignment is allowed if you plan to frequently write this
 ///	object in array form and alignment would be costly. For example, an
-///	array of u_short-sized objects may leave the stream u_short aligned
-///	as long as you know about it and will u_long-align the stream after
+///	array of uint16_t-sized objects may leave the stream uint16_t aligned
+///	as long as you know about it and will default-align the stream after
 ///	writing the array (note: vector<T> will already do this for you)
 /// 
 /// Example code:
 /// \code
 ///	memblock b;
 ///	int br = read (fd, b, b.size());
-///	b.SetSize (br);
+///	b.resize (br);
 ///	ostream is (b);
 ///	is >> boolVar;
 ///	is.align (sizeof(int));
 ///	is >> intVar >> floatVar;
 ///	is.read (binaryData, binaryDataSize);
-///	is.align (sizeof(u_long));
+///	is.align ();
 ///	// Assuming the input is written by code in mostream.h
 ///	assert (is.pos() == b.size()); 
 /// \endcode
@@ -201,7 +201,7 @@ inline size_t istream::align_size (size_t grain) const
 /// Returns \c true if the read position is aligned on \p grain
 inline bool istream::aligned (size_t grain) const
 {
-    assert (u_long(begin()) % grain == 0 && "Streams should be attached aligned at the maximum element grain to avoid bus errors.");
+    assert (uintptr_t(begin()) % grain == 0 && "Streams should be attached aligned at the maximum element grain to avoid bus errors.");
     return (pos() % grain == 0);
 }
 
@@ -235,21 +235,27 @@ inline void istream::iread (T& v)
 
 template <typename T>
 inline istream& operator>> (istream& is, T*& v)		{ is.iread(v); return (is); }
-inline istream&	operator>> (istream& is, signed char& v){ is.iread(v); return (is); }
 inline istream&	operator>> (istream& is, char& v)	{ is.iread(v); return (is); }
-inline istream&	operator>> (istream& is, short& v)	{ is.iread(v); return (is); }
-inline istream&	operator>> (istream& is, int& v)	{ is.iread(v); return (is); }
-inline istream&	operator>> (istream& is, long& v)	{ is.iread(v); return (is); }
-inline istream&	operator>> (istream& is, u_char& v)	{ is.iread(v); return (is); }
-inline istream&	operator>> (istream& is, u_short& v)	{ is.iread(v); return (is); }
-inline istream&	operator>> (istream& is, u_int& v)	{ is.iread(v); return (is); }
-inline istream&	operator>> (istream& is, u_long& v)	{ is.iread(v); return (is); }
+inline istream&	operator>> (istream& is, int8_t& v)	{ is.iread(v); return (is); }
+inline istream&	operator>> (istream& is, uint8_t& v)	{ is.iread(v); return (is); }
+inline istream&	operator>> (istream& is, int16_t& v)	{ is.iread(v); return (is); }
+inline istream&	operator>> (istream& is, uint16_t& v)	{ is.iread(v); return (is); }
+inline istream&	operator>> (istream& is, int32_t& v)	{ is.iread(v); return (is); }
+inline istream&	operator>> (istream& is, uint32_t& v)	{ is.iread(v); return (is); }
+#if HAVE_INT64_T
+inline istream&	operator>> (istream& is, int64_t& v)	{ is.iread(v); return (is); }
+inline istream&	operator>> (istream& is, uint64_t& v)	{ is.iread(v); return (is); }
+#endif
 inline istream&	operator>> (istream& is, float& v)	{ is.iread(v); return (is); }
 inline istream&	operator>> (istream& is, double& v)	{ is.iread(v); return (is); }
 inline istream&	operator>> (istream& is, bool& v)	{ is.iread(v); return (is); }
 inline istream&	operator>> (istream& is, wchar_t& v)	{ is.iread(v); return (is); }
-#ifdef HAVE_LONG_LONG
-inline istream&	operator>> (istream& is, long long& v)	{ is.iread(v); return (is); }
+#if SIZE_OF_LONG == SIZE_OF_INT
+inline istream&	operator>> (istream& is, long& v)		{ is.iread(v); return (is); }
+inline istream&	operator>> (istream& is, unsigned long& v)	{ is.iread(v); return (is); }
+#endif
+#if HAVE_LONG_LONG && (!HAVE_INT64_T || SIZE_OF_LONG_LONG > 8)
+inline istream&	operator>> (istream& is, long long& v)		{ is.iread(v); return (is); }
 inline istream&	operator>> (istream& is, unsigned long long& v)	{ is.iread(v); return (is); }
 #endif
 

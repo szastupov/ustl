@@ -262,7 +262,7 @@ inline hashvalue_t hash_value (const string::const_pointer& v)
 {
     string::const_pointer first (v), last (v + strlen(v));
     hashvalue_t h = 0;
-    // This has the bits flowing into each other from both sides of the u_long
+    // This has the bits flowing into each other from both sides of the number
     for (; first < last; ++ first)
 	h = *first + ((h << 7) | (h >> BitsInType(hashvalue_t) - 7));
     return (h);

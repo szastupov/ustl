@@ -19,8 +19,10 @@
 // sostream.h
 //
 
+#include "mistream.h"	// for istream_iterator, referenced in utf8.h
 #include "sostream.h"
 #include "ustring.h"
+#include "utf8.h"
 #include <stdio.h>	// for vsnprintf in ostringstream::format
 #include <stdarg.h>
 
@@ -95,9 +97,9 @@ void ostringstream::write_buffer (const char* buf, size_t bufSize)
 }
 
 /// Writes a single character into the stream.
-void ostringstream::iwrite (u_char v)
+void ostringstream::iwrite (uint8_t v)
 {
-    if (remaining() >= sizeof(u_char) || overflow() >= sizeof(u_char))
+    if (remaining() >= sizeof(uint8_t) || overflow() >= sizeof(uint8_t))
 	ostream::iwrite (v);
 }
 
@@ -136,17 +138,32 @@ inline void ostringstream::iwrite_integer (T v)
     write_buffer (first, c_BufSize - distance(buf, first) - 1);
 }
 
-/// Writes long value \p sv into the stream.
-void ostringstream::iwrite (long sv) { iwrite_integer (sv); }
+/// Writes signed value \p sv into the stream.
+void ostringstream::iwrite (int32_t sv) { iwrite_integer (sv); }
 /// Writes number \p v into the stream as text.
-void ostringstream::iwrite (u_long v) { iwrite_uinteger (v); }
+void ostringstream::iwrite (uint32_t v) { iwrite_uinteger (v); }
 
-#ifdef HAVE_LONG_LONG
+#if HAVE_INT64_T
+/// Writes signed value \p sv into the stream.
+void ostringstream::iwrite (int64_t sv) { iwrite_integer (sv); }
+/// Writes number \p v into the stream as text.
+void ostringstream::iwrite (uint64_t v) { iwrite_uinteger (v); }
+#endif
+
+#if HAVE_LONG_LONG && (!HAVE_INT64_T || SIZE_OF_LONG_LONG > 8)
 /// Writes number \p v into the stream as text.
 void ostringstream::iwrite (long long sv) { iwrite_integer (sv); }
 /// Writes number \p v into the stream as text.
 void ostringstream::iwrite (unsigned long long v) { iwrite_uinteger (v); }
 #endif
+
+/// Writes \p v into the stream as utf8
+void ostringstream::iwrite (wchar_t v)
+{
+    char buffer [9];
+    *utf8out(buffer) = v;
+    write_buffer (buffer, Utf8Bytes(v));
+}
 
 /// Writes number \p iv into the stream as text.
 void ostringstream::iwrite (double iv)

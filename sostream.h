@@ -43,15 +43,20 @@ public:
 				ostringstream (void* p, size_t n);
     explicit			ostringstream (string& dest);
     explicit			ostringstream (memlink& dest);
-    void			iwrite (long v);
-    void			iwrite (u_char v);
-    void			iwrite (u_long v);
+    void			iwrite (uint8_t v);
+    void			iwrite (int32_t v);
+    void			iwrite (uint32_t v);
+    void			iwrite (wchar_t v);
     void			iwrite (double v);
     void			iwrite (bool v);
     void			iwrite (const char* s);
     void			iwrite (const string& v);
     void			iwrite (ios::fmtflags f);
-#ifdef HAVE_LONG_LONG
+#if HAVE_INT64_T
+    void			iwrite (int64_t v);
+    void			iwrite (uint64_t v);
+#endif
+#if HAVE_LONG_LONG && (!HAVE_INT64_T || SIZE_OF_LONG_LONG > 8)
     void			iwrite (long long v);
     void			iwrite (unsigned long long v);
 #endif
@@ -60,7 +65,7 @@ public:
     inline void			set_width (uint16_t w);
     inline void			set_decimal_separator (char s);
     inline void			set_thousand_separator (char s);
-    inline void			set_precision (u_short precision);
+    inline void			set_precision (uint16_t precision);
     inline void			link (void* p, size_t n)	{ ostream::link (p, n); }
     inline void			link (memlink& l)		{ ostream::link (l); }
     void			link (string& l);
@@ -111,7 +116,7 @@ inline void ostringstream::set_thousand_separator (char s)
 }
 
 /// Sets the number of digits after the decimal separator.
-inline void ostringstream::set_precision (u_short precision)
+inline void ostringstream::set_precision (uint16_t precision)
 {
     m_Precision = precision;
 }
@@ -126,34 +131,46 @@ inline void ostringstream::write_strz (const char*)
 inline ostringstream& operator<< (ostringstream& os, RealT v)	\
 { os.iwrite ((CastT) v); return (os); }
 
+#if SIZE_OF_POINTER == SIZE_OF_INT
 template <typename T>
-OSTRSTREAM_OPERATOR (T*,		u_long)
-OSTRSTREAM_OPERATOR (long,		long)
-OSTRSTREAM_OPERATOR (u_char,		u_char)
-OSTRSTREAM_OPERATOR (u_long,		u_long)
-OSTRSTREAM_OPERATOR (double,		double)
-OSTRSTREAM_OPERATOR (bool,		bool)
+OSTRSTREAM_OPERATOR (T*,		uint32_t)
+OSTRSTREAM_OPERATOR (const void*,	uint32_t)
+OSTRSTREAM_OPERATOR (void*,		uint32_t)
+#else
+template <typename T>
+OSTRSTREAM_OPERATOR (T*,		uint64_t)
+OSTRSTREAM_OPERATOR (const void*,	uint64_t)
+OSTRSTREAM_OPERATOR (void*,		uint64_t)
+#endif
 OSTRSTREAM_OPERATOR (const char*,	const char*)
+OSTRSTREAM_OPERATOR (char*,		const char*)
+OSTRSTREAM_OPERATOR (uint8_t*,		const char*)
+OSTRSTREAM_OPERATOR (const uint8_t*,	const char*)
 OSTRSTREAM_OPERATOR (const string&,	const string&)
 OSTRSTREAM_OPERATOR (ios::fmtflags,	ios::fmtflags)
-OSTRSTREAM_OPERATOR (char,		u_char)
-OSTRSTREAM_OPERATOR (signed char,	u_char)
-OSTRSTREAM_OPERATOR (short,		long)
-OSTRSTREAM_OPERATOR (u_short,		u_long)
-OSTRSTREAM_OPERATOR (int,		long)
-OSTRSTREAM_OPERATOR (u_int,		u_long)
+OSTRSTREAM_OPERATOR (char,		uint8_t)
+OSTRSTREAM_OPERATOR (int8_t,		uint8_t)
+OSTRSTREAM_OPERATOR (uint8_t,		uint8_t)
+OSTRSTREAM_OPERATOR (int16_t,		int32_t)
+OSTRSTREAM_OPERATOR (uint16_t,		uint32_t)
+OSTRSTREAM_OPERATOR (int32_t,		int32_t)
+OSTRSTREAM_OPERATOR (uint32_t,		uint32_t)
 OSTRSTREAM_OPERATOR (float,		double)
-OSTRSTREAM_OPERATOR (wchar_t,		long)
-OSTRSTREAM_OPERATOR (char*,		const char*)
-OSTRSTREAM_OPERATOR (u_char*,		const char*)
-OSTRSTREAM_OPERATOR (const u_char*,	const char*)
-OSTRSTREAM_OPERATOR (const void*,	u_long)
-OSTRSTREAM_OPERATOR (void*,		u_long)
-#ifdef HAVE_LONG_LONG
+OSTRSTREAM_OPERATOR (double,		double)
+OSTRSTREAM_OPERATOR (bool,		bool)
+OSTRSTREAM_OPERATOR (wchar_t,		wchar_t)
+#if SIZE_OF_LONG == SIZE_OF_INT
+OSTRSTREAM_OPERATOR (long,		int32_t)
+OSTRSTREAM_OPERATOR (unsigned long,	uint32_t)
+#endif
+#if HAVE_INT64_T
+OSTRSTREAM_OPERATOR (int64_t,		int64_t)
+OSTRSTREAM_OPERATOR (uint64_t,		uint64_t)
+#endif
+#if HAVE_LONG_LONG && (!HAVE_INT64_T || SIZE_OF_LONG_LONG > 8)
 OSTRSTREAM_OPERATOR (long long,		long long)
 OSTRSTREAM_OPERATOR (unsigned long long, unsigned long long)
 #endif
-#undef OSTRSTREAM_OPERATOR
 
 } // namespace ustl
 

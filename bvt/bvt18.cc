@@ -5,7 +5,7 @@ int main (void)
 {
     int pt1v[4] = { 1, 2, 3, 4 };
     tuple<4,int> pt1 (pt1v);
-    tuple<4,u_int> pt2 (5, 6, 7, 8);
+    tuple<4,unsigned> pt2 (5, 6, 7, 8);
 
     cout << "pt1: size = " << pt1.size() << ", value = " << pt1 << endl;
     cout << "pt2: " << pt2 << endl;

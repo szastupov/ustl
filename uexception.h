@@ -39,7 +39,7 @@ class istream;
 class ostream;
 class ostringstream;
 
-typedef u_int		xfmt_t;
+typedef uint32_t	xfmt_t;
 
 static const xfmt_t	xfmt_Exception			= 0;
 static const xfmt_t	xfmt_BadAlloc			= 1;

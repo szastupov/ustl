@@ -3,22 +3,22 @@ using namespace ustl;
 
 int main (void)
 {
-    const u_char magic_Char = 'c';
-    const u_short magic_Short = 1234;
+    const unsigned char magic_Char = 'c';
+    const unsigned short magic_Short = 1234;
     const long magic_Int = -12345678;
-    const u_long magic_UInt = 12345678;
+    const unsigned long magic_UInt = 12345678;
     const float magic_Float = 123.45678;
     const double magic_Double = 123456789123456.789;
     const bool magic_Bool = true;
 
     char c = magic_Char;
-    u_char uc = magic_Char;
+    unsigned char uc = magic_Char;
     int i = magic_Int;
     short si = magic_Short;
     long li = magic_Int;
-    u_int ui = magic_UInt;
-    u_short usi = magic_Short;
-    u_long uli = magic_UInt;
+    unsigned int ui = magic_UInt;
+    unsigned short usi = magic_Short;
+    unsigned long uli = magic_UInt;
     float f = magic_Float;
     double d = magic_Double;
     bool bv = magic_Bool;

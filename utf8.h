@@ -53,7 +53,7 @@ inline size_t Utf8Bytes (wchar_t v)
 }
 
 /// Returns the number of bytes in a UTF-8 sequence that starts with \p c.
-inline size_t Utf8SequenceBytes (u_char c)
+inline size_t Utf8SequenceBytes (uint8_t c)
 {
     //
     // Count the leading bits. Header bits are 1 * nBytes followed by a 0.
@@ -63,7 +63,7 @@ inline size_t Utf8SequenceBytes (u_char c)
     //	>2 - multibyte character. Take remaining bits, and get the next bytes.
     // All errors are ignored, since the user can not correct them.
     //
-    u_char mask = (1 << (BitsInType(u_char) - 1));
+    uint8_t mask = (1 << (BitsInType(uint8_t) - 1));
     size_t nBytes = 0;
     while (c & mask) {
 	mask >>= 1;
@@ -121,7 +121,7 @@ WChar utf8in_iterator<Iterator,WChar>::operator* (void) const
 {
     WChar v;
     Iterator i (m_i);
-    const u_char c = *i++;
+    const uint8_t c = *i++;
     size_t nBytes = Utf8SequenceBytes (c);
     v = c & (0xFF >> nBytes);	// First byte contains bits after the header.
     while (--nBytes && *i)	// Each subsequent byte has 6 bits.
@@ -207,17 +207,17 @@ inline utf8in_iterator<Iterator> utf8in (Iterator i)
 }
 
 /// Returns a UTF-8 adaptor reading from \p is.
-inline utf8in_iterator<istream_iterator<u_char> > utf8in (istream& is)
+inline utf8in_iterator<istream_iterator<uint8_t> > utf8in (istream& is)
 {
-    istream_iterator<u_char> si (is);
-    return (utf8in_iterator<istream_iterator<u_char> > (si));
+    istream_iterator<uint8_t> si (is);
+    return (utf8in_iterator<istream_iterator<uint8_t> > (si));
 }
 
 /// Returns a UTF-8 adaptor writing to \p os.
-inline utf8out_iterator<ostream_iterator<u_char> > utf8out (ostream& os)
+inline utf8out_iterator<ostream_iterator<uint8_t> > utf8out (ostream& os)
 {
-    ostream_iterator<u_char> si (os);
-    return (utf8out_iterator<ostream_iterator<u_char> > (si));
+    ostream_iterator<uint8_t> si (os);
+    return (utf8out_iterator<ostream_iterator<uint8_t> > (si));
 }
 
 //----------------------------------------------------------------------

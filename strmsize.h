@@ -31,20 +31,29 @@ namespace ustl {
 template <typename T>
 inline size_t stream_size_of (T*)	{ return (sizeof(T*));		}
 #ifndef DOXYGEN_SHOULD_IGNORE_THIS
-template <typename T>
-inline size_t stream_size_of (const T*)	{ return (sizeof(const T*));	}
 inline size_t stream_size_of (char)	{ return (sizeof(char));	}
-inline size_t stream_size_of (u_char)	{ return (sizeof(u_char));	}
-inline size_t stream_size_of (short)	{ return (sizeof(short));	}
-inline size_t stream_size_of (u_short)	{ return (sizeof(u_short));	}
-inline size_t stream_size_of (int)	{ return (sizeof(int));		}
-inline size_t stream_size_of (u_int)	{ return (sizeof(u_int));	}
-inline size_t stream_size_of (long)	{ return (sizeof(long));	}
-inline size_t stream_size_of (u_long)	{ return (sizeof(u_long));	}
+inline size_t stream_size_of (int8_t)	{ return (sizeof(int8_t));	}
+inline size_t stream_size_of (uint8_t)	{ return (sizeof(uint8_t));	}
+inline size_t stream_size_of (int16_t)	{ return (sizeof(int16_t));	}
+inline size_t stream_size_of (uint16_t)	{ return (sizeof(uint16_t));	}
+inline size_t stream_size_of (int32_t)	{ return (sizeof(int32_t));	}
+inline size_t stream_size_of (uint32_t)	{ return (sizeof(uint32_t));	}
+#if HAVE_INT64_T
+inline size_t stream_size_of (int64_t)	{ return (sizeof(int64_t));	}
+inline size_t stream_size_of (uint64_t)	{ return (sizeof(uint64_t));	}
+#endif
 inline size_t stream_size_of (float)	{ return (sizeof(float));	}
 inline size_t stream_size_of (double)	{ return (sizeof(double));	}
 inline size_t stream_size_of (bool)	{ return (sizeof(bool));	}
 inline size_t stream_size_of (wchar_t)	{ return (sizeof(wchar_t));	}
+#if SIZE_OF_LONG == SIZE_OF_INT
+inline size_t stream_size_of (long v)			{ return (sizeof (v));	}
+inline size_t stream_size_of (unsigned long v)		{ return (sizeof (v));	}
+#endif
+#if HAVE_LONG_LONG && (!HAVE_INT64_T || SIZE_OF_LONG_LONG > 8)
+inline size_t stream_size_of (long long v)		{ return (sizeof (v));	}
+inline size_t stream_size_of (unsigned long long v)	{ return (sizeof (v));	}
+#endif
 #endif // DOXYGEN_SHOULD_IGNORE_THIS
 
 } // namespace ustl

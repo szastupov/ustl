@@ -11,13 +11,13 @@ int main (void)
 	cout << "You must put bvt13.cc on stdin (read " << testStr << ")" << endl;
 	return (-1);
     }
-    u_long n1 = 0, n3 = 0;
-    u_short n2 = 0;
+    uint32_t n1 = 0, n3 = 0;
+    uint16_t n2 = 0;
     double f1 = 0.0;
     cin >> testStr >> n1 >> n2 >> n3 >> f1;
     cout << testStr << endl;
     cout << "A string printed to stdout" << endl;
-    cout.format ("%d %s: %ld, %hd, 0x%08lX, %1.15f\n", 4, "numbers", n1, n2, n3, f1);
+    cout.format ("%d %s: %d, %hd, 0x%08X, %1.15f\n", 4, "numbers", n1, n2, n3, f1);
     string testString;
     testString.format ("A ustl::string object printed %d times\n", 3);
     for (int i = 0; i < 3; ++ i)

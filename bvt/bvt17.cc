@@ -23,7 +23,7 @@ int main (void)
     cout << ", [9] = " << bs1[9];
     cout << ", [8] = " << bs1[8] << endl;
     cout << "~bs1 == " << ~bs1 << endl;
-    cout << "to_ulong == 0x" << ios::hex << bs1.to_ulong() << ios::dec << endl;
+    cout << "to_value == 0x" << ios::hex << bs1.to_value() << ios::dec << endl;
 
     bitset<70> bs2 ("0101101");
     cout << "bitset<" << bs2.size() << "> bs2: capacity() = " << bs2.capacity() << ", sizeof() = " << sizeof(bs2) << endl;
@@ -31,7 +31,7 @@ int main (void)
 
     bitset<256> bs3 (0x3030);
     cout << "bitset<" << bs3.size() << "> bs3: capacity() = " << bs3.capacity() << ", sizeof() = " << sizeof(bs3) << endl;
-    cout << "bs3.to_ulong() == 0x" << ios::hex << bs3.to_ulong() << ios::dec << endl;
+    cout << "bs3.to_value() == 0x" << ios::hex << bs3.to_value() << ios::dec << endl;
 
     bitset<30> bs4 (bs1);
     if (bs1 == bs4)

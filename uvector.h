@@ -104,7 +104,7 @@ template <typename T>
 inline vector<T>::vector (size_t n)
 : memblock()
 {
-    resize (n);
+    vector<T>::resize (n);
 }
 
 /// Copies \p n elements from \p v.
@@ -112,7 +112,7 @@ template <typename T>
 vector<T>::vector (size_t n, const T& v)
 : memblock()
 {
-    resize (n);
+    vector<T>::resize (n);
     ::ustl::fill (begin(), end(), v);
 }
 
@@ -121,7 +121,7 @@ template <typename T>
 vector<T>::vector (const vector<T>& v)
 : memblock()
 {
-    resize (v.size());
+    vector<T>::resize (v.size());
     ::ustl::copy (v.begin(), v.end(), begin());
 }
 
@@ -130,7 +130,7 @@ template <typename T>
 vector<T>::vector (const_iterator i1, const_iterator i2)
 : memblock()
 {
-    resize (distance (i1, i2));
+    vector<T>::resize (distance (i1, i2));
     ::ustl::copy (i1, i2, begin());
 }
 
@@ -304,7 +304,7 @@ template <typename T>
 inline void vector<T>::assign (const_iterator i1, const_iterator i2)
 {
     assert (i1 <= i2);
-    resize (i2 - i1);
+    vector<T>::resize (i2 - i1);
     ::ustl::copy (i1, i2, begin());
 }
 
@@ -312,7 +312,7 @@ inline void vector<T>::assign (const_iterator i1, const_iterator i2)
 template <typename T>
 inline void vector<T>::assign (size_t n, const T& v)
 {
-    resize (n);
+    vector<T>::resize (n);
     ::ustl::fill (begin(), end(), v);
 }
 

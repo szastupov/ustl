@@ -22,6 +22,7 @@
 #include "sistream.h"
 #include "sostream.h"
 #include "ustring.h"
+#include "utf8.h"
 
 namespace ustl {
 
@@ -76,14 +77,14 @@ char istringstream::skip_delimiters (void)
     return (c);
 }
 
-void istringstream::iread (u_char& v)
+void istringstream::iread (int8_t& v)
 {
     v = skip_delimiters();
 }
 
-void istringstream::iread (long& v)
+void istringstream::iread (int32_t& v)
 {
-    register long base = m_Base;
+    int32_t base = m_Base;
     v = 0;
     char c = skip_delimiters();
     bool negative = (c == '-');
@@ -121,7 +122,49 @@ void istringstream::iread (long& v)
 	v = -v;
 }
 
-#ifdef HAVE_LONG_LONG
+#if HAVE_INT64_T
+void istringstream::iread (int64_t& v)
+{
+    int64_t base = m_Base;
+    v = 0;
+    char c = skip_delimiters();
+    bool negative = (c == '-');
+    if (negative && (remaining() || underflow()))
+	istream::iread (c);
+    if (c == '0') {
+	base = 8;
+	istream::iread (c);
+	if (c == 'x') {
+	    base = 16;
+	    istream::iread (c);
+	}
+    }
+    while (true) {
+	long long digit;
+	if (c >= '0' && c <= '9')
+	    digit = c - '0';
+	else if (c >= 'a' && c <= 'z' && c < base - 10 + 'a')
+	    digit = c - 'a' + 10;
+	else if (c >= 'A' && c <= 'Z' && c < base - 10 + 'a')
+	    digit = c - 'A' + 10;
+	else if (c == m_ThousandSeparator) {
+	    istream::iread (c);
+	    continue;
+	} else
+	    break;
+	v *= base;
+	v += digit;
+	if (!remaining() && !underflow())
+	    break;
+	istream::iread (c);
+    }
+    ungetc();
+    if (negative)
+	v = -v;
+}
+#endif
+
+#if HAVE_LONG_LONG && (!HAVE_INT64_T || SIZE_OF_LONG_LONG > 8)
 void istringstream::iread (long long& v)
 {
     long long base = m_Base;
@@ -162,6 +205,20 @@ void istringstream::iread (long long& v)
 	v = -v;
 }
 #endif
+
+void istringstream::iread (wchar_t& v)
+{
+    uint8_t c;
+    operator>> (*this, c);
+    size_t cs = Utf8SequenceBytes (c);
+    if (remaining() < cs && underflow() < cs)
+	v = c;
+    else {
+	ungetc();
+	istream_iterator<uint8_t> si (*this);
+	v = *utf8in(si); // istream_iterator already read ahead.
+    }
+}
 
 void istringstream::iread (double& v)
 {

@@ -11,13 +11,13 @@ int main (void)
     const bool magic_Bool = true;
 
     char c = magic_Char;
-    u_char uc = magic_Char;
+    unsigned char uc = magic_Char;
     int i = magic_Int;
     short si = magic_Short;
     long li = magic_Int;
-    u_int ui = magic_Int;
-    u_short usi = magic_Short;
-    u_long uli = magic_Int;
+    unsigned int ui = magic_Int;
+    unsigned short usi = magic_Short;
+    unsigned long uli = magic_Int;
     float f = magic_Float;
     double d = magic_Double;
     bool bv = magic_Bool;
@@ -78,10 +78,10 @@ int main (void)
     cout << endl;
 
     cout << "Binary dump:" << endl;
-    const u_char* pc = reinterpret_cast<const u_char*>(b.cdata());
-    const u_char* pcEnd = pc + b.size();
+    const unsigned char* pc = reinterpret_cast<const unsigned char*>(b.cdata());
+    const unsigned char* pcEnd = pc + b.size();
     const size_t c_nCharsPerLine = 8;
-    const u_char* pcNL = pc + c_nCharsPerLine;
+    const unsigned char* pcNL = pc + c_nCharsPerLine;
     while (pc < pcEnd) {
 	if (pc == pcNL) {
 	    cout << "" << endl;
