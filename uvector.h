@@ -327,7 +327,7 @@ void vector<T>::push_back (const T& v)
 }
 
 /// Use with vector classes to allocate and link to stack space. \p n is in elements.
-#define typed_alloca_link(m,T,n)	(m).link ((T*) alloca (n * sizeof(T)), (n))
+#define typed_alloca_link(m,T,n)	(m).link ((T*) alloca ((n) * sizeof(T)), (n))
 
 } // namespace ustl
 
