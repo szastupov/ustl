@@ -25,8 +25,6 @@
 #include "mistream.h"
 #ifdef WITHOUT_LIBSTDCPP
     #include "ufacets.h"
-#else
-    #include <locale>
 #endif
 
 namespace ustl {
@@ -92,7 +90,7 @@ inline void istringstream::set_thousand_separator (char s)
 }
 
 /// Reads a null-terminated character stream. This is not allowed in this class.
-inline void istringstream::read_strz (string& str)
+inline void istringstream::read_strz (string&)
 {
     assert (false && "Reading nul characters is not allowed from text streams");
 }

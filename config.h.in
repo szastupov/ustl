@@ -111,7 +111,9 @@
 #undef HAVE_UNISTD_H
 
 /* Define to 1 if you have the <byteswap.h> header file. */
+#if (__GNUG__ >= 3) /* Older compilers are simply incapable of handling byteswap code */
 #undef HAVE_BYTESWAP_H
+#endif
 
 /* Define to 1 if `lstat' dereferences a symlink specified with a trailing
    slash. */

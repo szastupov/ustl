@@ -15,7 +15,7 @@ int main (void)
     for (size_t i = 0; i < 5; ++ i)
 	s.push (1 + i);
     cout << "popping: ";
-    for (size_t i = 0; i < 5; ++ i) {
+    for (size_t j = 0; j < 5; ++ j) {
 	cout << s.top() << ' ';
 	s.pop();
     }
@@ -23,10 +23,10 @@ int main (void)
 
     queue<vector<int> > q;
     cout << "Testing queue: ";
-    for (size_t i = 0; i < 5; ++ i)
-	q.push (1 + i);
+    for (size_t k = 0; k < 5; ++ k)
+	q.push (1 + k);
     cout << "popping: ";
-    for (size_t i = 0; i < 5; ++ i) {
+    for (size_t l = 0; l < 5; ++ l) {
 	cout << q.front() << ' ';
 	q.pop();
     }

@@ -79,7 +79,7 @@ int main (void)
     cout.format ("long:    0x%08lX\n", li);
     cout.format ("u_long:  0x%08lX\n", uli);
     cout.format ("float:   %.8f\n", f);
-    cout.format ("double:  %.16lf\n", d);
+    cout.format ("double:  %.16f\n", d);
     cout.format ("short:   0x%04X\n", static_cast<int>(si));
     cout.format ("u_short: 0x%04X\n", static_cast<int>(usi));
     cout << endl;

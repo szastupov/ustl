@@ -25,8 +25,6 @@
 #include "mostream.h"
 #ifdef WITHOUT_LIBSTDCPP
     #include "ufacets.h"
-#else
-    #include <locale>
 #endif
 #include "uios.h"
 

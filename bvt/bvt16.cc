@@ -71,13 +71,13 @@ int main (void)
     ws.insert (4, wchar_t(3456));
     ws.insert (ws.length(), wchar_t(4567));
     cout << "Values[" << ws.length() << "]:";
-    for (uoff_t i = 0; i < ws.length(); ++ i)
-	cout << ' ' << ws.char_at(i);
+    for (uoff_t j = 0; j < ws.length(); ++ j)
+	cout << ' ' << ws.char_at(j);
     cout << endl;
 
     cout << "Character offsets:";
-    for (size_t i = 0; i < ws.length(); ++ i)
-	cout << ' ' << distance (ws.begin(), ws.ichar(i));
+    for (size_t k = 0; k < ws.length(); ++ k)
+	cout << ' ' << distance (ws.begin(), ws.ichar(k));
     cout << endl;
 
     cout << "Erasing character " << ws.length() - 1 << ": ";

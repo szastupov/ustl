@@ -240,32 +240,32 @@ inline typename vector<T>::const_reverse_iterator vector<T>::rend (void) const
 
 /// Returns the reference to the i'th element.
 template <typename T>
-inline typename vector<T>::reference vector<T>::at (uoff_t i)
+inline typename vector<T>::reference vector<T>::at (uoff_t i1)
 {
-    assert (i < size());
-    return (*(begin() + i));
+    assert (i1 < size());
+    return (*(begin() + i1));
 }
 
 /// Returns the const reference to the i'th element.
 template <typename T>
-inline typename vector<T>::const_reference vector<T>::at (uoff_t i) const
+inline typename vector<T>::const_reference vector<T>::at (uoff_t i2) const
 {
-    assert (i < size());
-    return (*(begin() + i));
+    assert (i2 < size());
+    return (*(begin() + i2));
 }
 
 /// Returns the reference to the i'th element.
 template <typename T>
-inline typename vector<T>::reference vector<T>::operator[] (uoff_t i)
+inline typename vector<T>::reference vector<T>::operator[] (uoff_t i3)
 {
-    return (at(i));
+    return (at(i3));
 }
 
 /// Returns the const reference to the i'th element.
 template <typename T>
-inline typename vector<T>::const_reference vector<T>::operator[] (uoff_t i) const
+inline typename vector<T>::const_reference vector<T>::operator[] (uoff_t i4) const
 {
-    return (at(i));
+    return (at(i4));
 }
 
 /// Returns the reference to the first element.

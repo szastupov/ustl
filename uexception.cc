@@ -246,7 +246,7 @@ void file_exception::read (istream& is)
     string filename;
     is >> filename;
     is.align();
-    strncpy (m_Filename, filename, PATH_MAX - 1);
+    strncpy (m_Filename, filename.c_str(), PATH_MAX - 1);
 }
 
 /// Writes the exception into stream \p os.

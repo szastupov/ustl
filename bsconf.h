@@ -1,7 +1,7 @@
 #define PACKAGE_NAME		"ustl"
 #define LIB_MAJOR		"0"
-#define LIB_MINOR		"5"
-#define LIB_BUILD		"1"
+#define LIB_MINOR		"4"
+#define LIB_BUILD		"2"
 
 #define PACKAGE_VERSION		LIB_MAJOR "." LIB_MINOR
 #define PACKAGE_TARNAME		PACKAGE_NAME
@@ -73,7 +73,7 @@ static string_t g_Functions [] = {
 };
 
 static string_t g_Components [] = {
-    "debug",		"#DEBUG\t\t= 1",			"DEBUG\t\t= 1",
+    "debug",		"#DEBUG\t\t= 1 ",			"DEBUG\t\t= 1",
     "bounds",		"#undef WANT_STREAM_BOUNDS_CHECKING",	"#define WANT_STREAM_BOUNDS_CHECKING 1",
     "cout",		"#define WITHOUT_CIN_COUT_CERR 1",	"#undef WITHOUT_CIN_COUT_CERR",
     "libstdc++",	"#define WITHOUT_LIBSTDCPP 1",		"#undef WITHOUT_LIBSTDCPP",
@@ -88,7 +88,11 @@ static SComponentInfo g_ComponentInfos [VectorSize(g_Components) / 3] = {
     { 0, "Compiles the library with debugging information" },
     { 0, "Enable runtime bounds checking on stream reads/writes" },
     { 1, "Removes support for standard cout/cin/cerr streams" },
+#if (__GNUC__ >= 3)
     { 1, "Allows user programs to not link with libstdc++" },
+#else
+    { 1, "" },
+#endif
     { 1, "" }
 };
 

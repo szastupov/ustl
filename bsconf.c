@@ -458,11 +458,10 @@ static void SubstituteCustomVars (void)
 static void SubstituteHeaders (void)
 {
     unsigned int i, j;
-    string_t match, paths [3];
+    string_t match, paths [2];
 
     copy (g_ConfigVV [vv_includedir], paths[0]);
     copy (g_ConfigVV [vv_oldincludedir], paths[1]);
-    copy ("/usr/lib/gcc-lib/i386-redhat-linux/3.2/include", paths[2]);	/* yeah, yeah... */
 
     for (i = 0; i < VectorSize(g_Headers) / 3; ++ i) {
 	for (j = 0; j < VectorSize(paths); ++ j) {
