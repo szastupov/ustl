@@ -409,6 +409,7 @@ SIMD_CONVERT_SPEC(4,float,int32_t,fround) { asm ("movups %2, %%xmm0\n\tcvtps2pi 
 SIMD_CONVERT_SPEC(4,int32_t,float,fround) { asm ("cvtpi2ps %2, %%xmm0\n\tshufps $0x4E,%%xmm0,%%xmm0\n\tcvtpi2ps %1, %%xmm0\n\tmovups %%xmm0, %0" : "=o"(oout.at(0)) : "y"(*(const v2si_t*)oin.begin()), "y"(*(const v2si_t*)(oin.begin() + 2)) : "xmm0"); }
 
 template <> inline int32_t fround<float,int32_t>::operator()(const float& a) const { register int32_t rv; asm ("movss %1, %%xmm0; cvtss2si %%xmm0, %0" : "=r"(rv) : "m"(a) : "xmm0" ); return (rv); }
+template <> inline uint32_t fround<float,uint32_t>::operator()(const float& a) const { register uint32_t rv; asm ("movss %1, %%xmm0; cvtss2si %%xmm0, %0" : "=r"(rv) : "m"(a) : "xmm0" ); return (rv); }
 
 SSE_IPASSIGN_SPEC(4,float)
 SSE_IPASSIGN_SPEC(4,int32_t)
