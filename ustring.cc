@@ -50,8 +50,9 @@ string::string (void)
 
 /// Assigns itself the value of string \p s
 string::string (const cmemlink& s)
-: memblock (s)
+: memblock ()
 {
+    assign (const_iterator (s.begin()), s.size());
 }
 
 /// Assigns itself the value of string \p s

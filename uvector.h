@@ -58,16 +58,16 @@ public:
     inline const vector<T>&	operator= (const vector<T>& v);
     inline void			reserve (size_type n);
     inline void			resize (size_type n);
-    inline size_type		capacity (void) const		{ return (memblock::capacity() / sizeof(T)); }
-    inline size_type		size (void) const		{ return (memblock::size() / sizeof(T)); }
-    inline iterator		begin (void);
-    inline const_iterator	begin (void) const;
-    inline iterator		end (void);
-    inline const_iterator	end (void) const;
-    inline reverse_iterator		rbegin (void);
-    inline const_reverse_iterator	rbegin (void) const;
-    inline reverse_iterator		rend (void);
-    inline const_reverse_iterator	rend (void) const;
+    inline size_type		capacity (void) const		{ return (memblock::capacity() / sizeof(T));	}
+    inline size_type		size (void) const		{ return (memblock::size() / sizeof(T));	}
+    inline iterator		begin (void)			{ return (iterator (memblock::begin()));	}
+    inline const_iterator	begin (void) const		{ return (const_iterator (memblock::begin()));	}
+    inline iterator		end (void)			{ return (iterator (memblock::end()));		}
+    inline const_iterator	end (void) const		{ return (const_iterator (memblock::end()));	}
+    inline reverse_iterator		rbegin (void)		{ return (reverse_iterator (end()));		}
+    inline const_reverse_iterator	rbegin (void) const	{ return (const_reverse_iterator (end()));	}
+    inline reverse_iterator		rend (void)		{ return (reverse_iterator (begin()));		}
+    inline const_reverse_iterator	rend (void) const	{ return (const_reverse_iterator (begin()));	}
     inline reference		at (size_type i);
     inline const_reference	at (size_type i) const;
     inline reference		operator[] (size_type i);
@@ -101,35 +101,35 @@ inline vector<T>::vector (void)
 /// Initializes a vector of size \p n.
 template <typename T>
 inline vector<T>::vector (size_type n)
-: memblock()
+: memblock ()
 {
-    vector<T>::resize (n);
+    resize (n);
 }
 
 /// Copies \p n elements from \p v.
 template <typename T>
 vector<T>::vector (size_type n, const T& v)
-: memblock()
+: memblock ()
 {
-    vector<T>::resize (n);
+    resize (n);
     ::ustl::fill (begin(), end(), v);
 }
 
 /// Copies \p v.
 template <typename T>
 vector<T>::vector (const vector<T>& v)
-: memblock()
+: memblock ()
 {
-    vector<T>::resize (v.size());
+    resize (v.size());
     ::ustl::copy (v.begin(), v.end(), begin());
 }
 
 /// Copies range [\p i1, \p i2]
 template <typename T>
 vector<T>::vector (const_iterator i1, const_iterator i2)
-: memblock()
+: memblock ()
 {
-    vector<T>::resize (distance (i1, i2));
+    resize (distance (i1, i2));
     ::ustl::copy (i1, i2, begin());
 }
 
@@ -164,62 +164,6 @@ template <typename T>
 inline void vector<T>::resize (size_type n)
 {
     memblock::resize (elementBytes(n));
-}
-
-/// Returns the pointer to the first element.
-template <typename T>
-inline typename vector<T>::iterator vector<T>::begin (void)
-{
-    return (iterator (memblock::begin()));
-}
-
-/// Returns the pointer to the first element.
-template <typename T>
-inline typename vector<T>::const_iterator vector<T>::begin (void) const
-{
-    return (const_iterator (memblock::begin()));
-}
-
-/// Returns the pointer to the last element.
-template <typename T>
-inline typename vector<T>::iterator vector<T>::end (void)
-{
-    return (iterator (memblock::end()));
-}
-
-/// Returns the pointer to the last element.
-template <typename T>
-inline typename vector<T>::const_iterator vector<T>::end (void) const
-{
-    return (const_iterator (memblock::end()));
-}
-
-/// Returns the reverse iterator to the last element.
-template <typename T>
-inline typename vector<T>::reverse_iterator vector<T>::rbegin (void)
-{
-    return (reverse_iterator (end()));
-}
-
-/// Returns the reverse iterator to the last element.
-template <typename T>
-inline typename vector<T>::const_reverse_iterator vector<T>::rbegin (void) const
-{
-    return (const_reverse_iterator (end()));
-}
-
-/// Returns the reverse iterator to the first element.
-template <typename T>
-inline typename vector<T>::reverse_iterator vector<T>::rend (void)
-{
-    return (reverse_iterator (begin()));
-}
-
-/// Returns the reverse iterator to the first element.
-template <typename T>
-inline typename vector<T>::const_reverse_iterator vector<T>::rend (void) const
-{
-    return (const_reverse_iterator (begin()));
 }
 
 /// Returns the reference to the i'th element.
