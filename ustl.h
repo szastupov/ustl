@@ -190,9 +190,6 @@
 #include "ustl/unumeric.h"
 #include "ustl/ulist.h"
 #include "ustl/ustdxept.h"
-#if !defined(WITHOUT_LIBSTDCPP) && (__GNUG__ >= 3)
-    #include <locale>
-#endif
 
 #endif
 
