@@ -137,7 +137,7 @@ void ostringstream::iwrite (u_long v)
     write_buffer (buffer + i, c_BufSize - i - 1);
 }
 
-#ifdef __GNUC__
+#ifdef HAVE_LONG_LONG
 /// Writes number \p v into the stream as text.
 void ostringstream::iwrite (long long sv)
 {

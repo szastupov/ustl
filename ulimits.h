@@ -131,7 +131,7 @@ struct numeric_limits<long double> {
     static inline bool is_signed (void)	{ return (true); }
 };
 
-#ifdef __GNUC__
+#ifdef HAVE_LONG_LONG
 
 #ifndef LONG_LONG_MIN
 #define ULONG_LONG_MAX	0xFFFFFFFFFFFFFFFFLL

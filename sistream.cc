@@ -121,7 +121,7 @@ void istringstream::iread (long& v)
 	v = -v;
 }
 
-#ifdef __GNUC__
+#ifdef HAVE_LONG_LONG
 void istringstream::iread (long long& v)
 {
     long long base = m_Base;

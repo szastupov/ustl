@@ -201,6 +201,7 @@ inline size_t istream::align_size (size_t grain) const
 /// Returns \c true if the read position is aligned on \p grain
 inline bool istream::aligned (size_t grain) const
 {
+    assert (u_long(begin()) % grain == 0 && "Streams should be attached aligned at the maximum element grain to avoid bus errors.");
     return (pos() % grain == 0);
 }
 
@@ -247,7 +248,7 @@ inline istream&	operator>> (istream& is, float& v)	{ is.iread(v); return (is); }
 inline istream&	operator>> (istream& is, double& v)	{ is.iread(v); return (is); }
 inline istream&	operator>> (istream& is, bool& v)	{ is.iread(v); return (is); }
 inline istream&	operator>> (istream& is, wchar_t& v)	{ is.iread(v); return (is); }
-#ifdef __GNUC__
+#ifdef HAVE_LONG_LONG
 inline istream&	operator>> (istream& is, long long& v)	{ is.iread(v); return (is); }
 inline istream&	operator>> (istream& is, unsigned long long& v)	{ is.iread(v); return (is); }
 #endif

@@ -44,7 +44,9 @@
 #define BUFSIZE		0x10000
 #define VectorSize(v)	(sizeof(v) / sizeof(*v))
 
-typedef char string_t [64];
+//#define const
+typedef const char string_t [64];
+typedef char strbuf_t [64];
 
 typedef enum {
     vv_prefix,
@@ -59,6 +61,7 @@ typedef enum {
     vv_libdir,
     vv_includedir,
     vv_oldincludedir,
+    vv_gccincludedir,
     vv_infodir,
     vv_mandir,
     vv_build,
@@ -68,7 +71,7 @@ typedef enum {
 
 /*--------------------------------------------------------------------*/
 
-static void GetConfigVarValues (int argc, char** argv);
+static void GetConfigVarValues (int argc, const char* const* argv);
 static void FillInDefaultConfigVarValues (void);
 static void FindPrograms (void);
 static void SubstitutePaths (void);
@@ -81,23 +84,24 @@ static void SubstituteComponents (void);
 static void SubstituteCustomVars (void);
 
 static void DetermineHost (void);
-static void DefaultConfigVarValue (EVV v, EVV root, char* suffix);
-static void Substitute (char *matchStr, char *replaceStr);
-static void MakeSubstString (char *str, char *substString);
-static int  IsBadInstallDir (char* match);
+static void DefaultConfigVarValue (EVV v, EVV root, const char* suffix);
+static void Substitute (const char *matchStr, const char *replaceStr);
+static void MakeSubstString (const char *str, char *substString);
+static const char* CopyPathEntry (const char* pi, char* dest);
+static int  IsBadInstallDir (const char* match);
 
 /* Unreliable (according to autoconf) libc stuff */
-static int   StrLen (char *str);
+static int   StrLen (const char *str);
 static void  Lowercase (char* str);
-static int   compare (char *str1, char *str2);
-static char* copy (char *src, char *dest);
-static char* copy_n (char *src, char *dest, int n);
-static char* append (char* src, char* dest);
+static int   compare (const char *str1, const char *str2);
+static char* copy (const char *src, char *dest);
+static char* copy_n (const char *src, char *dest, int n);
+static char* append (const char* src, char* dest);
 static void  fill_n (char *str, int n, char v);
-static char* copy_backward (char *src, char *dest, int n);
-static void  ReadFile (char *filename);
-static void  WriteFile (char *filename);
-static void  FatalError (char *errortext);
+static char* copy_backward (const char *src, char *dest, int n);
+static void  ReadFile (const char *filename);
+static void  WriteFile (const char *filename);
+static void  FatalError (const char *errortext);
 
 /*--------------------------------------------------------------------*/
 
@@ -119,23 +123,24 @@ static string_t g_ConfigV [vv_last] = {
     "libdir",
     "includedir",
     "oldincludedir",
+    "gccincludedir",
     "infodir",
     "mandir",
     "build",
     "host"
 };
 
-static string_t g_ConfigVV [vv_last];
-static string_t g_ProgLocs [VectorSize (g_ProgVars) / 4];
+static strbuf_t g_ConfigVV [vv_last];
+static strbuf_t g_ProgLocs [VectorSize (g_ProgVars) / 4];
 
 static struct utsname g_Uname;
 
 /*--------------------------------------------------------------------*/
 
-int main (int argc, char** argv)
+int main (int argc, const char* const* argv)
 {
     unsigned int f;
-    string_t srcFile;
+    strbuf_t srcFile;
 
     GetConfigVarValues (--argc, ++argv);
     FillInDefaultConfigVarValues();
@@ -161,7 +166,7 @@ int main (int argc, char** argv)
 
 static void PrintHelp (void)
 {
-    int i;
+    unsigned i;
     printf (
 "`configure' configures " PACKAGE_STRING " to adapt to many kinds of systems.\n"
 "\n"
@@ -184,6 +189,7 @@ static void PrintHelp (void)
 "  --libdir=DIR\t\tobject code libraries [EPREFIX/lib]\n"
 "  --includedir=DIR\tC header files [PREFIX/include]\n"
 "  --oldincludedir=DIR\tC header files for non-gcc [/usr/include]\n"
+"  --gccincludedir=DIR\tGCC internal header files [PREFIX/include]\n"
 "  --infodir=DIR\t\tinfo documentation [PREFIX/info]\n"
 "  --mandir=DIR\t\tman documentation [PREFIX/man]\n"
 "\n"
@@ -226,11 +232,12 @@ static void PrintVersion (void)
 
 /*--------------------------------------------------------------------*/
 
-static void GetConfigVarValues (int argc, char** argv)
+static void GetConfigVarValues (int argc, const char* const* argv)
 {
-    int a, cv, apos, cvl;
+    int a, apos, cvl;
+    unsigned cv;
     for (cv = 0; cv < vv_last; ++ cv)
-	fill_n (g_ConfigVV[cv], sizeof(string_t), 0);
+	fill_n (g_ConfigVV[cv], sizeof(strbuf_t), 0);
     /* --var=VALUE */
     for (a = 0; a < argc; ++ a) {
 	if (compare (argv[a], "--"))
@@ -262,7 +269,7 @@ static void GetConfigVarValues (int argc, char** argv)
     }
 }
 
-static void DefaultConfigVarValue (EVV v, EVV root, char* suffix)
+static void DefaultConfigVarValue (EVV v, EVV root, const char* suffix)
 {
     if (!*(g_ConfigVV [v])) {
 	copy (g_ConfigVV [root], g_ConfigVV [v]);
@@ -292,6 +299,7 @@ static void FillInDefaultConfigVarValues (void)
     DefaultConfigVarValue (vv_localstatedir,	vv_prefix,	"/var");
     DefaultConfigVarValue (vv_libdir,		vv_exec_prefix,	"/lib");
     DefaultConfigVarValue (vv_includedir,	vv_prefix,	"/include");
+    DefaultConfigVarValue (vv_gccincludedir,	vv_prefix,	"/include");
     DefaultConfigVarValue (vv_infodir,		vv_prefix,	"/info");
     DefaultConfigVarValue (vv_mandir,		vv_prefix,	"/man");
 
@@ -323,7 +331,7 @@ static void DetermineHost (void)
     append (g_Uname.sysname, g_ConfigVV [vv_host]);
 }
 
-static char* CopyPathEntry (char* pi, char* dest)
+static const char* CopyPathEntry (const char* pi, char* dest)
 {
     while (*pi && *pi != ':')
 	*dest++ = *pi++;
@@ -331,7 +339,7 @@ static char* CopyPathEntry (char* pi, char* dest)
     return (*pi ? ++pi : NULL);
 }
 
-static int IsBadInstallDir (char* match)
+static int IsBadInstallDir (const char* match)
 {
     return (!compare (match, "/etc/") ||
 	    !compare (match, "/usr/sbin/") ||
@@ -346,16 +354,16 @@ static int IsBadInstallDir (char* match)
 static void FindPrograms (void)
 {
     unsigned int i, count;
-    char *path, *pi;
-    string_t match;
+    const char *path, *pi;
+    strbuf_t match;
 
     path = getenv ("PATH");
     if (!path)
 	path = "";
 
     for (i = 0; i < VectorSize(g_ProgLocs); ++ i) {
-	fill_n (g_ProgLocs[i], sizeof(string_t), 0);
-	fill_n (match, sizeof(string_t), 0);
+	fill_n (g_ProgLocs[i], sizeof(strbuf_t), 0);
+	fill_n (match, sizeof(strbuf_t), 0);
 	count = 0;
 	for (pi = path; pi; pi = CopyPathEntry (pi, match)) {
 	    append ("/", match);
@@ -377,7 +385,7 @@ static void FindPrograms (void)
 
 static void SubstitutePaths (void)
 {
-    string_t match;
+    strbuf_t match;
     int cv;
     for (cv = 0; cv < vv_last; ++ cv) {
 	MakeSubstString (g_ConfigV [cv], match);
@@ -387,9 +395,9 @@ static void SubstitutePaths (void)
 
 static void SubstituteEnvironment (int bForce)
 {
-    string_t match;
+    strbuf_t match;
     unsigned int i;
-    char* envval;
+    const char* envval;
 
     for (i = 0; i < VectorSize(g_EnvVars); ++ i) {
 	envval = getenv (g_EnvVars[i]);
@@ -406,7 +414,7 @@ static void SubstituteEnvironment (int bForce)
 static void SubstitutePrograms (void)
 {
     unsigned int i;
-    string_t match;
+    strbuf_t match;
     for (i = 0; i < VectorSize(g_ProgLocs); ++ i) {
 	MakeSubstString (g_ProgVars [i * 4], match);
 	Substitute (match, g_ProgLocs [i]);
@@ -415,6 +423,7 @@ static void SubstitutePrograms (void)
 
 static void SubstituteHostOptions (void)
 {
+    strbuf_t buf;
     if (!compare (g_Uname.sysname, "osx") ||
 	!compare (g_Uname.sysname, "darwin"))
 	Substitute ("@SYSWARNS@", "-Wno-long-double");
@@ -435,6 +444,23 @@ static void SubstituteHostOptions (void)
     Substitute ("#undef off_t", "/* typedef long off_t; */");
     Substitute ("#undef size_t", "/* typedef long size_t; */");
 
+    sprintf (buf, "#define SIZE_OF_CHAR %d", sizeof(char));
+    Substitute ("#undef SIZE_OF_CHAR", buf);
+    sprintf (buf, "#define SIZE_OF_SHORT %d", sizeof(short));
+    Substitute ("#undef SIZE_OF_SHORT", buf);
+    sprintf (buf, "#define SIZE_OF_INT %d", sizeof(int));
+    Substitute ("#undef SIZE_OF_INT", buf);
+    sprintf (buf, "#define SIZE_OF_LONG %d", sizeof(long));
+    Substitute ("#undef SIZE_OF_LONG ", buf);
+#if defined(__GNUC__) || (__WORDSIZE == 64) || defined(__ia64__)
+    Substitute ("#undef HAVE_INT64_T", "#define HAVE_INT64_T 1");
+#endif
+#if defined(__GNUC__) || defined(__GLIBC_HAVE_LONG_LONG)
+    Substitute ("#undef HAVE_LONG_LONG", "#define HAVE_LONG_LONG 1");
+    sprintf (buf, "#define SIZE_OF_LONG_LONG %d", sizeof(long long));
+    Substitute ("#undef SIZE_OF_LONG_LONG", buf);
+#endif
+
     Substitute ("#undef LSTAT_FOLLOWS_SLASHED_SYMLINK", "#define LSTAT_FOLLOWS_SLASHED_SYMLINK 1");
     Substitute ("#undef HAVE_STAT_EMPTY_STRING_BUG", "/* #undef HAVE_STAT_EMPTY_STRING_BUG */");
 
@@ -448,7 +474,7 @@ static void SubstituteHostOptions (void)
 static void SubstituteCustomVars (void)
 {
     unsigned int i;
-    string_t match;
+    strbuf_t match;
     for (i = 0; i < VectorSize(g_CustomVars); ++ i) {
 	MakeSubstString (g_CustomVars [i * 2], match);
 	Substitute (match, g_CustomVars [i * 2 + 1]);
@@ -458,10 +484,11 @@ static void SubstituteCustomVars (void)
 static void SubstituteHeaders (void)
 {
     unsigned int i, j;
-    string_t match, paths [2];
+    strbuf_t match, paths [3];
 
     copy (g_ConfigVV [vv_includedir], paths[0]);
     copy (g_ConfigVV [vv_oldincludedir], paths[1]);
+    copy (g_ConfigVV [vv_gccincludedir], paths[2]);
 
     for (i = 0; i < VectorSize(g_Headers) / 3; ++ i) {
 	for (j = 0; j < VectorSize(paths); ++ j) {
@@ -492,7 +519,7 @@ static void SubstituteComponents (void)
 
 /*--------------------------------------------------------------------*/
 
-static void Substitute (char* matchStr, char* replaceStr)
+static void Substitute (const char* matchStr, const char* replaceStr)
 {
     int rsl = StrLen (replaceStr);
     int taill, delta = rsl - StrLen (matchStr);
@@ -512,7 +539,7 @@ static void Substitute (char* matchStr, char* replaceStr)
     }
 }
 
-static void MakeSubstString (char* str, char* substString)
+static void MakeSubstString (const char* str, char* substString)
 {
     copy ("@", substString);
     append (str, substString);
@@ -521,13 +548,13 @@ static void MakeSubstString (char* str, char* substString)
 
 /*--------------------------------------------------------------------*/
 
-static void FatalError (char* errortext)
+static void FatalError (const char* errortext)
 {
     perror (errortext);
     exit(-1);
 }
 
-static int StrLen (char* str)
+static int StrLen (const char* str)
 {
     int l;
     for (l = 0; *str; ++ l, ++ str);
@@ -541,28 +568,28 @@ static void Lowercase (char* str)
 	    *str += 'a' - 'A';
 }
 
-static int compare (char* str1, char* str2)
+static int compare (const char* str1, const char* str2)
 {
     while (*str1 && *str2 && *str1 == *str2)
 	++ str1, ++ str2;
     return (*str2);
 }
 
-static char* copy (char* src, char* dest)
+static char* copy (const char* src, char* dest)
 {
     while (*src) *dest++ = *src++;
     *dest = 0;
     return (dest);
 }
 
-static char* copy_n (char* src, char* dest, int n)
+static char* copy_n (const char* src, char* dest, int n)
 {
     while (n--)
 	*dest++ = *src++;
     return (dest);
 }
 
-static char* append (char* src, char* dest)
+static char* append (const char* src, char* dest)
 {
     while (*dest) ++ dest;
     return (copy (src, dest));
@@ -574,7 +601,7 @@ static void fill_n (char* str, int n, char v)
 	*str++ = v;
 }
 
-static char* copy_backward (char* src, char* dest, int n)
+static char* copy_backward (const char* src, char* dest, int n)
 {
     dest += n; src += n;
     while (n--)
@@ -582,7 +609,7 @@ static char* copy_backward (char* src, char* dest, int n)
     return (dest + n);
 }
 
-static void ReadFile (char* filename)
+static void ReadFile (const char* filename)
 {
     FILE* fp = fopen (filename, "r");
     if (!fp)
@@ -594,7 +621,7 @@ static void ReadFile (char* filename)
     fclose (fp);
 }
 
-static void WriteFile (char* filename)
+static void WriteFile (const char* filename)
 {
     int bw;
     FILE* fp = fopen (filename, "w");

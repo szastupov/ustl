@@ -51,7 +51,7 @@ public:
     void			iwrite (const char* s);
     void			iwrite (const string& v);
     void			iwrite (ios::fmtflags f);
-#ifdef __GNUC__
+#ifdef HAVE_LONG_LONG
     void			iwrite (long long v);
     void			iwrite (unsigned long long v);
 #endif
@@ -144,7 +144,7 @@ OSTRSTREAM_OPERATOR (u_char*,		const char*)
 OSTRSTREAM_OPERATOR (const u_char*,	const char*)
 OSTRSTREAM_OPERATOR (const void*,	u_long)
 OSTRSTREAM_OPERATOR (void*,		u_long)
-#ifdef __GNUC__
+#ifdef HAVE_LONG_LONG
 OSTRSTREAM_OPERATOR (long long,		long long)
 OSTRSTREAM_OPERATOR (unsigned long long, unsigned long long)
 #endif

@@ -179,7 +179,7 @@ num_get::const_iterator num_get::get (const_iterator first, const_iterator, iosf
     return (first);
 }
 
-#ifdef __GNUC__
+#ifdef HAVE_LONG_LONG
 
 num_get::const_iterator num_get::get (const_iterator first, const_iterator, iosflags_t, long long&) const
 {
@@ -356,7 +356,7 @@ num_put::iterator num_put::put (iterator first, iterator last, iosflags_t flags,
     return (put (first, last, flags, reinterpret_cast<u_long>(v), filler));
 }
 
-#ifdef __GNUC__
+#ifdef HAVE_LONG_LONG
 
 num_put::iterator num_put::put (iterator first, iterator last, iosflags_t flags, long long sv, wchar_t) const
 {

@@ -180,6 +180,7 @@ inline size_t ostream::remaining (void) const
 /// Returns \c true if the write pointer is aligned on \p grain
 inline bool ostream::aligned (size_t grain) const
 {
+    assert (u_long(begin()) % grain == 0 && "Streams should be attached aligned at the maximum element grain to avoid bus errors.");
     return (pos() % grain == 0);
 }
 
@@ -238,7 +239,7 @@ inline ostream&	operator<< (ostream& os, float v)	{ os.iwrite(v); return (os); }
 inline ostream&	operator<< (ostream& os, double v)	{ os.iwrite(v); return (os); }
 inline ostream&	operator<< (ostream& os, bool v)	{ os.iwrite(v); return (os); }
 inline ostream&	operator<< (ostream& os, wchar_t v)	{ os.iwrite(v); return (os); }
-#ifdef __GNUC__
+#ifdef HAVE_LONG_LONG
 inline ostream&	operator<< (ostream& os, long long v)	{ os.iwrite(v); return (os); }
 inline ostream&	operator<< (ostream& os, unsigned long long v)	{ os.iwrite(v); return (os); }
 #endif

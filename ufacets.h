@@ -98,7 +98,7 @@ public:
     const_iterator	get (const_iterator first, const_iterator last, iosflags_t flags, double& v) const;
     const_iterator	get (const_iterator first, const_iterator last, iosflags_t flags, long double& v) const;
     const_iterator	get (const_iterator first, const_iterator last, iosflags_t flags, void*& v) const;
-#ifdef __GNUC__
+#ifdef HAVE_LONG_LONG
     const_iterator	get (const_iterator first, const_iterator last, iosflags_t flags, long long& v) const;
     const_iterator	get (const_iterator first, const_iterator last, iosflags_t flags, unsigned long long& v) const;
 #endif
@@ -118,7 +118,7 @@ public:
     iterator		put (iterator first, iterator last, iosflags_t flags, double v, wchar_t filler = ' ') const;
     iterator		put (iterator first, iterator last, iosflags_t flags, long double v, wchar_t filler = ' ') const;
     iterator		put (iterator first, iterator last, iosflags_t flags, void* v, wchar_t filler = ' ') const;
-#ifdef __GNUC__
+#ifdef HAVE_LONG_LONG
     iterator		put (iterator first, iterator last, iosflags_t flags, long long v, wchar_t filler = ' ') const;
     iterator		put (iterator first, iterator last, iosflags_t flags, unsigned long long v, wchar_t filler = ' ') const;
 #endif

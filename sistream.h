@@ -48,7 +48,7 @@ public:
     void			iread (double& v);
     void			iread (bool& v);
     void			iread (string& v);
-#ifdef __GNUC__
+#ifdef HAVE_LONG_LONG
     void			iread (long long& v);
 #endif
     void			set_delimiters (const char* delimiters);
@@ -109,7 +109,7 @@ inline istringstream& operator>> (istringstream& is, u_char& v)	{ is.iread (v); 
 inline istringstream& operator>> (istringstream& is, double& v)	{ is.iread (v); return (is); }
 inline istringstream& operator>> (istringstream& is, bool& v)	{ is.iread (v); return (is); }
 inline istringstream& operator>> (istringstream& is, string& v)	{ is.iread (v); return (is); }
-#ifdef __GNUC__
+#ifdef HAVE_LONG_LONG
 inline istringstream& operator>> (istringstream& is, long long& v) { is.iread (v); return (is); }
 #endif
 
@@ -126,7 +126,7 @@ ISTRSTREAM_CAST_OPERATOR (u_int,	long)
 ISTRSTREAM_CAST_OPERATOR (u_long,	long)
 ISTRSTREAM_CAST_OPERATOR (wchar_t,	long)
 ISTRSTREAM_CAST_OPERATOR (float,	double)
-#ifdef __GNUC__
+#ifdef HAVE_LONG_LONG
 ISTRSTREAM_CAST_OPERATOR (unsigned long long, long long)
 #endif
 #undef ISTRSTREAM_CAST_OPERATOR
