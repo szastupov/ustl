@@ -14,7 +14,8 @@ vp = 4321
 advance(cvp,5) = 1239
 advance(vp,4) = 4325
 distance(cvp,vp) = 30ED
-distance(vp,cvp) = FFFFCF13
+distance(vp,cvp) = -30ED
+abs_distance(vp,cvp) = 30ED
 
 VectorSize(c_Numbers[5]) = 5
 VectorSize(c_Numbers[0]) = 0

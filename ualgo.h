@@ -33,7 +33,7 @@
 #include "uiterator.h"
 #include "ufunction.h"
 #include "upredalgo.h"
-#include <stdlib.h>	// for rand()
+#include <stdlib.h>	// for rand() and alloca()
 
 namespace ustl {
 
@@ -229,14 +229,31 @@ ForwardIterator rotate (ForwardIterator first, ForwardIterator middle, ForwardIt
 {
     if (first == middle || middle == last)
 	return (first);
-    reverse (first, middle);
-    reverse (middle, last);
-    for (;first != middle && middle != last; ++first)
-	iterator_swap (first, --last);
-    if (first == middle)
-	reverse (middle, last);
-    else
+#ifdef HAVE_ALLOCA_H
+    void *buf, *vfirst(first), *vresult(first + distance(middle, last));
+    const void *cvfirst(first), *cvmiddle(middle), *cvlast(last);
+    const size_t half1 (distance (cvfirst, cvmiddle));
+    const size_t half2 (distance (cvmiddle, cvlast));
+    if (half2 < half1 && (buf = alloca (half2))) {
+	copy (cvmiddle, cvlast, buf);
+	copy (cvfirst, cvmiddle, vresult);
+	copy_n ((const void*) buf, half2, vfirst);
+    } else if (half1 <= half2 && (buf = alloca (half1))) {
+	copy (cvfirst, cvmiddle, buf);
+	copy (cvmiddle, cvlast, vfirst);
+	copy_n ((const void*) buf, half1, vresult);
+    } else
+#endif
+    {
 	reverse (first, middle);
+	reverse (middle, last);
+	for (;first != middle && middle != last; ++first)
+	    iterator_swap (first, --last);
+	if (first == middle)
+	    reverse (middle, last);
+	else
+	    reverse (first, middle);
+    }
     return (first);
 }
 

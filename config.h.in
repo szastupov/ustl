@@ -21,12 +21,19 @@
 */
 #undef WITHOUT_CIN_COUT_CERR
 
-/* GCC (and some other compilers) define '__attribute__'; we're using this
- * macro to alert the compiler to flag inconsistencies in printf/scanf-like
- * function calls.  Just in case '__attribute__' isn't defined, make a dummy.
- */
-#if !defined(__GNUC__) && !defined(__attribute__)
-    #define __attribute__(p) /* nothing */
+/* Override some GNU extensions */
+#ifndef __GNUC__
+    /* GCC (and some other compilers) define '__attribute__'; ustl is using this
+     * macro to alert the compiler to flag inconsistencies in printf/scanf-like
+     * function calls.  Just in case '__attribute__' isn't defined, make a dummy.
+     */
+    #ifndef __attribute__
+	#define __attribute__(p) /* nothing */
+    #endif
+    /* GCC supports the prefetch directive, which some CPUs use to improve caching */
+    #ifndef __builtin_prefetch
+	#define __builtin_prefetch(p,rw,loc)
+    #endif
 #endif
 
 //----------------------------------------------------------------------
@@ -51,6 +58,9 @@
 
 /* Define to 1 if you have the <malloc.h> header file. */
 #undef HAVE_MALLOC_H
+
+/* Define to 1 if you have the <alloca.h> header file. */
+#undef HAVE_ALLOCA_H
 
 /* Define to 1 if you have the `memchr' function. */
 #undef HAVE_MEMCHR

@@ -79,14 +79,14 @@ inline void* advance (void* p, ssize_t offset)
 
 /// Returns the difference \p p1 - \p p2
 template <typename T1, typename T2>
-inline size_t distance (T1 i1, T2 i2)
+inline ptrdiff_t distance (T1 i1, T2 i2)
 {
     return (i2 - i1);
 }
 
 #define UNVOID_DISTANCE(T1const,T2const)			\
 template <>							\
-inline size_t distance (T1const void* p1, T2const void* p2)	\
+inline ptrdiff_t distance (T1const void* p1, T2const void* p2)	\
 {								\
     return (reinterpret_cast<T2const u_char*>(p2) -		\
 	    reinterpret_cast<T1const u_char*>(p1));		\
@@ -95,6 +95,22 @@ UNVOID_DISTANCE(,)
 UNVOID_DISTANCE(const,const)
 UNVOID_DISTANCE(,const)
 UNVOID_DISTANCE(const,)
+#undef UNVOID_DISTANCE
+
+/// \brief Returns the absolute value of \p v
+/// Unlike the stdlib functions, this is inline and works with all types.
+template <typename T>
+inline T absv (T v)
+{
+    return (v < 0 ? -v : v);
+}
+
+/// Returns the absolute value of the distance i1 and i2
+template <typename T1, typename T2>
+inline size_t abs_distance (T1 i1, T2 i2)
+{
+    return (absv (distance(i1, i2)));
+}
 
 #ifdef __GNUC__
     /// Returns the number of elements in a static vector

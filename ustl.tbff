@@ -32,10 +32,7 @@
 
 <!-- Standard C++ variable size types, also machine specific -->
 <type name=wchar_t format=signedIntegral size=wchar_t/>
-<type name=size_t format=signedIntegral size=size_t/>
-<type name=time_t format=signedIntegral size=time_t/>
-<type name=off_t format=signedIntegral size=off_t/>
-<type name=ptrdiff_t format=signedIntegral size=ptrdiff_t/>
+<type name=size_t format=integral size=size_t/>
 <type name=char format=signedIntegral size=char/>
 <type name=short format=signedIntegral size=short/>
 <type name=int format=signedIntegral size=int/>
@@ -47,24 +44,39 @@
 <type name=u_long format=signedIntegral size=long/>
 <type name=u_longlong format=signedIntegral size=longlong/>
 
+<!-- libc types -->
+<type name=time_t format=signedIntegral size=time_t/>
+<type name=off_t format=signedIntegral size=off_t/>
+<type name=ptrdiff_t format=signedIntegral size=ptrdiff_t/>
+<type name=dev_t format=integral size=dev_t/>
+<type name=uid_t format=integral size=uid_t/>
+<type name=gid_t format=integral size=gid_t/>
+<type name=mode_t format=integral size=mode_t/>
+<type name=nlink_t format=integral size=nlink_t/>
+<type name=pid_t format=integral size=pid_t/>
+<type name=fsid_t format=integral size=fsid_t/>
+<type name=clock_t format=integral size=clock_t/>
+<type name=id_t format=integral size=id_t/>
+<type name=key_t format=integral size=key_t/>
+<type name=blksize_t format=integral size=blksize_t/>
+
 <!-- Types within the ustl library -->
 <type name=utf8 format=integral minSize="1" maxSize="7"/>
 <type name=auto format=unstructured id="AUTO"/>
 <namespace name=ustl>
     <type name=uoff_t extends=size_t/>
     <type name=cmemlink_ptr_t format=pointer/>
-    <type name=memlink_ptr_t format=pointer/>
-    <type name=memblock_ptr_t format=pointer/>
-    <type name=cmemlink format=struct key=cmemlink_data_size >
+    <type name=memlink_ptr_t extends=cmemlink_ptr_t/>
+    <type name=memblock_ptr_t extends=memlink_ptr_t/>
+    <type name=cmemlink format=struct>
 	<var name=data_size type=size_t />
-	<type name=cmemlink_data_t extends=auto size=data_size />
-	<var name=cmemlink_data type=cmemlink_data_t />
+	<var name=data format=unstructured size=data_size />
     </type>
     <type name=memlink extends=cmemlink />
     <type name=memblock extends=cmemlink />
-    <type name=string format=struct>
-	<var name=string_data_size type=utf8 />
-	<var name=string_data format=array type=utf8 size=string_data_size />
+    <type name=string extends=memblock>
+	<var name=data_size type=utf8 />
+	<var name=data format=array type=utf8 size=data_size />
     </type>
 </namespace>
 

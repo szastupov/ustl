@@ -81,8 +81,12 @@ inline OutputIterator copy (InputIterator first, InputIterator last, OutputItera
 template <typename InputIterator, typename OutputIterator>
 inline OutputIterator copy_n (InputIterator first, size_t count, OutputIterator result)
 {
-    for (size_t i = 0; i < count; ++i, ++result, ++first)
+    while (count) {
 	*result = *first;
+	++ result;
+        -- count;
+	++ first;
+    }
     return (result);
 }
 
@@ -120,86 +124,138 @@ inline void fill (ForwardIterator first, ForwardIterator last, const T& value)
 template <typename OutputIterator, typename T>
 inline OutputIterator fill_n (OutputIterator first, size_t n, const T& value)
 {
-    for (size_t i = 0; i < n; ++i, ++first)
-	*first = value;
+    while (n) {
+	*first++ = value;
+	-- n;
+    }
     return (first);
 }
 
-//
-// Specializations for void* and char*.
-//
-template <>
-inline void* copy (const void* first, const void* last, void* result)
+// Optimized versions for standard types
+template <typename T>
+inline T* unrolled_copy (const T* first, size_t count, T* result)
 {
-    memcpy (result, first, distance (first, last));
-    return (advance (result, distance (first, last)));
+    __builtin_prefetch (first, 0, 1);
+    __builtin_prefetch (result, 1, 1);
+    if (result >= first && result < first + count) {
+	first += count;
+	result += count;
+	while (count) {
+	    *--result = *--first;
+	    -- count;
+	}
+    } else {
+	typedef u_long carrier_t;
+	while (count && (uintptr_t(first) % sizeof(carrier_t) || uintptr_t(result) % sizeof(carrier_t))) {
+	    *result++ = *first++;
+	    -- count;
+	}
+	size_t nCarriers = count / (sizeof(carrier_t) / sizeof(T));
+	if (nCarriers) {
+	    const carrier_t* csrc ((const carrier_t*) first);
+	    carrier_t* cdest ((carrier_t*) result);
+	    do {
+		*cdest++ = *csrc++;
+	    } while (--nCarriers);
+	    first = (const T*) csrc;
+	    result = (T*) cdest;
+	    count = count % sizeof(carrier_t);
+	}
+	while (count) {
+	    *result++ = *first++;
+	    -- count;
+	}
+    }
+    return (result);
 }
-template <>
-inline char* copy (const char* first, const char* last, char* result)
+
+template <typename T>
+inline T* unrolled_fill (T* first, size_t count, const T& value)
 {
-    memcpy (result, first, distance (first, last));
-    return (advance (result, distance (first, last)));
+    __builtin_prefetch (first, 1, 1);
+    typedef u_long carrier_t;
+    while (count && uintptr_t(first) % sizeof(carrier_t)) {
+	*first++ = value;
+	-- count;
+    }
+    size_t repCount (sizeof(carrier_t) / sizeof(T));
+    size_t nCarriers = count / repCount;
+    if (nCarriers) {
+	carrier_t* cdest ((carrier_t*) first);
+	carrier_t cvalue (value);
+	if (repCount > 1) {
+	    cvalue = (cvalue << BitsInType(T)) | cvalue;
+	    if (repCount > 2) {
+		cvalue = (cvalue << BitsInType(T) * 2) | cvalue;
+		if (repCount > 4)
+		    cvalue = (cvalue << BitsInType(T) * 4) | cvalue;
+	    }
+	}
+	do {
+	    *cdest++ = cvalue;
+	} while (--nCarriers);
+	first = (T*) cdest;
+	count = count % sizeof(carrier_t);
+    }
+    while (count) {
+	*first++ = value;
+	-- count;
+    }
+    return (first);
 }
-template <>
-inline u_char* copy (const u_char* first, const u_char* last, u_char* result)
-{
-    memcpy (result, first, distance (first, last));
-    return (advance (result, distance (first, last)));
-}
-template <>
-inline void* copy_n (const void* first, size_t count, void* result)
-{
-    memcpy (result, first, count);
-    return (advance (result, count));
-}
-template <>
-inline char* copy_n (const char* first, size_t count, char* result)
-{
-    memcpy (result, first, count);
-    return (advance (result, count));
-}
-template <>
-inline u_char* copy_n (const u_char* first, size_t count, u_char* result)
-{
-    memcpy (result, first, count);
-    return (advance (result, count));
-}
-inline void fill (void* first, void* last, char value)
-{
-    memset (first, value, distance (first, last));
-}
-inline void fill (void* first, void* last, u_char value)
-{
-    memset (first, value, distance (first, last));
-}
-inline void fill (char* first, char* last, char value)
-{
-    memset (first, value, distance (first, last));
-}
-inline void fill (u_char* first, u_char* last, u_char value)
-{
-    memset (first, value, distance (first, last));
-}
-inline void* fill_n (void* first, size_t n, char value)
-{
-    memset (first, value, n);
-    return (advance (first, n));
-}
-inline void* fill_n (void* first, size_t n, u_char value)
-{
-    memset (first, value, n);
-    return (advance (first, n));
-}
-inline char* fill_n (char* first, size_t n, char value)
-{
-    memset (first, value, n);
-    return (advance (first, n));
-}
-inline u_char* fill_n (u_char* first, size_t n, u_char value)
-{
-    memset (first, value, n);
-    return (advance (first, n));
-}
+
+#define UNROLLED_COPY_SPECIALIZATION(type)						\
+template <> inline type* copy (const type* first, const type* last, type* result)	\
+{ return (unrolled_copy (first, distance (first, last), result)); }			\
+template <> inline type* copy_n (const type* first, size_t count, type* result)		\
+{ return (unrolled_copy (first, count, result)); }
+UNROLLED_COPY_SPECIALIZATION(uint8_t)
+UNROLLED_COPY_SPECIALIZATION(uint16_t)
+#if SIZE_OF_LONG > 4
+UNROLLED_COPY_SPECIALIZATION(uint32_t)
+#endif
+#undef UNROLLED_COPY_SPECIALIZATION
+#define UNROLLED_FILL_SPECIALIZATION(type)						\
+template <> inline void fill (type* first, type* last, const type& value)		\
+{ unrolled_fill (first, distance (first, last), value); }				\
+template <> inline type* fill_n (type* first, size_t count, const type& value)	\
+{ return (unrolled_fill (first, count, value)); }
+UNROLLED_FILL_SPECIALIZATION(uint8_t)
+UNROLLED_FILL_SPECIALIZATION(uint16_t)
+#if SIZE_OF_LONG > 4
+UNROLLED_FILL_SPECIALIZATION(uint32_t)
+#endif
+#undef UNROLLED_FILL_SPECIALIZATION
+
+// Specializations for void* and char*, aliasing the above optimized versions.
+#define COPY_ALIAS_FUNC(type, alias_type)						\
+template <> inline type* copy (const type* first, const type* last, type* result)	\
+{ return ((type*) copy ((const alias_type*) first, (const alias_type*) last, (alias_type*) result)); }
+COPY_ALIAS_FUNC(void, uint8_t)
+COPY_ALIAS_FUNC(char, uint8_t)
+#undef COPY_ALIAS_FUNC
+#define FILL_ALIAS_FUNC(type, alias_type, v_type)				\
+template <> inline void fill (type* first, type* last, const v_type& value)	\
+{ fill ((alias_type*) first, (alias_type*) last, (const alias_type&) value); }
+FILL_ALIAS_FUNC(void, uint8_t, char)
+FILL_ALIAS_FUNC(void, uint8_t, u_char)
+FILL_ALIAS_FUNC(char, uint8_t, char)
+FILL_ALIAS_FUNC(char, uint8_t, u_char)
+#undef FILL_ALIAS_FUNC
+#define COPY_N_ALIAS_FUNC(type, alias_type)					\
+template <> inline type* copy_n (const type* first, size_t count, type* result)	\
+{ return ((type*) copy_n ((const alias_type*) first, count, (alias_type*) result)); }
+COPY_N_ALIAS_FUNC(void, uint8_t)
+COPY_N_ALIAS_FUNC(char, uint8_t)
+#undef COPY_N_ALIAS_FUNC
+#define FILL_N_ALIAS_FUNC(type, alias_type, v_type)				\
+template <> inline type* fill_n (type* first, size_t n, const v_type& value)	\
+{ return ((type*) fill_n ((alias_type*) first, n, (const alias_type&) value)); }
+FILL_N_ALIAS_FUNC(void, uint8_t, char)
+FILL_N_ALIAS_FUNC(void, uint8_t, u_char)
+FILL_N_ALIAS_FUNC(char, uint8_t, char)
+FILL_N_ALIAS_FUNC(char, uint8_t, u_char)
+#undef FILL_N_ALIAS_FUNC
 
 } // namespace ustl
 

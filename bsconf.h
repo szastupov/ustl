@@ -45,6 +45,7 @@ static string_t	g_Headers [] = {
     "inttypes.h",	"#undef HAVE_INTTYPES_H",	"#define HAVE_INTTYPES_H 1",
     "limits.h",		"#undef HAVE_LIMITS_H",		"#define HAVE_LIMITS_H 1",
     "malloc.h",		"#undef HAVE_MALLOC_H",		"#define HAVE_MALLOC_H 1",
+    "alloca.h",		"#undef HAVE_ALLOCA_H",		"#define HAVE_ALLOCA_H 1",
     "memory.h",		"#undef HAVE_MEMORY_H",		"#define HAVE_MEMORY_H 1",
     "stddef.h",		"#undef HAVE_STDDEF_H",		"#define HAVE_STDDEF_H 1",
     "stdint.h",		"#undef HAVE_STDINT_H",		"#define HAVE_STDINT_H 1",
