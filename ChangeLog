@@ -21,6 +21,9 @@ Release 0.4-3
 	* Made resize virtual in memblock to properly handle strings.
 	* sostream/sistream will handle wchar_t properly (as utf8 read/write)
 	* ustring.cc: fixed multiple wchar_t insert
+	* ustring.cc: changed allocation strategy to simply reserve the space
+		for the null terminator instead of tweaking size() all the
+		time. It's cleaner and saner this way.
 
 Release 0.4-2
 	* ostringstreams will now correctly resize the buffer as needed.

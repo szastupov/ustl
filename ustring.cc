@@ -45,7 +45,7 @@ const char string::empty_string[string::size_Terminator] = "";
 string::string (void)
 : memblock ()
 {
-    link (empty_string, VectorSize (empty_string));
+    link (empty_string, 0);
 }
 
 /// Assigns itself the value of string \p s
@@ -59,7 +59,7 @@ string::string (const string& s)
 : memblock()
 {
     if (s.is_linked())
-	link (s.c_str(), s.size() + size_Terminator);
+	link (s.c_str(), s.size());
     else
 	operator= (s);
 }
@@ -70,7 +70,7 @@ string::string (const_pointer s)
 {
     if (!s)
 	s = empty_string;
-    link (s, strlen(s) + size_Terminator);
+    link (s, strlen(s));
 }
 
 /// Copies the value of \p s of length \p len into itself.
@@ -90,30 +90,18 @@ string::string (const_pointer s1, const_pointer s2)
 
 /// Creates a string of length \p n filled with character \p c.
 string::string (size_type n, value_type c)
-: memblock (n + size_Terminator)
+: memblock ()
 {
+    resize (n);
     fill_n (begin(), n, c);
 }
 
 /// Resize the string to \p n characters. New space contents is undefined.
 void string::resize (size_type n)
 {
-    memblock::resize (n + size_Terminator);
+    reserve (n);
+    memblock::resize (n);
     at(n) = c_Terminator;
-}
-
-/// Returns the size of the readable area.
-string::size_type string::readable_size (void) const
-{
-    const size_type realSize = memblock::readable_size();
-    return (realSize ? realSize - size_Terminator : 0);
-}
-
-/// Returns the size of the writable area.
-string::size_type string::writable_size (void) const
-{
-    const size_type realSize = memblock::writable_size();
-    return (realSize ? realSize - size_Terminator : 0);
 }
 
 /// Returns the length of the string in characters.
@@ -377,11 +365,10 @@ string::const_iterator string::rfind (const_reference c, const_iterator pos) con
 {
     if (!pos) pos = begin();
     assert (pos >= begin() && pos <= end());
-    const_iterator found (end());
-    for (const_iterator first = pos; first < end(); ++ first)
+    for (const_iterator first = end(); first >= pos; -- first)
 	if (*first == c)
-	    found = first;
-    return (found);
+	    return (first);
+    return (end());
 }
 
 /// Returns the offset of the last occurence of substring \p s of size \p n after \p pos.

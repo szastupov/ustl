@@ -73,8 +73,8 @@ public:
     typedef ::ustl::reverse_iterator<const_iterator>	const_reverse_iterator;
 public:
     static const uoff_t npos = static_cast<uoff_t>(-1);			///< Value that means the end of string.
-    static const size_type size_Terminator = sizeof(value_type);	///< Most systems terminate strings with '\\0'
     static const value_type c_Terminator = 0;				///< String terminator
+    static const size_type size_Terminator = sizeof(c_Terminator);	///< Most systems terminate strings with '\\0'
     static const char empty_string [size_Terminator];			///< An empty string.
 public:
 				string (void);
@@ -84,27 +84,23 @@ public:
 				string (const_pointer s, size_type len);
 				string (const_pointer s1, const_pointer s2);
     explicit			string (size_type n, value_type c = c_Terminator);
-    inline size_type		size (void) const;
     size_type			length (void) const;
     const_iterator		ichar (uoff_t c) const;
     iterator			ichar (uoff_t c);
-    inline pointer		data (void);
-    inline const_pointer	c_str (void) const;
-    inline size_type		max_size (void) const;
-    virtual size_type		readable_size (void) const;
-    virtual size_type		writable_size (void) const;
-    inline bool			empty (void) const;
-    inline size_type		capacity (void) const;
-    inline void			reserve (size_type n);
+    inline pointer		data (void)		{ return (string::pointer (memblock::data())); }
+    inline const_pointer	c_str (void) const	{ return (string::const_pointer (memblock::cdata())); }
+    inline size_type		max_size (void) const	{ return (memblock::max_size() - size_Terminator); }
+    inline size_type		capacity (void) const	{ return (memblock::capacity() ? memblock::capacity() - size_Terminator : 0); }
+    inline void			reserve (size_type n)	{ memblock::reserve (n + size_Terminator); }
     virtual void		resize (size_type n);
-    inline const_iterator	begin (void) const;
-    inline iterator		begin (void);
-    inline const_iterator	end (void) const;
-    inline iterator		end (void);
-    inline const_reverse_iterator	rbegin (void) const;
-    inline reverse_iterator		rbegin (void);
-    inline const_reverse_iterator	rend (void) const;
-    inline reverse_iterator		rend (void);
+    inline const_iterator	begin (void) const	{ return (const_iterator (memblock::begin())); }
+    inline iterator		begin (void)		{ return (iterator (memblock::begin())); }
+    inline const_iterator	end (void) const	{ return (const_iterator (memblock::end())); }
+    inline iterator		end (void)		{ return (iterator (memblock::end())); }
+  inline const_reverse_iterator	rbegin (void) const	{ return (const_reverse_iterator (end())); }
+    inline reverse_iterator	rbegin (void)		{ return (reverse_iterator (end())); }
+  inline const_reverse_iterator	rend (void) const	{ return (const_reverse_iterator (begin())); }
+    inline reverse_iterator	rend (void)		{ return (reverse_iterator (begin())); }
     inline const_reference	at (uoff_t pos) const;
     inline reference		at (uoff_t pos);
     wchar_t			char_at (uoff_t pos) const;
@@ -135,7 +131,6 @@ public:
     void			append (size_type n, const_reference c);
     void			append (size_type n, wchar_t c);
     size_type			copyto (pointer p, size_type n, const_iterator start) const;
-    inline void			clear (void);
     inline int			compare (const string& s) const;
     inline int			compare (const_pointer s) const;
     int				compare (const_iterator first1, const_iterator last1, const_iterator first2, const_iterator last2) const;
@@ -165,66 +160,6 @@ public:
     size_t			stream_size (void) const;
 };
 
-/// Returns the number of characters in the string, not including the terminator.
-inline string::size_type string::size (void) const
-{
-    return (memblock::size() - size_Terminator);
-}
-
-/// Returns the pointer to the string
-inline string::pointer string::data (void)
-{
-    return (reinterpret_cast<string::pointer>(memblock::data()));
-}
-
-/// Returns the pointer to the string
-inline string::const_pointer string::c_str (void) const
-{
-    return (reinterpret_cast<string::const_pointer>(memblock::cdata()));
-}
-
-/// Returns the maximum size of the string. On most systems it is max of size_type.
-inline string::size_type string::max_size (void) const
-{
-    return (memblock::max_size() / sizeof(value_type) - size_Terminator);
-}
-
-/// Returns \c true for strings with zero characters.
-inline bool string::empty (void) const
-{
-    return (!size());
-}
-
-/// \brief Returns the number of bytes allocated for string data.
-//
-/// The number of bytes allocated may be greater than the number
-/// used (and returned by size()), depending on the memory allocation
-/// scheme.
-///
-inline string::size_type string::capacity (void) const
-{
-    const size_type n = memblock::capacity() / sizeof(value_type);
-    return (n ? n - size_Terminator : 0);
-}
-
-/// Allocate enough storage to hold \p n characters.
-inline void string::reserve (size_type n)
-{
-    memblock::reserve (n + size_Terminator);
-}
-
-/// Returns the pointer to the first character.
-inline string::const_iterator string::begin (void) const
-{
-    return (const_iterator (memblock::begin()));
-}
-
-/// Returns the pointer to the first character.
-inline string::iterator string::begin (void)
-{
-    return (iterator (memblock::begin()));
-}
-
 /// Returns the const reference to the \p pos character.
 inline string::const_reference string::at (uoff_t pos) const
 {
@@ -241,42 +176,6 @@ inline string::reference string::at (uoff_t pos)
     return (*(begin() + pos));
 }
 
-/// Returns the pointer to the terminator.
-inline string::const_iterator string::end (void) const
-{
-    return (begin() + size());
-}
-
-/// Returns the pointer to the terminator.
-inline string::iterator string::end (void)
-{
-    return (begin() + size());
-}
-
-/// Returns the reverse iterator to the end of the string
-inline string::const_reverse_iterator string::rbegin (void) const
-{
-    return (const_reverse_iterator (end()));
-}
-
-/// Returns the reverse iterator to the end of the string
-inline string::reverse_iterator string::rbegin (void)
-{
-    return (reverse_iterator (end()));
-}
-
-/// Returns the reverse iterator to the beginning of the string
-inline string::const_reverse_iterator string::rend (void) const
-{
-    return (const_reverse_iterator (begin()));
-}
-
-/// Returns the reverse iterator to the beginning of the string
-inline string::reverse_iterator string::rend (void)
-{
-    return (reverse_iterator (begin()));
-}
-
 /// Returns the pointer to the first character.
 inline string::operator const string::value_type* (void) const
 {
@@ -286,6 +185,7 @@ inline string::operator const string::value_type* (void) const
 /// Returns the pointer to the first character.
 inline string::operator string::value_type* (void)
 {
+    assert ((begin() || !c_str()) && "Requesting non-const pointer to a const string. Don't do that.");
     return (begin());
 }
 
@@ -406,12 +306,6 @@ inline bool string::operator< (const_reference c) const
 inline bool string::operator> (const_pointer s) const
 {
     return (0 < compare (s));
-}
-
-/// Sets the size of the string to 0. begin is not overwritten.
-inline void string::clear (void)
-{
-    resize (0);
 }
 
 /// Inserts \p c at the end of the string.

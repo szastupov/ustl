@@ -1,15 +1,6 @@
 #include <ustl.h>
 using namespace ustl;
 
-template <typename T>
-class Linear {
-public:
-    		Linear (T initialValue) : m_Value (initialValue) {}
-    T		operator()(void) { return (m_Value++); }
-private:
-    T		m_Value;
-};
-
 void Widen (const string& str, vector<wchar_t>& result)
 {
     result.clear();
@@ -20,7 +11,7 @@ void Widen (const string& str, vector<wchar_t>& result)
 void DumpWchars (const vector<wchar_t>& v)
 {
     foreach (vector<wchar_t>::const_iterator, i, v)
-	cout << ' ' << (uint32_t) *i;
+	cout << ' ' << uint32_t(*i);
 }
 
 int main (void)
@@ -28,13 +19,20 @@ int main (void)
     cout << "Generating Unicode characters ";
     vector<wchar_t> srcChars;
     srcChars.resize (0xFFFF);
-    generate (srcChars, Linear<wchar_t>(0));
+    iota (srcChars.begin(), srcChars.end(), 0);
     cout << size_t(srcChars[0]) << " - " << size_t(srcChars.back()) << endl;
 
     cout << "Encoding to utf8." << endl;
     string encoded;
     encoded.reserve (srcChars.size() * 4);
     copy (srcChars, utf8out (back_inserter(encoded)));
+    const char c_ProperEncoding[] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+    if (encoded.compare (encoded.begin(), encoded.begin() + VectorSize(c_ProperEncoding), c_ProperEncoding, c_ProperEncoding + VectorSize(c_ProperEncoding))) {
+	cout << "Encoding failed: ";
+	for (string::const_iterator i = encoded.begin(); i != encoded.begin() + VectorSize(c_ProperEncoding); ++ i)
+	    cout << uint32_t(*i);
+	cout << endl;
+    }
 
     cout << "Decoding back." << endl;
     vector<wchar_t> decChars;
@@ -47,7 +45,7 @@ int main (void)
     size_t nDiffs = 0;
     for (uoff_t i = 0; i < min (srcChars.size(), decChars.size()); ++ i) {
 	if (srcChars[i] != decChars[i]) {
-	    cout << srcChars[i] << " != " << decChars[i] << endl;
+	    cout << uint32_t(srcChars[i]) << " != " << uint32_t(decChars[i]) << endl;
 	    ++ nDiffs;
 	}
     }
