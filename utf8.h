@@ -49,11 +49,31 @@ namespace ustl {
 /// Returns the number of bytes required to UTF-8 encode \p v.
 inline size_t Utf8Bytes (wchar_t v)
 {
-    const uint32_t c_Bounds[] = { 0x80000000, 0x04000000, 0x00200000, 0x00010000, 0x00000800, 0x00000080, 0x00000000 };
+    const uint32_t c_Bounds[] = { 0x00000080, 0x00000800, 0x00010000, 0x00200000, 0x04000000, 0x80000000, 0xFFFFFFFF, };
     size_t bi = 0;
-    while (c_Bounds[bi] > uint32_t(v))
-	++ bi;
-    return (VectorSize(c_Bounds) - bi);
+    while (c_Bounds[bi++] <= uint32_t(v))
+	;
+    return (bi);
+}
+
+/// Returns the number of bytes in a UTF-8 sequence that starts with \p c.
+inline size_t Utf8SequenceBytes (u_char c)
+{
+    //
+    // Count the leading bits. Header bits are 1 * nBytes followed by a 0.
+    //	0 - single byte character. Take 7 bits (0xFF >> 1)
+    //	1 - error, in the middle of the character. Take 6 bits (0xFF >> 2)
+    //	    so you will keep reading invalid entries until you hit the next character.
+    //	>2 - multibyte character. Take remaining bits, and get the next bytes.
+    // All errors are ignored, since nothing can be done about them.
+    //
+    u_char mask = 0x80;
+    size_t nBytes = 0;
+    while (c & mask) {
+	mask >>= 1;
+	++ nBytes;
+    }
+    return (nBytes);
 }
 
 //----------------------------------------------------------------------
@@ -86,6 +106,8 @@ public:
     inline utf8in_iterator	operator++ (int) { utf8in_iterator old (*this); operator++(); return (old); }
     inline bool			operator== (const utf8in_iterator& i) const { return (m_i == i.m_i); }
     inline bool			operator< (const utf8in_iterator& i) const { return (m_i < i.m_i); }
+    inline utf8in_iterator&	operator+= (size_t n) { while (n--) operator++(); return (*this); }
+    difference_type		operator- (const utf8in_iterator& i) const;
 private:
     wchar_t			m_v;
     Iterator			m_i;
@@ -95,26 +117,27 @@ private:
 template <typename Iterator, typename WChar>
 utf8in_iterator<Iterator,WChar>& utf8in_iterator<Iterator,WChar>::operator++ (void)
 {
-    //
-    // First, count the leading bits. Header bits are 1 * nBytes followed by a 0.
-    //	0 - single byte character. Take 7 bits (0xFF >> 1)
-    //	1 - error, in the middle of the character. Take 6 bits (0xFF >> 2)
-    //	    so you will keep reading invalid entries until you hit the next character.
-    //	>2 - multibyte character. Take remaining bits, and get the next bytes.
-    // All errors are ignored, since nothing can be done about them.
-    //
     u_char c = *m_i++;
-    u_char mask = 0x80;
-    size_t nBytes = 0;
-    while (c & mask) {
-	mask >>= 1;
-	++ nBytes;
-    }
+    size_t nBytes = Utf8SequenceBytes (c);
     m_v = c & (0xFF >> (nBytes + 1));	// First byte contains bits after the header.
     if (nBytes)
 	while (--nBytes)		// Each subsequent byte has 6 bits.
 	    m_v = (m_v << 6) | (*m_i++ & 0x3F);
     return (*this);
+}
+
+/// Returns the distance in characters (as opposed to the distance in bytes).
+template <typename Iterator, typename WChar>
+typename utf8in_iterator<Iterator,WChar>::difference_type
+utf8in_iterator<Iterator,WChar>::operator- (const utf8in_iterator<Iterator,WChar>& last) const
+{
+    difference_type dist = 0;
+    Iterator first;
+    while (first < last) {
+	advance (first, Utf8SequenceBytes (*first));
+	++ dist;
+    }
+    return (dist);
 }
 
 //----------------------------------------------------------------------
