@@ -144,6 +144,7 @@ inline typename map<K,V>::iterator map<K,V>::find_data (const data_type& v, iter
 template <typename K, typename V>
 inline const typename map<K,V>::data_type& map<K,V>::operator[] (const key_type& k) const
 {
+    assert (find(k) && "operator[] const can not insert non-existent keys");
     return (find(k)->second);
 }
 

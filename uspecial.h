@@ -98,6 +98,20 @@ inline size_t stream_size_of (const pair<T1,T2>&)
     return (2 * max(sizeof(T1), sizeof(T2)));
 }
 
+/// Takes a pair and returns pair.first
+/// This is an extension, available in uSTL and the SGI STL.
+template <typename Pair> struct select1st : public unary_function<Pair,typename Pair::first_type> {
+    inline const result_type&	operator()(const Pair& a) const { return (a.first); }
+    inline result_type&		operator()(Pair& a) const { return (a.first); }
+};
+
+/// Takes a pair and returns pair.second
+/// This is an extension, available in uSTL and the SGI STL.
+template <typename Pair> struct select2nd : public unary_function<Pair,typename Pair::second_type> {
+    inline const result_type&	operator()(const Pair& a) const { return (a.second); }
+    inline result_type&		operator()(Pair& a) const { return (a.second); }
+};
+
 } // namespace ustl
 
 // This is here because there really is no other place to put it.

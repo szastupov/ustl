@@ -28,7 +28,7 @@
 #include "ualgo.h"
 #include "uiterator.h"
 #include "strmsize.h"
-#include "unew.h"
+#include "umemory.h"
 
 namespace ustl {
 
@@ -91,7 +91,7 @@ public:
 protected:
     virtual void		constructBlock (void* p, size_t s) const;
     virtual void		destructBlock (void* p, size_t s) const;
-    virtual size_t		elementSize (void) const;
+    inline virtual size_t	elementSize (void) const;
 };
 
 /// Initializes empty vector.
@@ -385,9 +385,8 @@ void vector<T>::constructBlock (void* p, size_t s) const
 {
     memblock::constructBlock (p, s);
     assert (s % sizeof(T) == 0);
-    T* pfirst = reinterpret_cast<T*>(p);
-    for (T* plast = pfirst + s / sizeof(T); pfirst < plast; ++ pfirst)
-	new (pfirst) T;
+    T* pt = reinterpret_cast<T*>(p);
+    construct (pt, pt + s / sizeof(T));
 }
 
 /// Calls ~T() for every element.
@@ -400,15 +399,13 @@ template <typename T>
 void vector<T>::destructBlock (void* p, size_t s) const
 {
     assert (s % sizeof(T) == 0);
-    size_t nObjects = s / sizeof(T);
     T* pt = reinterpret_cast<T*>(p);
-    while (nObjects--)
-	(*pt++).~T();
+    destroy (pt, pt + s / sizeof(T));
     memblock::destructBlock (p, s);
 }
 
 template <typename T>
-size_t vector<T>::elementSize (void) const
+inline size_t vector<T>::elementSize (void) const
 {
     return (sizeof(T));
 }

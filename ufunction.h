@@ -75,51 +75,57 @@ template <class T> struct less		: public binary_function<T,T,bool> { inline bool
 template <class T> struct greater_equal	: public binary_function<T,T,bool> { inline bool operator()(const T& a, const T& b) const { return (b < a || a == b); } };
 template <class T> struct less_equal	: public binary_function<T,T,bool> { inline bool operator()(const T& a, const T& b) const { return (a < b || a == b); } };
 template <class T> struct compare	: public binary_function<T,T,int> { inline int operator()(const T& a, const T& b) const { return (a < b ? -1 : (a == b ? 0 : 1)); } };
+template <class T> struct identity	: public unary_function<T,T>    { inline const T& operator()(const T& a) const { return (a); } };
+
+template <class T1, class T2> struct project1st	: public binary_function<T1,T2,T1>    { inline const T1& operator()(const T1& a, const T2&) const { return (a); } };
+template <class T1, class T2> struct project2nd	: public binary_function<T1,T2,T2>    { inline const T2& operator()(const T1&, const T2& a) const { return (a); } };
 
 //----------------------------------------------------------------------
 // Generic function to functor converters.
 //----------------------------------------------------------------------
 
-template <typename Arg, typename Result, typename UnaryFunction>
-class functor1 : public unary_function<Arg,Result> {
+template <typename Arg, typename Result>
+class pointer_to_unary_function : public unary_function<Arg,Result> {
 public:
     typedef Arg		argument_type;
     typedef Result	result_type;
+    typedef Result	(*pfunc_t)(Arg);
 public:
-    explicit		functor1 (UnaryFunction pfn) : m_pfn (pfn) {}
+    explicit		pointer_to_unary_function (pfunc_t pfn) : m_pfn (pfn) {}
     inline result_type	operator() (argument_type v) const { return (m_pfn(v)); }
 private:
-    UnaryFunction	m_pfn;
+    pfunc_t		m_pfn;
 };
 
-template <typename Arg1, typename Arg2, typename Result, typename BinaryFunction>
-class functor2 : public binary_function<Arg1,Arg2,Result> {
+template <typename Arg1, typename Arg2, typename Result>
+class pointer_to_binary_function : public binary_function<Arg1,Arg2,Result> {
 public:
     typedef Arg1	first_argument_type;
     typedef Arg2	second_argument_type;
     typedef Result	result_type;
+    typedef Result	(*pfunc_t)(Arg1, Arg2);
 public:
-    explicit		functor2 (BinaryFunction pfn) : m_pfn (pfn) {}
+    explicit		pointer_to_binary_function (pfunc_t pfn) : m_pfn (pfn) {}
     inline result_type	operator() (first_argument_type v1, second_argument_type v2) const { return (m_pfn(v1, v2)); }
 private:
-    BinaryFunction	m_pfn;
+    pfunc_t		m_pfn;
 };
 
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 
-/// functor(pfn) wraps function pointer pfn into a functor class that calls it.
+/// ptr_fun(pfn) wraps function pointer pfn into a functor class that calls it.
 template <typename Arg, typename Result>
-inline functor1<Arg,Result,Result (*)(Arg)> functor (Result (*pfn)(Arg))
+inline pointer_to_unary_function<Arg,Result> ptr_fun (Result (*pfn)(Arg))
 {
-    return (functor1<Arg,Result,Result (*)(Arg)> (pfn));
+    return (pointer_to_unary_function<Arg,Result> (pfn));
 }
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 
 template <typename Arg1, typename Arg2, typename Result>
-inline functor2<Arg1,Arg2,Result,Result (*)(Arg1,Arg2)> functor (Result (*pfn)(Arg1,Arg2))
+inline pointer_to_binary_function<Arg1,Arg2,Result> ptr_fun (Result (*pfn)(Arg1,Arg2))
 {
-    return (functor2<Arg1,Arg2,Result,Result (*)(Arg1,Arg2)> (pfn));
+    return (pointer_to_binary_function<Arg1,Arg2,Result> (pfn));
 }
 
 //----------------------------------------------------------------------
