@@ -20,6 +20,19 @@ private:
     T		m_Value;
 };
 
+void Widen (const string& str, vector<wchar_t>& result)
+{
+    result.clear();
+    result.resize (str.nchars());
+    copy (utf8in (str.begin()), utf8in (str.end()), result.begin());
+}
+
+void DumpWchars (const vector<wchar_t>& v)
+{
+    foreach (vector<wchar_t>::const_iterator, i, v)
+	cout << ' ' << *i;
+}
+
 int main (void)
 {
     cout << "Generating Unicode characters ";
@@ -35,8 +48,7 @@ int main (void)
 
     cout << "Decoding back." << endl;
     vector<wchar_t> decChars;
-    decChars.reserve (srcChars.size());
-    copy (utf8in (encoded.begin()), utf8in (encoded.end()), back_inserter(decChars));
+    Widen (encoded, decChars);
 
     cout << "Comparing." << endl;
     cout << "src = " << srcChars.size();
@@ -50,6 +62,36 @@ int main (void)
 	}
     }
     cout << nDiffs << " differences between src and decoded." << endl;
+
+    cout << "Testing wide character string::insert" << endl;
+    string ws ("1234567890", 10);
+
+    ws.insert (0, wchar_t(1234));
+    ws.insert (3, wchar_t(2345));
+    ws.insert (4, wchar_t(3456));
+    ws.insert (ws.nchars(), wchar_t(4567));
+    cout << "Values[" << ws.nchars() << "]:";
+    for (uoff_t i = 0; i < ws.nchars(); ++ i)
+	cout << ' ' << ws.char_at(i);
+    cout << endl;
+
+    cout << "Character offsets:";
+    for (size_t i = 0; i < ws.nchars(); ++ i)
+	cout << ' ' << distance (ws.begin(), ws.ichar(i));
+    cout << endl;
+
+    cout << "Erasing character " << ws.nchars() - 1 << ": ";
+    ws.erase (ws.nchars() - 1);
+    Widen (ws, decChars);
+    DumpWchars (decChars);
+    cout << endl;
+
+    cout << "Erasing characters 3-5: ";
+    ws.erase (3, 2);
+    Widen (ws, decChars);
+    DumpWchars (decChars);
+    cout << endl;
+
     return (0);
 }
 

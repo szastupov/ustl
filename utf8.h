@@ -63,13 +63,13 @@ inline size_t Utf8SequenceBytes (u_char c)
     //	>2 - multibyte character. Take remaining bits, and get the next bytes.
     // All errors are ignored, since nothing can be done about them.
     //
-    u_char mask = 0x80;
+    u_char mask = (1 << (BitsInType(u_char) - 1));
     size_t nBytes = 0;
     while (c & mask) {
 	mask >>= 1;
 	++ nBytes;
     }
-    return (nBytes);
+    return (nBytes ? nBytes : 1);
 }
 
 //----------------------------------------------------------------------
@@ -93,33 +93,34 @@ public:
     typedef typename iterator_traits<Iterator>::pointer		pointer;
     typedef typename iterator_traits<Iterator>::reference	reference;
 public:
-    explicit			utf8in_iterator (const Iterator& is) : m_v (0), m_i (is) { operator++(); }
-				utf8in_iterator (const utf8in_iterator& i) : m_v (i.m_v), m_i (i.m_i) {} 
-    inline const utf8in_iterator& operator= (const utf8in_iterator& i) { m_v = i.m_v; m_i = i.m_i; return (*this); }
+    explicit			utf8in_iterator (const Iterator& is) : m_i (is) {}
+				utf8in_iterator (const utf8in_iterator& i) : m_i (i.m_i) {} 
+    inline const Iterator&	base (void) const { return (m_i); }
+    inline const utf8in_iterator& operator= (const utf8in_iterator& i) { m_i = i.m_i; return (*this); }
     /// Reads and returns the next value.
-    inline const WChar&		operator* (void) const { return (m_v); }
-    utf8in_iterator&		operator++ (void);
+    inline WChar		operator* (void) const;
+    inline utf8in_iterator&	operator++ (void) { m_i += Utf8SequenceBytes(*m_i); return (*this); }
     inline utf8in_iterator	operator++ (int) { utf8in_iterator old (*this); operator++(); return (old); }
     inline bool			operator== (const utf8in_iterator& i) const { return (m_i == i.m_i); }
     inline bool			operator< (const utf8in_iterator& i) const { return (m_i < i.m_i); }
     inline utf8in_iterator&	operator+= (size_t n) { while (n--) operator++(); return (*this); }
     difference_type		operator- (const utf8in_iterator& i) const;
 private:
-    wchar_t			m_v;
     Iterator			m_i;
 };
 
 /// Steps to the next character and updates current returnable value.
 template <typename Iterator, typename WChar>
-utf8in_iterator<Iterator,WChar>& utf8in_iterator<Iterator,WChar>::operator++ (void)
+WChar utf8in_iterator<Iterator,WChar>::operator* (void) const
 {
-    u_char c = *m_i++;
+    WChar v;
+    Iterator i (m_i);
+    u_char c = *i++;
     size_t nBytes = Utf8SequenceBytes (c);
-    m_v = c & (0xFF >> (nBytes + 1));	// First byte contains bits after the header.
-    if (nBytes)
-	while (--nBytes)		// Each subsequent byte has 6 bits.
-	    m_v = (m_v << 6) | (*m_i++ & 0x3F);
-    return (*this);
+    v = c & (0xFF >> nBytes);	// First byte contains bits after the header.
+    while (--nBytes)		// Each subsequent byte has 6 bits.
+	v = (v << 6) | (*i++ & 0x3F);
+    return (v);
 }
 
 /// Returns the distance in characters (as opposed to the distance in bytes).
@@ -149,6 +150,7 @@ public:
 public:
     explicit			utf8out_iterator (const Iterator& os) : m_i (os) {}
 				utf8out_iterator (const utf8out_iterator& i) : m_i (i.m_i) {} 
+    inline const Iterator&	base (void) const { return (m_i); }
     /// Writes \p v into the stream.
     utf8out_iterator&		operator= (WChar v);
     inline utf8out_iterator&	operator* (void) { return (*this); }
@@ -187,14 +189,14 @@ inline utf8out_iterator<Iterator> utf8out (Iterator i)
     return (utf8out_iterator<Iterator> (i));
 }
 
-/// Returns a UTF-8 adaptor reading from \p i. First character is read on construction.
+/// Returns a UTF-8 adaptor reading from \p i.
 template <typename Iterator>
 inline utf8in_iterator<Iterator> utf8in (Iterator i)
 {
     return (utf8in_iterator<Iterator> (i));
 }
 
-/// Returns a UTF-8 adaptor reading from \p is. First character is read on construction.
+/// Returns a UTF-8 adaptor reading from \p is.
 inline utf8in_iterator<istream_iterator<u_char> > utf8in (istream& is)
 {
     istream_iterator<u_char> si (is);

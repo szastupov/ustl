@@ -4,3 +4,8 @@ Decoding back.
 Comparing.
 src = 65535 chars, encoded = 194429 chars, decoded = 65535
 0 differences between src and decoded.
+Testing wide character string::insert
+Values[14]: 1234 49 50 2345 3456 51 52 53 54 55 56 57 48 4567
+Character offsets: 0 2 3 4 7 10 11 12 13 14 15 16 17 18
+Erasing character 13:  1234 49 50 2345 3456 51 52 53 54 55 56 57 48
+Erasing characters 3-5:  1234 49 50 51 52 53 54 55 56 57 48

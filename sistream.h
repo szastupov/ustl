@@ -35,6 +35,7 @@ public:
     				istringstream (void);
 				istringstream (const void* p, size_t n);
     explicit			istringstream (const cmemlink& source);
+    inline istringstream&	operator>> (signed char& v);
     inline istringstream&	operator>> (char& v);
     inline istringstream&	operator>> (short& v);
     inline istringstream&	operator>> (int& v);
@@ -77,6 +78,12 @@ inline void istringstream::set_decimal_separator (char s)
 inline void istringstream::set_thousand_separator (char s)
 {
     m_ThousandSeparator = s;
+}
+
+/// Reads a single character into \p v.
+inline istringstream& istringstream::operator>> (signed char& v)
+{
+    u_char vl; operator>> (vl); v = vl; return (*this);
 }
 
 /// Reads a single character into \p v.

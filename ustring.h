@@ -32,6 +32,13 @@ namespace ustl {
 ///
 /// An STL container for string manipulation.
 /// Differences from C++ standard:
+///	all functions work with iterators instead of indexes. This makes for
+///		a cleaner syntax in most cases, and, of course, a cleaner
+///		implementation. The exception to expression clarity is the
+///		code that changes the string based on fixed offsets. You can
+///		bite it and use begin() offsets, but a better solution is to
+///		simply not do it. Code written in that manner is too
+///		inflexible. Search for separators, or use the replace call.
 /// 	format member function - strstreams on the string are possible, but
 /// 		are in many cases inconvenient because they hardcode not only
 /// 		the locations of substitutions, but also the constant text in
@@ -46,8 +53,6 @@ namespace ustl {
 /// 		to type .c_str() every time. A side effect of this is that
 /// 		const operator[] is no longer needed (gcc will warn about an
 /// 		ambiguous overload)
-/// 	copyto avoids having to include <string.h> and knowledge of the string
-/// 		size.
 /// 	length() currently returns the same number as size(), but eventually
 /// 		size() will return the allocated size including the terminator.
 ///
@@ -74,9 +79,12 @@ public:
 				string (const_pointer s);
 				string (const_pointer s, size_t len);
 				string (const_pointer s1, const_pointer s2);
-				string (size_t n, value_type c);
+				string (size_t n, value_type c = c_Terminator);
     inline size_t		size (void) const;
     inline size_t		length (void) const;
+    size_t			nchars (void) const;
+    const_iterator		ichar (uoff_t c) const;
+    iterator			ichar (uoff_t c);
     inline pointer		data (void);
     inline const_pointer	c_str (void) const;
     inline size_t		max_size (void) const;
@@ -94,8 +102,9 @@ public:
     inline reverse_iterator		rend (void);
     inline const_reference	at (uoff_t pos) const;
     inline reference		at (uoff_t pos);
+    wchar_t			char_at (uoff_t pos) const;
     inline			operator const value_type* (void) const;
-    inline reference		operator[] (uoff_t i);
+    inline			operator value_type* (void);
     inline const string&	operator= (const string& s);
     inline const string&	operator= (const_reference c);
     inline const string&	operator= (const_pointer s);
@@ -123,9 +132,13 @@ public:
     inline int			compare (const string& s) const;
     inline int			compare (const_pointer s) const;
     int				compare (const_iterator first1, const_iterator last1, const_iterator first2, const_iterator last2) const;
+    void			insert (const uoff_t ip, wchar_t c, size_t n = 1);
+    void			insert (const uoff_t ip, const wchar_t* first, const wchar_t* last, const size_t n = 1);
     void			insert (iterator start, const_reference c, size_t n = 1);
     void			insert (iterator start, const_pointer s, size_t n = 1);
     void			insert (iterator start, const_pointer first, const_iterator last, size_t n = 1);
+    inline iterator		erase (iterator start, size_t size = 1);
+    void			erase (uoff_t start, size_t size = 1);
     inline void			push_back (const_reference c);
     inline void			replace (iterator first, iterator last, const_reference c, size_t n = 1);
     void			replace (iterator first, iterator last, const_pointer s, size_t n = 1);
@@ -268,10 +281,10 @@ inline string::operator const string::value_type* (void) const
     return (begin());
 }
 
-/// Returns the reference to the \p pos character.
-inline string::reference string::operator[] (uoff_t pos)
+/// Returns the pointer to the first character.
+inline string::operator string::value_type* (void)
 {
-    return (at(pos));
+    return (begin());
 }
 
 /// Assigns itself the value of string \p s
@@ -396,6 +409,12 @@ inline void string::clear (void)
 inline void string::push_back (const_reference c)
 {
     insert (end(), c);
+}
+
+/// Erases \p size bytes at \p start.
+inline string::iterator string::erase (iterator ep, size_t n)
+{
+    return (string::iterator (memblock::erase (memblock::iterator(ep), n)));
 }
 
 /// Replaces range [\p start, \p start + \p len] with character \p c.

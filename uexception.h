@@ -37,10 +37,10 @@ class ostringstream;
 
 typedef u_int		xfmt_t;
 
-static const xfmt_t	xfmt_Exception = 0;
-static const xfmt_t	xfmt_BadAlloc = 1;
-static const xfmt_t	xfmt_LibcException = 2;
-static const xfmt_t	xfmt_FileException = 3;
+static const xfmt_t	xfmt_Exception		= 0;
+static const xfmt_t	xfmt_BadAlloc		= 1;
+static const xfmt_t	xfmt_LibcException	= 12;
+static const xfmt_t	xfmt_FileException	= 13;
 
 /// Base class for exceptions, equivalent to std::exception.
 class exception {
@@ -63,10 +63,17 @@ private:
     xfmt_t		m_Format;	///< Format of the exception's data.
 };
 
+/// Thrown to indicate a bad dynamic_cast usage.
+class bad_cast : public exception {
+public:
+    explicit		bad_cast (void);
+    virtual const char*	what (void) const;
+};
+
 /// Exception thrown on memory allocation failure by memblock::reserve.
 class bad_alloc : public exception {
 public:
-    			bad_alloc (size_t nBytes);
+    explicit		bad_alloc (size_t nBytes);
     virtual const char*	what (void) const;
     virtual void	info (string& msgbuf, const char* fmt = NULL) const;
     virtual void	read (istream& is);
@@ -79,7 +86,7 @@ protected:
 /// Thrown when a libc function returns an error. Contains an errno and description.
 class libc_exception : public exception {
 public:
-    			libc_exception (const char* operation);
+    explicit		libc_exception (const char* operation);
 			libc_exception (const libc_exception& v);
     const libc_exception& operator= (const libc_exception& v);
     virtual const char*	what (void) const;

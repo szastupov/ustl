@@ -94,6 +94,8 @@
 #endif
 #include "ustl/unumeric.h"
 #include "ustl/ulist.h"
+#include "ustl/uhash.h"
+#include "ustl/ustdxept.h"
 
 #endif
 

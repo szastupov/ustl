@@ -32,7 +32,14 @@
 
 namespace ustl {
 
+//----------------------------------------------------------------------
+
+const uoff_t string::npos;
+const size_t string::size_Terminator;
+const string::value_type string::c_Terminator;
 const char string::empty_string[string::size_Terminator] = "";
+
+//----------------------------------------------------------------------
 
 /// Creates an empty string.
 string::string (void)
@@ -93,6 +100,42 @@ void string::resize (size_t n)
 {
     memblock::resize (n + size_Terminator);
     at(n) = c_Terminator;
+}
+
+/// Returns the length of the string in characters.
+/// This may be different from the value returned by size() if
+/// you have non-ascii characters (UTF-8) in the string.
+///
+size_t string::nchars (void) const
+{
+    size_t nc = 0;
+    utf8in_iterator<const_iterator> endfinder (begin());
+    for (; endfinder.base() < end(); ++ endfinder, ++ nc);
+    return (nc);
+}
+
+/// Returns an iterator to the character position \p c.
+string::const_iterator string::ichar (uoff_t c) const
+{
+    utf8in_iterator<const_iterator> cfinder (begin());
+    cfinder += c;
+    return (cfinder.base());
+}
+
+/// Returns an iterator to the character position \p c.
+string::iterator string::ichar (uoff_t c)
+{
+    utf8in_iterator<iterator> cfinder (begin());
+    cfinder += c;
+    return (cfinder.base());
+}
+
+/// Returns the character at position \p pos
+wchar_t string::char_at (uoff_t pos) const
+{
+    utf8in_iterator<const_iterator> cfinder (begin());
+    cfinder += pos;
+    return (*cfinder);
 }
 
 /// Assigns itself the value of string \p s
@@ -184,6 +227,30 @@ bool string::operator== (const_pointer s) const
     return (size() == slen && 0 == memcmp (c_str(), s, size()));
 }
 
+/// Inserts wide character \p c at \p ip \p n times as a UTF-8 string.
+///
+/// \p ip is a character position, not a byte position, and must fall in
+/// the 0 through nchars() range.
+/// The first argument is not an iterator because it is rather difficult
+/// to get one. You'd have to use ((utf8in(s.begin()) + n).base()) as the first
+/// argument, which is rather ugly. Besides, then this insert would be
+/// ambiguous with the regular character insert.
+///
+void string::insert (const uoff_t ip, wchar_t c, size_t n)
+{
+    iterator ipp = ichar (ip);
+    insert (ipp, ' ', Utf8Bytes(c) * n);
+    fill_n (utf8out (ipp), n, c);
+}
+
+/// Inserts sequence of wide characters at \p ip.
+void string::insert (const uoff_t ip, const wchar_t* first, const wchar_t* last, const size_t n)
+{
+    for (uoff_t i = ip; i < ip + n; ++ i)
+	for (; first < last; ++ first)
+	    insert (i, *first);
+}
+
 /// Inserts character \p c into this string at \p start.
 void string::insert (iterator start, const_reference c, size_t n)
 {
@@ -206,6 +273,19 @@ void string::insert (iterator start, const_pointer first, const_pointer last, si
     assert (begin() <= start && end() >= start);
     start = iterator (memblock::insert (memblock::iterator(start), distance(first, last) * n));
     fill (memblock::iterator(start), first, distance(first, last), n);
+}
+
+/// Erases \p size characters at \p start.
+/// \p start is a character position, not a byte position, and must be
+/// in the 0..nchars() range.
+///
+void string::erase (uoff_t ep, size_t n)
+{
+    utf8in_iterator<iterator> rfinder (begin());
+    rfinder += ep;
+    iterator first (rfinder.base());
+    rfinder += n;
+    memblock::erase (first, distance (first, rfinder.base()));
 }
 
 /// Replaces range [\p start, \p start + \p len] with string \p s.

@@ -79,6 +79,9 @@
 /* Define to 1 if you have the <unistd.h> header file. */
 #undef HAVE_UNISTD_H
 
+/* Define to 1 if you have the <byteswap.h> header file. */
+#undef HAVE_BYTESWAP_H
+
 /* Define to 1 if `lstat' dereferences a symlink specified with a trailing
    slash. */
 #undef LSTAT_FOLLOWS_SLASHED_SYMLINK
@@ -116,3 +119,4 @@
 
 /* Define to `unsigned' if <sys/types.h> does not define. */
 #undef size_t
+

@@ -23,6 +23,8 @@
 
 #include "mistream.h"
 #include "mostream.h"
+#include "ustring.h"
+#include "ualgo.h"
 
 namespace ustl {
 
@@ -63,8 +65,20 @@ void istream::swap (istream& is)
 void istream::read (void* buffer, size_t n)
 {
     assert (remaining() >= n && "Reading past end of buffer. Make sure you are reading the right format.");
-    copy_n (begin() + pos(), n, reinterpret_cast<value_type*>(buffer));
+    copy_n (ipos(), n, reinterpret_cast<value_type*>(buffer));
     skip (n);
+}
+
+/// Reads a null-terminated string into \p str.
+void istream::read_strz (string& str)
+{
+    const_iterator zp = find (ipos(), end(), string::c_Terminator);
+    if (zp == end())
+	zp = ipos();
+    const size_t strl = distance (ipos(), zp);
+    str.resize (strl);
+    copy (ipos(), zp, str.begin());
+    skip (strl + 1);
 }
 
 /// Reads \p buf.size() bytes into \p buf.
@@ -81,7 +95,7 @@ void istream::read (istream&)
 /// Writes all unread bytes into \p os.
 void istream::write (ostream& os) const
 {
-    os.write (begin() + pos(), remaining());
+    os.write (ipos(), remaining());
 }
 
 /// Links to \p p of size \p n
@@ -128,8 +142,15 @@ void ostream::unlink (void)
 void ostream::write (const void* buffer, size_t n)
 {
     assert (remaining() >= n && "Buffer overrun. Check your stream size calculations.");
-    copy_n (const_iterator(buffer), n, begin() + pos());
+    copy_n (const_iterator(buffer), n, ipos());
     skip (n);
+}
+
+/// Writes \p str as a null-terminated string.
+void ostream::write_strz (const char* str)
+{
+    write (str, strlen(str));
+    iwrite (string::c_Terminator);
 }
 
 /// Equivalent to istream::write(os)

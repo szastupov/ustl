@@ -1,7 +1,7 @@
 #include <sistream.h>
 #include <sostream.h>
 #include <uios.h>
-#include <memblock.h>
+#include <ustring.h>
 #include <fdostream.h>
 #include <mistream.h>
 #include <uios.h>
@@ -29,8 +29,7 @@ int main (void)
     double d = magic_Double;
     bool bv = magic_Bool;
 
-    memblock b;
-    b.resize (256);
+    string b (256);
     ostringstream os (b);
 
     os << c << endl;

@@ -41,7 +41,8 @@
     typedef unsigned long	u_long;
 #endif
 
-typedef size_t	uoff_t; ///< A type for storing offsets into blocks measured by size_t.
+typedef size_t	uoff_t;		///< A type for storing offsets into blocks measured by size_t.
+typedef u_long	hashvalue_t;	///< Value type returned by the hash functions.
 
 #endif
 

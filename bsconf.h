@@ -55,6 +55,7 @@ static string_t	g_Headers [] = {
     "sys/types.h",	"#undef HAVE_SYS_TYPES_H",	"#define HAVE_SYS_TYPES_H 1",
     "sys/wait.h",	"#undef HAVE_SYS_WAIT_H",	"#define HAVE_SYS_WAIT_H 1",
     "unistd.h",		"#undef HAVE_UNISTD_H",		"#define HAVE_UNISTD_H 1",
+    "byteswap.h",	"#undef HAVE_BYTESWAP_H",	"#define HAVE_BYTESWAP_H 1",
     "stdlib.h",		"#undef STDC_HEADERS",		"#define STDC_HEADERS 1"
 };
 

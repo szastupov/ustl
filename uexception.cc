@@ -98,6 +98,20 @@ void exception::text_write (ostringstream& os) const
 
 //----------------------------------------------------------------------
 
+/// Initializes the empty object.
+bad_cast::bad_cast (void)
+: exception()
+{
+}
+
+/// Returns the name of the exception.
+const char* bad_cast::what (void) const
+{
+    return ("bad cast");
+}
+
+//----------------------------------------------------------------------
+
 /// Initializes the empty object. \p nBytes is the size of the attempted allocation.
 bad_alloc::bad_alloc (size_t nBytes)
 : exception(),

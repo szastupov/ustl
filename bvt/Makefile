@@ -10,8 +10,8 @@ SRCS	= bvt00.cc bvt01.cc bvt02.cc bvt03.cc bvt04.cc bvt05.cc bvt06.cc \
 	bvt14.cc bvt15.cc bvt16.cc bvt17.cc bvt18.cc
 LIBS	= -l${LIBNAME}
 
-CXXFLAGS	+= -I ${INCDIR} -I..
-LDFLAGS		+= -L ${LIBDIR} -L..
+CXXFLAGS	+= -I ${INCDIR} -I ..
+LDFLAGS		+= -L ${LIBDIR}
 TOCLEAN		+= ${BVTS}
 
 all:	${BVTS}

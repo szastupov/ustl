@@ -26,6 +26,7 @@
 namespace ustl {
 
 class istream;
+class string;
 
 ///
 /// \brief Helper class to write packed binary streams.
@@ -44,14 +45,14 @@ class istream;
 ///
 /// Example code:
 /// \code
-///     CMemoryBlock b;
+///     memblock b;
 ///     ostream os (b);
 ///     os << boolVar;
 ///     os.align (sizeof(int));
 ///     os << intVar << floatVar;
 ///     os.write (binaryData, binaryDataSize);
 ///     os.align (sizeof(u_long));
-///     b.SetSize (os.pos());
+///     b.resize (os.pos());
 ///     write (fd, b, b.size());
 /// \endcode
 ///
@@ -72,6 +73,7 @@ public:
     inline void		align (size_t grain = c_DefaultAlignment);
     void		write (const void* buffer, size_t size);
     inline void		write (const cmemlink& buf);
+    void		write_strz (const char* str);
     void		read (istream& is);
     void		write (ostream& os) const;
     void		insert (iterator start, size_t size);
@@ -105,6 +107,7 @@ public:
     inline ostream_iterator&	operator* (void) { return (*this); }
     inline ostream_iterator&	operator++ (void) { return (*this); }
     inline ostream_iterator	operator++ (int) { return (*this); }
+    inline ostream_iterator&	operator+= (size_t n) { m_Os.skip (n); return (*this); }
     inline bool			operator== (const ostream_iterator& i) const
 				    { return (m_Os.pos() == i.m_Os.pos()); }
     inline bool			operator< (const ostream_iterator& i) const
@@ -198,6 +201,7 @@ template <typename T>
 inline ostream&	operator<< (ostream& os, T* v)	{ os.iwrite(v); return (os); }
 template <typename T>
 inline ostream&	operator<< (ostream& os, const T* v)	{ os.iwrite(v); return (os); }
+inline ostream&	operator<< (ostream& os, signed char v)	{ os.iwrite(v); return (os); }
 inline ostream&	operator<< (ostream& os, char v)	{ os.iwrite(v); return (os); }
 inline ostream&	operator<< (ostream& os, short v)	{ os.iwrite(v); return (os); }
 inline ostream&	operator<< (ostream& os, int v)		{ os.iwrite(v); return (os); }

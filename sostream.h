@@ -35,6 +35,7 @@ public:
 				ostringstream (void* p, size_t n);
     explicit			ostringstream (const memlink& source);
     inline ostringstream&	operator<< (char v);
+    inline ostringstream&	operator<< (signed char v);
     inline ostringstream&	operator<< (short v);
     inline ostringstream&	operator<< (int v);
     ostringstream&		operator<< (long v);
@@ -101,6 +102,13 @@ inline void ostringstream::set_precision (u_short precision)
 
 /// Writes a single character into the stream.
 inline ostringstream& ostringstream::operator<< (char v)
+{
+    ostream::iwrite (v);
+    return (*this);
+}
+
+/// Writes a single character into the stream.
+inline ostringstream& ostringstream::operator<< (signed char v)
 {
     ostream::iwrite (v);
     return (*this);

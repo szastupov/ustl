@@ -27,6 +27,7 @@ namespace ustl {
 
 class ostream;
 class memlink;
+class string;
 
 ///
 /// \brief Helper class to read packed binary streams.
@@ -84,6 +85,7 @@ public:
     void		swap (istream& is);
     void		read (void* buffer, size_t size);
     void		read (memlink& buf);
+    void		read_strz (string& str);
     void		read (istream& is);
     void		write (ostream& is) const;
     inline size_t	stream_size (void) const;
@@ -121,6 +123,7 @@ public:
 				}
     inline istream_iterator&	operator++ (void) { ++ m_vPos; return (*this); }
     inline istream_iterator	operator++ (int) { istream_iterator old (*this); ++ m_vPos; return (old); }
+    inline istream_iterator&	operator+= (size_t n) { m_vPos += n; return (*this); }
     inline bool			operator== (const istream_iterator& i) const
 				    { return (m_Is.pos() == i.m_Is.pos()); }
     inline bool			operator< (const istream_iterator& i) const
@@ -204,6 +207,7 @@ template <typename T>
 inline istream& operator>> (istream& is, T*& v)		{ is.iread(v); return (is); }
 template <typename T>
 inline istream& operator>> (istream& is, const T*& v)	{ is.iread(v); return (is); }
+inline istream&	operator>> (istream& is, signed char& v){ is.iread(v); return (is); }
 inline istream&	operator>> (istream& is, char& v)	{ is.iread(v); return (is); }
 inline istream&	operator>> (istream& is, short& v)	{ is.iread(v); return (is); }
 inline istream&	operator>> (istream& is, int& v)	{ is.iread(v); return (is); }

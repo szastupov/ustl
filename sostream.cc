@@ -59,24 +59,21 @@ ostringstream::ostringstream (const memlink& source)
 {
 }
 
-const char c_Digits[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+const char c_Digits[] = "0123456789ABCDEF";
 
-ostringstream& ostringstream::operator<< (long v)
+ostringstream& ostringstream::operator<< (long sv)
 {
     assert (m_Base < VectorSize(c_Digits));
+    const bool negative = (sv < 0);
+    u_long v (negative ? -sv : sv);
     const size_t c_BufSize = BitsInType(v) + 1;
     char buffer [c_BufSize];
     uoff_t i = c_BufSize - 1;
     buffer [i--] = 0;
-    bool negative = (v < 0);
-    if (negative)
-	v = -v;
-    if (v == 0)
-	buffer[i--] = c_Digits[0];
-    while (v) {
+    do {
 	buffer[i--] = c_Digits[v % m_Base];
 	v /= m_Base;
-    }
+    } while (v);
     if (negative)
 	buffer[i--] = '-';
     ++ i;
@@ -84,6 +81,7 @@ ostringstream& ostringstream::operator<< (long v)
     return (*this);
 }
 
+/// Writes number \p v into the stream as text.
 ostringstream& ostringstream::operator<< (u_long v)
 {
     assert (m_Base < VectorSize(c_Digits));
@@ -91,12 +89,10 @@ ostringstream& ostringstream::operator<< (u_long v)
     char buffer [c_BufSize];
     uoff_t i = c_BufSize - 1;
     buffer [i--] = 0;
-    if (v == 0)
-	buffer[i--] = c_Digits[0];
-    while (v) {
+    do {
 	buffer[i--] = c_Digits[v % m_Base];
 	v /= m_Base;
-    }
+    } while (v);
     ++ i;
     write (buffer + i, c_BufSize - i - 1);
     return (*this);

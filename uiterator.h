@@ -88,6 +88,36 @@ protected:
 
 //----------------------------------------------------------------------
 
+/// Calls insert on bound container for each assignment.
+template <class Container>
+class insert_iterator {
+public:
+    typedef typename Container::value_type	value_type;
+    typedef typename Container::difference_type	difference_type;
+    typedef typename Container::pointer		pointer;
+    typedef typename Container::reference	reference;
+    typedef typename Container::iterator	iterator;
+public:
+    explicit			insert_iterator (Container& ctr, iterator ip) : m_rCtr (ctr), m_ip (ip) {}
+    inline insert_iterator&	operator= (typename Container::const_reference v)
+    				    { m_ip = m_rCtr.insert (m_ip, v); return (*this); }
+    inline insert_iterator&	operator* (void)  { return (*this); }
+    inline insert_iterator&	operator++ (void) { ++ m_ip; return (*this); }
+    inline insert_iterator	operator++ (int)  { insert_iterator prev (*this); ++ m_ip; return (*this); }
+protected:
+    Container&			m_rCtr;
+    iterator			m_ip;
+};
+
+/// Returns the insert_iterator for \p ctr.
+template <class Container>
+inline insert_iterator<Container> inserter (Container& ctr, typename Container::iterator ip)
+{
+    return (insert_iterator<Container> (ctr, ip));
+}
+
+//----------------------------------------------------------------------
+
 /// Calls push_back on bound container for each assignment.
 template <class Container>
 class back_insert_iterator {

@@ -20,12 +20,11 @@
 #
 
 if [ -z "${CC}" ]; then
-    OLDIFS=${IFS}
     IFS="${IFS}:"
     for i in cc gcc c++ g++ c89 c99; do
 	for dir in ${PATH}; do
 	    if [ -x "$dir/$i" ]; then
-		CC=$i;
+		export CC=$i;
 		break;
 	    fi;
 	done;
@@ -37,12 +36,11 @@ if [ -z "${CC}" ]; then
 	echo "Please set the CC environment variable to your C compiler";
 	exit;
     fi
-    export CC
 fi
 if [ ! -x bsconf ]; then
     ${CC} -o bsconf ${CFLAGS} bsconf.c
 fi
-if [ -x ./bsconf ]; then
+if [ -x bsconf ]; then
     ./bsconf $*;
 else
     echo "Build of the configurator program failed. Ensure you have an ANSI C compiler.";

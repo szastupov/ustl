@@ -24,7 +24,7 @@ good thing, placing memory management code into a template necessitates
 its reinstantiation for every template instance used by the derivative
 program. This produces substantial code bloat, that is frequently derided
 by C developers and used by them as an argument that C is better than
-C++. The uSTL implementation attempts to work around this problem
+C++. The uSTL implementation attempts to solve this problem
 by factoring memory management code into a non-template base class,
 ustl::memblock, which performs unstructured memory allocation. STL
 containers are then implemented as template wrappers for memblock to
@@ -43,7 +43,8 @@ classes for unstructured storage management (cmemlink - link to constant
 memory, memlink - link to mutable memory, and memblock - owner of mutable
 memory) are, of course, also available for use as data buffers wherever
 those are needed, and streams that efficiently read and write binary data
-into them are also available.
+into them (istream and ostream; plaintext support is the exception in this
+library, because I consider it evil) are also available.
 
 ------------
 COMPILATION:
@@ -67,6 +68,8 @@ make install
 	(usually /usr/local/lib) and the headers to your include directory
 	(usually /usr/local/include). SunOS and Darwin don't build shared
 	libraries like Linux does, so a static library will be built instead.
+	If you want a static library anyway, comment out the MAJOR line (#2)
+	in Common.mk.
 
 You may also chdir to the bvt subdirectory and 'make run' to verify that
 	the library works correctly on your system. This works only after
@@ -78,6 +81,19 @@ You may also chdir to the bvt subdirectory and 'make run' to verify that
 	(like long long), but are not required and if you are failing
 	the build because of them it is a bug.
 Documentation may be built with doxygen by typing 'make dox'.
+
+If you have g++ 3.3 or later, you can remove linkage to libstdc++
+by uncommenting the STANDALONE= line in Common.mk . This will add the
+-nodefaultlibs flag to CXXFLAGS and LDFLAGS. You will have to compile
+all your code with that flag as well, passed in to both the compiler
+and the linker. You may also need to link with -lsupc++ -lgcc_s -lc to
+get definitions not used by ustl. This is a great way to reduce your
+memory footprint; libstdc++ is 850k, standalone libustl is 85k. The
+former also links to libm, which you most likely do not need, saving an
+additional 137k. This leaves only libc and libgcc_s, both unavoidable.
+Unfortunately, the linking procedure is not too user friendly, and can be
+inconvenient unless you can factor out all that stuff into some common
+make include file, like I do.
 
 ------
 USAGE:
@@ -101,6 +117,26 @@ so give a reasonably good example for how I expect the library to be used.
 Incidentally, all the source code is formatted with the expectation of the
 tab size to be 8, and it may look really weird otherwise.
 
+It is worthwhile to note that while it is possible to convert a project that
+already uses STL to compile with uSTL instead, this is not intended to be the
+most common scenario. Reduction of template bloat is not going to save your
+project if it happens to be dreadfully slow; the causes for poor performance
+usually lie elsewhere. The motivation for uSTL is only simplification and
+reduction of code size for aesthetic reasons. The performance gains, if any,
+will probably be minimal.
+
+If you are using uSTL in your project, you should include a pointer to its
+website, or just bundle the release that you use with your own package. This
+practice, which I would recommend for all dependencies your project has, will
+help you avoid complaints of "this fool using a non-standard library". These
+days people expect every library to be bundled with the language compiler,
+as it is for perl or Java, and use the contrary situation as a misguided
+"proof" that those languages are better than C++. Such arguments come out not
+necessarily from laziness or stupidity, but from countless experiences with
+packages which have obscure dependencies and do not mention where those
+dependencies may be found. So please, make your users' life simpler and maybe
+they will eventually see that C++ really is the best programming language.
+
 --------------
 BUG REPORTING:
 --------------
@@ -111,7 +147,7 @@ Additional contact information may also be found there.
 ------------------------------------------------------------------------
 
 I hope you'll enjoy using this library; I am trying my best to keep it
-internally consistent and cleanly implemented. If you were afraid to
+internally consistent and cleanly implemented. If you were reluctant to
 use STL because of the code bloat, here's your alternative. I really
 love generic programming; it makes the code tighter and more readable,
 and in some cases there are even some efficiency gains from using

@@ -26,6 +26,9 @@
 
 #include "utypes.h"
 #include <assert.h>
+#ifdef HAVE_BYTESWAP_H
+    #include <byteswap.h>
+#endif
 
 namespace ustl {
 
@@ -108,6 +111,39 @@ inline size_t distance (const void* p1, const void* p2)
     #define DebugArg(x)
 #endif
 
+/// Shorthand for container iteration.
+#define foreach(type,i,ctr)	for (type i = ctr.begin(); i < ctr.end(); ++ i)
+
+#ifdef HAVE_BYTESWAP_H
+
+template <typename T>
+inline T bswap (const T& v)
+{
+    switch (BitsInType(T)) {
+	default:	return (v);
+	case 16:	return (T (bswap_16 (uint16_t (v))));
+	case 32:	return (T (bswap_32 (uint32_t (v))));
+#ifdef bswap_64
+	case 64:	return (T (bswap_64 (uint64_t (v))));
+#endif
+    };
+}
+
+#if __BYTE_ORDER == __BIG_ENDIAN
+template <typename T> inline T le_to_native (const T& v) { return (bswap (v)); }
+template <typename T> inline T be_to_native (const T& v) { return (v); }
+template <typename T> inline T native_to_le (const T& v) { return (bswap (v)); }
+template <typename T> inline T native_to_be (const T& v) { return (v); }
+#elif __BYTE_ORDER == __LITTLE_ENDIAN
+template <typename T> inline T le_to_native (const T& v) { return (v); }
+template <typename T> inline T be_to_native (const T& v) { return (bswap (v)); }
+template <typename T> inline T native_to_le (const T& v) { return (v); }
+template <typename T> inline T native_to_be (const T& v) { return (bswap (v)); }
+#else
+    #error Your system does not define __BYTE_ORDER. Please define it in config.h
+#endif // __BYTE_ORDER
+#endif // HAVE_BYTESWAP_H
+
 /// Template for for_each to call delete
 template <typename T>
 inline void Delete (T* p)
@@ -124,24 +160,16 @@ inline void DeleteVector (T* p)
 
 /// Returns the minimum of \p a and \p b
 template <typename T1, typename T2>
-inline const T1& min (const T1& a, const T2& b)
+inline const T1 min (const T1& a, const T2& b)
 {
-#ifdef __GNUC__
-    return (a <? b);
-#else
     return (a < b ? a : b);
-#endif
 }
 
 /// Returns the maximum of \p a and \p b
 template <typename T1, typename T2>
-inline const T1& max (const T1& a, const T2& b)
+inline const T1 max (const T1& a, const T2& b)
 {
-#ifdef __GNUC__
-    return (a >? b);
-#else
     return (b < a ? a : b);
-#endif
 }
 
 /// Template of making != from ! and ==

@@ -53,9 +53,12 @@ make install
 %{_prefix}/include/ustl/strmsize.h
 %{_prefix}/include/ustl/ualgo.h
 %{_prefix}/include/ustl/ualgobase.h
+%{_prefix}/include/ustl/upredalgo.h
 %{_prefix}/include/ustl/uctralgo.h
 %{_prefix}/include/ustl/uexception.h
+%{_prefix}/include/ustl/ustdxept.h
 %{_prefix}/include/ustl/ufunction.h
+%{_prefix}/include/ustl/uhash.h
 %{_prefix}/include/ustl/uios.h
 %{_prefix}/include/ustl/uiosfunc.h
 %{_prefix}/include/ustl/uiterator.h

@@ -63,6 +63,13 @@ int main (void)
     PrintVector (v);
     v.assign (first, last);
 
+    cout << "copy with inserter" << endl;
+    v.clear();
+    copy (first, first + 5, inserter(v, v.begin()));
+    copy (first, first + 5, inserter(v, v.begin() + 3));
+    PrintVector (v);
+    v.assign (first, last);
+
     cout << "copy_n(0,8,9)" << endl;
     copy_n (v.begin(), 8, v.begin() + 9);
     PrintVector (v);
