@@ -107,13 +107,6 @@ inline void memlink::link (void* p, size_t n)
     m_Data = reinterpret_cast<pointer>(p);
 }
 
-/// Resets all members to 0
-inline void memlink::unlink (void)
-{
-    cmemlink::unlink();
-    m_Data = NULL;
-}
-
 /// Returns a modifiable pointer to the block
 inline memlink::pointer memlink::data (void)
 {

@@ -85,6 +85,13 @@ size_t memlink::writable_size (void) const
     return (m_Data ? size() : 0);
 }
 
+/// Resets all members to 0
+void memlink::unlink (void)
+{
+    cmemlink::unlink();
+    m_Data = NULL;
+}
+
 /// Reads the object from stream \p s
 void memlink::read (istream& is)
 {
@@ -124,7 +131,7 @@ void memlink::fill (iterator start, const void* p, size_t elSize, size_t elCount
     assert (start >= begin() && start + elSize * elCount <= end());
     assert (elSize % elementSize() == 0 && "You are trying to write an incompatible element type");
     if (elSize == 1)
-	fill_n (start, elCount, *reinterpret_cast<const u_char*>(p));
+	fill_n (start, elCount, *reinterpret_cast<const uint8_t*>(p));
     else {
 	while (elCount--)
 	    start = copy_n (const_iterator(p), elSize, start);
@@ -159,7 +166,7 @@ void memlink::erase (iterator start, size_t n)
 void memlink::constructBlock (void* p, size_t n) const
 {
     assert (n % elementSize() == 0 && "You are trying to write an incompatible element type");
-    fill_n (p, n, u_char(0));
+    fill_n (p, n, uint8_t(0));
 }
 
 #ifndef NDEBUG
@@ -167,7 +174,7 @@ void memlink::constructBlock (void* p, size_t n) const
 void memlink::destructBlock (void* p, size_t n) const
 {
     assert (n % elementSize() == 0 && "You are trying to write an incompatible element type");
-    fill_n (p, n, u_char(0xCD));
+    fill_n (p, n, uint8_t(0xCD));
 }
 #else
 void memlink::destructBlock (void*, size_t) const

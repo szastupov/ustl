@@ -54,7 +54,7 @@ public:
     inline void		assign (const cmemlink& l);
     inline void		swap (memblock& l);
     void		reserve (size_t newSize, bool bExact = true);
-    inline virtual void	resize (size_t newSize);
+    virtual void	resize (size_t newSize);
     iterator		insert (iterator start, size_t size);
     iterator		erase (iterator start, size_t size);
     inline void		clear (void);
@@ -127,13 +127,6 @@ inline void memblock::swap (memblock& l)
 {
     memlink::swap (l);
     ::ustl::swap (m_AllocatedSize, l.m_AllocatedSize);
-}
-
-/// resizes the block to \p newSize bytes, reallocating if necessary.
-inline void memblock::resize (size_t newSize)
-{
-    reserve (newSize);
-    memlink::resize (newSize);
 }
 
 /// Resizes the block to 0

@@ -80,7 +80,7 @@ public:
     inline size_t	max_size (void) const;
   inline virtual size_t	readable_size (void) const;
     inline bool		empty (void) const;
-    inline virtual void	resize (size_t n);
+    inline void		resize (size_t n);
     inline void		read (istream&);
     void		write (ostream& os) const;
     size_t		stream_size (void) const;

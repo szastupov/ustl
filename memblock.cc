@@ -147,6 +147,13 @@ void memblock::reserve (size_t newSize, bool bExact)
     m_AllocatedSize = newSize;
 }
 
+/// resizes the block to \p newSize bytes, reallocating if necessary.
+void memblock::resize (size_t newSize)
+{
+    reserve (newSize);
+    memlink::resize (newSize);
+}
+
 /// Shifts the data in the linked block from \p start to \p start + \p n.
 memblock::iterator memblock::insert (iterator start, size_t n)
 {
