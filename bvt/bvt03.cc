@@ -37,11 +37,11 @@ int main (void)
     os << c;
     os << uc;
     os << ios::align(sizeof(bool)) << bv;
-    os << ios::align() << i;
+    os << ios::align(sizeof(int)) << i;
     os << ui;
-    os << li;
+    os << ios::align() << li;
     os << uli;
-    os << f;
+    os << ios::align(sizeof(float)) << f;
     os << ios::align(sizeof(double)) << d;
     os << si;
     os << usi;
@@ -59,11 +59,11 @@ int main (void)
     is >> c;
     is >> uc;
     is >> ios::align(sizeof(bool)) >> bv;
-    is >> ios::align() >> i;
+    is >> ios::align(sizeof(int)) >> i;
     is >> ui;
-    is >> li;
+    is >> ios::align() >> li;
     is >> uli;
-    is >> f;
+    is >> ios::align(sizeof(float)) >> f;
     is >> ios::align(sizeof(double)) >> d;
     is >> si;
     is >> usi;
@@ -79,7 +79,7 @@ int main (void)
     cout.format ("long:    0x%08lX\n", li);
     cout.format ("u_long:  0x%08lX\n", uli);
     cout.format ("float:   %.8f\n", f);
-    cout.format ("double:  %.16f\n", d);
+    cout.format ("double:  %.16lf\n", d);
     cout.format ("short:   0x%04X\n", static_cast<int>(si));
     cout.format ("u_short: 0x%04X\n", static_cast<int>(usi));
     cout << endl;

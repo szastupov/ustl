@@ -33,7 +33,7 @@
 namespace ustl {
 
 /// The alignment performed by default.
-const size_t c_DefaultAlignment = sizeof(u_int);
+const size_t c_DefaultAlignment = sizeof(void*);
 
 /// Divides \p n1 by \p n2 and rounds the result up (regular division rounds down).
 /// Negative numbers are rounded down because they are an unusual case, supporting

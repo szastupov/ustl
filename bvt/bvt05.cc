@@ -38,6 +38,23 @@ int genint (void)
     return (counter++);
 }
 
+// In its own function because compilers differ in selecting const/nonconst
+// members where no choice is needed.
+//
+void TestEqualRange (const vector<int>& v)
+{
+    pair<vector<int>::const_iterator,vector<int>::const_iterator> rv;
+    rv = equal_range (v, 10);
+    cout << "Range of 10 is { " << rv.first - v.begin()
+	 << ", " << rv.second - v.begin() << " }" << endl;
+    rv = equal_range (v, 0);
+    cout << "Range of 0 is { " << rv.first - v.begin()
+	 << ", " << rv.second - v.begin() << " }" << endl;
+    rv = equal_range (v, 100);
+    cout << "Range of 100 is { " << rv.first - v.begin()
+    	 << ", " << rv.second - v.begin() << " }" << endl;
+}
+
 int main (void)
 {
     const int c_TestNumbers[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 11, 12, 13, 13, 14, 15, 16, 17, 18 };
@@ -183,16 +200,7 @@ int main (void)
 
     cout << "equal_range(10)" << endl;
     PrintVector (v);
-    pair<vector<int>::iterator,vector<int>::iterator> rv;
-    rv = equal_range (v, 10);
-    cout << "Range of 10 is { " << rv.first - v.begin()
-	 << ", " << rv.second - v.begin() << " }" << endl;
-    rv = equal_range (v, 0);
-    cout << "Range of 0 is { " << rv.first - v.begin()
-	 << ", " << rv.second - v.begin() << " }" << endl;
-    rv = equal_range (v, 100);
-    cout << "Range of 100 is { " << rv.first - v.begin()
-    	 << ", " << rv.second - v.begin() << " }" << endl;
+    TestEqualRange (v);
     v.assign (first, last);
 
     cout << "sort" << endl;
