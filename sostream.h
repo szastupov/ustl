@@ -61,6 +61,9 @@ public:
     inline void			set_decimal_separator (char s);
     inline void			set_thousand_separator (char s);
     inline void			set_precision (u_short precision);
+protected:
+    inline virtual size_t	overflow (void)	{ return (0); }
+    void			write_buffer (const char* buf, size_t bufSize);
 private:
     char			m_DecimalSeparator;	///< Period by default.
     char			m_ThousandSeparator;	///< Comma by default.

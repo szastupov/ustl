@@ -73,6 +73,7 @@ public:
 			istream (void);
 			istream (const void* p, size_t n);
     explicit		istream (const cmemlink& source);
+    explicit		istream (const ostream& source);
     virtual void	unlink (void);
     inline void		seek (uoff_t newPos);
     inline void		seek (const_iterator newPos);

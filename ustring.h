@@ -111,6 +111,7 @@ public:
     inline const string&	operator+= (const string& s);
     inline const string&	operator+= (const_reference c);
     inline const string&	operator+= (const_pointer s);
+    inline const string&	operator+= (wchar_t c);
     inline string		operator+ (const string& s) const;
     bool			operator== (const string& s) const;
     bool			operator== (const_pointer s) const;
@@ -127,6 +128,7 @@ public:
     void	   		append (const_pointer s, size_t len);
     void	   		append (const_pointer s);
     void			append (size_t n, const_reference c);
+    void			append (size_t n, wchar_t c);
     size_t			copyto (pointer p, size_t n, const_iterator start) const;
     inline void			clear (void);
     inline int			compare (const string& s) const;
@@ -140,6 +142,7 @@ public:
     inline iterator		erase (iterator start, size_t size = 1);
     void			erase (uoff_t start, size_t size = 1);
     inline void			push_back (const_reference c);
+    inline void			push_back (wchar_t c);
     inline void			replace (iterator first, iterator last, const_reference c, size_t n = 1);
     void			replace (iterator first, iterator last, const_pointer s, size_t n = 1);
     void			replace (iterator first, iterator last, const_pointer i1, const_pointer i2, size_t n = 1);
@@ -318,7 +321,7 @@ inline const string& string::operator+= (const string& s)
 /// Appends character \p c
 inline const string& string::operator+= (const_reference c)
 {
-    append (&c, 1);
+    append (1, c);
     return (*this);
 }
 
@@ -326,6 +329,13 @@ inline const string& string::operator+= (const_reference c)
 inline const string& string::operator+= (const_pointer s)
 {
     append (s);
+    return (*this);
+}
+
+/// Appends character \p c
+inline const string& string::operator+= (wchar_t c)
+{
+    append (1, c);
     return (*this);
 }
 
@@ -408,7 +418,13 @@ inline void string::clear (void)
 /// Inserts \p c at the end of the string.
 inline void string::push_back (const_reference c)
 {
-    insert (end(), c);
+    append (1, c);
+}
+
+/// Inserts \p c at the end of the string.
+inline void string::push_back (wchar_t c)
+{
+    append (1, c);
 }
 
 /// Erases \p size bytes at \p start.

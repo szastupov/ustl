@@ -22,13 +22,14 @@
 #ifndef FDOSTREAM_H_5E27FC3D530BF3CA04D6C73F5700EECC
 #define FDOSTREAM_H_5E27FC3D530BF3CA04D6C73F5700EECC
 
+#include "sistream.h"
 #include "sostream.h"
 #include "memblock.h"
 
 namespace ustl {
 
-#define USTL_COUT_BUFFER_SIZE		1024
-#define USTL_COUT_FLUSH_THRESHOLD	(USTL_COUT_BUFFER_SIZE / 8)
+#define USTL_COUT_BUFFER_SIZE		2048
+#define USTL_CIN_BUFFER_SIZE		2048
 
 class string;
 
@@ -38,65 +39,28 @@ public:
     explicit			fdostringstream (int fd, size_t bufSize = USTL_COUT_BUFFER_SIZE);
     virtual		       ~fdostringstream (void);
     void			flush (void);
-    fdostringstream&		operator<< (char c);
-    inline fdostringstream&	operator<< (char* s);
-    fdostringstream&		operator<< (const char* s);
-    fdostringstream&		operator<< (const string& s);
-    inline fdostringstream&	operator<< (short v);
-    inline fdostringstream&	operator<< (int v);
-    inline fdostringstream&	operator<< (long v);
-    inline fdostringstream&	operator<< (u_char v);
-    inline fdostringstream&	operator<< (u_short v);
-    inline fdostringstream&	operator<< (u_int v);
-    inline fdostringstream&	operator<< (u_long v);
-    inline fdostringstream&	operator<< (float v);
-    inline fdostringstream&	operator<< (double v);
-    inline fdostringstream&	operator<< (bool v);
-    inline fdostringstream&	operator<< (wchar_t v);
-    inline fdostringstream&	operator<< (const u_char* s);
-    inline fdostringstream&	operator<< (u_char* s);
-    inline fdostringstream&	operator<< (const void* s);
-    inline fdostringstream&	operator<< (void* s);
-    inline fdostringstream&	operator<< (ios::fmtflags f);
     int				format (const char* fmt, ...) __attribute__((__format__(__printf__, 2, 3)));
-private:
-    inline void			flush_if_full (void);
+protected:
+    virtual size_t		overflow (void);
 private:
     memblock			m_Buffer;
     int				m_Fd;
 };
 
-inline fdostringstream& fdostringstream::operator<< (char* s)
-{
-    return (operator<< (const_cast<const char*>(s)));
-}
-
-inline fdostringstream& fdostringstream::operator<< (const u_char* s)
-{
-    return (operator<< (reinterpret_cast<const char*>(s)));
-}
-
-inline fdostringstream& fdostringstream::operator<< (u_char* s)
-{
-    return (operator<< (const_cast<const u_char*>(s)));
-}
-
-inline fdostringstream& fdostringstream::operator<< (short v)	{ ostringstream::operator<< (v); return (*this); }
-inline fdostringstream& fdostringstream::operator<< (int v)	{ ostringstream::operator<< (v); return (*this); }
-inline fdostringstream& fdostringstream::operator<< (long v)	{ ostringstream::operator<< (v); return (*this); }
-inline fdostringstream& fdostringstream::operator<< (u_char v)	{ ostringstream::operator<< (v); return (*this); }
-inline fdostringstream& fdostringstream::operator<< (u_short v)	{ ostringstream::operator<< (v); return (*this); }
-inline fdostringstream& fdostringstream::operator<< (u_int v)	{ ostringstream::operator<< (v); return (*this); }
-inline fdostringstream& fdostringstream::operator<< (u_long v)	{ ostringstream::operator<< (v); return (*this); }
-inline fdostringstream& fdostringstream::operator<< (float v)	{ ostringstream::operator<< (v); return (*this); }
-inline fdostringstream& fdostringstream::operator<< (double v)	{ ostringstream::operator<< (v); return (*this); }
-inline fdostringstream& fdostringstream::operator<< (bool v)	{ ostringstream::operator<< (v); return (*this); }
-inline fdostringstream& fdostringstream::operator<< (wchar_t v)	{ ostringstream::operator<< (v); return (*this); }
-inline fdostringstream& fdostringstream::operator<< (void* s)	{ ostringstream::operator<< (s); return (*this); }
-inline fdostringstream& fdostringstream::operator<< (const void* s)	{ ostringstream::operator<< (s); return (*this); }
-inline fdostringstream& fdostringstream::operator<< (ios::fmtflags f)	{ ostringstream::operator<< (f); return (*this); }
+/// A string stream that reads from an fd. Implements cin.
+class fdistringstream : public istringstream {
+public:
+    explicit			fdistringstream (int fd, size_t bufSize = USTL_CIN_BUFFER_SIZE);
+    virtual		       ~fdistringstream (void);
+protected:
+    virtual size_t		underflow (void);
+private:
+    memblock			m_Buffer;
+    int				m_Fd;
+};
 
 extern fdostringstream cout, cerr;
+extern fdistringstream cin;
 
 }; // namespace ustl
 

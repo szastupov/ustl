@@ -66,24 +66,27 @@ inline bool istringstream::is_delimiter (char c) const
     return (NULL != memchr (m_Delimiters, c, c_MaxDelimiters));
 }
 
-istringstream& istringstream::operator>> (u_char& v)
+char istringstream::skip_delimiters (void)
 {
     char c = m_Delimiters[0];
-    while (remaining() && is_delimiter(c))
+    while (is_delimiter(c) && (remaining() || underflow()))
 	iread (c);
-    v = c;
+    return (c);
+}
+
+istringstream& istringstream::operator>> (u_char& v)
+{
+    v = skip_delimiters();
     return (*this);
 }
 
 istringstream& istringstream::operator>> (long& v)
 {
-    char c = m_Delimiters[0];
     register long base = m_Base;
     v = 0;
-    while (remaining() && is_delimiter(c))
-	iread (c);
+    char c = skip_delimiters();
     bool negative = (c == '-');
-    if (negative && remaining())
+    if (negative && (remaining() || underflow()))
 	iread (c);
     if (c == '0') {
 	base = 8;
@@ -108,11 +111,11 @@ istringstream& istringstream::operator>> (long& v)
 	    break;
 	v *= base;
 	v += digit;
-	if (!remaining())
+	if (!remaining() && !underflow())
 	    break;
 	iread (c);
     }
-    seek (pos() - sizeof(char));
+    ungetc();
     if (negative)
 	v = -v;
     return (*this);
@@ -120,11 +123,9 @@ istringstream& istringstream::operator>> (long& v)
 
 istringstream& istringstream::operator>> (double& v)
 {
-    char c = m_Delimiters[0];
     register long base = m_Base;
     v = 0;
-    while (remaining() && is_delimiter(c))
-	iread (c);
+    char c = skip_delimiters();
     bool negative = (c == '-');
     bool beforedot = true;
     double divisor = 1.0;
@@ -152,11 +153,11 @@ istringstream& istringstream::operator>> (double& v)
 	    divisor *= base;
 	    v += digit / divisor;
 	}
-	if (!remaining())
+	if (!remaining() && !underflow())
 	    break;
 	iread (c);
     }
-    seek (pos() - sizeof(char));
+    ungetc();
     if (negative)
 	v = -v;
     return (*this);
@@ -164,47 +165,54 @@ istringstream& istringstream::operator>> (double& v)
 
 istringstream& istringstream::operator>> (bool& v)
 {
-    char c = m_Delimiters[0];
-    while (remaining() && is_delimiter(c))
-	iread (c);
+    char c = skip_delimiters();
     v = (c == '1' || c == 't');
-    if (c == 't' && remaining()) {
+    if (c == 't' && (remaining() || underflow())) {
 	iread (c);
 	if (c == 'r' && remaining() >= 2 * sizeof(char))
 	    skip (2 * sizeof(char));
 	else
-	    seek (pos() - sizeof(char));
-    } else if (c == 'f' && remaining()) {
+	    ungetc();
+    } else if (c == 'f' && (remaining() || underflow())) {
 	iread (c);
 	if (c == 'a' && remaining() >= 3 * sizeof(char))
 	    skip (3 * sizeof(char));
 	else
-	    seek (pos() - sizeof(char));
+	    ungetc();
     }
     return (*this);
 }
 
 istringstream& istringstream::operator>> (string& v)
 {
-    char c = m_Delimiters[0];
-    while (remaining() && is_delimiter(c))
+    v.clear();
+    char prevc, quoteChar = 0, c = skip_delimiters();
+    if (c == '\"' || c == '\'')
+	quoteChar = c;
+    else
+	v += c;
+    while (remaining() || underflow()) {
+	prevc = c;
 	iread (c);
-    if (c == '\"') {
-	char prevc;
-	do {
-	    if (!remaining())
+	if (!quoteChar && is_delimiter(c))
+	    break;
+	if (prevc == '\\') {
+	    switch (c) {
+		case 't':	c = '\t'; break;
+		case 'n':	c = '\n'; break;
+		case 'r':	c = '\r'; break;
+		case 'b':	c = '\b'; break;
+		case 'E':	c = 27;   break; // ESC sequence
+		case '\"':	c = '\"'; break;
+		case '\'':	c = '\''; break;
+		case '\\':	c = '\\'; break;
+	    };
+	    *(v.end() - 1) = c;
+	} else {
+	    if (c == quoteChar)
 		break;
-	    prevc = c;
-	    iread (c);
 	    v += c;
-	} while (c != '\"' || prevc != '\\');
-    } else {
-	do {
-	    v += c;
-	    if (!remaining())
-		break;
-	    iread (c);
-	} while (!is_delimiter(c));
+	}
     }
     return (*this);
 }

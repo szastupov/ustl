@@ -179,6 +179,14 @@ void string::append (size_t n, value_type c)
     fill_n (end() - n, n, c);
 }
 
+/// Appends to itself \p n characters of value \p c.
+void string::append (size_t n, wchar_t c)
+{
+    iterator ipp (end());
+    ipp = iterator (memblock::insert (memblock::iterator(ipp), n * Utf8Bytes(c)));
+    fill_n (utf8out (ipp), n, c);
+}
+
 /// Copies into itself at offset \p start, the value of string \p p of length \p n.
 size_t string::copyto (pointer p, size_t n, const_iterator start) const
 {

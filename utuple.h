@@ -43,7 +43,9 @@ public:
     typedef pair<const_iterator,const_iterator>		const_range_t;
 public:
     inline			tuple (void)			{ fill_n (m_v, N, T()); }
-    inline			tuple (const tuple<N,T>& t)	{ copy_n (t.m_v, N, m_v); }
+    template <typename T2>
+    inline			tuple (const tuple<N,T2>& t)	{ copy_n (t.begin(), N, m_v); }
+    inline			tuple (const tuple<N,T>& t)	{ copy_n (t.begin(), N, m_v); }
     inline			tuple (const_pointer v)		{ copy_n (v, N, m_v); }
     inline			tuple (const_reference v0);
     inline			tuple (const_reference v0, const_reference v1);
@@ -73,6 +75,14 @@ public:
 				    { for (size_t i = 0; i != N; ++ i) m_v[i] *= v; return (*this); }
     inline const tuple&		operator/= (const_reference v)
 				    { for (size_t i = 0; i != N; ++ i) m_v[i] /= v; return (*this); }
+    inline const tuple		operator+ (const_reference v) const
+				    { tuple result; for (size_t i = 0; i != N; ++ i) result[i] = m_v[i] + v; return (result); }
+    inline const tuple		operator- (const_reference v) const
+				    { tuple result; for (size_t i = 0; i != N; ++ i) result[i] = m_v[i] - v; return (result); }
+    inline const tuple		operator* (const_reference v) const
+				    { tuple result; for (size_t i = 0; i != N; ++ i) result[i] = m_v[i] * v; return (result); }
+    inline const tuple		operator/ (const_reference v) const
+				    { tuple result; for (size_t i = 0; i != N; ++ i) result[i] = m_v[i] / v; return (result); }
 private:
     T				m_v [N];
 };

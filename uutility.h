@@ -74,8 +74,8 @@ inline void* advance (void* p, ssize_t offset)
 }
 
 /// Returns the difference \p p1 - \p p2
-template <typename T>
-inline size_t distance (T i1, T i2)
+template <typename T1, typename T2>
+inline size_t distance (T1 i1, T2 i2)
 {
     return (i2 - i1);
 }

@@ -103,7 +103,6 @@ inline size_t stream_size_of (wchar_t)	{ return (sizeof(wchar_t));	}
 #define TEXT_STREAMABLE(T)	\
     namespace ustl {		\
 	inline ostringstream& operator<< (ostringstream& os, const T& v)	{ v.text_write (os); return (os); }	\
-	inline fdostringstream& operator<< (fdostringstream& os, const T& v)	{ v.text_write ((ostringstream&) os); return (os); }	\
     }
 
 #endif

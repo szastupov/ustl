@@ -53,6 +53,10 @@ public:
     inline void			set_base (short base);
     inline void			set_decimal_separator (char s);
     inline void			set_thousand_separator (char s);
+protected:
+    inline virtual size_t	underflow (void)	{ return (0); }
+    inline void			ungetc (void)		{ seek (pos() - sizeof(char)); }
+    char			skip_delimiters (void);
 private:
     inline bool			is_delimiter (char c) const;
 private:

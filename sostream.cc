@@ -61,6 +61,13 @@ ostringstream::ostringstream (const memlink& source)
 
 const char c_Digits[] = "0123456789ABCDEF";
 
+void ostringstream::write_buffer (const char* buf, size_t bufSize)
+{
+    size_t btw = 0, written = 0;
+    while ((written += btw) < bufSize && (remaining() || overflow()))
+	write (buf + written, btw = min (remaining(), bufSize - written));
+}
+
 ostringstream& ostringstream::operator<< (long sv)
 {
     assert (m_Base < VectorSize(c_Digits));
@@ -77,7 +84,7 @@ ostringstream& ostringstream::operator<< (long sv)
     if (negative)
 	buffer[i--] = '-';
     ++ i;
-    write (buffer + i, c_BufSize - i - 1);
+    write_buffer (buffer + i, c_BufSize - i - 1);
     return (*this);
 }
 
@@ -94,7 +101,7 @@ ostringstream& ostringstream::operator<< (u_long v)
 	v /= m_Base;
     } while (v);
     ++ i;
-    write (buffer + i, c_BufSize - i - 1);
+    write_buffer (buffer + i, c_BufSize - i - 1);
     return (*this);
 }
 
@@ -130,28 +137,28 @@ ostringstream& ostringstream::operator<< (double iv)
 	    buffer[++di] = c_Digits[u_long(v) % m_Base];
 	}
     }
-    write (buffer + i, c_BufSize - i - 1);
+    write_buffer (buffer + i, c_BufSize - i - 1);
     return (*this);
 }
 
 ostringstream& ostringstream::operator<< (bool v)
 {
     if (v)
-	write ("true", 4);
+	write_buffer ("true", 4);
     else
-	write ("false", 5);
+	write_buffer ("false", 5);
     return (*this);
 }
 
 ostringstream& ostringstream::operator<< (const char* s)
 {
-    write (s, strlen(s));
+    write_buffer (s, strlen(s));
     return (*this);
 }
 
 ostringstream& ostringstream::operator<< (const string& v)
 {
-    write (v.begin(), v.length());
+    write_buffer (v.begin(), v.length());
     return (*this);
 }
 

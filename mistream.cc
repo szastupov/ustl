@@ -54,6 +54,13 @@ istream::istream (const cmemlink& source)
 {
 }
 
+/// Attaches to the block pointed to by source of size source.pos()
+istream::istream (const ostream& source)
+: cmemlink (source.begin(), source.pos()),
+  m_Pos (0)
+{
+}
+
 /// Swaps contents with \p is
 void istream::swap (istream& is)
 {
