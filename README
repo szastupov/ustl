@@ -54,24 +54,27 @@ COMPILATION:
 
 ./configure
 	(you may edit Common.mk at this point to adjust compiler flags)
+
 make install
 	This copies the static library libustl.a to your lib directory,
 	(usually /usr/local/lib) and the headers to your include directory
-	(usually /usr/local/include)
+	(usually /usr/local/include).
 
-You may also chdir to the bvt subdirectory and 'make run' to verify that
-	the library works correctly on your system. I pretty much assume
-	an ANSI-compliant system, and have no desire whatsoever to support
-	some weird architecture that lacks regular libc headers or something.
-	GNU extensions may be used (like long long), but are not required
-	and if you are failing the build because of them it is a bug.
+You may also chdir to the bvt subdirectory and 'make -I .. run' to verify that
+	the library works correctly on your system.  Note the -I flag;
+	it is required to properly include the .mk files, which are
+	really supposed to be installed in a common include directory.
+	I pretty much assume an ANSI-compliant system, and have no
+	desire whatsoever to support some weird architecture that lacks
+	regular libc headers or something.  GNU extensions may be used
+	(like long long), but are not required and if you are failing
+	the build because of them it is a bug.
 Documentation may be built with doxygen by typing 'make dox'. This is not
 	working very well right now because doxygen is blind to templates.
 	You do get a page for all the static classes though.
 The .mk files in this distribution are actually another project, giving
-	common rules for people who hate HaTe HATE writing makefiles. See
-	if you like it; Makefile pretty much explains how to use it. I am
-	not satisfied though and might turn to some other build system later.
+	common rules for people who hate writing makefiles. I am not
+	satisfied though and might turn to some other build system later.
 
 ------
 USAGE:

@@ -24,14 +24,14 @@ CWARNOPTS	= -ansi -Werror -Wall -W -Winline -Wpointer-arith -Wcast-qual \
 		-Wconversion -Wshadow -Wredundant-decls -pedantic-errors
 CXXWARNOPTS	= ${CWARNOPTS} -Wsign-promo -Weffc++ -Wsynth -Woverloaded-virtual
 OPTIMIZE	= -DNDEBUG=1 -frepo -fomit-frame-pointer -fmerge-all-constants
-DEBUG		= 1
+#DEBUG		= 1
 ifdef DEBUG
-    CFLAGS	= -ggdb3 ${CWARNOPTS} -I ${INCDIR}
-    CXXFLAGS	= -ggdb3 -fno-rtti ${CXXWARNOPTS} -I ${INCDIR}
-    LDFLAGS	= -L ${LIBDIR}
+    CFLAGS	= -ggdb3 ${CWARNOPTS}
+    CXXFLAGS	= -ggdb3 -fno-rtti ${CXXWARNOPTS}
+    LDFLAGS	=
 else
-    CFLAGS	= @CFLAGS@ ${CWARNOPTS} ${OPTIMIZE} -I ${INCDIR}
-    CXXFLAGS	= @CXXFLAGS@ -fno-rtti ${CXXWARNOPTS} ${OPTIMIZE} -I ${INCDIR}
-    LDFLAGS	= -s -L ${LIBDIR}
+    CFLAGS	= @CFLAGS@ ${CWARNOPTS} ${OPTIMIZE}
+    CXXFLAGS	= @CXXFLAGS@ -fno-rtti ${CXXWARNOPTS} ${OPTIMIZE}
+    LDFLAGS	= -s
 endif
 
