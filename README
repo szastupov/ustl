@@ -52,7 +52,7 @@ COMPILATION:
 
 ./configure
 	(you may edit Common.mk at this point to adjust compiler flags)
-	Standard autoconf flags may be passed in.
+	Standard autoconf flags may be passed in, like --prefix=${HOME}
 
 Clean builds have been thus obtained on (SourceForge compile farm):
 	* x86 architecture (dual-processor SMP Intel Pentium III) - Linux OS kernel version 2.2 (Debian GNU/Linux 2.2)
@@ -64,15 +64,16 @@ Clean builds have been thus obtained on (SourceForge compile farm):
 	* StrongArm 10000 host.
 	My own development platform is a dual-proc Athlon-MP 1GHz, Debian
 	with the latest kernel and GCC, both of which I upgrade promptly as
-	they become available.
+	they become available. You will need at least gcc 3.3 to use all the
+	features of the library (like the MMX/SSE code, for instance)
 
 make install
 	This copies the shared library libustl.so to your lib directory,
 	(usually /usr/local/lib) and the headers to your include directory
 	(usually /usr/local/include). SunOS and Darwin don't build shared
 	libraries like Linux does, so a static library will be built instead.
-	If you want a static library anyway, comment out the MAJOR line (#2)
-	in Common.mk.
+	If you want a static library anyway, give --with-static option to
+	configure or just uncomment the BUILD_STATIC line in Common.mk
 
 You may also chdir to the bvt subdirectory and 'make run' to verify that
 	the library works correctly on your system. This works only
