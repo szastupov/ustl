@@ -20,6 +20,9 @@ Release 0.6-1
 		Only Alpha has bool as a long, so a define is better.
 	* Fixed configure being confused with multiple gcc versions.
 	* Reduced Align code for nonstandard values.
+	* Pulled up vector/tuple stream operators into generic container
+		templates in uctrstm.h and made use of resulting macros.
+	* New TEMPLATE_TYPE macros to allow template building with macros.
 
 2005-01-17 Release 0.6
 	* The library is relicensed under the MIT License (was LGPL)

@@ -6,11 +6,11 @@ OBJS	= cmemlink.o fdostream.o memblock.o memlink.o mstream.o \
 	sistream.o sostream.o ubitset.o uexception.o ustdxept.o ustring.o
 INCS	= cmemlink.h config.h fdostream.h memblock.h memlink.h mistream.h \
 	mostream.h simd.h sistream.h sostream.h strmsize.h ualgo.h \
-	ualgobase.h ubitset.h uctralgo.h uexception.h ufunction.h uios.h \
-	uiosfunc.h uiterator.h ulaalgo.h ulimits.h ulist.h umap.h umatrix.h \
-	umemory.h umultimap.h umultiset.h unumeric.h upair.h upredalgo.h \
-	uqueue.h uset.h uspecial.h ustack.h ustdxept.h ustl.h ustl.tbff \
-	ustring.h utf8.h utuple.h utypes.h uutility.h uvector.h
+	ualgobase.h ubitset.h uctralgo.h uctrstrm.h uexception.h ufunction.h \
+	uios.h uiosfunc.h uiterator.h ulaalgo.h ulimits.h ulist.h umap.h \
+	umatrix.h umemory.h umultimap.h umultiset.h unumeric.h upair.h \
+	upredalgo.h uqueue.h uset.h uspecial.h ustack.h ustdxept.h ustl.h \
+	ustl.tbff ustring.h utf8.h utuple.h utypes.h uutility.h uvector.h
 DOCT	= ustldoc.in
 
 ifdef STANDALONE

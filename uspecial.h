@@ -19,10 +19,7 @@
 #include "ulaalgo.h"
 #include "uctralgo.h"
 #include "ufunction.h"
-#include "mistream.h"
-#include "mostream.h"
-#include "sostream.h"
-#include "strmsize.h"
+#include "uctrstrm.h"
 #if !defined(WITHOUT_LIBSTDCPP) && defined(__GNUC__) && (__GNUC__ >= 3)
     #include <locale>
 #else
@@ -39,30 +36,16 @@ template <> inline void swap (cmemlink& a, cmemlink& b)			{ a.swap (b); }
 template <> inline void swap (memlink& a, memlink& b)			{ a.swap (b); }
 template <> inline void swap (memblock& a, memblock& b)			{ a.swap (b); }
 template <> inline void swap (string& a, string& b)			{ a.swap (b); }
-template <typename T> inline void swap (vector<T>& a, vector<T>& b)	{ a.swap (b); }
-template <typename T> inline void swap (set<T>& a, set<T>& b)		{ a.swap (b); }
-template <typename T> inline void swap (multiset<T>& a, multiset<T>& b)	{ a.swap (b); }
-template <size_t N, typename T> inline void swap (tuple<N,T>& a, tuple<N,T>& b)	{ a.swap (b); }
+#define TEMPLATE_SWAP_PSPEC(type, template_decl)	\
+template_decl inline void swap (type& a, type& b) { a.swap (b); }
+TEMPLATE_SWAP_PSPEC (TEMPLATE_TYPE1 (vector,T),		TEMPLATE_DECL1 (T))
+TEMPLATE_SWAP_PSPEC (TEMPLATE_TYPE1 (set,T),		TEMPLATE_DECL1 (T))
+TEMPLATE_SWAP_PSPEC (TEMPLATE_TYPE1 (multiset,T),	TEMPLATE_DECL1 (T))
+TEMPLATE_SWAP_PSPEC (TEMPLATE_TYPE2 (tuple,N,T),	TEMPLATE_FULL_DECL2 (size_t,N,typename,T))
 
 //----------------------------------------------------------------------
 // Streamable definitions. Not used in the library and require streams.
 //----------------------------------------------------------------------
-
-/// Computes the stream size of a standard container.
-template <typename Container>
-size_t container_stream_size (const Container& v)
-{
-    typedef typename Container::const_iterator viter_t;
-    typedef typename iterator_traits<viter_t>::value_type value_type;
-    size_t s = 0;
-    if (numeric_limits<value_type>::is_integral)
-	s += v.size() * stream_size_of(value_type());
-    else {
-	foreach (viter_t, i, v)
-	    s += stream_size_of(*i);
-    }
-    return (s);
-}
 
 //----{ pair }----------------------------------------------------------
 
@@ -136,52 +119,7 @@ unconst (const pair<typename Container::const_iterator, typename Container::cons
 
 //----{ vector }--------------------------------------------------------
 
-/// Reads the vector from stream \p is.
-template <typename T>
-istream& operator>> (istream& is, vector<T>& v)
-{
-    size_t n;
-    is >> n;
-    const size_t expectedSize = n * stream_size_of(T());
-    if (expectedSize > is.remaining())
-	throw stream_bounds_exception ("read", typeid(v).name(), is.pos(), expectedSize, is.remaining());
-    v.resize (n);
-    foreach (typename vector<T>::iterator, i, v)
-	is >> *i;
-    is.align();
-    return (is);
-}
-
-/// Writes the vector to stream \p os.
-template <typename T>
-ostream& operator<< (ostream& os, const vector<T>& v)
-{
-    os << v.size();
-    copy (v, ostream_iterator<T>(os));
-    os.align();
-    return (os);
-}
-
-/// Writes the vector to stream \p os.
-template <typename T>
-ostringstream& operator<< (ostringstream& os, const vector<T>& v)
-{
-    typename vector<T>::const_iterator i = v.begin();
-    os << '(';
-    if (i < v.end())
-	os << *i;
-    while (++i < v.end())
-	os << ',' << *i;
-    os << ')';
-    return (os);
-}
-
-/// Returns the number of bytes necessary to write this object to a stream
-template <typename T>
-inline size_t stream_size_of (const vector<T>& v)
-{
-    return (Align (stream_size_of(v.size()) + container_stream_size (v)));
-}
+STD_TEMPLATE_CTR_STREAMABLE (TEMPLATE_TYPE1 (vector,T), TEMPLATE_DECL1 (T))
 
 //----{ bitset }--------------------------------------------------------
 
@@ -189,18 +127,14 @@ inline size_t stream_size_of (const vector<T>& v)
 template <size_t Size>
 inline istream& operator>> (istream& is, bitset<Size>& v)
 {
-    foreach (typename bitset<Size>::iterator, i, v)
-	is >> *i;
-    return (is);
+    return (nr_container_read (v));
 }
 
 /// Writes bitset \p v into stream \p os.
 template <size_t Size>
 inline ostream& operator<< (ostream& os, const bitset<Size>& v)
 {
-    foreach (typename bitset<Size>::const_iterator, i, v)
-	os << *i;
-    return (os);
+    return (nr_container_write (v));
 }
 
 /// Writes bitset \p v into stream \p os.
@@ -219,80 +153,27 @@ inline size_t stream_size_of (const bitset<Size>& v)
 
 //----{ tuple }---------------------------------------------------------
 
-/// Reads tuple \p v from stream \p is.
-template <size_t N, typename T>
-inline istream& operator>> (istream& is, tuple<N,T>& v)
-{
-    typedef typename tuple<N,T>::iterator iter_t;
-    foreach (iter_t, i, v)
-	is >> *i;
-    return (is);
-}
+STD_TEMPLATE_NR_CTR_STREAMABLE (
+    TEMPLATE_TYPE2 (tuple,N,T),
+    TEMPLATE_FULL_DECL2 (size_t,N,typename,T)
+)
 
-/// Writes tuple \p v into stream \p os.
-template <size_t N, typename T>
-inline ostream& operator<< (ostream& os, const tuple<N,T>& v)
+template <typename T, typename IntT>
+inline ostringstream& chartype_text_write (ostringstream& os, const T& v)
 {
-    typedef typename tuple<N,T>::const_iterator iter_t;
-    foreach (iter_t, i, v)
-	os << *i;
+    if (isprint(v))
+	os << '\'' << v << '\'';
+    else
+	os << (IntT)(v);
     return (os);
 }
 
-/// Writes tuple \p v into stream \p os.
-template <size_t N, typename T>
-ostringstream& operator<< (ostringstream& os, const tuple<N,T>& v)
-{
-    typename tuple<N,T>::const_iterator i = v.begin();
-    os << '(';
-    if (i < v.end())
-	os << *i;
-    while (++i < v.end())
-	os << ',' << *i;
-    os << ')';
-    return (os);
-}
-
-template <size_t N>
-ostringstream& operator<< (ostringstream& os, const tuple<N,uint8_t>& v)
-{
-    typename tuple<N,uint8_t>::const_iterator i = v.begin();
-    os << '(';
-    while (i < v.end()) {
-	if (isprint(*i))
-	    os << '\'' << *i << '\'';
-	else
-	    os << (unsigned int)(*i);
-	if (++i < v.end())
-	    os << ',';
-    }
-    os << ')';
-    return (os);
-}
-
-template <size_t N>
-ostringstream& operator<< (ostringstream& os, const tuple<N,int8_t>& v)
-{
-    typename tuple<N,int8_t>::const_iterator i = v.begin();
-    os << '(';
-    while (i < v.end()) {
-	if (isprint(*i))
-	    os << '\'' << *i << '\'';
-	else
-	    os << (int)(*i);
-	if (++i < v.end())
-	    os << ',';
-    }
-    os << ')';
-    return (os);
-}
-
-/// Returns the number of bytes necessary to write this object to a stream
-template <size_t N, typename T>
-inline size_t stream_size_of (const tuple<N,T>& v)
-{
-    return (container_stream_size (v));
-}
+template <>
+inline ostringstream& container_element_text_write (ostringstream& os, const uint8_t& v)
+{ return (chartype_text_write<uint8_t, unsigned int> (os, v)); }
+template <>
+inline ostringstream& container_element_text_write (ostringstream& os, const int8_t& v)
+{ return (chartype_text_write<int8_t, int> (os, v)); }
 
 //----{ matrix }--------------------------------------------------------
 

@@ -19,11 +19,12 @@ namespace ustl {
 ///
 /// \brief Linked list emulator.
 ///
-/// The list template is aliased to vector for philosophical reasons.
-/// I believe the use of linked lists of any kind to be an indicator
-/// of bad design. It is simply the wrong way of thinking about storage.
 /// The alias is provided for compatibility with the C++ standard and
-/// is mostly inline.
+/// is mostly inline. I never use linked lists, and see no reason to
+/// add more bloat to the library. If you wish to contribute one, I'll
+/// accept implementations that are somehow based on vector (like to
+/// allocate pointer carriers, for instance). That's because uSTL has
+/// no allocators and that's the only way to implement a memory pool.
 ///
 template <typename T>
 class list : public vector<T> {
