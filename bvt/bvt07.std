@@ -29,3 +29,4 @@ X rfound at 30
 [456] last found at 25
 s2 is empty [], capacity 5 bytes
 <31 bytes of 31> Format '<const] 42, [rfile>, 0xDEADBEEF'
+Custom vararg MyFormat: '<const] 42, [rfile>, 0xDEADBEEF'

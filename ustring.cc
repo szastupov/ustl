@@ -27,7 +27,6 @@
 #include "mostream.h"
 #include "utf8.h"
 #include "ualgo.h"
-#include <stdarg.h>	// for va_list, va_start, and va_end (in string::format)
 #include <stdio.h>	// for vsnprintf (in string::format)
 
 namespace ustl {
@@ -240,6 +239,11 @@ bool string::operator== (const_pointer s) const
     return (size() == slen && 0 == memcmp (c_str(), s, size()));
 }
 
+string::size_type string::minimumFreeCapacity (void) const
+{
+    return (size_Terminator);
+}
+
 /// Inserts wide character \p c at \p ip \p n times as a UTF-8 string.
 ///
 /// \p ip is a character position, not a byte position, and must fall in
@@ -447,12 +451,9 @@ string::const_iterator string::find_last_not_of (const string& s, const_iterator
     return (end());
 }
 
-/// Equivalent to a sprintf on the string.
-int string::format (const char* fmt, ...)
+/// Equivalent to a vsprintf on the string.
+int string::vformat (const char* fmt, va_list args)
 {
-    simd::reset_mmx();
-    va_list args;
-    va_start (args, fmt);
     if (is_linked() || !data() || !capacity())
 	reserve (strlen (fmt));
     int rv = vsnprintf (data(), memblock::capacity(), fmt, args);
@@ -463,6 +464,16 @@ int string::format (const char* fmt, ...)
 	}
 	resize (rv);
     }
+    return (rv);
+}
+
+/// Equivalent to a sprintf on the string.
+int string::format (const char* fmt, ...)
+{
+    simd::reset_mmx();
+    va_list args;
+    va_start (args, fmt);
+    const int rv = vformat (fmt, args);
     va_end (args);
     return (rv);
 }

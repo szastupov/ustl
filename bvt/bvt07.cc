@@ -1,6 +1,8 @@
 #include <ustl.h>
 using namespace ustl;
 
+void MyFormat (const char* fmt, ...);
+
 int main (void)
 {
     const char c_TestString1[] = "123456789012345678901234567890";
@@ -103,7 +105,19 @@ int main (void)
     s2.format ("<const] %d, %s, 0x%08X", 42, "[rfile>", 0xDEADBEEF);
     cout << "<" << s2.length() << " bytes of " << s2.capacity();
     cout << "> Format '" << s2 << '\''<< endl;
+    MyFormat ("'<const] %d, %s, 0x%08X'", 42, "[rfile>", 0xDEADBEEF);
 
     return (0);
+}
+
+void MyFormat (const char* fmt, ...)
+{
+    string buf;
+    simd::reset_mmx();
+    va_list args;
+    va_start (args, fmt);
+    buf.vformat (fmt, args);
+    cout << "Custom vararg MyFormat: " << buf << endl;
+    va_end (args);
 }
 

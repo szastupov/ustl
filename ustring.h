@@ -24,6 +24,7 @@
 
 #include "memblock.h"
 #include "uiterator.h"
+#include <stdarg.h>	// for va_list, va_start, and va_end (in string::format)
 
 namespace ustl {
 
@@ -155,12 +156,13 @@ public:
     const_iterator		find_first_not_of (const string& s, const_iterator pos = NULL) const;
     const_iterator		find_last_of (const string& s, const_iterator pos = NULL) const;
     const_iterator		find_last_not_of (const string& s, const_iterator pos = NULL) const;
+    int				vformat (const char* fmt, va_list args);
     int				format (const char* fmt, ...) __attribute__((__format__(__printf__, 2, 3)));
     void			read (istream&);
     void			write (ostream& os) const;
     size_t			stream_size (void) const;
 protected:
-    inline virtual size_type	minimumFreeCapacity (void) const { return (size_Terminator); }
+    virtual size_type		minimumFreeCapacity (void) const;
 };
 
 /// Returns the const reference to the \p pos character.
