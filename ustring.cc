@@ -155,7 +155,7 @@ size_t string::copyto (pointer p, size_t n, const_iterator start) const
 ///
 int string::compare (const_iterator first1, const_iterator last1, const_iterator first2, const_iterator last2) const
 {
-    assert (first1 <= last1 && first2 <= last2 && "Negative ranges result in memory allocation errors.");
+    assert (first1 <= last1 && (first2 <= last2 || !last2) && "Negative ranges result in memory allocation errors.");
     const size_t len1 = distance (first1, last1);
     const size_t len2 = last2 ? distance (first2, last2) : strlen(first2);
     int rv = memcmp (first1, first2, min (len1, len2));
