@@ -81,6 +81,7 @@ int main (void)
     #endif
     TestCtr<tuple<2,float> >("float[2]");
     TestCtr<tuple<4,float> >("float[4]");
+    TestCtr<tuple<7,uint32_t> >("uint32_t[7]");
     return (0);
 }
 
