@@ -17,9 +17,9 @@ namespace ustl {
 template <typename T> 
 struct numeric_limits {
     /// Returns the minimum value for type T.
-    static inline T min (void)		{ return (static_cast<T>(0)); }
+    static inline T min (void)		{ return (T()); }
     /// Returns the minimum value for type T.
-    static inline T max (void)		{ return (static_cast<T>(0)); }
+    static inline T max (void)		{ return (T()); }
     static const bool is_signed = false;	///< True if the type is signed.
     static const bool is_integer = false;	///< True if stores an exact value.
     static const bool is_integral = false;	///< True if fixed size and cast-copyable.
@@ -27,155 +27,64 @@ struct numeric_limits {
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 
-template <>
-struct numeric_limits<bool> {
-    static inline bool min (void)	{ return (false); }
-    static inline bool max (void)	{ return ( true); }
-    static const bool is_signed = false;
-    static const bool is_integer = true;
-    static const bool is_integral = true;
-};
+#define _NUMERIC_LIMITS(type, minVal, maxVal, bSigned, bInteger, bIntegral)	\
+template <>							\
+struct numeric_limits<type> {					\
+    static inline type min (void)	{ return (minVal); }	\
+    static inline type max (void)	{ return (maxVal); }	\
+    static const bool is_signed = bSigned;			\
+    static const bool is_integer = bInteger;			\
+    static const bool is_integral = bIntegral;			\
+}
 
-template <>
-struct numeric_limits<char> {
-    static inline char min (void)	{ return (SCHAR_MIN); }
-    static inline char max (void)	{ return (SCHAR_MAX); }
-    static const bool is_signed = true;
-    static const bool is_integer = true;
-    static const bool is_integral = true;
-};
-
-template <>
-struct numeric_limits<int> {
-    static inline int min (void)	{ return (INT_MIN); }
-    static inline int max (void)	{ return (INT_MAX); }
-    static const bool is_signed = true;
-    static const bool is_integer = true;
-    static const bool is_integral = true;
-};
-
-template <>
-struct numeric_limits<short> {
-    static inline short min (void)	{ return (SHRT_MIN); }
-    static inline short max (void)	{ return (SHRT_MAX); }
-    static const bool is_signed = true;
-    static const bool is_integer = true;
-    static const bool is_integral = true;
-};
-
-template <>
-struct numeric_limits<long> {
-    static inline long min (void)	{ return (LONG_MIN); }
-    static inline long max (void)	{ return (LONG_MAX); }
-    static const bool is_signed = true;
-    static const bool is_integer = true;
-    static const bool is_integral = true;
-};
-
-template <>
-struct numeric_limits<unsigned char> {
-    static inline unsigned char min (void)	{ return (0); }
-    static inline unsigned char max (void)	{ return (UCHAR_MAX); }
-    static const bool is_signed = false;
-    static const bool is_integer = true;
-    static const bool is_integral = true;
-};
-
-template <>
-struct numeric_limits<unsigned int> {
-    static inline unsigned int min (void)	{ return (0); }
-    static inline unsigned int max (void)	{ return (UINT_MAX); }
-    static const bool is_signed = false;
-    static const bool is_integer = true;
-    static const bool is_integral = true;
-};
-
-template <>
-struct numeric_limits<unsigned short> {
-    static inline unsigned short min (void)	{ return (0); }
-    static inline unsigned short max (void)	{ return (USHRT_MAX); }
-    static const bool is_signed = false;
-    static const bool is_integer = true;
-    static const bool is_integral = true;
-};
-
-template <>
-struct numeric_limits<unsigned long> {
-    static inline unsigned long min (void)	{ return (0); }
-    static inline unsigned long max (void)	{ return (ULONG_MAX); }
-    static const bool is_signed = false;
-    static const bool is_integer = true;
-    static const bool is_integral = true;
-};
-
-template <>
-struct numeric_limits<wchar_t> {
-    static inline wchar_t min (void)		{ return (0); }
-#ifdef WCHAR_MAX
-    static inline wchar_t max (void)		{ return (WCHAR_MAX); }
-#elif defined(__WCHAR_MAX__)
-    static inline wchar_t max (void)		{ return (__WCHAR_MAX__); }
-#else
-    static inline wchar_t max (void)		{ return (CHAR_MAX); }
-#endif
-    static const bool is_signed = false;
-    static const bool is_integer = true;
-    static const bool is_integral = true;
-};
-
-template <>
-struct numeric_limits<float> {
-    static inline float min (void)	{ return (FLT_MIN); }
-    static inline float max (void)	{ return (FLT_MAX); }
-    static const bool is_signed = true;
-    static const bool is_integer = false;
-    static const bool is_integral = true;
-};
-
-template <>
-struct numeric_limits<double> {
-    static inline double min (void)	{ return (DBL_MIN); }
-    static inline double max (void)	{ return (DBL_MAX); }
-    static const bool is_signed = true;
-    static const bool is_integer = false;
-    static const bool is_integral = true;
-};
-
-template <>
-struct numeric_limits<long double> {
-    static inline long double min (void){ return (LDBL_MIN); }
-    static inline long double max (void){ return (LDBL_MAX); }
-    static const bool is_signed = true;
-    static const bool is_integer = false;
-    static const bool is_integral = true;
-};
-
+//--------------------------------------------------------------------------------------
+//		type		min		max		signed	integer	integral
+//--------------------------------------------------------------------------------------
+_NUMERIC_LIMITS (bool,		false,		true,		false,	true,	true);
+_NUMERIC_LIMITS (char,		SCHAR_MIN,	SCHAR_MAX,	true,	true,	true);
+_NUMERIC_LIMITS (int,		INT_MIN,	INT_MAX,	true,	true,	true);
+_NUMERIC_LIMITS (short,		SHRT_MIN,	SHRT_MAX,	true,	true,	true);
+_NUMERIC_LIMITS (long,		LONG_MIN,	LONG_MAX,	true,	true,	true);
+_NUMERIC_LIMITS (unsigned char,	0,		UCHAR_MAX,	false,	true,	true);
+_NUMERIC_LIMITS (unsigned int,	0,		UINT_MAX,	false,	true,	true);
+_NUMERIC_LIMITS (unsigned short,0,		USHRT_MAX,	false,	true,	true);
+_NUMERIC_LIMITS (unsigned long,	0,		ULONG_MAX,	false,	true,	true);
+_NUMERIC_LIMITS (wchar_t,	0,		WCHAR_MAX,	false,	true,	true);
+_NUMERIC_LIMITS (float,		FLT_MIN,	FLT_MAX,	true,	false,	true);
+_NUMERIC_LIMITS (double,	DBL_MIN,	DBL_MAX,	true,	false,	true);
+_NUMERIC_LIMITS (long double,	LDBL_MIN,	LDBL_MAX,	true,	false,	true);
 #ifdef HAVE_LONG_LONG
-#ifndef LLONG_MAX
-    #define ULLONG_MAX	UINT64_C(0xFFFFFFFFFFFFFFFF)
-    #define LLONG_MAX	INT64_C(0x7FFFFFFFFFFFFFFF)
-    #define LLONG_MIN	ULLONG_MAX
+_NUMERIC_LIMITS (long long,	LLONG_MIN,	LLONG_MAX,	true,	true,	true);
+_NUMERIC_LIMITS (unsigned long long,	0,	ULLONG_MAX,	false,	true,	true);
 #endif
+//--------------------------------------------------------------------------------------
 
-template <>
-struct numeric_limits<long long> {
-    static inline long long min (void)	{ return (LLONG_MIN); }
-    static inline long long max (void)	{ return (LLONG_MAX); }
-    static const bool is_signed = true;
-    static const bool is_integer = true;
-    static const bool is_integral = true;
-};
-
-template <>
-struct numeric_limits<unsigned long long> {
-    static inline unsigned long long min (void)	{ return (0); }
-    static inline unsigned long long max (void)	{ return (ULLONG_MAX); }
-    static const bool is_signed = false;
-    static const bool is_integer = true;
-    static const bool is_integral = true;
-};
-#endif
 #endif // DOXYGEN_SHOULD_SKIP_THIS
+
+/// Macro for defining numeric_limits specializations
+#define NUMERIC_LIMITS(type, minVal, maxVal, bSigned, bInteger, bIntegral)	\
+namespace ustl { _NUMERIC_LIMITS (type, minVal, maxVal, bSigned, bInteger, bIntegral); }
+
+/// Standard container NUMERIC_LIMITS
+#define CONTAINER_NUMERIC_LIMITS(type)					\
+namespace ustl {							\
+    template <>								\
+    struct numeric_limits<type> {					\
+	typedef numeric_limits<type::value_type> value_limits;		\
+	static inline type min (void)	{ type v; fill (v, value_limits::min()); return (v); }	\
+	static inline type max (void)	{ type v; fill (v, value_limits::max()); return (v); }	\
+	static const bool is_signed = value_limits::is_signed;		\
+	static const bool is_integer = value_limits::is_integer;	\
+	static const bool is_integral = value_limits::is_integral;	\
+    };									\
+}
+
+/// Standard tuple NUMERIC_LIMITS
+#define TUPLE_NUMERIC_LIMITS(type)	\
+CONTAINER_NUMERIC_LIMITS(type)		\
+namespace ustl {			\
+    template <> inline size_t alignof (type) { return (alignof (type::value_type())); }; \
+}
 
 } // namespace ustl
 

@@ -27,8 +27,22 @@
 #ifdef HAVE_SYS_TYPES_H
     #include <sys/types.h>
 #endif
-#ifndef SIZE_MAX		// This is occasionally not present
-    #define SIZE_MAX	UINT_MAX
+#ifndef SIZE_MAX
+    #define SIZE_MAX		UINT_MAX
+#endif
+#ifndef WCHAR_MAX
+    #ifdef __WCHAR_MAX__
+	#define WCHAR_MAX	__WCHAR_MAX__
+    #else
+	#define WCHAR_MAX	CHAR_MAX
+    #endif
+#endif
+#ifdef HAVE_LONG_LONG
+    #ifndef LLONG_MAX
+	#define ULLONG_MAX	UINT64_C(0xFFFFFFFFFFFFFFFF)
+	#define LLONG_MAX	INT64_C(0x7FFFFFFFFFFFFFFF)
+	#define LLONG_MIN	ULLONG_MAX
+    #endif
 #endif
 
 typedef size_t		uoff_t;		///< A type for storing offsets into blocks measured by size_t.
