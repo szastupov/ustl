@@ -52,7 +52,7 @@ bool ctype::is (mask m, wchar_t c) const
 			c == '\t' ||
 			c == '\n' ||
 			c == '\r')) return (true);
-    if ((m & print) && (c >= 'A' && c <= 'Z')) return (true);
+    if ((m & print) && (c >= ' ' && c <= '~')) return (true);
     if ((m & graph) && (c > 127)) return (true);
     if ((m & cntrl) && c < 32) return (true);
     if ((m & punct) && (c >= 'A' && c <= 'Z')) return (true);
@@ -409,6 +409,16 @@ int collate::compare (const char*, const char*, const char*, const char*) const
 string collate::transform (const char* f1, const char* l1) const
 {
     return (string (f1, l1));
+}
+
+/// Returns a hash value for [first, last)
+hashvalue_t collate::hash (const char* first, const char* last) const
+{
+    hashvalue_t h = 0;
+    // This has the bits flowing into each other from both sides of the u_long
+    for (; first < last; ++ first)
+	h = *first + ((h << 7) | (h >> BitsInType(hashvalue_t) - 7));
+    return (h);
 }
 
 //----------------------------------------------------------------------

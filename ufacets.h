@@ -26,6 +26,8 @@
 
 namespace ustl {
 
+//----------------------------------------------------------------------
+
 class ctype_base {
 public:
     typedef int mask;
@@ -62,6 +64,8 @@ public:
     const wchar_t*	narrow (const wchar_t* first, const wchar_t* last, char dfault, char* result) const;
 };
 
+//----------------------------------------------------------------------
+
 class numpunct : public locale::facet {
 public:
     static const locale::category_bit c_Category = locale::numpunct_bit;
@@ -73,6 +77,8 @@ public:
     string		truename (void) const;
     string		falsename (void) const;
 };
+
+//----------------------------------------------------------------------
 
 class num_get : public locale::facet {
 public:
@@ -97,6 +103,8 @@ public:
 #endif
 };
 
+//----------------------------------------------------------------------
+
 class num_put : public locale::facet {
 public:
     typedef uint32_t	iosflags_t;
@@ -118,15 +126,31 @@ private:
     inline iterator	write_buffer (const iterator& from, size_t n, iterator first, iterator last) const;
 };
 
-extern hashvalue_t char_hash (const char* first, const char* last); // in uhash.cc
+//----------------------------------------------------------------------
 
 class collate : public locale::facet {
+public:
+    static const locale::category_bit c_Category = locale::collate_bit;
 public:
     explicit		collate (const locale& loc);
     int			compare (const char* f1, const char* l1, const char* f2, const char* l2) const;
     string		transform (const char* f1, const char* l1) const;
-    inline hashvalue_t	hash (const char* f1, const char* l1) const { return (char_hash (f1, l1)); }
+    hashvalue_t		hash (const char* f1, const char* l1) const;
 };
+
+template <typename T>
+inline hashvalue_t hash_value (const T& v, const locale& loc = locale::global)
+{ return (use_facet<collate>(loc).hash (v.begin(), v.end())); }
+
+template <>
+inline hashvalue_t hash_value (const string::const_pointer& v, const locale& loc)
+{ return (use_facet<collate>(loc).hash (v, v + strlen(v))); }
+
+template <>
+inline hashvalue_t hash_value (const string::pointer& v, const locale& loc)
+{ return (use_facet<collate>(loc).hash (v, v + strlen(v))); }
+
+//----------------------------------------------------------------------
 
 class time_base {
 public:
@@ -151,6 +175,8 @@ public:
     explicit		time_put (const locale& loc);
     iterator		put (iterator first, iterator last, iosflags_t flags, const tm* v, wchar_t filler = ' ') const;
 };
+
+//----------------------------------------------------------------------
 
 class money_base {
 public:
@@ -186,6 +212,8 @@ public:
     iterator		put (iterator first, iterator last, iosflags_t flags, const string& v, wchar_t filler = ' ') const;
 };
 
+//----------------------------------------------------------------------
+
 class messages : public locale::facet {
 public:
     typedef int		catalog;
@@ -196,29 +224,46 @@ public:
     void		close (catalog c);
 };
 
-#define CTYPE_IS_FUNC(what)					\
-    inline bool is##what (wchar_t c, const locale& loc)		\
+//----------------------------------------------------------------------
+
+// libc ctype macros need to be undefined here.
+#undef isalnum
+#undef isalpha
+#undef iscntrl
+#undef isdigit
+#undef islower
+#undef isgraph
+#undef isprint
+#undef ispunct
+#undef isspace
+#undef isupper
+#undef isxdigit
+
+#define CTYPE_IS_FUNC(what)							\
+    inline bool is##what (wchar_t c, const locale& loc = locale::global)	\
     { return (use_facet<ctype>(loc).is (ctype_base::what, c)); }
 
-CTYPE_IS_FUNC(space)
-CTYPE_IS_FUNC(print)
-CTYPE_IS_FUNC(cntrl)
-CTYPE_IS_FUNC(upper)
-CTYPE_IS_FUNC(lower)
-CTYPE_IS_FUNC(alpha)
-CTYPE_IS_FUNC(digit)
-CTYPE_IS_FUNC(xdigit)
 CTYPE_IS_FUNC(alnum)
+CTYPE_IS_FUNC(alpha)
+CTYPE_IS_FUNC(cntrl)
+CTYPE_IS_FUNC(digit)
 CTYPE_IS_FUNC(graph)
+CTYPE_IS_FUNC(lower)
+CTYPE_IS_FUNC(print)
 CTYPE_IS_FUNC(punct)
+CTYPE_IS_FUNC(space)
+CTYPE_IS_FUNC(upper)
+CTYPE_IS_FUNC(xdigit)
 
 #undef CTYPE_IS_FUNC
 
-inline wchar_t toupper (wchar_t c, const locale& loc)
+inline wchar_t toupper (wchar_t c, const locale& loc = locale::global)
 { return (use_facet<ctype>(loc).toupper (c)); }
 
-inline wchar_t tolower (wchar_t c, const locale& loc)
+inline wchar_t tolower (wchar_t c, const locale& loc = locale::global)
 { return (use_facet<ctype>(loc).tolower (c)); }
+
+//----------------------------------------------------------------------
 
 }; // namespace ustl
 
