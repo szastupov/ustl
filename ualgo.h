@@ -429,11 +429,42 @@ inline void random_shuffle (RandomAccessIterator first, RandomAccessIterator las
 	iterator_swap (first, first + (rand() % distance (first, last)));
 }
 
+template <typename ConstPointer, typename Compare>
+int qsort_adapter (const void* p1, const void* p2)
+{
+    ConstPointer i1 = reinterpret_cast<ConstPointer>(p1);
+    ConstPointer i2 = reinterpret_cast<ConstPointer>(p2);
+    Compare comp;
+    return (comp (*i1, *i2) ? -1 : (comp (*i2, *i1) ? 1 : 0));
+}
+
 /// Sorts the container
 /// \ingroup SortingAlgorithms
 ///
 template <typename RandomAccessIterator, typename Compare>
-void sort (RandomAccessIterator first, RandomAccessIterator last, Compare comp)
+void sort (RandomAccessIterator first, RandomAccessIterator last, Compare)
+{
+    typedef typename iterator_traits<RandomAccessIterator>::value_type value_type;
+    typedef typename iterator_traits<RandomAccessIterator>::const_pointer const_pointer;
+    qsort (first, distance (first, last), sizeof(value_type),
+	   &qsort_adapter<const_pointer, Compare>);
+}
+
+/// Sorts the container
+/// \ingroup SortingAlgorithms
+///
+template <typename RandomAccessIterator>
+inline void sort (RandomAccessIterator first, RandomAccessIterator last)
+{
+    typedef typename iterator_traits<RandomAccessIterator>::value_type value_type;
+    sort (first, last, less<value_type>());
+}
+
+/// Sorts the container preserving order of equal elements.
+/// \ingroup SortingAlgorithms
+///
+template <typename RandomAccessIterator, typename Compare>
+void stable_sort (RandomAccessIterator first, RandomAccessIterator last, Compare comp)
 {
     for (RandomAccessIterator ip (first); ip != last; ++ ip) {
 	RandomAccessIterator minEl (ip), curEl (ip);
@@ -449,28 +480,10 @@ void sort (RandomAccessIterator first, RandomAccessIterator last, Compare comp)
 /// \ingroup SortingAlgorithms
 ///
 template <typename RandomAccessIterator>
-inline void sort (RandomAccessIterator first, RandomAccessIterator last)
-{
-    typedef typename iterator_traits<RandomAccessIterator>::value_type value_type;
-    sort (first, last, less<value_type>());
-}
-
-/// Sorts the container
-/// \ingroup SortingAlgorithms
-///
-template <typename RandomAccessIterator>
 inline void stable_sort (RandomAccessIterator first, RandomAccessIterator last)
 {
-    sort (first, last);
-}
-
-/// Sorts the container preserving order of equal elements.
-/// \ingroup SortingAlgorithms
-///
-template <typename RandomAccessIterator, typename Compare>
-inline void stable_sort (RandomAccessIterator first, RandomAccessIterator last, Compare comp)
-{
-    sort (first, last, comp);
+    typedef typename iterator_traits<RandomAccessIterator>::value_type value_type;
+    stable_sort (first, last, less<value_type>());
 }
 
 /// \brief Partially sort the range.

@@ -31,6 +31,7 @@ template <typename T>
 struct iterator_traits<T*> {
     typedef T		value_type;
     typedef ptrdiff_t	difference_type;
+    typedef const T*	const_pointer;
     typedef T*		pointer;
     typedef T&		reference;
 };
@@ -39,6 +40,7 @@ template <typename T>
 struct iterator_traits<const T*> {
     typedef T		value_type;
     typedef ptrdiff_t	difference_type;
+    typedef const T*	const_pointer;
     typedef const T*	pointer;
     typedef const T&	reference;
 };
@@ -47,6 +49,7 @@ template <>
 struct iterator_traits<void*> {
     typedef uint8_t	value_type;
     typedef ptrdiff_t	difference_type;
+    typedef const void*	const_pointer;
     typedef void*	pointer;
     typedef value_type&	reference;
 };
@@ -55,6 +58,7 @@ template <>
 struct iterator_traits<const void*> {
     typedef uint8_t		value_type;
     typedef ptrdiff_t		difference_type;
+    typedef const void*		const_pointer;
     typedef const void*		pointer;
     typedef const value_type&	reference;
 };

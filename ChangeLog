@@ -27,6 +27,18 @@ Release 0.6-1
 	* Pulled up vector/tuple stream operators into generic container
 		templates in uctrstm.h and made use of resulting macros.
 	* New TEMPLATE_TYPE macros to allow template building with macros.
+	* Fixed SSE3 detection in bsconf; thanks to Aloysius Indrayanto.
+	* Now using libc qsort in the sort algorithm.
+		This may give you trouble if you are using a custom comparator
+		that requires initialization outside the constructor. You can
+		write a wrapper class that does the initialization in the
+		constructor. Or, you can use stable_sort.
+		I'm doing this to both speed up the common case and to reuse
+		the functionality already linked to in libc. If you really
+		need to have a sort with a parametrized comparator and don't
+		want to change your code, file a bug report and I'll change
+		it back. I just don't think anyone is using this type of
+		construction.
 
 2005-01-17 Release 0.6
 	* The library is relicensed under the MIT License (was LGPL)
