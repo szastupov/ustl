@@ -67,6 +67,10 @@ template <class T> struct multiplies	: public binary_function<T,T,T> { inline T 
 template <class T> struct logical_and	: public binary_function<T,T,T> { inline T operator()(const T& a, const T& b) const { return (a && b); } };
 template <class T> struct logical_or	: public binary_function<T,T,T> { inline T operator()(const T& a, const T& b) const { return (a || b); } };
 template <class T> struct logical_not	: public unary_function<T,T>    { inline T operator()(const T& a) const { return (!a); } };
+template <class T> struct bitwise_or	: public binary_function<T,T,T> { inline T operator()(const T& a, const T& b) const { return (a | b); } };
+template <class T> struct bitwise_and	: public binary_function<T,T,T> { inline T operator()(const T& a, const T& b) const { return (a & b); } };
+template <class T> struct bitwise_xor	: public binary_function<T,T,T> { inline T operator()(const T& a, const T& b) const { return (a ^ b); } };
+template <class T> struct bitwise_not	: public unary_function<T,T>    { inline T operator()(const T& a) const { return (~a); } };
 template <class T> struct negate	: public unary_function<T,T>    { inline T operator()(const T& a) const { return (-a); } };
 template <class T> struct equal_to	: public binary_function<T,T,bool> { inline bool operator()(const T& a, const T& b) const { return (a == b); } };
 template <class T> struct not_equal_to	: public binary_function<T,T,bool> { inline bool operator()(const T& a, const T& b) const { return (!(a == b)); } };

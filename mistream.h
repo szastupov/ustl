@@ -83,6 +83,7 @@ public:
     inline void		link (const void* p, size_type n)	{ cmemlink::link (p, n); }
     inline void		link (const cmemlink& l)		{ cmemlink::link (l.cdata(), l.readable_size()); }
     inline void		link (const void* f, const void* l)	{ cmemlink::link (f, l); }
+			OVERLOAD_POINTER_AND_SIZE_T_V2(link, const void*)
     virtual void	unlink (void);
     inline void		seek (uoff_t newPos);
     inline void		seek (const_iterator newPos);
@@ -102,13 +103,6 @@ public:
     inline size_t	stream_size (void) const;
     template <typename T>
     inline void		iread (T& v);
-    inline void		link (const void* p, int n)		{ link (p, size_type(n)); }
-    inline void		link (const void* p, long n)		{ link (p, size_type(n)); }
-#if SIZE_OF_SIZE_T == SIZE_OF_INT // Numbers should NEVER be implicitly cast to a pointer, dammit!
-    inline void		link (const void* p, unsigned long n)	{ link (p, size_type(n)); }
-#else
-    inline void		link (const void* p, unsigned int n)	{ link (p, size_type(n)); }
-#endif
 private:
     uoff_t		m_Pos;		///< The current read position.
 };

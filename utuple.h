@@ -52,7 +52,7 @@ public:
     inline			tuple (const tuple<N,T2>& t)	{ for (uoff_t i = 0; i < N; ++ i) m_v[i] = T(t.at(i)); }
     inline			tuple (const tuple<N,T>& t)	{ copy_n (t.begin(), N, m_v); }
     inline			tuple (const_pointer v)		{ copy_n (v, N, m_v); }
-    inline			tuple (const_reference v0);
+    explicit inline		tuple (const_reference v0);
     inline			tuple (const_reference v0, const_reference v1);
     inline			tuple (const_reference v0, const_reference v1, const_reference v2);
     inline			tuple (const_reference v0, const_reference v1, const_reference v2, const_reference v3);

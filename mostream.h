@@ -90,13 +90,7 @@ public:
     inline void		link (void* p, size_type n)		{ memlink::link (p, n); }
     inline void		link (memlink& l)			{ memlink::link (l.data(), l.writable_size()); }
     inline void		link (void* f, void* l)			{ memlink::link (f, l); }
-    inline void		link (void* p, int n)			{ link (p, size_type(n)); }
-    inline void		link (void* p, long n)			{ link (p, size_type(n)); }
-#if SIZE_OF_SIZE_T == SIZE_OF_INT // Numbers should NEVER be implicitly cast to a pointer, dammit!
-    inline void		link (void* p, unsigned long n)		{ link (p, size_type(n)); }
-#else
-    inline void		link (void* p, unsigned int n)		{ link (p, size_type(n)); }
-#endif
+			OVERLOAD_POINTER_AND_SIZE_T_V2(link, void*)
 private:
     uoff_t		m_Pos;	///< Current write position.
 };

@@ -71,6 +71,8 @@ public:
     inline void		link (memlink& l);
     inline void		link (const void* first, const void* last);
     inline void		link (void* first, void* last);
+			OVERLOAD_POINTER_AND_SIZE_T_V2(link, void*)
+			OVERLOAD_POINTER_AND_SIZE_T_V2(link, const void*)
     virtual void	unlink (void);
     inline void		copy (const cmemlink& l);
     inline void		copy (const void* p, size_type n);
@@ -88,17 +90,6 @@ public:
     void		insert (iterator start, size_type size);
     void		erase (iterator start, size_type size);
     void		read (istream& is);
-    inline void		link (void* p, int n)			{ link (p, size_type(n)); }
-    inline void		link (const void* p, int n)		{ link (p, size_type(n)); }
-    inline void		link (void* p, long n)			{ link (p, size_type(n)); }
-    inline void		link (const void* p, long n)		{ link (p, size_type(n)); }
-#if SIZE_OF_SIZE_T == SIZE_OF_INT // Numbers should NEVER be implicitly cast to a pointer, dammit!
-    inline void		link (void* p, unsigned long n)		{ link (p, size_type(n)); }
-    inline void		link (const void* p, unsigned long n)	{ link (p, size_type(n)); }
-#else
-    inline void		link (void* p, unsigned int n)		{ link (p, size_type(n)); }
-    inline void		link (const void* p, unsigned int n)	{ link (p, size_type(n)); }
-#endif
 protected:
     virtual void	constructBlock (void*, size_type) const;
     virtual void	destructBlock (void*, size_type) const;

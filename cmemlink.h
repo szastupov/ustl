@@ -68,8 +68,9 @@ public:
 			cmemlink (const cmemlink& l);
     inline virtual     ~cmemlink (void) {}
     void		link (const void* p, size_type n);
-    inline void		link (const cmemlink& l);
     inline void		link (const void* first, const void* last);
+			OVERLOAD_POINTER_AND_SIZE_T_V2(link, const void*)
+    inline void		link (const cmemlink& l);
     virtual void	unlink (void);
     const cmemlink&	operator= (const cmemlink& l);
     bool		operator== (const cmemlink& l) const;
@@ -86,13 +87,6 @@ public:
     void		write (ostream& os) const;
     size_type		stream_size (void) const;
     void		write_file (const char* filename, int mode = 0644) const;
-    inline void		link (const void* p, int n)		{ link (p, size_type(n)); }
-    inline void		link (const void* p, long n)		{ link (p, size_type(n)); }
-#if SIZE_OF_SIZE_T == SIZE_OF_INT // Numbers should NEVER be implicitly cast to a pointer, dammit!
-    inline void		link (const void* p, unsigned long n)	{ link (p, size_type(n)); }
-#else
-    inline void		link (const void* p, unsigned int n)	{ link (p, size_type(n)); }
-#endif
 protected:
     virtual size_type	elementSize (void) const;
     inline size_type	elementBytes (size_type n) const	{ return (n * elementSize()); }

@@ -23,6 +23,7 @@
 #define ULAALGO_H_2E403D182E83FB596AFB800E68B255A1
 
 #include "umatrix.h"
+#include "simd.h"
 
 namespace ustl {
 
