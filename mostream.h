@@ -70,6 +70,7 @@ public:
     inline bool		aligned (size_t grain = c_DefaultAlignment) const;
     inline void		align (size_t grain = c_DefaultAlignment);
     void		write (const void* buffer, size_t size);
+    inline void		write (const cmemlink& buf);
     virtual void	read (istream& is);
     virtual void	write (ostream& os) const;
     virtual size_t	stream_size (void) const;
@@ -153,6 +154,12 @@ inline bool ostream::aligned (size_t grain) const
 inline void ostream::align (size_t grain)
 {
     seek (Align (pos(), grain));
+}
+
+/// Writes the contents of \p buf into the stream as a raw dump.
+inline void ostream::write (const cmemlink& buf)
+{
+    write (buf.begin(), buf.size());
 }
 
 /// Writes any type to the stream.

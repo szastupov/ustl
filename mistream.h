@@ -81,6 +81,7 @@ public:
     inline bool		aligned (size_t grain = c_DefaultAlignment) const;
     inline void		align (size_t grain = c_DefaultAlignment);
     void		read (void* buffer, size_t size);
+    inline void		read (memlink& buf);
     virtual void	read (istream& is);
     virtual void	write (ostream& is) const;
     virtual size_t	stream_size (void) const;
@@ -173,6 +174,12 @@ inline bool istream::aligned (size_t grain) const
 inline void istream::align (size_t grain)
 {
     seek (Align (pos(), grain));
+}
+
+/// Reads \p buf.size() bytes into \p buf.
+inline void istream::read (memlink& buf)
+{
+    read (buf.begin(), buf.size());
 }
 
 /// Reads any type from the stream
