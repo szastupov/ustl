@@ -4,8 +4,7 @@
 // This file is free software, distributed under the MIT License.
 //
 
-#include <ustl.h>
-using namespace ustl;
+#include "stdtest.h"
 
 void PrintVector (const vector<int>& v)
 {
@@ -90,7 +89,7 @@ void TestBigCopy (const size_t size, const T magic)
     cout << endl;
 }
 
-int main (void)
+void TestAlgorithms (void)
 {
     const int c_TestNumbers[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 11, 12, 13, 13, 14, 15, 16, 17, 18 };
     const int* first = c_TestNumbers;
@@ -271,7 +270,7 @@ int main (void)
     sort (v);
     PrintVector (v);
     v.assign (first, last);
-
-    return (EXIT_SUCCESS);
 }
+
+StdBvtMain (TestAlgorithms)
 

@@ -7,8 +7,7 @@
 // Tests matrix operations
 //
 
-#include <ustl.h>
-using namespace ustl;
+#include "stdtest.h"
 
 template <size_t NX, size_t NY, typename T>
 void TestMatrix (void)
@@ -60,7 +59,7 @@ void TestMatrix (void)
     cout << "    vt = " << vt << endl;
 }
 
-int main (void)
+void TestMatrixAlgorithms (void)
 {
     cout << "========================================" << endl;
     cout << "Testing 4x4 int matrix:" << endl;
@@ -71,6 +70,7 @@ int main (void)
     cout << "========================================" << endl;
     cout.set_precision (1);
     TestMatrix<4,4,float>();
-    return (EXIT_SUCCESS);
 }
+
+StdBvtMain (TestMatrixAlgorithms)
 

@@ -4,10 +4,9 @@
 // This file is free software, distributed under the MIT License.
 //
 
-#include <ustl.h>
-using namespace ustl;
+#include "stdtest.h"
 
-int main (void)
+void TestEnumArithmetic (void)
 {
     enum EFruit {
 	apple,
@@ -30,7 +29,7 @@ int main (void)
     cout << "Testing operator+" << endl;
     cout << "apple = " << fruits [apple] << endl;
     cout << "peach = " << fruits [apple + 3] << endl;
-
-    return (EXIT_SUCCESS);
 }
+
+StdBvtMain (TestEnumArithmetic)
 

@@ -4,8 +4,7 @@
 // This file is free software, distributed under the MIT License.
 //
 
-#include <ustl.h>
-using namespace ustl;
+#include "stdtest.h"
 
 void PrintBlock (const cmemlink& l)
 {
@@ -16,7 +15,7 @@ void PrintBlock (const cmemlink& l)
     cout << endl;
 }
 
-int main (void)
+void TestObjectVector (void)
 {
     vector<memblock> v;
     const size_t nNumbers = 1000;
@@ -61,6 +60,7 @@ int main (void)
     cout << "---" << endl;
     for_each (v.rbegin(), v.rend(), &PrintBlock);
     cout << "---" << endl;
-    return (EXIT_SUCCESS);
 }
+
+StdBvtMain (TestObjectVector)
 

@@ -4,10 +4,9 @@
 // This file is free software, distributed under the MIT License.
 //
 
-#include <ustl.h>
-using namespace ustl;
+#include "stdtest.h"
 
-int main (void)
+void TestBitset (void)
 {
     bitset<30> bs1;
     cout << "bitset<" << bs1.size() << "> bs1: capacity() = " << bs1.capacity() << ", sizeof() = " << sizeof(bs1) << endl;
@@ -68,7 +67,7 @@ int main (void)
     bs4 = 0x50505050;
     bs4 = bs4 ^ 0x30303030;
     cout << "bs4 ^ bs1;  bs4 = " << bs4 << endl;
-
-    return (EXIT_SUCCESS);
 }
+
+StdBvtMain (TestBitset)
 

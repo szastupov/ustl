@@ -4,8 +4,7 @@
 // This file is free software, distributed under the MIT License.
 //
 
-#include <ustl.h>
-using namespace ustl;
+#include "stdtest.h"
 
 typedef multimap<int,string> empmap_t;
 typedef empmap_t::const_iterator citer_t;
@@ -18,7 +17,7 @@ void PrintEntries (citer_t first, citer_t last)
 
 inline void PrintEntries (const empmap_t& m)	{ PrintEntries (m.begin(), m.end()); }
 
-int main (void)
+void TestMultiMap (void)
 {
     empmap_t employees;
     employees.insert (make_pair (27000, string("Dave"))); 
@@ -52,7 +51,7 @@ int main (void)
     cout << "Firing dumb employees:" << endl;
     employees.erase (employees.begin(), employees.begin() + 1);
     PrintEntries (employees);
-
-    return (EXIT_SUCCESS);
 }
+
+StdBvtMain (TestMultiMap)
 

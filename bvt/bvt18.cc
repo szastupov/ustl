@@ -4,8 +4,7 @@
 // This file is free software, distributed under the MIT License.
 //
 
-#include <ustl.h>
-using namespace ustl;
+#include "stdtest.h"
 
 template <size_t N, typename T>
 void TestTuple (const char* ctrType)
@@ -53,7 +52,7 @@ void TestTuple (const char* ctrType)
     cout << "pt1 = pt1 - pt2:\t" << pt1 << endl;
 }
 
-int main (void)
+void TestIntegralTuples (void)
 {
     TestTuple<4,float> ("tuple<4,float>");
     TestTuple<2,float> ("tuple<2,float>");
@@ -74,7 +73,7 @@ int main (void)
     strv[1] = "str1";
     strv[2] = "str2";
     cout << "str: " << strv << endl;
-
-    return (EXIT_SUCCESS);
 }
+
+StdBvtMain (TestIntegralTuples)
 

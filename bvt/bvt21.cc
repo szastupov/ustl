@@ -7,10 +7,9 @@
 // Tests functions from uutility.h
 //
 
-#include <ustl.h>
-using namespace ustl;
+#include "stdtest.h"
 
-int main (void)
+void TestUtility (void)
 {
     cout << "DivRU(13,5) = " << DivRU(13,5) << endl;
     cout << "DivRU(15,5) = " << DivRU(15,5) << endl;
@@ -105,6 +104,7 @@ int main (void)
     cout << "min(6U,1U) = " << min(6U,1U) << endl;
     cout << "max(-3,-6) = " << max(-3,-6) << endl;
     cout << "max(-3L,6L) = " << max(-3L,6L) << endl;
-    return (EXIT_SUCCESS);
 }
+
+StdBvtMain (TestUtility)
 

@@ -4,8 +4,7 @@
 // This file is free software, distributed under the MIT License.
 //
 
-#include <ustl.h>
-using namespace ustl;
+#include "stdtest.h"
 
 void PrintVector (const vector<int>& v)
 {
@@ -30,7 +29,7 @@ public:
 
 NOT_STREAMABLE(A)
 
-int main (void)
+void TestVector (void)
 {
     const int c_TestNumbers[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 13, 14, 15, 16, 17, 18 };
     vector<int> v;
@@ -78,6 +77,7 @@ int main (void)
     ctv.pop_back();
     cout << "Class insertion testing successful" << endl;
     cout.flush();
-    return (EXIT_SUCCESS);
 }
+
+StdBvtMain (TestVector)
 

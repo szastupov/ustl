@@ -4,10 +4,9 @@
 // This file is free software, distributed under the MIT License.
 //
 
-#include <ustl.h>
-using namespace ustl;
+#include "stdtest.h"
 
-int main (void)
+void TestStringStreams (void)
 {
     const unsigned char magic_Char = 'c';
     const unsigned short magic_Short = 1234;
@@ -83,7 +82,7 @@ int main (void)
     cout << "Dump:" << endl;
     cout << reinterpret_cast<const char*>(b.cdata()) << endl;
     cout << endl;
-
-    return (EXIT_SUCCESS);
 }
+
+StdBvtMain (TestStringStreams)
 

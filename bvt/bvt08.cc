@@ -4,15 +4,14 @@
 // This file is free software, distributed under the MIT License.
 //
 
-#include <ustl.h>
-using namespace ustl;
+#include "stdtest.h"
 
 inline void PrintString (const string& str)
 {
     cout << str << endl;
 }
 
-int main (void)
+void TestStringVector (void)
 {
     vector<string> v;
 
@@ -54,7 +53,6 @@ int main (void)
     v.insert (v.begin() + 1, v2.begin() + 1, v2.begin() + 1 + 3);
     cout << "After insert(1,1,3):" << endl;
     for_each (v, &PrintString);
-
-    return (EXIT_SUCCESS);
 }
 
+StdBvtMain (TestStringVector)

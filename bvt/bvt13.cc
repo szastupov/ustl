@@ -7,16 +7,15 @@
 // This file is free software, distributed under the MIT License.
 //
 
-#include <ustl.h>
-using namespace ustl;
+#include "stdtest.h"
 
-int main (void)
+void TestCoutCinCerr (void)
 {
     string testStr;
     cin >> testStr;
     if (testStr != "//") {
 	cout << "You must put bvt13.cc on stdin (read " << testStr << ")" << endl;
-	return (-1);
+	return;
     }
     uint32_t n1 = 0, n3 = 0;
     uint16_t n2 = 0;
@@ -31,6 +30,7 @@ int main (void)
 	cout << testString;
     cout.flush();
     cerr << "All done." << endl;
-    return (EXIT_SUCCESS);
 }
+
+StdBvtMain (TestCoutCinCerr)
 

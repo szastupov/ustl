@@ -4,10 +4,9 @@
 // This file is free software, distributed under the MIT License.
 //
 
-#include <ustl.h>
-using namespace ustl;
+#include "stdtest.h"
 
-int main (void)
+void TestStreams (void)
 {
     const uint8_t magic_Char = 0x12;
     const uint16_t magic_Short = 0x1234;
@@ -117,7 +116,7 @@ int main (void)
 	cout.format ("%02X ", *pc++);
     }
     cout << endl;
-
-    return (EXIT_SUCCESS);
 }
+
+StdBvtMain (TestStreams)
 

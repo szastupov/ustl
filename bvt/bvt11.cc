@@ -4,8 +4,7 @@
 // This file is free software, distributed under the MIT License.
 //
 
-#include <ustl.h>
-using namespace ustl;
+#include "stdtest.h"
 
 void PrintVector (const int* first, const int* last)
 {
@@ -15,7 +14,7 @@ void PrintVector (const int* first, const int* last)
     cout << " }" << endl;
 }
 
-int main (void)
+void TestSetAndMultiset (void)
 {
     const int vv[] = { 1, 8, 9, 2, 3, 1, 1, 4, 6, 1, 3, 4 };
     set<int> v (vv, vv + VectorSize(vv));
@@ -34,4 +33,6 @@ int main (void)
     mv.erase (3);
     PrintVector (mv.begin(), mv.end());
 }
+
+StdBvtMain (TestSetAndMultiset)
 

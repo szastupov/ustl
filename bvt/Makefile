@@ -21,7 +21,7 @@ all:	${BVTS} bench
 run:	${BVTS}
 	@for i in ${BVTS}; do echo "Running $$i"; ./$$i < $$i.cc | diff $$i.std -; done
 
-bvt%:	bvt%.o
+bvt%:	bvt%.o stdtest.o
 	@echo "Linking $@ ..."
 	@${LD} ${LDFLAGS} -o $@ $^ ${LIBS}
 

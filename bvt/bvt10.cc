@@ -4,8 +4,7 @@
 // This file is free software, distributed under the MIT License.
 //
 
-#include <ustl.h>
-using namespace ustl;
+#include "stdtest.h"
 
 void PrintVector (const int* first, const int* last)
 {
@@ -38,7 +37,7 @@ void PrintAVector (const A* first, const A* last)
     cout << " }" << endl;
 }
 
-int main (void)
+void TestFunctors (void)
 {
     vector<int> v;
     v.resize (20);
@@ -158,7 +157,7 @@ int main (void)
     cout << "add next:\t\t";
     transform (av.begin(), av.end() - 1, av.begin() + 1, av.begin(), mem_var2(&A::m_v, plus<int>()));
     PrintAVector (av.begin(), av.end());
-
-    return (EXIT_SUCCESS);
 }
+
+StdBvtMain (TestFunctors)
 

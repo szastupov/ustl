@@ -4,8 +4,7 @@
 // This file is free software, distributed under the MIT License.
 //
 
-#include <ustl.h>
-using namespace ustl;
+#include "stdtest.h"
 
 void WriteCML (const cmemlink& l)
 {
@@ -48,9 +47,5 @@ void TestCML (void)
     WriteCML (a);
 }
 
-int main (void)
-{
-    TestCML();
-    return (EXIT_SUCCESS);
-}
+StdBvtMain (TestCML)
 

@@ -4,8 +4,7 @@
 // This file is free software, distributed under the MIT License.
 //
 
-#include <ustl.h>
-using namespace ustl;
+#include "stdtest.h"
 
 void Widen (const string& str, vector<wchar_t>& result)
 {
@@ -20,7 +19,7 @@ void DumpWchars (const vector<wchar_t>& v)
 	cout << ' ' << uint32_t(*i);
 }
 
-int main (void)
+void TestUTF8 (void)
 {
     cout << "Generating Unicode characters ";
     vector<wchar_t> srcChars;
@@ -86,7 +85,7 @@ int main (void)
     Widen (ws, decChars);
     DumpWchars (decChars);
     cout << endl;
-
-    return (EXIT_SUCCESS);
 }
+
+StdBvtMain (TestUTF8)
 

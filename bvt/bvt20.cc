@@ -4,10 +4,9 @@
 // This file is free software, distributed under the MIT License.
 //
 
-#include <ustl.h>
-using namespace ustl;
+#include "stdtest.h"
 
-int main (void)
+void TestStackAndQueue (void)
 {
     stack<vector<int> > s;
     cout << "Testing stack: ";
@@ -30,7 +29,7 @@ int main (void)
 	q.pop();
     }
     cout << endl;
-
-    return (EXIT_SUCCESS);
 }
+
+StdBvtMain (TestStackAndQueue)
 

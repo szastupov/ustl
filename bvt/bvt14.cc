@@ -4,10 +4,9 @@
 // This file is free software, distributed under the MIT License.
 //
 
-#include <ustl.h>
-using namespace ustl;
+#include "stdtest.h"
 
-int main (void)
+void TestMap (void)
 {
     typedef map<string,int> monthmap_t;
     monthmap_t months;
@@ -56,7 +55,7 @@ int main (void)
     for (i = mcopy.begin(); i < mcopy.end(); ++ i)
 	cout << i->first << " ";
     cout << endl;
-
-    return (EXIT_SUCCESS);
 }
+
+StdBvtMain (TestMap)
 

@@ -4,10 +4,9 @@
 // This file is free software, distributed under the MIT License.
 //
 
-#include <ustl.h>
-using namespace ustl;
+#include "stdtest.h"
 
-int main (void)
+void ObjectSerialization (void)
 {
     const void* pBufC;
     void* pBuf;
@@ -15,7 +14,7 @@ int main (void)
     string testString ("TestString");
     const string* pStrC = NULL;
     string* pStr = NULL;
-    vector<int> tv (6);
+    vector<uint16_t> tv (7);
     static const char* rws[2] = { "wrong", "right" };
 
     const size_t bufSize = stream_size_of(pBufC) +
@@ -42,7 +41,7 @@ int main (void)
     os << &testString; expect += stream_size_of(&testString);
     cout << "Write string*, pos is " << rws[os.pos() == expect] << endl;
     os << tv; expect += stream_size_of(tv);
-    cout << "Write vector<int>(6), pos is " << rws[os.pos() == expect] << endl;
+    cout << "Write vector<uint16_t>(7), pos is " << rws[os.pos() == expect] << endl;
     if (os.pos() != bufSize)
 	cout << "Incorrect number of bytes written: " << os.pos() << " of " << bufSize << endl;
     
@@ -70,14 +69,14 @@ int main (void)
     expect += stream_size_of(pStr);
     cout << "Read string*, pos is " << rws[is.pos() == expect];
     cout << ", value is " << rws[pStr == &testString] << endl;
-    vector<int> rv;
+    vector<uint16_t> rv;
     is >> rv;
     expect += stream_size_of(rv);
-    cout << "Read vector<int>(" << rv.size() << "), pos is " << rws[is.pos() == expect];
+    cout << "Read vector<uint16_t>(" << rv.size() << "), pos is " << rws[is.pos() == expect];
     cout << ", value is " << rws[rv == tv] << endl;
     if (is.pos() != bufSize)
 	cout << "Incorrect number of bytes read: " << is.pos() << " of " << bufSize << endl;
-
-    return (EXIT_SUCCESS);
 }
+
+StdBvtMain (ObjectSerialization)
 

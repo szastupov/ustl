@@ -4,12 +4,11 @@
 // This file is free software, distributed under the MIT License.
 //
 
-#include <ustl.h>
-using namespace ustl;
+#include "stdtest.h"
 
 void MyFormat (const char* fmt, ...);
 
-int main (void)
+void TestString (void)
 {
     const char c_TestString1[] = "123456789012345678901234567890";
     const char c_TestString2[] = "abcdefghijklmnopqrstuvwxyz";
@@ -120,8 +119,6 @@ int main (void)
     cout << "<" << s2.length() << " bytes of " << s2.capacity();
     cout << "> Format '" << s2 << '\''<< endl;
     MyFormat ("'<const] %d, %s, 0x%08X'", 42, "[rfile>", 0xDEADBEEF);
-
-    return (EXIT_SUCCESS);
 }
 
 void MyFormat (const char* fmt, ...)
@@ -134,4 +131,6 @@ void MyFormat (const char* fmt, ...)
     cout << "Custom vararg MyFormat: " << buf << endl;
     va_end (args);
 }
+
+StdBvtMain (TestString)
 

@@ -7,8 +7,7 @@
 // Tests SIMD algorithms and specializations.
 //
 
-#include <ustl.h>
-using namespace ustl;
+#include "stdtest.h"
 using namespace ustl::simd;
 
 template <typename Ctr>
@@ -92,7 +91,7 @@ void TestConversion (const char* ctrType)
     cout << src << " -> " << dst << endl;
 }
 
-int main (void)
+void TestSimdAlgorithms (void)
 {
     TestCtr<tuple<8,uint8_t> >("uint8_t[8]");
     TestCtr<tuple<8,int8_t> >("int8_t[8]");
@@ -121,7 +120,7 @@ int main (void)
     #else
 	cout << "CAN'T TEST: math.h functions are not available on this platform." << endl;
     #endif
-
-    return (EXIT_SUCCESS);
 }
+
+StdBvtMain (TestSimdAlgorithms)
 
