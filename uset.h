@@ -34,10 +34,10 @@ public:
     typedef typename vector<T>::reverse_iterator	reverse_iterator;
     typedef typename vector<T>::const_reverse_iterator	const_reverse_iterator;
 public:
-    				set (void);
-    explicit			set (size_type n);
-    				set (const set<T>& v);
-				set (const_iterator i1, const_iterator i2);
+    inline			set (void);
+    explicit inline		set (size_type n);
+    inline			set (const set<T>& v);
+    inline			set (const_iterator i1, const_iterator i2);
     inline const set<T>&	operator= (const set<T>& v);
     inline void			assign (const_iterator i1, const_iterator i2);
     inline void			push_back (const_reference v);
@@ -58,28 +58,28 @@ public:
 
 /// Default constructor.
 template <typename T>
-set<T>::set (void)
+inline set<T>::set (void)
 : vector<T> ()
 {
 }
 
 /// Creates a container able to hold at least \p n elements.
 template <typename T>
-set<T>::set (size_type n)
+inline set<T>::set (size_type n)
 : vector<T> (n)
 {
 }
 
 /// Creates a copy of \p v.
 template <typename T>
-set<T>::set (const set<T>& v)
+inline set<T>::set (const set<T>& v)
 : vector<T> (v)
 {
 }
 
 /// Inserts elements from range [i1,i2), which does not have to be sorted.
 template <typename T>
-set<T>::set (const_iterator i1, const_iterator i2)
+inline set<T>::set (const_iterator i1, const_iterator i2)
 : vector<T> ()
 {
     insert (i1, i2);

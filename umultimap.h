@@ -39,10 +39,10 @@ public:
     typedef pair<const_iterator,const_iterator>		const_range_t;
     typedef pair<iterator,iterator>			range_t;
 public:
-    				multimap (void);
-    explicit			multimap (size_type n);
-    				multimap (const multimap<K,V>& v);
-				multimap (const_iterator i1, const_iterator i2);
+    inline			multimap (void);
+    explicit inline		multimap (size_type n);
+    inline			multimap (const multimap<K,V>& v);
+    inline			multimap (const_iterator i1, const_iterator i2);
     inline const multimap<K,V>&	operator= (const multimap<K,V>& v);
     inline void			assign (const_iterator i1, const_iterator i2);
     size_type			count (const_key_ref k) const;
@@ -66,28 +66,28 @@ public:
 
 /// Default constructor.
 template <typename K, typename V>
-multimap<K,V>::multimap (void)
+inline multimap<K,V>::multimap (void)
 : vector<pair<K,V> > ()
 {
 }
 
 /// Creates container with enough space for \p n elements.
 template <typename K, typename V>
-multimap<K,V>::multimap (size_type n)
+inline multimap<K,V>::multimap (size_type n)
 : vector<pair<K,V> > (n)
 {
 }
 
 /// Creates a copy of \p v.
 template <typename K, typename V>
-multimap<K,V>::multimap (const multimap<K,V>& v)
+inline multimap<K,V>::multimap (const multimap<K,V>& v)
 : vector<pair<K,V> > (v)
 {
 }
 
 /// Inserts elements from range [i1,i2).
 template <typename K, typename V>
-multimap<K,V>::multimap (const_iterator i1, const_iterator i2)
+inline multimap<K,V>::multimap (const_iterator i1, const_iterator i2)
 : vector<pair<K,V> > ()
 {
     insert (i1, i2);

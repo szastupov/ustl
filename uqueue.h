@@ -29,8 +29,8 @@ public:
     typedef typename Sequence::const_reference	const_reference;
     typedef typename Sequence::pointer		pointer;
 public:
-				queue (void);
-    explicit			queue (const Sequence& s);
+    inline			queue (void);
+    explicit inline		queue (const Sequence& s);
     inline bool			empty (void) const;
     inline size_type		size (void) const;
     inline reference		front (void);
@@ -48,7 +48,7 @@ private:
 
 /// Default constructor.
 template <class Sequence>
-queue<Sequence>::queue (void)
+inline queue<Sequence>::queue (void)
 : m_Storage (),
   m_Front (0)
 {
@@ -56,7 +56,7 @@ queue<Sequence>::queue (void)
 
 /// Copies contents of \p s.
 template <class Sequence>
-queue<Sequence>::queue (const Sequence& s)
+inline queue<Sequence>::queue (const Sequence& s)
 : m_Storage (s),
   m_Front (0)
 {

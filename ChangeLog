@@ -1,5 +1,9 @@
 Release 0.6-1
 	* Increased the version number after relase.
+	* Optimized vector push_back
+	* ostream will now zero bytes skipped by align.
+	* memblock will no longer zero newly allocated storage.
+	* Inlined empty constructors on map,multimap,set,multiset.
 
 2005-01-17 Release 0.6
 	* The library is relicensed under the MIT License (was LGPL)

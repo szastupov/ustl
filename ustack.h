@@ -26,8 +26,8 @@ public:
     typedef typename Sequence::const_reference	const_reference;
     typedef typename Sequence::pointer		pointer;
 public:
-				stack (void);
-    explicit			stack (const Sequence& s);
+    inline			stack (void);
+    explicit inline		stack (const Sequence& s);
     inline bool			empty (void) const;
     inline size_type		size (void) const;
     inline reference		top (void);
@@ -42,14 +42,14 @@ private:
 
 /// Default constructor.
 template <class Sequence>
-stack<Sequence>::stack (void)
+inline stack<Sequence>::stack (void)
 : m_Storage ()
 {
 }
 
 /// Copies contents of \p s.
 template <class Sequence>
-stack<Sequence>::stack (const Sequence& s)
+inline stack<Sequence>::stack (const Sequence& s)
 : m_Storage (s)
 {
 }

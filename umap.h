@@ -39,10 +39,10 @@ public:
     typedef pair<const_iterator,const_iterator>		const_range_t;
     typedef pair<iterator,iterator>			range_t;
 public:
-    				map (void);
-    explicit			map (size_type n);
-    				map (const map<K,V>& v);
-				map (const_iterator i1, const_iterator i2);
+    inline			map (void);
+    explicit inline		map (size_type n);
+    inline			map (const map<K,V>& v);
+    inline			map (const_iterator i1, const_iterator i2);
     inline const map<K,V>&	operator= (const map<K,V>& v);
     inline const_data_ref	operator[] (const_key_ref i) const;
     data_type&			operator[] (const_key_ref i);
@@ -67,28 +67,28 @@ public:
 
 /// Default constructor.
 template <typename K, typename V>
-map<K,V>::map (void)
+inline map<K,V>::map (void)
 : vector<pair<K,V> > ()
 {
 }
 
 /// Constructs the container with space for \p n elements.
 template <typename K, typename V>
-map<K,V>::map (size_type n)
+inline map<K,V>::map (size_type n)
 : vector<pair<K,V> > (n)
 {
 }
 
 /// Copies contents of \p v.
 template <typename K, typename V>
-map<K,V>::map (const map<K,V>& v)
+inline map<K,V>::map (const map<K,V>& v)
 : vector<pair<K,V> > (v)
 {
 }
 
 /// Inserts elements from range [i1,i2)
 template <typename K, typename V>
-map<K,V>::map (const_iterator i1, const_iterator i2)
+inline map<K,V>::map (const_iterator i1, const_iterator i2)
 : vector<pair<K,V> > ()
 {
     insert (i1, i2);

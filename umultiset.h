@@ -34,10 +34,10 @@ public:
     typedef typename vector<T>::reverse_iterator	reverse_iterator;
     typedef typename vector<T>::const_reverse_iterator	const_reverse_iterator;
 public:
-    				multiset (void);
-    explicit			multiset (size_type n);
-    				multiset (const multiset<T>& v);
-				multiset (const_iterator i1, const_iterator i2);
+    inline			multiset (void);
+    explicit inline		multiset (size_type n);
+    inline			multiset (const multiset<T>& v);
+    inline			multiset (const_iterator i1, const_iterator i2);
     inline const multiset<T>&	operator= (const multiset<T>& v);
     inline void			assign (const_iterator i1, const_iterator i2);
     size_type			count (const_reference v) const;
@@ -57,28 +57,28 @@ public:
 
 /// Default constructor.
 template <typename T>
-multiset<T>::multiset (void)
+inline multiset<T>::multiset (void)
 : vector<T> ()
 {
 }
 
 /// Creates the container with space enough to hold \p n elements.
 template <typename T>
-multiset<T>::multiset (size_type n)
+inline multiset<T>::multiset (size_type n)
 : vector<T> (n)
 {
 }
 
 /// Creates a copy of \p v.
 template <typename T>
-multiset<T>::multiset (const multiset<T>& v)
+inline multiset<T>::multiset (const multiset<T>& v)
 : vector<T> (v)
 {
 }
 
 /// Copies range [i1,i2)
 template <typename T>
-multiset<T>::multiset (const_iterator i1, const_iterator i2)
+inline multiset<T>::multiset (const_iterator i1, const_iterator i2)
 : vector<T> ()
 {
     insert (i1, i2);
