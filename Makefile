@@ -20,7 +20,7 @@ DOCT	= ustldoc.in
 TOCLEAN	= config.status config.log
 
 ifdef STANDALONE
-LIBS	= -lsupc++ -lgcc_s -lc
+LIBS	= -lsupc++ -lgcc -lgcc_eh -lc
 endif
 
 ########################################################################
@@ -88,6 +88,11 @@ uninstall-incs:
 %.s:	%.cc
 	@echo "    Compiling $< to assembly ..."
 	@${CXX} ${CXXFLAGS} -S -o $@ -c $<
+
+gch:	${INCDIR}/ustl.h.gch
+${INCDIR}/ustl.h.gch:	${INCS}
+	@echo "    Creating precompiled header ..."
+	@${CXX} ${CXXFLAGS} -o $@ -c ${INCDIR}/ustl.h
 
 clean:
 	@echo "Removing generated files ..."
