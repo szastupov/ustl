@@ -40,7 +40,7 @@ public:
     virtual void	read (istream& is);
     virtual void	write (ostream& os) const;
     virtual size_t	stream_size (void) const;
-private:
+protected:
     string		m_Arg;
 };
 
@@ -82,7 +82,7 @@ public:
     virtual void	read (istream& is);
     virtual void	write (ostream& os) const;
     virtual size_t	stream_size (void) const;
-private:
+protected:
     string		m_Arg;
 };
 
