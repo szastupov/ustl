@@ -53,6 +53,8 @@ namespace ustl {
 /// Argument that is used only in debug builds (as in an assert)
 #ifndef NDEBUG
     #define DebugArg(x)	x
+#elif defined(__GNUC__)
+    #define DebugArg(x)	x __attribute__((unused))
 #else
     #define DebugArg(x)
 #endif
@@ -63,7 +65,11 @@ namespace ustl {
 #define eachfor(type,i,ctr)	for (type i = (ctr).rbegin(); i != (ctr).rend(); ++ i)
 
 /// The alignment performed by default.
-const size_t c_DefaultAlignment = sizeof(void*);
+#if defined(__GNUC__) && (__GNUC__ >= 3)
+    const size_t c_DefaultAlignment = __alignof__(void*);
+#else
+    const size_t c_DefaultAlignment = sizeof(void*);
+#endif
 
 /// Returns the minimum of \p a and \p b
 template <typename T1, typename T2>

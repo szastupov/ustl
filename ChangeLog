@@ -19,6 +19,7 @@ Release 0.5-1
 		(Note that multimap only compares the key, since the mapped
 		value is not required to have an operator<. If you want them
 		sorted, you can use sort() on it.)
+	* Fixed remove_copy algorithms to not require value operator !=.
 
 2004-11-11 Release 0.5
 	* configure will now properly enable mmx compiler flags.

@@ -127,7 +127,7 @@ dist-clean:	clean
 	@rm -f Common.mk config.h ${LIBNAME}.spec bsconf.o bsconf .depend bvt/.depend
 
 maintainer-clean: dist-clean
-	@rm -rf docs
+	@rm -rf docs/html
 
 -include .depend
  
