@@ -35,8 +35,10 @@
 #define VectorSize(v)	(sizeof(v) / sizeof(*v))
 
 /*#define const*/
-typedef const char string_t [64];
-typedef char strbuf_t [128];
+typedef char*		pchar_t;
+typedef const char*	cpchar_t;
+typedef const char	string_t [64];
+typedef char		strbuf_t [128];
 
 typedef enum {
     vv_prefix,
@@ -64,7 +66,7 @@ typedef enum {
 
 /*--------------------------------------------------------------------*/
 
-static void GetConfigVarValues (int argc, const char* const* argv);
+static void GetConfigVarValues (int argc, cpchar_t const* argv);
 static void FillInDefaultConfigVarValues (void);
 static void FindPrograms (void);
 static void SubstitutePaths (void);
@@ -80,26 +82,26 @@ static void SubstituteComponents (void);
 static void SubstituteCustomVars (void);
 
 static void DetermineHost (void);
-static void DefaultConfigVarValue (EVV v, EVV root, const char* suffix);
-static void Substitute (const char *matchStr, const char *replaceStr);
+static void DefaultConfigVarValue (EVV v, EVV root, cpchar_t suffix);
+static void Substitute (cpchar_t matchStr, cpchar_t replaceStr);
 static void ExecuteSubstitutionList (void);
-static void MakeSubstString (const char *str, char *substString);
-static const char* CopyPathEntry (const char* pi, char* dest);
-static int  IsBadInstallDir (const char* match);
+static void MakeSubstString (cpchar_t str, pchar_t substString);
+static cpchar_t CopyPathEntry (cpchar_t pi, pchar_t dest);
+static int  IsBadInstallDir (cpchar_t match);
 
 /* Unreliable (according to autoconf) libc stuff */
-static int   StrLen (const char *str);
-static void  Lowercase (char* str);
-static int   compare (const char *str1, const char *str2);
-static char* copy (const char *src, char *dest);
-static char* copy_n (const char *src, char *dest, int n);
-static char* append (const char* src, char* dest);
-static char* append2 (const char* src1, const char* src2, char* dest);
-static void  fill_n (char *str, int n, char v);
-static char* copy_backward (const char *src, char *dest, int n);
-static void  ReadFile (const char *filename);
-static void  WriteFile (const char *filename);
-static void  FatalError (const char *errortext);
+static int   StrLen (cpchar_t str);
+static void  Lowercase (pchar_t str);
+static int   compare (cpchar_t str1, cpchar_t str2);
+static pchar_t copy (cpchar_t src, pchar_t dest);
+static pchar_t copy_n (cpchar_t src, pchar_t dest, int n);
+static pchar_t append (cpchar_t src, pchar_t dest);
+static pchar_t append2 (cpchar_t src1, cpchar_t src2, pchar_t dest);
+static void  fill_n (pchar_t str, int n, char v);
+static pchar_t copy_backward (cpchar_t src, pchar_t dest, int n);
+static void  ReadFile (cpchar_t filename);
+static void  WriteFile (cpchar_t filename);
+static void  FatalError (cpchar_t errortext);
 
 /*--------------------------------------------------------------------*/
 
@@ -108,12 +110,12 @@ static char g_Buf [BUFSIZE];
 
 typedef struct {
     int		m_bDefaultOn;
-    string_t	m_Description;
+    cpchar_t	m_Description;
 } SComponentInfo;
 
 #include "bsconf.h"
 
-static string_t g_ConfigV [vv_last] = {
+static cpchar_t g_ConfigV [vv_last] = {
     "prefix",
     "exec_prefix",
     "bindir",
@@ -147,9 +149,9 @@ static struct utsname g_Uname;
 
 typedef struct {
     int		m_Bit;
-    const char*	m_Description;
-    const char*	m_Disabled;
-    const char*	m_Enabled;
+    cpchar_t	m_Description;
+    cpchar_t	m_Disabled;
+    cpchar_t	m_Enabled;
 } SCpuCaps;
 
 static const SCpuCaps g_CpuCaps [] = {
@@ -174,7 +176,7 @@ static const SCpuCaps g_CpuCaps [] = {
 };
 static unsigned int g_CpuCapBits = 0;
 
-static string_t g_LibSuffixes[] = { ".a", ".so", ".la" };
+static cpchar_t g_LibSuffixes[] = { ".a", ".so", ".la" };
 
 static unsigned int g_nSubs = 0;
 static strbuf_t g_Subs [MAX_SUBSTITUTIONS * 2];
@@ -283,7 +285,7 @@ static void PrintVersion (void)
 
 /*--------------------------------------------------------------------*/
 
-static void GetConfigVarValues (int argc, const char* const* argv)
+static void GetConfigVarValues (int argc, cpchar_t const* argv)
 {
     int a, apos, cvl;
     unsigned cv;
@@ -331,7 +333,7 @@ static void GetConfigVarValues (int argc, const char* const* argv)
     }
 }
 
-static void DefaultConfigVarValue (EVV v, EVV root, const char* suffix)
+static void DefaultConfigVarValue (EVV v, EVV root, cpchar_t suffix)
 {
     if (!*(g_ConfigVV [v])) {
 	copy (g_ConfigVV [root], g_ConfigVV [v]);
@@ -379,7 +381,7 @@ static void FillInDefaultConfigVarValues (void)
 
 static void DetermineHost (void)
 {
-    fill_n ((char*) &g_Uname, sizeof(struct utsname), 0);
+    fill_n ((pchar_t) &g_Uname, sizeof(struct utsname), 0);
     uname (&g_Uname);
     Lowercase (g_Uname.machine);
     Lowercase (g_Uname.sysname);
@@ -393,7 +395,7 @@ static void DetermineHost (void)
     append2 ("-", g_Uname.sysname, g_ConfigVV [vv_host]);
 }
 
-static const char* CopyPathEntry (const char* pi, char* dest)
+static cpchar_t CopyPathEntry (cpchar_t pi, pchar_t dest)
 {
     while (*pi && *pi != ':')
 	*dest++ = *pi++;
@@ -401,7 +403,7 @@ static const char* CopyPathEntry (const char* pi, char* dest)
     return (*pi ? ++pi : NULL);
 }
 
-static int IsBadInstallDir (const char* match)
+static int IsBadInstallDir (cpchar_t match)
 {
     return (compare (match, "/etc") ||
 	    compare (match, "/usr/sbin") ||
@@ -416,7 +418,7 @@ static int IsBadInstallDir (const char* match)
 static void FindPrograms (void)
 {
     unsigned int i, count;
-    const char *path, *pi;
+    cpchar_t path, pi;
     strbuf_t match;
 
     path = getenv ("PATH");
@@ -504,7 +506,7 @@ static void SubstituteEnvironment (int bForce)
 {
     strbuf_t match;
     unsigned int i;
-    const char* envval;
+    cpchar_t envval;
 
     for (i = 0; i < VectorSize(g_EnvVars); ++ i) {
 	envval = getenv (g_EnvVars[i]);
@@ -572,7 +574,6 @@ static unsigned int cpuid (void)
 static void SubstituteCpuCaps (void)
 {
     unsigned int i;
-    strbuf_t mmxopts = "";
     g_CpuCapBits = cpuid();
     for (i = 0; i < VectorSize(g_CpuCaps); ++ i)
 	if (g_CpuCapBits & (1 << g_CpuCaps[i].m_Bit))
@@ -672,7 +673,7 @@ static void SubstituteCustomVars (void)
 {
     unsigned int i;
     strbuf_t match;
-    for (i = 0; i < VectorSize(g_CustomVars); ++ i) {
+    for (i = 0; i < VectorSize(g_CustomVars) / 2; ++ i) {
 	MakeSubstString (g_CustomVars [i * 2], match);
 	Substitute (match, g_CustomVars [i * 2 + 1]);
     }
@@ -680,15 +681,15 @@ static void SubstituteCustomVars (void)
 
 static void SubstituteHeaders (void)
 {
-    unsigned int i, j;
-    const char* pi;
+    unsigned int i;
+    cpchar_t pi;
     strbuf_t defaultPath;
     strbuf_t match;
 
     copy (g_ConfigVV [vv_includedir], defaultPath);
     append2 (":", g_ConfigVV [vv_oldincludedir], defaultPath);
     append2 (":", g_ConfigVV [vv_gccincludedir], defaultPath);
-    for (i = 0; i < g_nCustomIncDirs; ++ i)
+    for (i = 0; i < (unsigned) g_nCustomIncDirs; ++ i)
 	append2 (":", g_CustomIncDirs [i], defaultPath);
     for (i = 0; i < VectorSize(g_Headers) / 3; ++ i) {
 	for (pi = defaultPath; pi; pi = CopyPathEntry (pi, match)) {
@@ -701,8 +702,8 @@ static void SubstituteHeaders (void)
 
 static void SubstituteLibs (void)
 {
-    unsigned int i, j, k, ok;
-    const char *pi;
+    unsigned int i, k, ok;
+    cpchar_t pi;
     char defaultPath [4096] = "/lib:/usr/lib:/usr/local/lib";
     strbuf_t match;
 
@@ -711,7 +712,7 @@ static void SubstituteLibs (void)
 	append (pi, defaultPath);
     append2 (":", g_ConfigVV [vv_libdir], defaultPath);
     append2 (":", g_ConfigVV [vv_gcclibdir], defaultPath);
-    for (i = 0; i < g_nCustomLibDirs; ++ i)
+    for (i = 0; i < (unsigned) g_nCustomLibDirs; ++ i)
 	append2 (":", g_CustomLibDirs [i], defaultPath);
 
     for (i = 0; i < VectorSize(g_Libs) / 3; ++ i) {
@@ -749,7 +750,7 @@ static void SubstituteComponents (void)
 
 /*--------------------------------------------------------------------*/
 
-static void Substitute (const char* matchStr, const char* replaceStr)
+static void Substitute (cpchar_t matchStr, cpchar_t replaceStr)
 {
     if (g_nSubs >= MAX_SUBSTITUTIONS)
 	FatalError ("substitution list is too long, increase MAX_SUBSTITUTIONS");
@@ -762,7 +763,7 @@ static void ExecuteSubstitutionList (void)
 {
     unsigned int i;
     int rsl, taill, delta;
-    char *cp;
+    pchar_t cp;
 
     for (i = 0; i < g_nSubs; ++ i) {
 	rsl = StrLen (g_Subs[i * 2 + 1]);
@@ -783,7 +784,7 @@ static void ExecuteSubstitutionList (void)
     }
 }
 
-static void MakeSubstString (const char* str, char* substString)
+static void MakeSubstString (cpchar_t str, pchar_t substString)
 {
     copy ("@", substString);
     append2 (str, "@", substString);
@@ -791,65 +792,65 @@ static void MakeSubstString (const char* str, char* substString)
 
 /*--------------------------------------------------------------------*/
 
-static void FatalError (const char* errortext)
+static void FatalError (cpchar_t errortext)
 {
     perror (errortext);
     exit(-1);
 }
 
-static int StrLen (const char* str)
+static int StrLen (cpchar_t str)
 {
     int l;
     for (l = 0; *str; ++ l, ++ str);
     return (l);
 }
 
-static void Lowercase (char* str)
+static void Lowercase (pchar_t str)
 {
     for (; *str; ++ str)
 	if (*str >= 'A' && *str <= 'Z')
 	    *str += 'a' - 'A';
 }
 
-static int compare (const char* str1, const char* str2)
+static int compare (cpchar_t str1, cpchar_t str2)
 {
     while (*str1 && *str2 && *str1 == *str2)
 	++ str1, ++ str2;
     return (!*str2);
 }
 
-static char* copy (const char* src, char* dest)
+static pchar_t copy (cpchar_t src, pchar_t dest)
 {
     while (*src) *dest++ = *src++;
     *dest = 0;
     return (dest);
 }
 
-static char* copy_n (const char* src, char* dest, int n)
+static pchar_t copy_n (cpchar_t src, pchar_t dest, int n)
 {
     while (n--)
 	*dest++ = *src++;
     return (dest);
 }
 
-static char* append (const char* src, char* dest)
+static pchar_t append (cpchar_t src, pchar_t dest)
 {
     while (*dest) ++ dest;
     return (copy (src, dest));
 }
 
-static char* append2 (const char* src1, const char* src2, char* dest)
+static pchar_t append2 (cpchar_t src1, cpchar_t src2, pchar_t dest)
 {
     return (append (src2, append (src1, dest)));
 }
 
-static void fill_n (char* str, int n, char v)
+static void fill_n (pchar_t str, int n, char v)
 {
     while (n--)
 	*str++ = v;
 }
 
-static char* copy_backward (const char* src, char* dest, int n)
+static pchar_t copy_backward (cpchar_t src, pchar_t dest, int n)
 {
     dest += n; src += n;
     while (n--)
@@ -857,7 +858,7 @@ static char* copy_backward (const char* src, char* dest, int n)
     return (dest + n);
 }
 
-static void ReadFile (const char* filename)
+static void ReadFile (cpchar_t filename)
 {
     FILE* fp = fopen (filename, "r");
     if (!fp)
@@ -869,7 +870,7 @@ static void ReadFile (const char* filename)
     fclose (fp);
 }
 
-static void WriteFile (const char* filename)
+static void WriteFile (cpchar_t filename)
 {
     int bw;
     FILE* fp = fopen (filename, "w");
