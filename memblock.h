@@ -38,8 +38,8 @@ namespace ustl {
 ///
 class memblock : public memlink {
 public:
-    static const size_t c_DefaultPageSize = 16;			///< The default minimum allocation unit.
-    static const size_t	c_MinimumShrinkSize = ((1 << 16) - 1);	///< reserve will shrink reallocated block if this much unused space results.
+    static const size_t c_PageSize = 64;		///< The default minimum allocation unit.
+    static const size_t	c_MinimumShrinkSize = 0x10000;	///< reserve will shrink reallocated block if this much unused space results.
 public:
 			memblock (void);
     explicit		memblock (size_t n);
@@ -53,16 +53,14 @@ public:
     const memblock&	operator= (const memblock& b);
     void		assign (const cmemlink& l);
     void		swap (memblock& l);
-    void		reserve (size_t newSize);
-    void		resize (size_t newSize);
+    void		reserve (size_t newSize, bool bExact = true);
+    void		resize (size_t newSize, bool bExact = true);
     iterator		insert (iterator start, size_t size);
     iterator		erase (iterator start, size_t size);
     inline void		clear (void);
     void		deallocate (void);
     void		manage (void* p, size_t n);
     inline void		manage (memlink& l);
-    inline void		setPageSize (size_t n);
-    inline size_t	pageSize (void) const;
     inline size_t	capacity (void) const;
     virtual void	unlink (void);
     inline size_t	max_size (void) const;
@@ -71,25 +69,12 @@ public:
     inline bool		is_linked (void) const;
 private:
     size_t		m_AllocatedSize;	///< Number of bytes allocated by Resize.
-    size_t		m_PageSize;		///< The minimum allocation unit.
 };
-
-/// Sets the minimum allocation unit.
-inline void memblock::setPageSize (size_t n)
-{
-    m_PageSize = n;
-}
 
 /// Returns the number of bytes allocated.
 inline size_t memblock::capacity (void) const
 {
     return (m_AllocatedSize);
-}
-
-/// Returns the current page size.
-inline size_t memblock::pageSize (void) const
-{
-    return (m_PageSize);
 }
 
 /// Assumes control over block pointed to by \p l
@@ -101,7 +86,7 @@ inline void memblock::manage (memlink& l)
 /// Returns the maximum possible size of the block
 inline size_t memblock::max_size (void) const
 {
-    return (numeric_limits<size_t>::max());
+    return (numeric_limits<size_t>::max() / elementSize());
 }
 
 /// Resizes the block to 0

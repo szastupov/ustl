@@ -46,6 +46,7 @@ cmemlink::cmemlink (const void* p, size_t n)
   m_Size (n)
 {
     assert (p || !n);
+    assert (size() % elementSize() == 0 && "You are trying to link to a block of different element type.");
 }
 
 /// Copies values from l
@@ -53,6 +54,7 @@ cmemlink::cmemlink (const cmemlink& l)
 : m_CData (l.m_CData),
   m_Size (l.m_Size)
 {
+    assert (size() % elementSize() == 0 && "You are trying to link to a block of different element type.");
 }
 
 /// Destructor does nothing
@@ -65,6 +67,7 @@ void cmemlink::link (const void* p, size_t n)
 {
     unlink();
     assert (p || !n);
+    assert (n % elementSize() == 0 && "You are trying to link to a block of different element type.");
     m_CData = p;
     m_Size = n;
 }
@@ -110,6 +113,7 @@ const cmemlink& cmemlink::operator= (const cmemlink& l)
 {
     m_CData = l.m_CData;
     m_Size = l.m_Size;
+    assert (size() % elementSize() == 0 && "You are trying to link to a block of different element type.");
     return (*this);
 }
 
@@ -118,6 +122,7 @@ void cmemlink::swap (cmemlink& l)
 {
     ::ustl::swap (m_CData, l.m_CData);
     ::ustl::swap (m_Size, l.m_Size);
+    assert (size() % elementSize() == 0 && "You are trying to link to a block of different element type.");
 }
 
 /// Compares to memory block pointed by l. Size is compared first.
@@ -125,6 +130,12 @@ bool cmemlink::operator== (const cmemlink& l) const
 {
     return (l.m_Size == m_Size &&
 	    (l.m_CData == m_CData || 0 == memcmp (l.m_CData, m_CData, m_Size)));
+}
+
+/// Returns the size of the atomic element in the block, if any.
+size_t cmemlink::elementSize (void) const
+{
+    return (1);
 }
 
 } // namespace ustl

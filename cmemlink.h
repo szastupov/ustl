@@ -109,6 +109,8 @@ public:
     void		write (ostream& os) const;
     size_t		stream_size (void) const;
     void		write_file (const char* filename, int mode = 0644) const;
+protected:
+    virtual size_t	elementSize (void) const;
 private:
     const void*		m_CData;	///< Pointer to the data block (const)
     size_t		m_Size;		///< size of the data block

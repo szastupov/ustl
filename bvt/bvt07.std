@@ -2,7 +2,7 @@
 abcdefghijklmnopqrstuvwxyz
 123456789012345678901234567890
 12345678901234567890
-s3.size() = 20, max_size() = 4294967294, capacity() = 63
+s3.size() = 20, max_size() = 4294967294, capacity() = 48
 abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ$
 HelloWorld
 Concatenated HelloWorld string.
@@ -22,5 +22,5 @@ replace(0,5,@)
 9 found at 8
 [456] found at 3
 [456] last found at 25
-s2 is empty [], capacity 31 bytes
-<31 bytes of 63> Format '<const] 42, [rfile>, 0xDEADBEEF'
+s2 is empty [], capacity 5 bytes
+<31 bytes of 31> Format '<const] 42, [rfile>, 0xDEADBEEF'

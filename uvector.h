@@ -51,7 +51,6 @@ public:
     typedef const_pointer		const_iterator;
     typedef ::ustl::reverse_iterator<iterator>	reverse_iterator;
     typedef ::ustl::reverse_iterator<const_iterator>	const_reverse_iterator;
-    static const size_t c_DefaultPageSize = sizeof(T) * 16;	///< Minimum allocation unit.
 public:
 				vector (void);
     explicit			vector (size_t n);
@@ -64,7 +63,6 @@ public:
     inline void			resize (size_t n);
     inline size_t		capacity (void) const;
     inline size_t		size (void) const;
-    inline size_t		max_size (void) const;
     inline size_t		stream_size (void) const;
     inline iterator		begin (void);
     inline const_iterator	begin (void) const;
@@ -94,6 +92,7 @@ public:
 protected:
     virtual void		constructBlock (void* p, size_t s) const;
     virtual void		destructBlock (void* p, size_t s) const;
+    virtual size_t		elementSize (void) const;
 };
 
 /// Initializes empty vector.
@@ -101,7 +100,6 @@ template <typename T>
 vector<T>::vector (void)
 : memblock ()
 {
-    setPageSize (c_DefaultPageSize);
 }
 
 /// Initializes a vector of size \p n.
@@ -109,7 +107,6 @@ template <typename T>
 vector<T>::vector (size_t n)
 : memblock ()
 {
-    setPageSize (c_DefaultPageSize);
     resize (n);
 }
 
@@ -118,7 +115,6 @@ template <typename T>
 vector<T>::vector (size_t n, const T& v)
 : memblock ()
 {
-    setPageSize (c_DefaultPageSize);
     resize (n);
     ::ustl::fill (begin(), end(), v);
 }
@@ -128,7 +124,6 @@ template <typename T>
 vector<T>::vector (const vector<T>& v)
 : memblock ()
 {
-    setPageSize (v.pageSize());
     resize (v.size());
     ::ustl::copy (v.begin(), v.end(), begin());
 }
@@ -139,7 +134,6 @@ vector<T>::vector (const_iterator i1, const_iterator i2)
 : memblock ()
 {
     assert (i1 <= i2);
-    setPageSize (c_DefaultPageSize);
     resize (i2 - i1);
     ::ustl::copy (i1, i2, begin());
 }
@@ -189,13 +183,6 @@ template <typename T>
 inline size_t vector<T>::size (void) const
 {
     return (memblock::size() / sizeof(T));
-}
-
-/// Returns the maximum number of elements that can ever be put in this container.
-template <typename T>
-inline size_t vector<T>::max_size (void) const
-{
-    return (memblock::max_size() / sizeof(T));
 }
 
 /// Returns the pointer to the first element.
@@ -398,7 +385,7 @@ template <typename T>
 void vector<T>::constructBlock (void* p, size_t s) const
 {
     memblock::constructBlock (p, s);
-    assert (s % sizeof(T) == 0);    // vector's constructor ensures this
+    assert (s % sizeof(T) == 0);
     new (p) T [s / sizeof(T)];
 }
 
@@ -411,12 +398,18 @@ void vector<T>::constructBlock (void* p, size_t s) const
 template <typename T>
 void vector<T>::destructBlock (void* p, size_t s) const
 {
-    assert (s % sizeof(T) == 0);    // vector's constructor ensures this
+    assert (s % sizeof(T) == 0);
     size_t nObjects = s / sizeof(T);
     T* pt = reinterpret_cast<T*>(p);
     while (nObjects--)
 	(*pt++).~T();
     memblock::destructBlock (p, s);
+}
+
+template <typename T>
+size_t vector<T>::elementSize (void) const
+{
+    return (sizeof(T));
 }
 
 /// Reads the vector from stream \p is.

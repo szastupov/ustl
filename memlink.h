@@ -117,7 +117,7 @@ protected:
     virtual void	constructBlock (void*, size_t) const;
     virtual void	destructBlock (void*, size_t) const;
 private:
-    mutable void*	m_Data;	///< Pointer to the begin block (non-const)
+    void*		m_Data;	///< Pointer to the begin block (non-const)
 };
 
 /// Returns a modifiable pointer to the block

@@ -35,16 +35,14 @@ namespace ustl {
 /// Allocates 0 bytes for the internal block.
 memblock::memblock (void)
 : memlink (),
-  m_AllocatedSize (0),
-  m_PageSize (c_DefaultPageSize)
+  m_AllocatedSize (0)
 {
 }
 
 /// Allocates \p n bytes for the internal block.
 memblock::memblock (size_t n)
 : memlink (),
-  m_AllocatedSize (0),
-  m_PageSize (c_DefaultPageSize)
+  m_AllocatedSize (0)
 {
     resize (n);
 }
@@ -52,32 +50,28 @@ memblock::memblock (size_t n)
 /// links to \p p, \p n. Data can be modified but will not be freed.
 memblock::memblock (void* p, size_t n)
 : memlink (p, n),
-  m_AllocatedSize (0),
-  m_PageSize (c_DefaultPageSize)
+  m_AllocatedSize (0)
 {
 }
 
 /// links to \p p, \p n. Data can not be modified and will not be freed.
 memblock::memblock (const void* p, size_t n)
 : memlink (p, n),
-  m_AllocatedSize (0),
-  m_PageSize (c_DefaultPageSize)
+  m_AllocatedSize (0)
 {
 }
 
 /// Links to what \p b is linked to.
 memblock::memblock (const cmemlink& b)
 : memlink (b),
-  m_AllocatedSize (0),
-  m_PageSize (c_DefaultPageSize)
+  m_AllocatedSize (0)
 {
 }
 
 /// Allocates enough space and copies the contents of \p b.
 memblock::memblock (const memblock& b)
 : memlink (),
-  m_AllocatedSize (0),
-  m_PageSize (b.m_PageSize)
+  m_AllocatedSize (0)
 {
     resize (b.size());
     copy (b.begin(), b.size());
@@ -115,7 +109,6 @@ const memblock& memblock::operator= (const memblock& b)
 {
     if (is_linked())
 	unlink();
-    m_PageSize = b.m_PageSize;
     resize (b.size());
     copy (b.begin(), b.size());
     return (*this);
@@ -126,8 +119,6 @@ void memblock::deallocate (void)
 {
     if (m_AllocatedSize) {
 	assert (data() && cdata());
-	if (m_PageSize > c_DefaultPageSize)
-	    m_PageSize /= 2;
 	destructBlock (data(), m_AllocatedSize);
 	free (data());
     }
@@ -140,6 +131,7 @@ void memblock::manage (void* p, size_t n)
 {
     assert (p || !n);
     assert (!data() || !m_AllocatedSize);	// Can't link to an allocated block.
+    assert (n % elementSize() == 0 && "You are trying to manage a block with an incompatible element type");
     link (p, n);
     m_AllocatedSize = n;
 }
@@ -165,41 +157,39 @@ void memblock::swap (memblock& l)
 {
     memlink::swap (l);
     ::ustl::swap (m_AllocatedSize, l.m_AllocatedSize);
-    ::ustl::swap (m_PageSize, l.m_PageSize);
 }
 
-/// Reallocates internal block to hold at least \p newSize bytes
-/// Paged allocation is performed with minimum allocation unit
-/// defined by variable m_PageSize. The block size as returned by
-/// size() is not altered.
+/// Reallocates internal block to hold at least \p newSize bytes. Some
+/// additional memory may be allocated, but for efficiency it is a very
+/// good idea to call reserve before doing byte-by-byte edit operations.
+/// The block size as returned by size() is not altered.
 ///
-void memblock::reserve (size_t newSize)
+void memblock::reserve (size_t newSize, bool bExact)
 {
-    if ((newSize < m_AllocatedSize && newSize + c_MinimumShrinkSize > m_AllocatedSize) ||
+    if ((m_AllocatedSize > newSize &&
+	 m_AllocatedSize < newSize + c_MinimumShrinkSize) ||
 	is_linked() || !newSize)
 	return;
-    size_t alignedSize = Align (newSize, m_PageSize);
-    if (alignedSize > m_AllocatedSize)
-	m_PageSize *= 2;
-    else {
-	if (m_PageSize > c_DefaultPageSize)
-	    m_PageSize /= 2;
-	destructBlock (begin() + alignedSize, m_AllocatedSize - alignedSize);
-	m_AllocatedSize = alignedSize; // To retain sanity in case of failure.
+    if (!bExact)
+	newSize = Align (newSize, Align (c_PageSize, elementSize()));
+    assert (newSize % elementSize() == 0 && "reserve can only allocate units of elementType.");
+    if (newSize < m_AllocatedSize) {
+	destructBlock (begin() + newSize, m_AllocatedSize - newSize);
+	m_AllocatedSize = newSize;
     }
-    void* newBlock = realloc (data(), alignedSize);
+    void* newBlock = realloc (data(), newSize);
     if (!newBlock)
-	throw bad_alloc(alignedSize);
-    if (alignedSize > m_AllocatedSize)
-	constructBlock (advance (newBlock, m_AllocatedSize), alignedSize - m_AllocatedSize);
+	throw bad_alloc(newSize);
+    if (newSize > m_AllocatedSize)
+	constructBlock (advance (newBlock, m_AllocatedSize), newSize - m_AllocatedSize);
     link (newBlock, size());
-    m_AllocatedSize = alignedSize;
+    m_AllocatedSize = newSize;
 }
 
 /// resizes the block to \p newSize bytes, reallocating if necessary.
-void memblock::resize (size_t newSize)
+void memblock::resize (size_t newSize, bool bExact)
 {
-    reserve (newSize);
+    reserve (newSize, bExact);
     memlink::resize (newSize);
 }
 
@@ -208,7 +198,7 @@ memblock::iterator memblock::insert (iterator start, size_t n)
 {
     const uoff_t ip = start - begin();
     assert (ip <= size());
-    resize (size() + n);
+    resize (size() + n, false);
     memlink::insert (begin() + ip, n);
     return (begin() + ip);
 }
@@ -219,7 +209,7 @@ memblock::iterator memblock::erase (iterator start, size_t n)
     const uoff_t ep = start - begin();
     assert (ep <= size());
     memlink::erase (begin() + ep, n);
-    resize (size() - n);
+    resize (size() - n, false);
     return (begin() + ep);
 }
 

@@ -105,6 +105,7 @@ void memlink::read (istream& is)
 {
     size_t n;
     is >> n;
+    assert (n % elementSize() == 0 && "You are trying to read a block with different element type.");
     size_t btr = min (size_t(n), size());
     is.read (data(), btr);
     resize (btr);
@@ -125,6 +126,7 @@ void memlink::copy (iterator start, const void* p, size_t n)
     assert (m_Data || !n);
     assert (p || !n);
     assert (start >= begin() && start + n <= end());
+    assert (n % elementSize() == 0 && "You are trying to write an incompatible element type");
     if (p && n && p != m_Data)
 	memcpy (start, p, n);
 }
@@ -140,6 +142,7 @@ void memlink::fill (iterator start, const void* p, size_t elSize, size_t elCount
 {
     assert (m_Data || !elCount || !elSize);
     assert (start >= begin() && start + elSize * elCount <= end());
+    assert (elSize % elementSize() == 0 && "You are trying to write an incompatible element type");
     if (elSize == 1)
 	memset (start, *reinterpret_cast<const u_char*>(p), elCount);
     else {
@@ -156,6 +159,7 @@ void memlink::insert (iterator start, size_t n)
     assert (m_Data || !n);
     assert (cmemlink::begin() || !n);
     assert (start >= begin() && start + n <= end());
+    assert (n % elementSize() == 0 && "You are trying to write an incompatible element type");
     destructBlock (end() - n, n);
     memmove (start + n, start, distance (start, end()) - n);
     constructBlock (start, n);
@@ -167,6 +171,7 @@ void memlink::erase (iterator start, size_t n)
     assert (m_Data || !n);
     assert (cmemlink::begin() || !n);
     assert (start >= begin() && start + n <= end());
+    assert (n % elementSize() == 0 && "You are trying to write an incompatible element type");
     destructBlock (start, n);
     memmove (start, start + n, distance (start, end()) - n);
     constructBlock (end() - n, n);
@@ -175,6 +180,7 @@ void memlink::erase (iterator start, size_t n)
 /// Override to initialize malloc'ed space, like calling constructors, for example.
 void memlink::constructBlock (void* p, size_t n) const
 {
+    assert (n % elementSize() == 0 && "You are trying to write an incompatible element type");
     memset (p, 0, n);
 }
 
@@ -182,6 +188,7 @@ void memlink::constructBlock (void* p, size_t n) const
 /// Override to deinitialize malloc'ed space, like calling destructors, for example.
 void memlink::destructBlock (void* p, size_t n) const
 {
+    assert (n % elementSize() == 0 && "You are trying to write an incompatible element type");
     memset (p, 0xCD, n);
 }
 #else
