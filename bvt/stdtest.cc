@@ -8,18 +8,19 @@
 //
 
 #define _GNU_SOURCE 1
-#include <signal.h>
 #include "stdtest.h"
+#include <signal.h>
 
 /// Called when a signal is received.
-static void OnSignal (int sig, siginfo*, void*)
+static void OnSignal (int sig)
 {
     cout.flush();
-    cerr << "Signal " << sig;
     #if HAVE_STRSIGNAL
-	cerr << " (" << strsignal(sig) << ')';
+	cerr.format ("Fatal error: %s received.\n", strsignal(sig));
+    #else
+	cerr.format ("Fatal error: system signal %d received.\n", sig);
     #endif
-    cerr << " received. Aborting." << endl;
+    cerr.flush();
     exit (sig);
 }
 
@@ -34,7 +35,7 @@ static void Terminate (void)
 /// Called when an exception violates a throw specification.
 static void OnUnexpected (void)
 {
-    cerr << "Unexpected exception caught. This is an internal error. Aborting." << endl;
+    cerr << "Fatal internal error: unexpected exception caught." << endl;
     Terminate();
 }
 
@@ -44,12 +45,12 @@ static void InstallCleanupHandlers (void)
     static const int c_Signals[] = {
 	SIGINT, SIGQUIT, SIGILL,  SIGTRAP, SIGABRT,
 	SIGIOT, SIGBUS,  SIGFPE,  SIGSEGV, SIGTERM,
-	SIGIO,  SIGPWR,  SIGCHLD
+	SIGIO,  SIGCHLD
     };
     struct sigaction sa;
     sigemptyset (&sa.sa_mask);
-    sa.sa_sigaction = OnSignal;
-    sa.sa_flags = SA_RESTART | SA_SIGINFO;
+    sa.sa_handler = OnSignal;
+    sa.sa_flags = SA_RESTART;
     for (size_t i = 0; i < VectorSize(c_Signals); ++ i)
 	sigaction (c_Signals[i], &sa, NULL);
     std::set_terminate (Terminate);
@@ -63,7 +64,7 @@ int StdTestHarness (stdtestfunc_t testFunction)
     try {
 	(*testFunction)();
 	rv = EXIT_SUCCESS;
-    } catch (exception& e) {
+    } catch (ustl::exception& e) {
 	cout.flush();
 	cerr << "Error: " << e << endl;
     } catch (...) {
