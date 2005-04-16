@@ -16,6 +16,8 @@
 #endif
 #ifdef HAVE_ALLOCA_H
     #include <alloca.h>
+#else
+    #include <malloc.h>
 #endif
 #include "upair.h"
 
@@ -131,13 +133,9 @@ inline pair<T*, ptrdiff_t> make_temporary_buffer (void* p, size_t n, const T* pt
     /// \ingroup RawStorageAlgorithms
     #define get_temporary_buffer(size, ptype)	make_temporary_buffer (alloca(size_of_elements(size, ptype)), size, ptype)
     #define return_temporary_buffer(p)
-#elif HAVE_MALLOC_H
-    #include <malloc.h>
+#else
     #define get_temporary_buffer(size, ptype)	make_temporary_buffer (malloc(size_of_elements(size, ptype)), size, ptype)
     #define return_temporary_buffer(p)		if (p) free (p), p = NULL
-#else
-    #define get_temporary_buffer(size, ptype)	make_pair ((ptype*) NULL, 0)
-    #define return_temporary_buffer(p)
 #endif
 
 /// Copies [first, last) into result by calling copy constructors in result.

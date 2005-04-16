@@ -60,25 +60,33 @@ static cpchar_t g_ProgVars [] = {
 
 /*   NAME               IF NOT FOUND                    IF FOUND */
 static cpchar_t	g_Headers [] = {
+    "assert.h",		"#undef HAVE_ASSERT_H",		"#define HAVE_ASSERT_H 1",
+    "ctype.h",		"#undef HAVE_CTYPE_H",		"#define HAVE_CTYPE_H 1",
+    "errno.h",		"#undef HAVE_ERRNO_H",		"#define HAVE_ERRNO_H 1",
     "fcntl.h",		"#undef HAVE_FCNTL_H",		"#define HAVE_FCNTL_H 1",
     "float.h",		"#undef HAVE_FLOAT_H",		"#define HAVE_FLOAT_H 1",
     "inttypes.h",	"#undef HAVE_INTTYPES_H",	"#define HAVE_INTTYPES_H 1",
     "limits.h",		"#undef HAVE_LIMITS_H",		"#define HAVE_LIMITS_H 1",
+    "locale.h",		"#undef HAVE_LOCALE_H",		"#define HAVE_LOCALE_H 1",
     "malloc.h",		"#undef HAVE_MALLOC_H",		"#define HAVE_MALLOC_H 1",
     "alloca.h",		"#undef HAVE_ALLOCA_H",		"#define HAVE_ALLOCA_H 1",
     "memory.h",		"#undef HAVE_MEMORY_H",		"#define HAVE_MEMORY_H 1",
+    "signal.h",		"#undef HAVE_SIGNAL_H",		"#define HAVE_SIGNAL_H 1",
+    "stdarg.h",		"#undef HAVE_STDARG_H",		"#define HAVE_STDARG_H 1",
     "stddef.h",		"#undef HAVE_STDDEF_H",		"#define HAVE_STDDEF_H 1",
     "stdint.h",		"#undef HAVE_STDINT_H",		"#define HAVE_STDINT_H 1",
+    "stdio.h",		"#undef HAVE_STDIO_H",		"#define HAVE_STDIO_H 1",
     "stdlib.h",		"#undef HAVE_STDLIB_H",		"#define HAVE_STDLIB_H 1",
     "string.h",		"#undef HAVE_STRING_H",		"#define HAVE_STRING_H 1",
     "strings.h",	"#undef HAVE_STRINGS_H",	"#define HAVE_STRINGS_H 1",
     "sys/stat.h",	"#undef HAVE_SYS_STAT_H",	"#define HAVE_SYS_STAT_H 1",
     "sys/types.h",	"#undef HAVE_SYS_TYPES_H",	"#define HAVE_SYS_TYPES_H 1",
     "sys/wait.h",	"#undef HAVE_SYS_WAIT_H",	"#define HAVE_SYS_WAIT_H 1",
+    "time.h",		"#undef HAVE_TIME_H",		"#define HAVE_TIME_H 1",
     "unistd.h",		"#undef HAVE_UNISTD_H",		"#define HAVE_UNISTD_H 1",
     "math.h",		"#undef HAVE_MATH_H",		"#define HAVE_MATH_H 1",
     "byteswap.h",	"#undef HAVE_BYTESWAP_H",	"#define HAVE_BYTESWAP_H 1",
-    "stdlib.h",		"#undef STDC_HEADERS",		"#define STDC_HEADERS 1"
+    "stdlib.h",		"#undef HAVE_STDLIB_H",		"#define HAVE_STDLIB_H 1"
 };
 
 /*   NAME               IF NOT FOUND                    IF FOUND */

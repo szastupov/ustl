@@ -12,6 +12,12 @@
 #define UTYPES_H_118BBB3B50B7DBF22F5460C52E515C83
 
 #include "config.h"
+#ifndef STDC_HEADERS
+    #error This library requires standard C and C++ headers to compile.
+#endif
+#ifndef STDUNIX_HEADERS
+    #error This library compiles only on UNIX systems.
+#endif
 #define __STDC_LIMIT_MACROS	// For WCHAR_MIN and WCHAR_MAX in stdint.
 #define __STDC_CONSTANT_MACROS	// For UINT??_C macros to avoid using L and UL suffixes on constants.
 #ifdef HAVE_STDINT_H
