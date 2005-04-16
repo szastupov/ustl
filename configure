@@ -39,7 +39,6 @@ fi
 if [ ! -z "${PRIVATE_LIBDIR}" ]; then
     PRIVATE_PATHS="${PRIVATE_PATHS} --gcclibdir=${PRIVATE_LIBDIR}"
 fi
-echo "Private dirs: ${PRIVATE_PATHS}"
 
 if [ ! -x bsconf ]; then
     ${CC} -o bsconf bsconf.c
