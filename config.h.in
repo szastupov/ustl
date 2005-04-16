@@ -173,8 +173,7 @@
 #endif
 
 // STDC_HEADERS is defined to 1 on unix systems.
-#if defined(HAVE_FCNTL_H) && defined(HAVE_MALLOC_H) &&\
-    defined(HAVE_SYS_STAT_H) && defined(HAVE_UNISTD_H)
+#if defined(HAVE_FCNTL_H) && defined(HAVE_SYS_STAT_H) && defined(HAVE_UNISTD_H)
 #define STDUNIX_HEADERS 1
 #endif
 

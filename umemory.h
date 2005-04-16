@@ -17,7 +17,7 @@
 #ifdef HAVE_ALLOCA_H
     #include <alloca.h>
 #else
-    #include <malloc.h>
+    #include <stdlib.h>
 #endif
 #include "upair.h"
 
