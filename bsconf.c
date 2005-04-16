@@ -22,6 +22,7 @@
 #include <fcntl.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <sys/types.h>
 #include <sys/utsname.h>
 
 /*--------------------------------------------------------------------*/
@@ -35,11 +36,11 @@
 #define VectorSize(v)	(sizeof(v) / sizeof(*v))
 
 /*#define const*/
+/*typedef unsigned int	uint;*/
 typedef char*		pchar_t;
 typedef const char*	cpchar_t;
 typedef const char	string_t [64];
 typedef char		strbuf_t [128];
-typedef unsigned int	uint;
 
 typedef enum {
     vv_prefix,
@@ -176,6 +177,34 @@ static const SCpuCaps g_CpuCaps [] = {
     { 31, "3dNow!",	"#undef CPU_HAS_3DNOW",		"#define CPU_HAS_3DNOW 1"	}
 };
 static uint g_CpuCapBits = 0;
+
+typedef enum {
+    sys_Unknown,
+    sys_Linux,
+    sys_Mac,
+    sys_Bsd,
+    sys_Sun,
+    sys_Alpha
+} ESysType;
+
+typedef struct {
+    cpchar_t	sysname;
+    ESysType	type;
+} SHostType;
+
+static const SHostType g_HostTypes[] = {
+    { "linux",		sys_Linux },
+    { "sun",		sys_Sun },
+    { "solaris",	sys_Sun },
+    { "openbsd",	sys_Bsd },
+    { "netbsd",		sys_Bsd },
+    { "freebsd",	sys_Bsd },
+    { "osx",		sys_Mac },
+    { "darwin",		sys_Mac },
+    { "alpha",		sys_Alpha }
+};
+
+static ESysType g_SysType = sys_Unknown;
 
 static cpchar_t g_LibSuffixes[] = { ".a", ".so", ".la" };
 
@@ -382,6 +411,7 @@ static void FillInDefaultConfigVarValues (void)
 
 static void DetermineHost (void)
 {
+    int i;
     fill_n ((pchar_t) &g_Uname, sizeof(struct utsname), 0);
     uname (&g_Uname);
     Lowercase (g_Uname.machine);
@@ -394,6 +424,11 @@ static void DetermineHost (void)
     append ("unknown", g_ConfigVV [vv_host]);
 #endif
     append2 ("-", g_Uname.sysname, g_ConfigVV [vv_host]);
+    for (i = 0; i < VectorSize(g_HostTypes); ++ i)
+	if (compare (g_Uname.sysname, g_HostTypes[i].sysname))
+	    g_SysType = g_HostTypes[i].type;
+    if (compare (g_Uname.machine, "alpha"))
+	g_SysType = sys_Alpha;
 }
 
 static cpchar_t CopyPathEntry (cpchar_t pi, pchar_t dest)
@@ -476,7 +511,7 @@ static void SubstituteCFlags (void)
     #if __GNUC__ >= 3
 	if (g_CpuCapBits & (1 << 23))
 	    append (" -mmmx", buf);
-	if (compare (g_Uname.sysname, "linux"))
+	if (g_SysType == sys_Linux)
 	    if (g_CpuCapBits & ((1 << 22) | (1 << 25)))
 		append (" -msse -mfpmath=sse", buf);
 	if (g_CpuCapBits & (1 << 26))
@@ -586,39 +621,35 @@ static void SubstituteCpuCaps (void)
 static void SubstituteHostOptions (void)
 {
     strbuf_t buf;
-
-    if (compare (g_Uname.sysname, "osx") ||
-	compare (g_Uname.sysname, "darwin"))
+    if (g_SysType == sys_Mac)
 	Substitute ("@SYSWARNS@", "-Wno-long-double");
     else
 	Substitute ("@SYSWARNS@", "");
     #if __GNUC__ >= 3
-    if (compare (g_Uname.sysname, "sun") ||
-	compare (g_Uname.sysname, "solaris"))
+    if (g_SysType == sys_Mac) {
+	Substitute ("@libgcc@", "@libsupc++@ @libgcc@");
+	Substitute (" @libgcc_eh@", "");
+    }
+    if (g_SysType == sys_Sun)
     #endif
 	Substitute ("-Wredundant-decls", "-Wno-redundant-decls");
 
-    if (compare (g_Uname.sysname, "openbsd") ||
-	compare (g_Uname.sysname, "netbsd") ||
-	compare (g_Uname.sysname, "freebsd")) {
+    if (g_SysType == sys_Bsd) {
 	Substitute ("-Wredundant-decls", "-Wno-redundant-decls");
 	Substitute ("-Winline", "-Wno-inline");
     }
 
-    if (!compare (g_Uname.sysname, "linux") &&
-	!compare (g_Uname.sysname, "solaris") &&
-	!compare (g_Uname.sysname, "sunos")) {
+    if (g_SysType != sys_Linux && g_SysType != sys_Sun) {
 	Substitute ("BUILD_SHARED\t= 1 ", "#BUILD_SHARED\t= 1");
 	Substitute ("#BUILD_STATIC\t= 1", "BUILD_STATIC\t= 1 ");
     }
 
-    if (compare (g_Uname.sysname, "linux"))
+    if (g_SysType == sys_Linux)
 	Substitute ("@SHBLDFL@", "-shared -Wl,-soname=${LIBSOLNK}");
     else
 	Substitute ("@SHBLDFL@", "-G");
 
-    if (!compare (g_Uname.sysname, "solaris") &&
-	!compare (g_Uname.sysname, "sunos"))
+    if (g_SysType != sys_Sun)
 	Substitute ("#undef HAVE_THREE_CHAR_TYPES", "#define HAVE_THREE_CHAR_TYPES 1");
 
     Substitute ("#undef RETSIGTYPE", "#define RETSIGTYPE void");
@@ -639,17 +670,15 @@ static void SubstituteHostOptions (void)
     Substitute ("#undef SIZE_OF_POINTER ", buf);
     sprintf (buf, "#define SIZE_OF_SIZE_T %d", sizeof(size_t));
     Substitute ("#undef SIZE_OF_SIZE_T ", buf);
-    if (compare (g_Uname.machine, "alpha"))
+    if (g_SysType == sys_Alpha || g_SysType == sys_Mac)
 	Substitute ("#undef SIZE_OF_BOOL ", "#define SIZE_OF_BOOL SIZE_OF_LONG");
     else
 	Substitute ("#undef SIZE_OF_BOOL ", "#define SIZE_OF_BOOL SIZE_OF_CHAR");
     if ((sizeof(size_t) == sizeof(unsigned long) &&
-	 sizeof(size_t) != sizeof(uint)) ||
-	compare (g_Uname.sysname, "osx") ||
-	compare (g_Uname.sysname, "darwin"))
+	 sizeof(size_t) != sizeof(uint)) || g_SysType == sys_Mac)
 	Substitute ("#undef SIZE_T_IS_LONG", "#define SIZE_T_IS_LONG 1");
 #if defined(__GNUC__) || (__WORDSIZE == 64) || defined(__ia64__)
-    if (!compare (g_Uname.sysname, "openbsd"))
+    if (g_SysType != sys_Bsd)
 	Substitute ("#undef HAVE_INT64_T", "#define HAVE_INT64_T 1");
 #endif
 #if defined(__GNUC__) || defined(__GLIBC_HAVE_LONG_LONG)
@@ -672,7 +701,7 @@ static void SubstituteHostOptions (void)
     Substitute ("#undef PACKAGE_TARNAME",	"#define PACKAGE_TARNAME \"" PACKAGE_TARNAME "\"");
     Substitute ("#undef PACKAGE_VERSION",	"#define PACKAGE_VERSION \"" PACKAGE_VERSION "\"");
 
-    if (compare (g_Uname.sysname, "linux"))
+    if (g_SysType == sys_Linux)
 	Substitute ("#undef HAVE_RINTF", "#define HAVE_RINTF 1");
 }
 
@@ -745,6 +774,8 @@ static void SubstituteFunctions (void)
     uint i;
     for (i = 0; i < VectorSize(g_Functions) / 3; ++ i)
 	Substitute (g_Functions [i * 3 + 1], g_Functions [i * 3 + 2]);
+    if (g_SysType == sys_Mac)
+	Substitute ("#define HAVE_STRSIGNAL 1", "#undef HAVE_STRSIGNAL");
 }
 
 static void SubstituteComponents (void)

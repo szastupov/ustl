@@ -23,20 +23,29 @@ if [ -z "${CC}" ]; then
 	exit;
     fi
 fi
-GCCVERSION=`${CC} --version | head -n 1 | sed "s/gcc (GCC) //"`
-STDDEFPATH=`find /usr/lib/gcc* -name stddef.h 2> /dev/null | grep ${GCCVERSION} | head -n 1`
-if [ ! -z ${STDDEFPATH} ]; then
-    GINCDIR=`dirname ${STDDEFPATH}`
-    GLIBDIR=`dirname ${GINCDIR}`
-    GCCINCDIR="--gccincludedir=${GINCDIR}"
-    GCCLIBDIR="--gcclibdir=${GLIBDIR}"
+
+STDDEFPATH=`echo "#include <stddef.h>" | ${CC} -E - | grep stddef.h | head -n 1 | cut -d ' ' -f 3 | cut -d \" -f 2`
+PRIVATE_INCDIR=`dirname ${STDDEFPATH}`
+PRIVATE_DIR=`dirname ${PRIVATE_INCDIR}`
+if [ -d "${PRIVATE_DIR}/lib" ]; then
+    PRIVATE_LIBDIR=${PRIVATE_DIR}/lib
+else
+    PRIVATE_LIBDIR=${PRIVATE_DIR}
 fi
+PRIVATE_PATHS=
+if [ ! -z "${PRIVATE_INCDIR}" ]; then
+    PRIVATE_PATHS="${PRIVATE_PATHS} --gccincludedir=${PRIVATE_INCDIR}"
+fi
+if [ ! -z "${PRIVATE_LIBDIR}" ]; then
+    PRIVATE_PATHS="${PRIVATE_PATHS} --gcclibdir=${PRIVATE_LIBDIR}"
+fi
+echo "Private dirs: ${PRIVATE_PATHS}"
 
 if [ ! -x bsconf ]; then
     ${CC} -o bsconf bsconf.c
 fi
 if [ -x bsconf ]; then
-    ./bsconf ${GCCINCDIR} ${GCCLIBDIR} $*;
+    ./bsconf ${PRIVATE_PATHS} $*;
 else
     echo "Build of the configurator program failed. Ensure you have an ANSI C compiler.";
 fi

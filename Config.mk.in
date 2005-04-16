@@ -58,7 +58,8 @@ ifdef PROFILE
     LDFLAGS	+= -pg
 endif
 ifdef STANDALONE
-    LIBS	+= @libsupc++@ @libgcc@ @libgcc_eh@ @libc@
+    LANG_LIBS	= @libgcc@ @libc@
+    LIBS	+= @libsupc++@ @libgcc_eh@ ${LANG_LIBS}
 endif
 ifdef BUILD_SHARED
     CFLAGS	+= -fPIC

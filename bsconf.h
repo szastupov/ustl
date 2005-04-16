@@ -15,8 +15,8 @@
 
 #define PACKAGE_NAME		"ustl"
 #define LIB_MAJOR		"0"
-#define LIB_MINOR		"6"
-#define LIB_BUILD		"1"
+#define LIB_MINOR		"7"
+#define LIB_BUILD		"0"
 
 #define PACKAGE_VERSION		LIB_MAJOR "." LIB_MINOR
 #define PACKAGE_TARNAME		PACKAGE_NAME
@@ -84,7 +84,7 @@ static cpchar_t	g_Headers [] = {
 /*   NAME               IF NOT FOUND                    IF FOUND */
 static cpchar_t g_Libs [] = {
     "supc++",		"",				"-lsupc++",
-    "gcc",		"",				"-lgcc",
+    "gcc",		"-lgcc_s",			"-lgcc",
     "gcc_eh",		"-lgcc_s",			"-lgcc_eh",
     "c",		"",				"-lc"
 };
