@@ -28,6 +28,8 @@ Release 0.6-1
 		templates in uctrstm.h and made use of resulting macros.
 	* New TEMPLATE_TYPE macros to allow template building with macros.
 	* Fixed SSE3 detection in bsconf; thanks to Aloysius Indrayanto.
+	* Fixed get_temporary_buffer to return size in elements, not in bytes.
+		This is the proper behaviour as specified in the C++ standard.
 	* Now using libc qsort in the sort algorithm.
 		This may give you trouble if you are using a custom comparator
 		that requires initialization outside the constructor. You can

@@ -66,7 +66,7 @@ private:
 /// \ingroup RawStorageAlgorithms
 ///
 template <typename T>
-inline void construct (T* p)
+void construct (T* p)
 {
     new (p) T;
 }
@@ -75,7 +75,7 @@ inline void construct (T* p)
 /// \ingroup RawStorageAlgorithms
 ///
 template <typename ForwardIterator>
-inline void construct (ForwardIterator first, ForwardIterator last)
+void construct (ForwardIterator first, ForwardIterator last)
 {
     while (first < last) {
 	construct (&*first);
@@ -87,7 +87,7 @@ inline void construct (ForwardIterator first, ForwardIterator last)
 /// \ingroup RawStorageAlgorithms
 ///
 template <typename T>
-inline void construct (T* p, const T& value)
+void construct (T* p, const T& value)
 {
     new (p) T (value);
 }
@@ -96,7 +96,7 @@ inline void construct (T* p, const T& value)
 /// \ingroup RawStorageAlgorithms
 ///
 template <typename T>
-inline void destroy (T* p) throw()
+void destroy (T* p) throw()
 {
     p->~T();
 }
@@ -105,7 +105,7 @@ inline void destroy (T* p) throw()
 /// \ingroup RawStorageAlgorithms
 ///
 template <typename ForwardIterator>
-inline void destroy (ForwardIterator first, ForwardIterator last) throw()
+void destroy (ForwardIterator first, ForwardIterator last) throw()
 {
     while (first < last) {
 	destroy (&*first);
@@ -129,11 +129,16 @@ inline pair<T*, ptrdiff_t> make_temporary_buffer (void* p, size_t n, const T* pt
 #ifdef HAVE_ALLOCA_H
     /// \brief Allocates a temporary buffer, if possible.
     /// \ingroup RawStorageAlgorithms
-    #define get_temporary_buffer(size, ptype)	make_temporary_buffer (alloca(size_of_elements(size, ptype)), size_of_elements(size, ptype), ptype)
+    #define get_temporary_buffer(size, ptype)	make_temporary_buffer (alloca(size_of_elements(size, ptype)), size, ptype)
+    #define return_temporary_buffer(p)
+#elif HAVE_MALLOC_H
+    #include <malloc.h>
+    #define get_temporary_buffer(size, ptype)	make_temporary_buffer (malloc(size_of_elements(size, ptype)), size, ptype)
+    #define return_temporary_buffer(p)		if (p) free (p), p = NULL
 #else
-    #define get_temporary_buffer(size, ptype)	make_pair(cast_to_type(NULL,ptype), 0)
+    #define get_temporary_buffer(size, ptype)	make_pair ((ptype*) NULL, 0)
+    #define return_temporary_buffer(p)
 #endif
-#define return_temporary_buffer(p)
 
 /// Copies [first, last) into result by calling copy constructors in result.
 /// \ingroup RawStorageAlgorithms
