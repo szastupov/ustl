@@ -1,3 +1,8 @@
+Release 0.7-1
+	* Fixed reversed conditional ostringstream.format
+		This was causing a seek exception sometimes.
+	* Added ostringstream.vformat
+
 2005-04-16 Release 0.7
 	* Removed vector inheritance from memblock.
 		There are just too many problems with treating a vector

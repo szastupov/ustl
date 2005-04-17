@@ -163,21 +163,26 @@ void ostringstream::iwrite (const string& v)
     write_buffer (v.begin(), v.size());
 }
 
+/// Equivalent to a vsprintf on the string.
+int ostringstream::vformat (const char* fmt, va_list args)
+{
+    va_list args2;
+    __va_copy (args2, args);    // Because vsnprintf will iterate over args, changing them.
+    const bool bIsString (m_pResizable);
+    int rv = vsnprintf (ipos(), remaining() + bIsString, fmt, args);
+    if (uoff_t(rv) > remaining() + bIsString)
+	rv = vsnprintf (ipos(), overflow(rv) + bIsString, fmt, args2);
+    skip (min (uoff_t(rv), remaining()));
+    return (rv);
+}
+
 /// Equivalent to a sprintf on the string.
 int ostringstream::format (const char* fmt, ...)
 {
     simd::reset_mmx();
     va_list args;
     va_start (args, fmt);
-    const bool bIsString = m_pResizable;
-    assert (ipos());
-    int rv = vsnprintf (ipos(), remaining() + bIsString, fmt, args);
-    if (rv > 0) {
-	const size_t urv (rv);
-	if (urv > remaining() + bIsString)
-	    rv = (urv < overflow(urv) ? 0 : vsnprintf (ipos(), remaining() + bIsString, fmt, args));
-	skip (rv);
-    }
+    const int rv = vformat (fmt, args);
     va_end (args);
     return (rv);
 }
