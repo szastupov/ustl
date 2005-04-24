@@ -8,8 +8,8 @@
 
 void ObjectSerialization (void)
 {
-    const void* pBufC;
-    void* pBuf;
+    const void* pBufC = NULL;
+    void* pBuf = NULL;
     memblock buffer;
     string testString ("TestString");
     const string* pStrC = NULL;

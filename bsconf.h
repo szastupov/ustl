@@ -92,8 +92,13 @@ static cpchar_t	g_Headers [] = {
 /*   NAME               IF NOT FOUND                    IF FOUND */
 static cpchar_t g_Libs [] = {
     "supc++",		"",				"-lsupc++",
+#if __GNUC__ >= 4
+    "gcc",		"-lgcc_s",			"-lgcc_s",
+    "gcc_eh",		"",				"",
+#elif __GNUC__ >= 3
     "gcc",		"-lgcc_s",			"-lgcc",
     "gcc_eh",		"-lgcc_s",			"-lgcc_eh",
+#endif
     "c",		"",				"-lc"
 };
 

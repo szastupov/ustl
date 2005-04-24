@@ -199,19 +199,25 @@ template <typename T> inline int32_t sround (T op) { fround<T,int32_t> obj; retu
 //----------------------------------------------------------------------
 
 #if HAVE_VECTOR_EXTENSIONS
-#define VECTOR_ATTRIBUTE(x)	__attribute__((mode(x)))
+#if __GNUC__ >= 4
+#define VECTOR_ATTRIBUTE(mode,vs)	__attribute__((vector_size(vs)))
 #else
-#define VECTOR_ATTRIBUTE(x)
+#define VECTOR_ATTRIBUTE(mode,vs)	__attribute__((mode(x)))
 #endif
-typedef uint8_t v8qi_t VECTOR_ATTRIBUTE (V8QI);
-typedef uint16_t v4hi_t VECTOR_ATTRIBUTE (V4HI);
-typedef uint16_t v8hi_t VECTOR_ATTRIBUTE (V8HI);
-typedef uint32_t v2si_t VECTOR_ATTRIBUTE (V2SI);
-typedef uint32_t v4si_t VECTOR_ATTRIBUTE (V4SI);
-typedef uint32_t v1di_t VECTOR_ATTRIBUTE (V1DI);
-typedef float v2sf_t VECTOR_ATTRIBUTE (V2SF);
-typedef float v4sf_t VECTOR_ATTRIBUTE (V4SF);
-typedef double v2df_t VECTOR_ATTRIBUTE (V2DF);
+#else
+#define VECTOR_ATTRIBUTE(mode,vs)
+#endif
+typedef uint8_t v8qi_t VECTOR_ATTRIBUTE (V8QI,8);
+typedef uint16_t v4hi_t VECTOR_ATTRIBUTE (V4HI,8);
+typedef uint16_t v8hi_t VECTOR_ATTRIBUTE (V8HI,16);
+typedef uint32_t v2si_t VECTOR_ATTRIBUTE (V2SI,8);
+typedef uint32_t v4si_t VECTOR_ATTRIBUTE (V4SI,16);
+#if HAVE_INT64_T
+typedef uint64_t v1di_t VECTOR_ATTRIBUTE (V1DI,8);
+#endif
+typedef float v2sf_t VECTOR_ATTRIBUTE (V2SF,8);
+typedef float v4sf_t VECTOR_ATTRIBUTE (V4SF,16);
+typedef double v2df_t VECTOR_ATTRIBUTE (V2DF,16);
 #undef VECTOR_ATTRIBUTE
 
 //----------------------------------------------------------------------

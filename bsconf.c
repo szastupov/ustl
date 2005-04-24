@@ -530,6 +530,9 @@ static void SubstituteCFlags (void)
 	    append (" --param large-function-growth=65535", buf);
 	    append (" --param inline-unit-growth=1024", buf);
 	#endif
+	#if __GNUC__ >= 4
+	    append (" -fvisibility-inlines-hidden", buf);
+	#endif
     #endif
     Substitute ("@INLINE_OPTS@", buf);
 
