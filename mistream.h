@@ -193,7 +193,7 @@ inline size_t istream::stream_size (void) const
 template <typename T>
 inline void istream::iread (T& v)
 {
-    assert (aligned (alignof (v)));
+    assert (aligned (alignof (T())));
 #ifdef WANT_STREAM_BOUNDS_CHECKING
     if (remaining() < sizeof(T))
 	throw stream_bounds_exception ("read", typeid(v).name(), pos(), sizeof(T), remaining());
