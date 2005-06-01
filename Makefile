@@ -91,6 +91,10 @@ uninstall-incs:
 	@echo "    Compiling $< to assembly ..."
 	@${CXX} ${CXXFLAGS} -S -o $@ -c $<
 
+%.h.gch:	%.h
+	@echo "    Compiling $< ..."
+	@${CXX} ${CXXFLAGS} -o $@ -c $<
+
 .PHONY:	gch clean depend dox dist dist-clean maintainer-clean
 
 gch:	${INCDIR}/${LIBNAME}.h.gch
