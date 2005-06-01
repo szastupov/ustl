@@ -2,6 +2,11 @@ Release 0.7-1
 	* Fixed reversed conditional ostringstream.format
 		This was causing a seek exception sometimes.
 	* Added ostringstream.vformat
+	* Now compiles with gcc 4.0.0
+	* Added FPU registers to reset_mmx modlist; apparently gcc doesn't
+		know that they are shared with MMX registers.
+	* Standard exception constructors now take const char* instead
+		of string&; this generates much less code.
 
 2005-04-16 Release 0.7
 	* Removed vector inheritance from memblock.
