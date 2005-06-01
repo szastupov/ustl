@@ -174,15 +174,15 @@ inline string::reference string::at (uoff_t pos)
 /// Returns the pointer to the first character.
 inline string::operator const string::value_type* (void) const
 {
-    assert (*end() == c_Terminator && "This string is linked to data that is not 0-terminated. This may cause serious security problems. Please assign the data instead of linking.");
+    assert ((!end() || *end() == c_Terminator) && "This string is linked to data that is not 0-terminated. This may cause serious security problems. Please assign the data instead of linking.");
     return (begin());
 }
 
 /// Returns the pointer to the first character.
 inline string::operator string::value_type* (void)
 {
-    assert (*end() == c_Terminator && "This string is linked to data that is not 0-terminated. This may cause serious security problems. Please assign the data instead of linking.");
     assert ((begin() || !c_str()) && "Requesting non-const pointer to a const string. Don't do that.");
+    assert ((end() && *end() == c_Terminator) && "This string is linked to data that is not 0-terminated. This may cause serious security problems. Please assign the data instead of linking.");
     return (begin());
 }
 
