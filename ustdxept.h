@@ -24,7 +24,7 @@ static const xfmt_t	xfmt_RuntimeError	= 3;
 ///
 class logic_error : public exception {
 public:
-    explicit		logic_error (const string& arg) throw();
+    explicit		logic_error (const char* arg) throw();
     virtual	       ~logic_error (void) throw();
     virtual const char*	what (void) const throw();
     virtual void	info (string& msgbuf, const char* fmt = NULL) const throw();
@@ -42,7 +42,7 @@ protected:
 ///
 class domain_error : public logic_error {
 public:
-    explicit		domain_error (const string& arg) throw();
+    explicit		domain_error (const char* arg) throw();
     virtual const char*	what (void) const throw();
 };
 
@@ -53,7 +53,7 @@ public:
 ///
 class invalid_argument : public logic_error {
 public:
-    explicit		invalid_argument (const string& arg) throw();
+    explicit		invalid_argument (const char* arg) throw();
     virtual const char*	what (void) const throw();
 };
 
@@ -64,7 +64,7 @@ public:
 ///
 class length_error : public logic_error {
 public:
-    explicit		length_error (const string& arg) throw();
+    explicit		length_error (const char* arg) throw();
     virtual const char*	what (void) const throw();
 };
 
@@ -75,7 +75,7 @@ public:
 ///
 class out_of_range : public logic_error {
 public:
-    explicit		out_of_range (const string& arg) throw();
+    explicit		out_of_range (const char* arg) throw();
     virtual const char*	what (void) const throw();
 };
 
@@ -86,7 +86,7 @@ public:
 ///
 class runtime_error : public exception {
 public:
-    explicit		runtime_error (const string& arg) throw();
+    explicit		runtime_error (const char* arg) throw();
     virtual	       ~runtime_error (void) throw();
     virtual const char*	what (void) const throw();
     virtual void	info (string& msgbuf, const char* fmt = NULL) const throw();
@@ -104,7 +104,7 @@ protected:
 ///
 class range_error : public runtime_error {
 public:
-    explicit		range_error (const string& arg) throw();
+    explicit		range_error (const char* arg) throw();
     virtual const char*	what (void) const throw();
 };
 
@@ -115,7 +115,7 @@ public:
 ///
 class overflow_error : public runtime_error {
 public:
-    explicit		overflow_error (const string& arg) throw();
+    explicit		overflow_error (const char* arg) throw();
     virtual const char*	what (void) const throw();
 };
 
@@ -126,7 +126,7 @@ public:
 ///
 class underflow_error : public runtime_error {
 public:
-    explicit		underflow_error (const string& arg) throw();
+    explicit		underflow_error (const char* arg) throw();
     virtual const char*	what (void) const throw();
 };
 

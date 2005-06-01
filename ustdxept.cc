@@ -18,7 +18,7 @@ namespace ustl {
 //----------------------------------------------------------------------
 
 /// \p arg contains a description of the error.
-logic_error::logic_error (const string& arg) throw()
+logic_error::logic_error (const char* arg) throw()
 : m_Arg ()
 {
     try { m_Arg = arg; } catch (...) {}
@@ -61,7 +61,7 @@ size_t logic_error::stream_size (void) const
 
 //----------------------------------------------------------------------
 
-domain_error::domain_error (const string& arg) throw()
+domain_error::domain_error (const char* arg) throw()
 : logic_error (arg)
 {
 }
@@ -73,7 +73,7 @@ const char* domain_error::what (void) const throw()
 
 //----------------------------------------------------------------------
 
-invalid_argument::invalid_argument (const string& arg) throw()
+invalid_argument::invalid_argument (const char* arg) throw()
 : logic_error (arg)
 {
 }
@@ -85,7 +85,7 @@ const char* invalid_argument::what (void) const throw()
 
 //----------------------------------------------------------------------
 
-length_error::length_error (const string& arg) throw()
+length_error::length_error (const char* arg) throw()
 : logic_error (arg)
 {
 }
@@ -97,7 +97,7 @@ const char* length_error::what (void) const throw()
 
 //----------------------------------------------------------------------
 
-out_of_range::out_of_range (const string& arg) throw()
+out_of_range::out_of_range (const char* arg) throw()
 : logic_error (arg)
 {
 }
@@ -110,7 +110,7 @@ const char* out_of_range::what (void) const throw()
 //----------------------------------------------------------------------
 
 /// \p arg contains a description of the error.
-runtime_error::runtime_error (const string& arg) throw()
+runtime_error::runtime_error (const char* arg) throw()
 : m_Arg ()
 {
     try { m_Arg = arg; } catch (...) {}
@@ -152,7 +152,7 @@ size_t runtime_error::stream_size (void) const
 
 //----------------------------------------------------------------------
 
-range_error::range_error (const string& arg) throw()
+range_error::range_error (const char* arg) throw()
 : runtime_error (arg)
 {
 }
@@ -164,7 +164,7 @@ const char* range_error::what (void) const throw()
 
 //----------------------------------------------------------------------
 
-overflow_error::overflow_error (const string& arg) throw()
+overflow_error::overflow_error (const char* arg) throw()
 : runtime_error (arg)
 {
 }
@@ -176,7 +176,7 @@ const char* overflow_error::what (void) const throw()
 
 //----------------------------------------------------------------------
 
-underflow_error::underflow_error (const string& arg) throw()
+underflow_error::underflow_error (const char* arg) throw()
 : runtime_error (arg)
 {
 }
