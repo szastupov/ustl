@@ -13,7 +13,7 @@ using namespace ustl;
 //----------------------------------------------------------------------
 
 #if __i386__
-void movsb_copy (const char* src, size_t nBytes, char* dest)
+extern "C" void movsb_copy (const char* src, size_t nBytes, char* dest)
 {
     asm volatile (
 	"cld		\n\t"
@@ -23,7 +23,7 @@ void movsb_copy (const char* src, size_t nBytes, char* dest)
 	: "memory");
 }
 
-void movsd_copy (const char* src, size_t nBytes, char* dest)
+extern "C" void movsd_copy (const char* src, size_t nBytes, char* dest)
 {
     asm volatile (
 	"shr $2, %%ecx	\n\t"
@@ -34,7 +34,7 @@ void movsd_copy (const char* src, size_t nBytes, char* dest)
 	: "memory");
 }
 
-void risc_copy (const char* src, size_t nBytes, char* dest)
+extern "C" void risc_copy (const char* src, size_t nBytes, char* dest)
 {
     asm volatile (
 	"shr $2, %%ecx		\n\t"
@@ -50,7 +50,7 @@ void risc_copy (const char* src, size_t nBytes, char* dest)
 	: "memory", "eax");
 }
 
-void unroll_copy (const char* src, size_t nBytes, char* dest)
+extern "C" void unroll_copy (const char* src, size_t nBytes, char* dest)
 {
     asm volatile (
 	"shr $4, %%ecx		\n\t"
@@ -73,7 +73,7 @@ void unroll_copy (const char* src, size_t nBytes, char* dest)
 }
 
 #if CPU_HAS_MMX
-void mmx_copy (const char* src, size_t nBytes, char* dest)
+extern "C" void mmx_copy (const char* src, size_t nBytes, char* dest)
 {
     asm volatile (
 	"shr $5, %%ecx		\n\t"
@@ -110,7 +110,7 @@ void mmx_copy (const char* src, size_t nBytes, char* dest)
 #endif // CPU_HAS_MMX
 
 #if CPU_HAS_SSE
-void sse_copy (const char* src, size_t nBytes, char* dest)
+extern "C" void sse_copy (const char* src, size_t nBytes, char* dest)
 {
     for (; nBytes && (uintptr_t(src) % 16 || uintptr_t(dest) % 16); --nBytes)
 	*dest++ = *src++;
@@ -140,6 +140,11 @@ void sse_copy (const char* src, size_t nBytes, char* dest)
 #endif // CPU_HAS_SSE
 #endif // __i386__
 
+extern "C" void memcpy_copy (const char* src, size_t nBytes, char* dest)
+{
+    memcpy (dest, src, nBytes);
+}
+
 template <typename CopyFunction>
 void TestCopyFunction (const char* name, CopyFunction pfn)
 {
@@ -167,7 +172,7 @@ void TestCopyFunction (const char* name, CopyFunction pfn)
 //----------------------------------------------------------------------
 
 #if __i386__
-void stosb_fill (const char* dest, size_t nBytes, char v)
+extern "C" void stosb_fill (const char* dest, size_t nBytes, char v)
 {
     asm volatile (
 	"cld		\n\t"
@@ -177,7 +182,7 @@ void stosb_fill (const char* dest, size_t nBytes, char v)
 	: "memory");
 }
 
-void stosd_fill (const char* dest, size_t nBytes, char v)
+extern "C" void stosd_fill (const char* dest, size_t nBytes, char v)
 {
     uint32_t lv;
     pack_type (v, lv);
@@ -190,7 +195,7 @@ void stosd_fill (const char* dest, size_t nBytes, char v)
 	: "memory");
 }
 
-void risc_fill (const char* dest, size_t nBytes, char v)
+extern "C" void risc_fill (const char* dest, size_t nBytes, char v)
 {
     uint32_t lv;
     pack_type (v, lv);
@@ -206,7 +211,7 @@ void risc_fill (const char* dest, size_t nBytes, char v)
 	: "memory");
 }
 
-void unroll_fill (const char* dest, size_t nBytes, char v)
+extern "C" void unroll_fill (const char* dest, size_t nBytes, char v)
 {
     uint32_t lv;
     pack_type (v, lv);
@@ -226,7 +231,7 @@ void unroll_fill (const char* dest, size_t nBytes, char v)
 }
 
 #if CPU_HAS_MMX && HAVE_INT64_T
-void mmx_fill (const char* dest, size_t nBytes, char v)
+extern "C" void mmx_fill (const char* dest, size_t nBytes, char v)
 {
     uint64_t lv;
     pack_type (v, lv);
@@ -314,6 +319,7 @@ int main (void)
     TestCopyFunction ("risc_copy\t", &risc_copy);
     TestCopyFunction ("unroll_copy\t", &unroll_copy);
 #endif
+    TestCopyFunction ("memcpy_copy\t", &memcpy_copy);
 
     return (EXIT_SUCCESS);
 }
