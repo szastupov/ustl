@@ -282,6 +282,7 @@ inline void pack_type (TSmall s, TBig& b)
     b = (b << min (BitsInType(TSmall) * 4, BitsInType(TBig))) | b;
 }
 
+inline bool TestAndSet (int* pm) __attribute__((always_inline));
 /// Sets the contents of \p pm to 1 and returns true if the previous value was 0.
 inline bool TestAndSet (int* pm)
 {
@@ -311,7 +312,8 @@ inline bool TestAndSet (int* pm)
 }
 
 namespace simd {
-/// Call after you are done using SIMD algorithms for 64 bit tuples.
+    /// Call after you are done using SIMD algorithms for 64 bit tuples.
+    inline void reset_mmx (void) __attribute__((always_inline));
 #if CPU_HAS_MMX
     #if CPU_HAS_3DNOW
 	inline void reset_mmx (void) { asm ("femms":::"mm0","mm1","mm2","mm3","mm4","mm5","mm6","mm7","st","st(1)","st(2)","st(3)","st(4)","st(5)","st(6)","st(7)"); }
