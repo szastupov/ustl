@@ -17,7 +17,7 @@ extern "C" void movsb_copy (const char* src, size_t nBytes, char* dest)
 {
     asm volatile (
 	"cld		\n\t"
-	"rep movsb	\n\t"
+	"rep movsb"
 	: "=&S"(src), "=&D"(dest)
 	: "0"(src), "1"(dest), "c"(nBytes)
 	: "memory");
@@ -28,7 +28,7 @@ extern "C" void movsd_copy (const char* src, size_t nBytes, char* dest)
     asm volatile (
 	"shr $2, %%ecx	\n\t"
 	"cld		\n\t"
-	"rep movsl	\n\t"
+	"rep movsl"
 	: "=&S"(src), "=&D"(dest)
 	: "0"(src), "1"(dest), "c"(nBytes)
 	: "memory");
@@ -44,7 +44,7 @@ extern "C" void risc_copy (const char* src, size_t nBytes, char* dest)
 	"mov %%eax, (%%edi)	\n\t"
 	"add $4, %%edi		\n\t"
 	"dec %%ecx		\n\t"
-	"jnz 1b			\n\t"
+	"jnz 1b"
 	: "=&S"(src), "=&D"(dest)
 	: "0"(src), "1"(dest), "c"(nBytes)
 	: "memory", "eax");
@@ -66,7 +66,7 @@ extern "C" void unroll_copy (const char* src, size_t nBytes, char* dest)
 	"add $16, %%esi		\n\t"
 	"add $16, %%edi		\n\t"
 	"dec %%ecx		\n\t"
-	"jnz 1b			\n\t"
+	"jnz 1b"
 	: "=&S"(src), "=&D"(dest)
 	: "0"(src), "1"(dest), "c"(nBytes)
 	: "memory", "eax", "edx");
@@ -87,54 +87,45 @@ extern "C" void mmx_copy (const char* src, size_t nBytes, char* dest)
 	"movq 8(%%esi), %%mm1	\n\t"
 	"movq 16(%%esi), %%mm2	\n\t"
 	"movq 24(%%esi), %%mm3	\n\t"
-#if 0
-	"movntq %%mm0, (%%edi)	\n\t"
-	"movntq %%mm1, 8(%%edi)	\n\t"
-	"movntq %%mm2, 16(%%edi)\n\t"
-	"movntq %%mm3, 24(%%edi)\n\t"
-#else
 	"movq %%mm0, (%%edi)	\n\t"
 	"movq %%mm1, 8(%%edi)	\n\t"
 	"movq %%mm2, 16(%%edi)	\n\t"
 	"movq %%mm3, 24(%%edi)	\n\t"
-#endif
 	"add $32, %%esi		\n\t"
 	"add $32, %%edi		\n\t"
 	"dec %%ecx		\n\t"
-	"jnz 1b			\n\t"
-	"emms"
+	"jnz 1b"
 	: "=&S"(src), "=&D"(dest)
 	: "0"(src), "1"(dest), "c"(nBytes)
 	: "memory", "mm0", "mm1", "mm2", "mm3");
+    simd::reset_mmx();
 }
 #endif // CPU_HAS_MMX
 
 #if CPU_HAS_SSE
 extern "C" void sse_copy (const char* src, size_t nBytes, char* dest)
 {
-    for (; nBytes && (uintptr_t(src) % 16 || uintptr_t(dest) % 16); --nBytes)
+    const size_t nHeadBytes = min (nBytes, Align(uintptr_t(src), 16U) - uintptr_t(src));
+    for (uoff_t i = 0; i < nHeadBytes; ++ i)
 	*dest++ = *src++;
-    asm volatile (
-	"shr $6, %%ecx			\n\t"
-	"1:				\n\t"
-	"prefetch 512(%%esi)		\n\t"
-	"movaps (%%esi), %%xmm0		\n\t"
-	"movaps 16(%%esi), %%xmm1	\n\t"
-	"movaps 32(%%esi), %%xmm2	\n\t"
-	"movaps 48(%%esi), %%xmm3	\n\t"
-	"movntps %%xmm0, (%%edi)	\n\t"
-	"movntps %%xmm1, 16(%%edi)	\n\t"
-	"movntps %%xmm2, 32(%%edi)	\n\t"
-	"movntps %%xmm3, 48(%%edi)	\n\t"
-	"add $64, %%esi			\n\t"
-	"add $64, %%edi			\n\t"
-	"dec %%ecx			\n\t"
-	"jnz 1b				\n\t"
-	: "=&S"(src), "=&D"(dest)
-	: "0"(src), "1"(dest), "c"(nBytes)
-	: "memory", "xmm0", "xmm1", "xmm2", "xmm3");
-    nBytes = nBytes % 64;
-    for (; nBytes; --nBytes)
+    nBytes -= nHeadBytes;
+    if (!(uintptr_t(dest) % 16)) {
+	const size_t nMiddleBlocks = nBytes / 32;
+	for (uoff_t i = 0; i < nMiddleBlocks; ++ i) {
+	    prefetch (src + 512, 0, 0);
+	    asm volatile (
+		"movaps (%%esi), %%xmm0		\n\t"
+		"movaps 16(%%esi), %%xmm1	\n\t"
+		"movntps %%xmm0, (%%edi)	\n\t"
+		"movntps %%xmm1, 16(%%edi)"
+		: : "S"(src), "D"(dest)
+		: "memory", "xmm0", "xmm1", "xmm2", "xmm3");
+	    src += 32;
+	    dest += 32;
+	}
+	nBytes %= 32;
+    }
+    for (uoff_t i = 0; i < nBytes; ++ i)
 	*dest++ = *src++;
 }
 #endif // CPU_HAS_SSE
@@ -148,22 +139,34 @@ extern "C" void memcpy_copy (const char* src, size_t nBytes, char* dest)
 template <typename CopyFunction>
 void TestCopyFunction (const char* name, CopyFunction pfn)
 {
-    const size_t nIter = 256;
-    const size_t nBytes = 1024 * 1024;
-    memblock buf1 (nBytes), buf2 (nBytes);
+    const uoff_t misalignment = 0;
+    const uoff_t headBytes = 0;
+    const uoff_t tailBytes = 0;
+
+    const size_t nIter = 128;
+    const size_t nBytes = 1024 * 1024 + misalignment;
+
+    string buf1 (nBytes), buf2 (nBytes);
     iota (buf1.begin(), buf1.end(), '\x1');
     fill (buf2, 0);
-    clock_t first = clock();
+    const clock_t first = clock();
     for (uoff_t i = 0; i < nIter; ++ i)
-	(*pfn)(buf1.cdata(), nBytes, buf2.data());
+	(*pfn)(buf1.cdata() + headBytes, nBytes - headBytes - tailBytes, buf2.data() + headBytes + misalignment);
     clock_t last = clock();
     last += (last == first);
     const size_t mbps = nIter * CLOCKS_PER_SEC / (last - first);
     cout << name << " transfer rate is " << mbps << " Mbps, data is ";
-    if (buf1 == buf2)
+    size_t nBad = 0;
+    for (uoff_t i = headBytes; i < buf1.size() - tailBytes; ++ i)
+	nBad += (buf1[i] != buf2[i + misalignment]);
+    if (!nBad)
 	cout << "GOOD" << endl;
-    else
+    else {
 	cout << "BAD" << endl;
+	for (uoff_t i = headBytes; i < buf1.size() - tailBytes; ++ i)
+	    if (buf1[i] != buf2[i + misalignment])
+		cout << "\t\t" << i << "\tbuf1: " << (int) buf1[i] << ", buf2: " << (int) buf2[i + misalignment] << endl;
+    }
     cout.flush();
 }
 
@@ -241,17 +244,10 @@ extern "C" void mmx_fill (const char* dest, size_t nBytes, char v)
 	"prefetchw 512(%%edi)	\n\t"
 #endif
 	"1:			\n\t"
-#if 0
-	"movntq %2, (%%edi)	\n\t"
-	"movntq %2, 8(%%edi)	\n\t"
-	"movntq %2, 16(%%edi)	\n\t"
-	"movntq %2, 24(%%edi)	\n\t"
-#else
 	"movq %2, (%%edi)	\n\t"
 	"movq %2, 8(%%edi)	\n\t"
 	"movq %2, 16(%%edi)	\n\t"
 	"movq %2, 24(%%edi)	\n\t"
-#endif
 	"add $32, %%esi		\n\t"
 	"add $32, %%edi		\n\t"
 	"dec %%ecx		\n\t"
@@ -269,7 +265,7 @@ void TestFillFunction (const char* name, FillFunction pfn)
 {
     const size_t nIter = 256;
     const size_t nBytes = 1024 * 1024;
-    memblock buf1 (nBytes), buf2 (nBytes);
+    string buf1 (nBytes), buf2 (nBytes);
     iota (buf1.begin(), buf1.end(), '\x1');
     fill (buf2, 42);
     clock_t first = clock();

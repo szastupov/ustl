@@ -1,9 +1,10 @@
 include Common.mk
 
 SRCS	= cmemlink.cc fdostream.cc memblock.cc memlink.cc mstream.cc \
-	sistream.cc sostream.cc ubitset.cc uexception.cc ustdxept.cc ustring.cc
-OBJS	= cmemlink.o fdostream.o memblock.o memlink.o mstream.o \
-	sistream.o sostream.o ubitset.o uexception.o ustdxept.o ustring.o
+	sistream.cc sostream.cc ualgobase.h ubitset.cc uexception.cc \
+	ustdxept.cc ustring.cc
+OBJS	= cmemlink.o fdostream.o memblock.o memlink.o mstream.o sistream.o \
+	sostream.o ubitset.o ualgobase.o uexception.o ustdxept.o ustring.o
 INCS	= cmemlink.h config.h fdostream.h memblock.h memlink.h mistream.h \
 	mostream.h simd.h sistream.h sostream.h strmsize.h ualgo.h \
 	ualgobase.h ubitset.h uctralgo.h uctrstrm.h uexception.h ufunction.h \

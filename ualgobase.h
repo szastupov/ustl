@@ -124,6 +124,16 @@ inline OutputIterator fill_n (OutputIterator first, size_t count, const T& value
     return (first);
 }
 
+#if CPU_HAS_MMX
+extern "C" void copy_n_fast (const void* src, size_t count, void* dest);
+extern "C" void copy_n_backward (const void* src, size_t count, void* dest);
+#else
+inline void copy_n_fast (const void* src, size_t count, void* dest)
+    { memcpy (dest, src, count); }
+inline void copy_n_backward (const void* src, size_t count, void* dest)
+    { memmove (dest, src, count); }
+#endif
+
 //----------------------------------------------------------------------
 // Optimized versions for standard types
 //----------------------------------------------------------------------
@@ -142,45 +152,18 @@ inline OutputIterator fill_n (OutputIterator first, size_t count, const T& value
 	#define MMX_PREFETCHW
     #endif
     #if CPU_HAS_SSE
-	#define UNROLLED_COPY_MMX_STORE		\
-	    "movntq %%mm0, (%%edi)  \n\t"	\
-	    "movntq %%mm1, 8(%%edi) \n\t"	\
-	    "movntq %%mm2, 16(%%edi)\n\t"	\
-	    "movntq %%mm3, 24(%%edi)\n\t"
 	#define UNROLLED_FILL_MMX_STORE		\
 	    "movntq %%mm0, (%%edi)  \n\t"	\
 	    "movntq %%mm0, 8(%%edi) \n\t"	\
 	    "movntq %%mm0, 16(%%edi)\n\t"	\
 	    "movntq %%mm0, 24(%%edi)\n\t"
     #else
-	#define UNROLLED_COPY_MMX_STORE		\
-	    "movq %%mm0, (%%edi)    \n\t"	\
-	    "movq %%mm1, 8(%%edi)   \n\t"	\
-	    "movq %%mm2, 16(%%edi)  \n\t"	\
-	    "movq %%mm3, 24(%%edi)  \n\t"
 	#define UNROLLED_FILL_MMX_STORE		\
 	    "movq %%mm0, (%%edi)  \n\t"		\
 	    "movq %%mm0, 8(%%edi) \n\t"		\
 	    "movq %%mm0, 16(%%edi)\n\t"		\
 	    "movq %%mm0, 24(%%edi)\n\t"
     #endif
-    #define UNROLLED_COPY_LOOP(src, dest, count)\
-	asm volatile (				\
-	    "1: "				\
-	    MMX_PREFETCH			\
-	    "movq (%%esi), %%mm0	\n\t"	\
-	    "movq 8(%%esi), %%mm1	\n\t"	\
-	    "movq 16(%%esi), %%mm2	\n\t"	\
-	    "movq 24(%%esi), %%mm3	\n\t"	\
-	    UNROLLED_COPY_MMX_STORE		\
-	    "add $32, %%esi		\n\t"	\
-	    "add $32, %%edi		\n\t"	\
-	    "dec %%ecx			\n\t"	\
-	    "jnz 1b			\n\t"	\
-	    MMX_RESET				\
-	    : "=&S"(src), "=&D"(dest)		\
-	    : "0"(src), "1"(dest), "c"(count)	\
-	    : "memory", "mm0", "mm1", "mm2", "mm3");
     #define UNROLLED_FILL_LOOP(src, dest, count)\
 	const size_t nMMTs = 8 / sizeof(T);	\
 	T vv [nMMTs];				\
@@ -204,12 +187,6 @@ inline OutputIterator fill_n (OutputIterator first, size_t count, const T& value
 	    : "memory", "mm0");
 #else
     #define CARRIER_SIZE	sizeof(unsigned long)
-    #define UNROLLED_COPY_LOOP(first, result, nCarriers)		\
-	const unsigned long* csrc ((const unsigned long*) first);	\
-	unsigned long* cdest ((unsigned long*) result);			\
-	do { *cdest++ = *csrc++; } while (--nCarriers);			\
-	first = (const T*) csrc;					\
-	result = (T*) cdest;
     #define UNROLLED_FILL_LOOP(src, dest, count)		\
 	unsigned long *cdest ((unsigned long*) dest), cv;	\
 	pack_type (v, cv);					\
@@ -218,22 +195,10 @@ inline OutputIterator fill_n (OutputIterator first, size_t count, const T& value
 #endif
 
 template <typename T>
-T* unrolled_copy (const T* first, size_t count, T* result)
+inline T* unrolled_copy (const T* first, size_t count, T* result)
 {
-    const size_t multi = CARRIER_SIZE / sizeof(T);
-    size_t nCarriers = count / multi;
-    if (nCarriers > 2) {
-	for (; count && (uintptr_t(first) % CARRIER_SIZE || uintptr_t(result) % CARRIER_SIZE); --count)
-	    *result++ = *first++;
-	nCarriers = count / multi;
-	if (nCarriers) {
-	    UNROLLED_COPY_LOOP(first, result, nCarriers);
-	    count = count % multi;
-	}
-    }
-    for (; count; --count)
-	*result++ = *first++;
-    return (result);
+    copy_n_fast (first, count * sizeof(T), result);
+    return (advance (result, count));
 }
 
 template <typename T>
@@ -254,9 +219,7 @@ T* unrolled_fill (T* first, size_t count, const T v)
 }
 #undef CARRIER_SIZE
 #undef UNROLLED_FILL_LOOP
-#undef UNROLLED_COPY_LOOP
 #undef UNROLLED_FILL_MMX_STORE
-#undef UNROLLED_COPY_MMX_STORE
 #undef MMX_RESET
 #undef MMX_PREFETCH
 #undef MMX_PREFETCHW
@@ -268,27 +231,8 @@ T* unrolled_fill (T* first, size_t count, const T v)
 template <>
 inline uint8_t* copy_backward (const uint8_t* first, const uint8_t* last, uint8_t* result)
 {
-    size_t count = distance (first, last);
-    prefetch (first, 0, 1);
-    prefetch (result - count, 1, 1);
-    typedef unsigned long vec_t;
-    const size_t multi = sizeof(vec_t) / sizeof(uint8_t);
-    size_t nCarriers = count / multi;
-    if (nCarriers) {
-	for (; count && (uintptr_t(last) % sizeof(vec_t) || uintptr_t(result) % sizeof(vec_t)); --count)
-	    *--result = *--last;
-	nCarriers = count / multi;
-	if (nCarriers) {
-	    const vec_t* csrc ((const vec_t*) last);
-	    vec_t* cdest ((vec_t*) result);
-	    do { *--cdest = *--csrc; } while (--nCarriers);
-	    last = (const uint8_t*) csrc;
-	    result = (uint8_t*) cdest;
-	    count %= multi;
-	}
-    }
-    for (; count; --count)
-	*--result = *--last;
+    const size_t count (distance (first, last));
+    copy_n_backward (first, count, result - count);
     return (result);
 }
 
