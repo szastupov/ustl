@@ -233,29 +233,29 @@ extern "C" void unroll_fill (const char* dest, size_t nBytes, char v)
 	: "memory");
 }
 
-#if CPU_HAS_MMX && HAVE_INT64_T
+#if CPU_HAS_MMX
 extern "C" void mmx_fill (const char* dest, size_t nBytes, char v)
 {
-    uint64_t lv;
-    pack_type (v, lv);
+    prefetch (dest + 512, 1, 0);
     asm volatile (
-	"shr $5, %%ecx		\n\t"
-#if CPU_HAS_3DNOW
-	"prefetchw 512(%%edi)	\n\t"
-#endif
-	"1:			\n\t"
-	"movq %2, (%%edi)	\n\t"
-	"movq %2, 8(%%edi)	\n\t"
-	"movq %2, 16(%%edi)	\n\t"
-	"movq %2, 24(%%edi)	\n\t"
-	"add $32, %%esi		\n\t"
-	"add $32, %%edi		\n\t"
-	"dec %%ecx		\n\t"
-	"jnz 1b			\n\t"
-	"emms"
-	: "=&D"(dest)
-	: "0"(dest), "y"(lv), "c"(nBytes)
-	: "memory");
+	"movd %0, %%mm0		\n\t"
+	"punpcklbw %%mm0, %%mm0	\n\t"
+	"punpcklwd %%mm0, %%mm0	\n\t"
+	"punpckldq %%mm0, %%mm0"
+	::"r"(uint32_t(v))
+	: "mm0", "st");
+    const size_t nBlocks (nBytes / 32);
+    for (uoff_t i = 0; i < nBlocks; ++ i) {
+	asm volatile (
+	    "movq %%mm0, (%%edi)	\n\t"
+	    "movq %%mm0, 8(%%edi)	\n\t"
+	    "movq %%mm0, 16(%%edi)	\n\t"
+	    "movq %%mm0, 24(%%edi)"
+	    :: "D"(dest)
+	    : "memory");
+	dest += 32;
+    }
+    simd::reset_mmx();
 }
 #endif // CPU_HAS_MMX
 #endif // __i386__
