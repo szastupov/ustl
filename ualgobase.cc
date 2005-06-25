@@ -17,23 +17,38 @@ namespace ustl {
 //----------------------------------------------------------------------
 
 #if __i386__
-static inline void movsb_cld (void) __attribute__((always_inline));
-static inline void movsb_cld (void) { asm volatile ("cld":::); }
+static inline void movsb_dir_up (void) __attribute__((always_inline));
+static inline void movsb_dir_up (void) { asm volatile ("cld":::); }
 
-static inline void movsb (const char*& src, size_t nBytes, char*& dest) __attribute__((always_inline));
-static inline void movsb (const char*& src, size_t nBytes, char*& dest)
+static inline void movsb_dir_down (void) __attribute__((always_inline));
+static inline void movsb_dir_down (void) { asm volatile ("std":::); }
+
+static inline void movsb (const void*& src, size_t nBytes, void*& dest) __attribute__((always_inline));
+static inline void movsb (const void*& src, size_t nBytes, void*& dest)
 {
     asm volatile ("rep movsb"
-	: "=&S"(src), "=&D"(dest)
-	: "0"(src), "1"(dest), "c"(nBytes)
+	: "=&S"(src), "=&D"(dest), "=&c"(nBytes)
+	: "0"(src), "1"(dest), "2"(nBytes)
+	: "memory");
+}
+
+static inline void movsd (const void*& src, size_t nWords, void*& dest) __attribute__((always_inline));
+static inline void movsd (const void*& src, size_t nWords, void*& dest)
+{
+    asm volatile ("rep movsl"
+	: "=&S"(src), "=&D"(dest), "=&c"(nWords)
+	: "0"(src), "1"(dest), "2"(nWords)
 	: "memory");
 }
 
 #if CPU_HAS_MMX
-static inline void simd_block_copy (const char* src, char* dest) __attribute__((always_inline));
+#define MMX_ALIGN	16U	// Data must be aligned on this grain
+#define MMX_BS		32U	// Assembly routines copy data this many bytes at a time.
+
+static inline void simd_block_copy (const void* src, void* dest) __attribute__((always_inline));
 static inline void simd_block_cleanup (void) __attribute__((always_inline));
 
-static inline void simd_block_copy (const char* src, char* dest)
+static inline void simd_block_copy (const void* src, void* dest)
 {
     #if CPU_HAS_SSE
     asm volatile (
@@ -68,56 +83,50 @@ static inline void simd_block_cleanup (void)
 }
 
 /// The fastest optimized raw memory copy.
-void copy_n_fast (const void* vsrc, size_t nBytes, void* vdest)
+void copy_n_fast (const void* src, size_t nBytes, void* dest)
 {
-    const char* src (reinterpret_cast<const char*>(vsrc));
-    char* dest (reinterpret_cast<char*>(vdest));
-    movsb_cld();
-    const size_t nHeadBytes = min (nBytes, Align(uintptr_t(src), 16U) - uintptr_t(src));
+    movsb_dir_up();
+    size_t nHeadBytes = Align(uintptr_t(src), MMX_ALIGN) - uintptr_t(src);
+    nHeadBytes = min (nHeadBytes, nBytes);
     movsb (src, nHeadBytes, dest);
     nBytes -= nHeadBytes;
-    if (!(uintptr_t(dest) % 16)) {
-	const size_t nMiddleBlocks = nBytes / 32;
+    if (!(uintptr_t(dest) % MMX_ALIGN)) {
+	const size_t nMiddleBlocks = nBytes / MMX_BS;
 	for (uoff_t i = 0; i < nMiddleBlocks; ++ i) {
-	    prefetch (src + 512, 0, 0);
+	    prefetch (advance (src, 512), 0, 0);
 	    simd_block_copy (src, dest);
-	    src += 32;
-	    dest += 32;
+	    src = advance (src, MMX_BS);
+	    dest = advance (dest, MMX_BS);
 	}
 	simd_block_cleanup();
-	nBytes %= 32;
+	nBytes %= MMX_BS;
     }
     movsb (src, nBytes, dest);
 }
+#endif // CPU_HAS_MMX
 
 /// The fastest optimized backwards raw memory copy.
-void copy_n_backward (const void* vsrc, size_t count, void* vdest)
+void copy_n_backward_fast (const void* first, const void* last, void* result)
 {
-    const char* src (reinterpret_cast<const char*>(vsrc));
-    const char* last (src + count);
-    char* dest (reinterpret_cast<char*>(vdest) + count);
-    prefetch (src, 0, 1);
-    prefetch (dest - count, 1, 1);
-    typedef unsigned long vec_t;
-    const size_t multi = sizeof(vec_t) / sizeof(uint8_t);
-    size_t nCarriers = count / multi;
-    if (nCarriers) {
-	for (; count && (uintptr_t(last) % sizeof(vec_t) || uintptr_t(dest) % sizeof(vec_t)); --count)
-	    *--dest = *--last;
-	nCarriers = count / multi;
-	if (nCarriers) {
-	    const vec_t* csrc ((const vec_t*) last);
-	    vec_t* cdest ((vec_t*) dest);
-	    do { *--cdest = *--csrc; } while (--nCarriers);
-	    last = (const char*) csrc;
-	    dest = (char*) cdest;
-	    count %= multi;
-	}
+    prefetch (first, 0, 0);
+    prefetch (result, 1, 0);
+    size_t nBytes (distance (first, last));
+    movsb_dir_down();
+    size_t nHeadBytes = uintptr_t(last) % 4;
+    last = advance (last, -1);
+    result = advance (result, -1);
+    movsb (last, nHeadBytes, result);
+    nBytes -= nHeadBytes;
+    if (uintptr_t(result) % 4 == 3) {
+	const size_t nMiddleBlocks = nBytes / 4;
+	last = advance (last, -3);
+	result = advance (result, -3);
+	movsd (last, nMiddleBlocks, result);
+	nBytes %= 4;
     }
-    for (; count; --count)
-	*--dest = *--last;
+    movsb (last, nBytes, result);
+    movsb_dir_up();
 }
-#endif // CPU_HAS_MMX
 #endif // __i386__
 
 } // namespace ustl

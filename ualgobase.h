@@ -126,12 +126,18 @@ inline OutputIterator fill_n (OutputIterator first, size_t count, const T& value
 
 #if CPU_HAS_MMX
 extern "C" void copy_n_fast (const void* src, size_t count, void* dest);
-extern "C" void copy_n_backward (const void* src, size_t count, void* dest);
 #else
 inline void copy_n_fast (const void* src, size_t count, void* dest)
     { memcpy (dest, src, count); }
-inline void copy_n_backward (const void* src, size_t count, void* dest)
-    { memmove (dest, src, count); }
+#endif
+#if __i386__
+extern "C" void copy_n_backward_fast (const void* first, const void* last, void* result);
+#else
+inline void copy_n_backward_fast (const void* first, const void* last, void* result)
+{
+    const size_t nBytes (distance (first, last));
+    memmove (advance (dest, -nBytes), first, nBytes);
+}
 #endif
 
 //----------------------------------------------------------------------
@@ -224,15 +230,10 @@ T* unrolled_fill (T* first, size_t count, const T v)
 #undef MMX_PREFETCH
 #undef MMX_PREFETCHW
 
-// There is no advantage in using MMX for copy_backward, because distance
-// between last and result must be a multiple of 8, which rarely happens.
-// Unrolling the loop creates a considerable improvement though.
-//
 template <>
 inline uint8_t* copy_backward (const uint8_t* first, const uint8_t* last, uint8_t* result)
 {
-    const size_t count (distance (first, last));
-    copy_n_backward (first, count, result - count);
+    copy_n_backward_fast (first, last, result);
     return (result);
 }
 

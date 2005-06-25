@@ -7,6 +7,7 @@ Release 0.7-1
 		know that they are shared with MMX registers.
 	* Standard exception constructors now take const char* instead
 		of string&; this generates much less code.
+	* Moved simd copy/fill into ualgobase.cc; they are not inlined anyway.
 
 2005-04-16 Release 0.7
 	* Removed vector inheritance from memblock.
