@@ -68,7 +68,7 @@ private:
 /// \ingroup RawStorageAlgorithms
 ///
 template <typename T>
-void construct (T* p)
+inline void construct (T* p)
 {
     new (p) T;
 }
@@ -89,7 +89,7 @@ void construct (ForwardIterator first, ForwardIterator last)
 /// \ingroup RawStorageAlgorithms
 ///
 template <typename T>
-void construct (T* p, const T& value)
+inline void construct (T* p, const T& value)
 {
     new (p) T (value);
 }
@@ -98,7 +98,7 @@ void construct (T* p, const T& value)
 /// \ingroup RawStorageAlgorithms
 ///
 template <typename T>
-void destroy (T* p) throw()
+inline void destroy (T* p) throw()
 {
     p->~T();
 }
