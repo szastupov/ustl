@@ -8,6 +8,10 @@
 // Copy and fill optimizations are here.
 //
 
+#ifndef NDEBUG	// Optimized code here. asserts slow it down, and are checked elsewhere.
+#define NDEBUG
+#endif
+
 #include "ualgobase.h"
 
 namespace ustl {
