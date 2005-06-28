@@ -1,13 +1,17 @@
-Release 0.7-1
+2005-06-28 Release 0.7-1
+	* Now compiles with gcc 4.0.0
+	* Standard exception constructors now take const char* instead
+		of string&; this generates much less code.
 	* Fixed reversed conditional ostringstream.format
 		This was causing a seek exception sometimes.
 	* Added ostringstream.vformat
-	* Now compiles with gcc 4.0.0
 	* Added FPU registers to reset_mmx modlist; apparently gcc doesn't
 		know that they are shared with MMX registers.
-	* Standard exception constructors now take const char* instead
-		of string&; this generates much less code.
-	* Moved simd copy/fill into ualgobase.cc; they are not inlined anyway.
+	* Moved simd copy into ualgobase.cc; they are not inlined anyway.
+	* Added workaround for BSD which has no __va_copy.
+		I wonder why nobody reported this as a bug. Is anyone running
+		BSD out there? Anyone? Anyone at all? Is the damn thing dead?
+	* So it now compiles on BSD again... Whoohoo...
 
 2005-04-16 Release 0.7
 	* Removed vector inheritance from memblock.

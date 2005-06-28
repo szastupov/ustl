@@ -21,25 +21,27 @@ namespace ustl {
 //----------------------------------------------------------------------
 
 #if __i386__
+#if __GNUC__ >= 3
 static inline void movsb_dir_up (void) __attribute__((always_inline));
-static inline void movsb_dir_up (void) { asm volatile ("cld":::); }
-
 static inline void movsb_dir_down (void) __attribute__((always_inline));
-static inline void movsb_dir_down (void) { asm volatile ("std":::); }
-
 static inline void movsb (const void*& src, size_t nBytes, void*& dest) __attribute__((always_inline));
+static inline void movsd (const void*& src, size_t nWords, void*& dest) __attribute__((always_inline));
+#endif
+
+static inline void movsb_dir_up (void) { asm volatile ("cld"); }
+static inline void movsb_dir_down (void) { asm volatile ("std"); }
+
 static inline void movsb (const void*& src, size_t nBytes, void*& dest)
 {
-    asm volatile ("rep movsb"
+    asm volatile ("rep; movsb"
 	: "=&S"(src), "=&D"(dest), "=&c"(nBytes)
 	: "0"(src), "1"(dest), "2"(nBytes)
 	: "memory");
 }
 
-static inline void movsd (const void*& src, size_t nWords, void*& dest) __attribute__((always_inline));
 static inline void movsd (const void*& src, size_t nWords, void*& dest)
 {
-    asm volatile ("rep movsl"
+    asm volatile ("rep; movsl"
 	: "=&S"(src), "=&D"(dest), "=&c"(nWords)
 	: "0"(src), "1"(dest), "2"(nWords)
 	: "memory");
@@ -83,7 +85,7 @@ static inline void simd_block_cleanup (void)
     #if !CPU_HAS_SSE
 	simd::reset_mmx();
     #endif
-    asm volatile ("sfence":::);
+    asm volatile ("sfence");
 }
 
 /// The fastest optimized raw memory copy.

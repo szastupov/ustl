@@ -17,7 +17,7 @@ extern "C" void movsb_copy (const char* src, size_t nBytes, char* dest)
 {
     asm volatile (
 	"cld		\n\t"
-	"rep movsb"
+	"rep; movsb"
 	: "=&S"(src), "=&D"(dest)
 	: "0"(src), "1"(dest), "c"(nBytes)
 	: "memory");
@@ -28,7 +28,7 @@ extern "C" void movsd_copy (const char* src, size_t nBytes, char* dest)
     asm volatile (
 	"shr $2, %%ecx	\n\t"
 	"cld		\n\t"
-	"rep movsl"
+	"rep; movsl"
 	: "=&S"(src), "=&D"(dest)
 	: "0"(src), "1"(dest), "c"(nBytes)
 	: "memory");
@@ -179,7 +179,7 @@ extern "C" void stosb_fill (const char* dest, size_t nBytes, char v)
 {
     asm volatile (
 	"cld		\n\t"
-	"rep stosb	\n\t"
+	"rep; stosb	\n\t"
 	: "=&D"(dest)
 	: "0"(dest), "a"(v), "c"(nBytes)
 	: "memory");
@@ -192,7 +192,7 @@ extern "C" void stosd_fill (const char* dest, size_t nBytes, char v)
     asm volatile (
 	"shr $2, %%ecx		\n\t"
 	"cld			\n\t"
-	"rep stosl		\n\t"
+	"rep; stosl		\n\t"
 	: "=&D"(dest)
 	: "0"(dest), "a"(lv), "c"(nBytes)
 	: "memory");

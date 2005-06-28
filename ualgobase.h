@@ -136,7 +136,7 @@ extern "C" void copy_n_backward_fast (const void* first, const void* last, void*
 inline void copy_n_backward_fast (const void* first, const void* last, void* result)
 {
     const size_t nBytes (distance (first, last));
-    memmove (advance (dest, -nBytes), first, nBytes);
+    memmove (advance (result, -nBytes), first, nBytes);
 }
 #endif
 

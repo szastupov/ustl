@@ -48,8 +48,8 @@ ifdef DEBUG
     CFLAGS	+= -O0 -g
     CXXFLAGS	+= -O0 -g
 else
-    CFLAGS	+= -O3 -DNDEBUG=1
-    CXXFLAGS	+= -O3 -DNDEBUG=1
+    CFLAGS	+= -O2 -DNDEBUG=1
+    CXXFLAGS	+= -O2 -DNDEBUG=1
     LDFLAGS	+= 
 endif
 ifdef PROFILE

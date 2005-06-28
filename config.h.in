@@ -103,6 +103,9 @@
 // Define to 1 if you have the <signal.h> header file.
 #undef HAVE_SIGNAL_H
 
+// Define to 1 if you have the __va_copy function
+#undef HAVE_VA_COPY
+
 // Define to 1 if `stat' has the bug that it succeeds when given the
 // zero-length file name argument.
 #undef HAVE_STAT_EMPTY_STRING_BUG
@@ -251,7 +254,7 @@
 
 // GCC vector extensions
 #if defined(CPU_HAS_MMX) || defined(CPU_HAS_SSE)
-#undef HAVE_VECTOR_EXTENSIONS
+    #undef HAVE_VECTOR_EXTENSIONS
 #endif
 
 #if CPU_HAS_SSE && defined(__GNUC__)

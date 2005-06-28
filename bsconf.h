@@ -16,7 +16,7 @@
 #define PACKAGE_NAME		"ustl"
 #define LIB_MAJOR		"0"
 #define LIB_MINOR		"7"
-#define LIB_BUILD		"0"
+#define LIB_BUILD		"1"
 
 #define PACKAGE_VERSION		LIB_MAJOR "." LIB_MINOR
 #define PACKAGE_TARNAME		PACKAGE_NAME
@@ -116,7 +116,8 @@ static cpchar_t g_Functions [] = {
 #if __GNUC__ >= 3
     "round",		"#undef HAVE_ROUND",		"#define HAVE_ROUND 1",
 #endif
-    "strrchr",		"#undef HAVE_STRRCHR",		"#define HAVE_STRRCHR 1"
+    "strrchr",		"#undef HAVE_STRRCHR",		"#define HAVE_STRRCHR 1",
+    "__va_copy",	"#undef HAVE_VA_COPY",		"#define HAVE_VA_COPY 1"
 };
 
 /*   NAME               WITHOUT TEXT                            WITH TEXT */
@@ -128,7 +129,7 @@ static cpchar_t g_Components [] = {
     "bounds",		"#undef WANT_STREAM_BOUNDS_CHECKING",	"#define WANT_STREAM_BOUNDS_CHECKING 1 ",
     "cout",		"#define WITHOUT_CIN_COUT_CERR 1",	"#undef WITHOUT_CIN_COUT_CERR",
     "fastcopy",		"#undef WANT_UNROLLED_COPY",		"#define WANT_UNROLLED_COPY 1 ",
-#if __i386__
+#if __i386__ && __GNUC__ >= 3
     "mmx",		"#undef WANT_MMX",			"#define WANT_MMX 1 ",
 #endif
     "libstdc++",	"#define WITHOUT_LIBSTDCPP 1",		"#undef WITHOUT_LIBSTDCPP",
@@ -146,7 +147,7 @@ static SComponentInfo g_ComponentInfos [VectorSize(g_Components) / 3] = {
     { 0, "Enable runtime bounds checking on stream reads/writes" },
     { 1, "Removes support for standard cout/cin/cerr streams" },
     { 1, "Adds optimized specializations for copy/fill (<1k)" },
-#if __i386__
+#if __i386__ && __GNUC__ >= 3
     { 0, "Enables use of MMX/SSE/3dNow! instructions (~4k)" },
 #endif
 #if (__GNUC__ >= 3)
