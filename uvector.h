@@ -10,7 +10,6 @@
 #define UVECTOR_H_00BB13AF082BEB7829C031B265518169
 
 #include "memblock.h"
-#include "uiterator.h"
 #include "umemory.h"
 
 namespace ustl {

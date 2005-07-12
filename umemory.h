@@ -20,6 +20,8 @@
     #include <stdlib.h>
 #endif
 #include "upair.h"
+#include "uiterator.h"
+#include "ulimits.h"
 
 namespace ustl {
 
@@ -77,11 +79,14 @@ inline void construct (T* p)
 /// \ingroup RawStorageAlgorithms
 ///
 template <typename ForwardIterator>
-void construct (ForwardIterator first, ForwardIterator last)
+inline void construct (ForwardIterator first, ForwardIterator last)
 {
-    while (first < last) {
-	construct (&*first);
-	++ first;
+    typedef typename iterator_traits<ForwardIterator>::value_type value_type;
+    if (!numeric_limits<value_type>::is_integral) {
+	while (first < last) {
+	    construct (&*first);
+	    ++ first;
+	}
     }
 }
 
@@ -107,11 +112,14 @@ inline void destroy (T* p) throw()
 /// \ingroup RawStorageAlgorithms
 ///
 template <typename ForwardIterator>
-void destroy (ForwardIterator first, ForwardIterator last) throw()
+inline void destroy (ForwardIterator first, ForwardIterator last) throw()
 {
-    while (first < last) {
-	destroy (&*first);
-	++ first;
+    typedef typename iterator_traits<ForwardIterator>::value_type value_type;
+    if (!numeric_limits<value_type>::is_integral) {
+	while (first < last) {
+	    destroy (&*first);
+	    ++ first;
+	}
     }
 }
 

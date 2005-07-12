@@ -17,7 +17,6 @@
 
 #include "upair.h"
 #include "ualgobase.h"
-#include "uiterator.h"
 #include "ufunction.h"
 #include "upredalgo.h"
 #include "umemory.h"
