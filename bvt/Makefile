@@ -1,9 +1,10 @@
 include ../Common.mk
 
 BVTCCS	= $(wildcard bvt*.cc)
-BVTS	= $(BVTCCS:.cc=)
-OBJS	= $(BVTCCS:.cc=.o) bench.o stdtest.o
 SRCS	= ${BVTCCS} bench.cc stdtest.cc
+
+BVTS	= $(BVTCCS:.cc=)
+OBJS	= $(SRCS:.cc=.o)
 LIBS	= ${LANG_LIBS} -l${LIBNAME} -lm
 TOCLEAN	+= ${BVTS} bench
 
