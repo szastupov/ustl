@@ -62,6 +62,7 @@ protected:
     virtual size_type		overflow (size_type n = 1);
     void			write_buffer (const char* buf, size_type bufSize);
 private:
+    inline char*		encode_dec (char* fmt, uint32_t n) const;
     void			fmtstring (char* fmt, const char* typestr, bool bInteger) const;
     template <typename T>
     inline void			sprintf_iwrite (T v, const char* typestr);

@@ -88,17 +88,26 @@ void ostringstream::write_buffer (const char* buf, size_type bufSize)
 	write (buf + written, btw = min (remaining(), bufSize - written));
 }
 
+/// Simple decimal encoding of \p n into \p fmt.
+inline char* ostringstream::encode_dec (char* fmt, uint32_t n) const
+{
+    do {
+	*fmt++ = '0' + n % 10;
+    } while (n /= 10);
+    return (fmt);
+}
+
+/// Generates a sprintf format string for the given type.
 void ostringstream::fmtstring (char* fmt, const char* typestr, bool bInteger) const
 {
-    #define encode_dec(p,n)	{ *p++ = '0'+n/10; *p++ = '0'+n%10; }
     *fmt++ = '%';
     if (m_Width)
-	encode_dec (fmt, m_Width);
+	fmt = encode_dec (fmt, m_Width);
     if (m_Flags & ios::left)
 	*fmt++ = '-';
     if (!bInteger) {
 	*fmt++ = '.';
-	encode_dec (fmt, m_Precision);
+	fmt = encode_dec (fmt, m_Precision);
     }
     while (*typestr)
 	*fmt++ = *typestr++;
