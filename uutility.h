@@ -31,6 +31,9 @@ namespace ustl {
     #define VectorSize(v)	(sizeof(v) / ustl::size_of_elements(1, v))
 #endif
 
+/// Expands into a begin,end expression for the given static vector; useful for algorithm arguments.
+#define VectorRange(v)	(v), (v) + VectorSize(v)
+
 /// Returns the number of bits in the given type
 #define BitsInType(t)	(sizeof(t) * CHAR_BIT)
 
