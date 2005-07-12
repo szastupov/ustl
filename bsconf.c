@@ -373,6 +373,28 @@ static void DefaultConfigVarValue (EVV v, EVV root, cpchar_t suffix)
 
 static void FillInDefaultConfigVarValues (void)
 {
+    typedef struct _SDefaultPathMap {
+	EVV		var;
+	EVV		base;
+	cpchar_t	path;
+    } SDefaultPathMap;
+    static const SDefaultPathMap c_Defaults[] = {
+	{ vv_bindir,		vv_exec_prefix,	"/bin" },
+	{ vv_sbindir,		vv_exec_prefix,	"/sbin" },
+	{ vv_libexecdir,	vv_prefix,	"/libexec" },
+	{ vv_datadir,		vv_prefix,	"/share" },
+	{ vv_sysconfdir,	vv_prefix,	"/etc" },
+	{ vv_sharedstatedir,	vv_prefix,	"/com" },
+	{ vv_localstatedir,	vv_prefix,	"/var" },
+	{ vv_libdir,		vv_exec_prefix,	"/lib" },
+	{ vv_gcclibdir,		vv_exec_prefix,	"/lib" },
+	{ vv_includedir,	vv_prefix,	"/include" },
+	{ vv_gccincludedir,	vv_prefix,	"/include" },
+	{ vv_infodir,		vv_prefix,	"/info" },
+	{ vv_mandir,		vv_prefix,	"/man" }
+    };
+    uint i;
+
     if (!*(g_ConfigVV [vv_prefix]))
 	copy ("/usr/local", g_ConfigVV [vv_prefix]);
     else if (g_ConfigVV [vv_prefix][0] == '/' && !g_ConfigVV [vv_prefix][1])
@@ -384,19 +406,8 @@ static void FillInDefaultConfigVarValues (void)
     if (!*(g_ConfigVV [vv_oldincludedir]))
 	copy ("/usr/include", g_ConfigVV [vv_oldincludedir]);
 
-    DefaultConfigVarValue (vv_bindir,		vv_exec_prefix,	"/bin");
-    DefaultConfigVarValue (vv_sbindir,		vv_exec_prefix,	"/sbin");
-    DefaultConfigVarValue (vv_libexecdir,	vv_prefix,	"/libexec");
-    DefaultConfigVarValue (vv_datadir,		vv_prefix,	"/share");
-    DefaultConfigVarValue (vv_sysconfdir,	vv_prefix,	"/etc");
-    DefaultConfigVarValue (vv_sharedstatedir,	vv_prefix,	"/com");
-    DefaultConfigVarValue (vv_localstatedir,	vv_prefix,	"/var");
-    DefaultConfigVarValue (vv_libdir,		vv_exec_prefix,	"/lib");
-    DefaultConfigVarValue (vv_gcclibdir,	vv_exec_prefix,	"/lib");
-    DefaultConfigVarValue (vv_includedir,	vv_prefix,	"/include");
-    DefaultConfigVarValue (vv_gccincludedir,	vv_prefix,	"/include");
-    DefaultConfigVarValue (vv_infodir,		vv_prefix,	"/info");
-    DefaultConfigVarValue (vv_mandir,		vv_prefix,	"/man");
+    for (i = 0; i < VectorSize(c_Defaults); ++ i)
+	DefaultConfigVarValue (c_Defaults[i].var, c_Defaults[i].base, c_Defaults[i].path);
 
     if (!*(g_ConfigVV [vv_prefix]))
 	copy ("/", g_ConfigVV [vv_prefix]);
@@ -411,7 +422,7 @@ static void FillInDefaultConfigVarValues (void)
 
 static void DetermineHost (void)
 {
-    int i;
+    uint i;
     fill_n ((pchar_t) &g_Uname, sizeof(struct utsname), 0);
     uname (&g_Uname);
     Lowercase (g_Uname.machine);
@@ -441,14 +452,15 @@ static cpchar_t CopyPathEntry (cpchar_t pi, pchar_t dest)
 
 static int IsBadInstallDir (cpchar_t match)
 {
-    return (compare (match, "/etc") ||
-	    compare (match, "/usr/sbin") ||
-	    compare (match, "/c") ||
-	    compare (match, "/C") ||
-	    compare (match, "/usr/etc") ||
-	    compare (match, "/sbin") ||
-	    compare (match, "/usr/ucb") ||
-	    compare (match, "/usr/afsws/bin"));
+    static const char* c_BadDirs[] = {
+	"/etc", "/usr/sbin", "/c", "/C", "/usr/etc",
+	"/sbin", "/usr/ucb", "/usr/afsws/bin"
+    };
+    uint i;
+    for (i = 0; i < VectorSize(c_BadDirs); ++ i)
+	if (compare (match, c_BadDirs[i]))
+	    return (0);
+    return (1);
 }
 
 static void FindPrograms (void)
@@ -525,10 +537,12 @@ static void SubstituteCFlags (void)
 
     buf[0] = 0;
     #if __GNUC__ >= 3
-	append (" -finline-limit=65535", buf);
 	#if __GNUC__ > 3 || __GNUC_MINOR__ >= 4
+	    append (" --param max-inline-insns-single=1024", buf);
 	    append (" --param large-function-growth=65535", buf);
 	    append (" --param inline-unit-growth=1024", buf);
+	#else
+	    append (" -finline-limit=65535", buf);
 	#endif
 	#if __GNUC__ >= 4
 	    append (" -fvisibility-inlines-hidden", buf);
