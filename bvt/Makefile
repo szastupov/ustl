@@ -31,6 +31,11 @@ bench:	bench.o
 	@echo "    Compiling $< to assembly ..."
 	@${CXX} ${CXXFLAGS} -S -o $@ -c $<
 
+gch:	stdtest.h.gch
+stdtest.h.gch:	stdtest.h
+	@echo "    Creating precompiled header ..."
+	@${CXX} ${CXXFLAGS} -o $@ -c $<
+
 clean:
 	@echo "Removing generated files ..."
 	@${RM} -f ${OBJS} ${TOCLEAN} *.rpo
