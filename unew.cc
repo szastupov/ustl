@@ -9,6 +9,8 @@
 #include "unew.h"
 #include <stdlib.h>
 
+#ifdef WITHOUT_LIBSTDCPP
+
 void* operator new (size_t n) throw (ustl::bad_alloc)
 {
     void* p = malloc (n);
@@ -37,4 +39,5 @@ void operator delete[] (void* p) throw()
 	free (p);
 }
 
+#endif
 

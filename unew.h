@@ -13,6 +13,7 @@
 
 #include "uexception.h"
 
+#ifdef WITHOUT_LIBSTDCPP
 //
 // These are replaceable signatures:
 //  - normal single new and delete (no arguments, throw @c bad_alloc on error)
@@ -36,6 +37,8 @@ inline void* operator new[] (size_t, void* p) throw() { return (p); }
 // Default placement versions of operator delete.
 inline void  operator delete  (void*, void*) throw() { }
 inline void  operator delete[](void*, void*) throw() { }
+
+#endif	// WITHOUT_LIBSTDCPP
 
 #endif
 

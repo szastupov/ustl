@@ -1,24 +1,10 @@
 include Common.mk
 
-SRCS	= cmemlink.cc fdostream.cc memblock.cc memlink.cc mstream.cc \
-	sistream.cc sostream.cc ualgobase.h ubitset.cc uexception.cc \
-	ustdxept.cc ustring.cc
-OBJS	= cmemlink.o fdostream.o memblock.o memlink.o mstream.o sistream.o \
-	sostream.o ubitset.o ualgobase.o uexception.o ustdxept.o ustring.o
-INCS	= cmemlink.h config.h fdostream.h memblock.h memlink.h mistream.h \
-	mostream.h simd.h sistream.h sostream.h strmsize.h ualgo.h uheap.h \
-	ualgobase.h ubitset.h uctralgo.h uctrstrm.h uexception.h ufunction.h \
-	uios.h uiosfunc.h uiterator.h ulaalgo.h ulimits.h ulist.h umap.h \
-	umatrix.h umemory.h umultimap.h umultiset.h unumeric.h upair.h \
-	upredalgo.h uqueue.h uset.h uspecial.h ustack.h ustdxept.h ustl.h \
-	ustl.tbff ustring.h utf8.h utuple.h utypes.h uutility.h uvector.h
+SRCS	= $(wildcard *.cc)
+INCS	= $(filter-out bsconf.%,$(wildcard *.h)) ustl.tbff
+OBJS	= $(SRCS:.cc=.o)
 DOCT	= ustldoc.in
 
-ifdef STANDALONE
-SRCS	+= unew.cc
-OBJS	+= unew.o
-INCS	+= unew.h
-endif
 TOCLEAN	+= config.status config.log
 
 ########################################################################
@@ -74,7 +60,7 @@ uninstall-static: uninstall-incs
 install-incs: ${INCS}
 	@echo "Installing headers to ${INCDIR} ..."
 	@${INSTALLDIR} ${INCDIR}/${LIBNAME}
-	@for i in ${INCS}; do					\
+	@for i in $(filter-out ${LIBNAME}.h,${INCS}); do	\
 	    ${INSTALLDATA} $$i ${INCDIR}/${LIBNAME}/$$i;	\
 	done;
 	@${INSTALLDATA} ${LIBNAME}.h ${INCDIR}

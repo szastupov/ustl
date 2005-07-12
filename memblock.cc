@@ -14,7 +14,6 @@
 #include "umemory.h"
 #include <fcntl.h>
 #include <unistd.h>
-#include <stdlib.h>
 #include <sys/stat.h>
 
 namespace ustl {

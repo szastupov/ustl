@@ -11,7 +11,6 @@
 #include "mistream.h"
 #include "memlink.h"
 #include "ualgo.h"
-#include <stdlib.h>
 
 namespace ustl {
 
