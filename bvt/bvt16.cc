@@ -32,7 +32,7 @@ void TestUTF8 (void)
     encoded.reserve (srcChars.size() * 4);
     copy (srcChars, utf8out (back_inserter(encoded)));
     const char c_ProperEncoding[] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-    if (encoded.compare (encoded.begin(), encoded.begin() + VectorSize(c_ProperEncoding), c_ProperEncoding, c_ProperEncoding + VectorSize(c_ProperEncoding))) {
+    if (encoded.compare (encoded.begin(), encoded.begin() + VectorSize(c_ProperEncoding), VectorRange(c_ProperEncoding))) {
 	cout << "Encoding failed: ";
 	for (string::const_iterator i = encoded.begin(); i != encoded.begin() + VectorSize(c_ProperEncoding); ++ i)
 	    cout << uint32_t(*i);
@@ -62,7 +62,7 @@ void TestUTF8 (void)
     ws.insert (0, wchar_t(1234));
     ws.insert (3, wchar_t(2345));
     const wchar_t c_WChars[2] = { 3456, 4567 };
-    ws.insert (3, c_WChars, c_WChars + VectorSize(c_WChars), 2);
+    ws.insert (3, VectorRange(c_WChars), 2);
     ws.insert (ws.length(), wchar_t(5678));
     cout << "Values[" << ws.length() << "]:";
     for (uoff_t j = 0; j < ws.length(); ++ j)

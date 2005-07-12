@@ -209,12 +209,12 @@ void TestAlgorithms (void)
     cout << "merge with (3,5,10,11,11,14)" << endl;
     const int c_MergeWith[] = { 3,5,10,11,11,14 };
     vector<int> vmerged;
-    merge (v.begin(), v.end(), c_MergeWith, c_MergeWith + VectorSize(c_MergeWith), back_inserter(vmerged));
+    merge (v.begin(), v.end(), VectorRange(c_MergeWith), back_inserter(vmerged));
     PrintVector (vmerged);
     v.assign (first, last);
 
     cout << "inplace_merge with (3,5,10,11,11,14)" << endl;
-    v.insert (v.end(), c_MergeWith, c_MergeWith + VectorSize(c_MergeWith));
+    v.insert (v.end(), VectorRange(c_MergeWith));
     inplace_merge (v.begin(), v.end() - VectorSize(c_MergeWith), v.end());
     PrintVector (v);
     v.assign (first, last);

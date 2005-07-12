@@ -17,8 +17,8 @@ void PrintVector (const int* first, const int* last)
 void TestSetAndMultiset (void)
 {
     const int vv[] = { 1, 8, 9, 2, 3, 1, 1, 4, 6, 1, 3, 4 };
-    set<int> v (vv, vv + VectorSize(vv));
-    multiset<int> mv (vv, vv + VectorSize(vv));
+    set<int> v (VectorRange (vv));
+    multiset<int> mv (VectorRange (vv));
     cout << "set:\t\t";
     PrintVector (v.begin(), v.end());
     cout << "erase(3):\t";

@@ -43,7 +43,7 @@ void TestVector (void)
     else
 	cout << v.max_size();
     cout << " max)" << endl;
-    v.insert (v.begin() + 1, c_TestNumbers + 1, c_TestNumbers + VectorSize(c_TestNumbers));
+    v.insert (v.begin() + 1, 1 + VectorRange(c_TestNumbers));
     PrintVector (v);
     cout.format ("front() = %d, back() = %d\n", v.front(), v.back());
     v.erase (v.begin());
@@ -64,7 +64,7 @@ void TestVector (void)
     PrintVector (v2);
     v2.assign (20, 33);
     PrintVector (v2);
-    v.assign (c_TestNumbers, c_TestNumbers + VectorSize(c_TestNumbers));
+    v.assign (VectorRange (c_TestNumbers));
     PrintVector (v);
     if (v == v2)
 	cout << "v == v2" << endl;
