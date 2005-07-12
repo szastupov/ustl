@@ -1,3 +1,10 @@
+Release 0.8
+	* Implemented heap algorithms.
+	* construct/destruct will now disappear for integral types.
+		Integral types have no destructors/constructors.
+	* Field width should be padded with spaces, not zeroes.
+	* Added VectorRange macro
+
 2005-06-28 Release 0.7-1
 	* Now compiles with gcc 4.0.0
 	* Standard exception constructors now take const char* instead

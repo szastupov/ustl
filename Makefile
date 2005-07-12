@@ -6,7 +6,7 @@ SRCS	= cmemlink.cc fdostream.cc memblock.cc memlink.cc mstream.cc \
 OBJS	= cmemlink.o fdostream.o memblock.o memlink.o mstream.o sistream.o \
 	sostream.o ubitset.o ualgobase.o uexception.o ustdxept.o ustring.o
 INCS	= cmemlink.h config.h fdostream.h memblock.h memlink.h mistream.h \
-	mostream.h simd.h sistream.h sostream.h strmsize.h ualgo.h \
+	mostream.h simd.h sistream.h sostream.h strmsize.h ualgo.h uheap.h \
 	ualgobase.h ubitset.h uctralgo.h uctrstrm.h uexception.h ufunction.h \
 	uios.h uiosfunc.h uiterator.h ulaalgo.h ulimits.h ulist.h umap.h \
 	umatrix.h umemory.h umultimap.h umultiset.h unumeric.h upair.h \

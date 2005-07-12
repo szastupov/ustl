@@ -157,11 +157,10 @@
 ///	Algorithms for manipulating unstructured memory.
 //
 
-#ifndef USTL_H_99881273
-#define USTL_H_99881273
+#ifndef USTL_H_6A5A10410D2CD7FC2D78FE470F045EB7
+#define USTL_H_6A5A10410D2CD7FC2D78FE470F045EB7
 
 #include "ustl/uspecial.h"
-#include "ustl/ulimits.h"
 #include "ustl/sistream.h"
 #include "ustl/uiosfunc.h"
 #include "ustl/utf8.h"
@@ -176,6 +175,7 @@
 #endif
 #include "ustl/unumeric.h"
 #include "ustl/ulist.h"
+#include "ustl/uheap.h"
 #include "ustl/ustdxept.h"
 
 #endif

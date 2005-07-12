@@ -19,6 +19,20 @@
 
 namespace ustl {
 
+/// \brief Returns true if the given range is a heap under \p comp.
+/// A heap is a sequentially encoded binary tree where for every node
+/// comp(node,child1) is false and comp(node,child2) is false.
+///
+template <typename RandomAccessIterator, typename Compare>
+bool is_heap (RandomAccessIterator first, RandomAccessIterator last, Compare comp)
+{
+    RandomAccessIterator iChild (first);
+    for (; ++iChild < last; ++first)
+	if (comp (*first, *iChild) || (++iChild < last && comp (*first, *iChild)))
+	    return (false);
+    return (true);
+}
+
 /// \brief make_heap turns the range [first, last) into a heap
 /// At completion, is_heap (first, last, comp) is true.
 /// The algorithm is adapted from "Classic Data Structures in C++" by Timothy Budd.
@@ -33,9 +47,9 @@ void make_heap (RandomAccessIterator first, RandomAccessIterator last, Compare c
 	// replace position with the smaller of the two children, or the last element
 	RandomAccessIterator iChild = i + 2 * distance (first, i) + 1;
 	if (iChild < last) {
-	    if (iChild + 1 < last && comp (*(iChild + 1), *iChild))
+	    if (iChild + 1 < last && comp (*iChild, *(iChild + 1)))
 		++ iChild;
-	    if (comp (v, *iChild)) {
+	    if (comp (*iChild, v)) {
 		*i = v;
 		break;
 	    } else {
@@ -49,6 +63,7 @@ void make_heap (RandomAccessIterator first, RandomAccessIterator last, Compare c
     }
 }
 
+/// \brief Inserts the *--last into the preceeding range assumed to be a heap.
 template <typename RandomAccessIterator, typename Compare>
 void push_heap (RandomAccessIterator first, RandomAccessIterator last, Compare comp)
 {
@@ -57,8 +72,8 @@ void push_heap (RandomAccessIterator first, RandomAccessIterator last, Compare c
     typedef typename iterator_traits<RandomAccessIterator>::value_type value_type;
     const value_type v (*--last);
     while (first < last) {
-	RandomAccessIterator iParent = first + distance(first, last) / 2;
-	if (comp (*iParent, v))
+	RandomAccessIterator iParent = first + (distance(first, last) - 1) / 2;
+	if (comp (v, *iParent))
 	    break;
 	else {
 	    *last = *iParent;
@@ -66,6 +81,13 @@ void push_heap (RandomAccessIterator first, RandomAccessIterator last, Compare c
 	}
     }
     *last = v;
+}
+
+template <typename RandomAccessIterator>
+inline bool is_heap (RandomAccessIterator first, RandomAccessIterator last)
+{
+    typedef typename iterator_traits<RandomAccessIterator>::value_type value_type;
+    return (is_heap (first, last, less<value_type>()));
 }
 
 /// \brief Make_heap turns the range [first, last) into a heap
@@ -77,8 +99,9 @@ inline void make_heap (RandomAccessIterator first, RandomAccessIterator last)
     make_heap (first, last, less<value_type>());
 }
 
+/// \brief Inserts the *--last into the preceeding range assumed to be a heap.
 template <typename RandomAccessIterator>
-inline void push_heap (RandomAccessIterator first, RandomAccessIterator last, Compare comp)
+inline void push_heap (RandomAccessIterator first, RandomAccessIterator last)
 {
     typedef typename iterator_traits<RandomAccessIterator>::value_type value_type;
     push_heap (first, last, less<value_type>());

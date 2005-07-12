@@ -60,6 +60,7 @@ make install
 %{_prefix}/include/ustl/uctrstrm.h
 %{_prefix}/include/ustl/uexception.h
 %{_prefix}/include/ustl/ufunction.h
+%{_prefix}/include/ustl/uheap.h
 %{_prefix}/include/ustl/uios.h
 %{_prefix}/include/ustl/uiosfunc.h
 %{_prefix}/include/ustl/uiterator.h
