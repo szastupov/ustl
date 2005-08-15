@@ -39,7 +39,7 @@ inline size_t Utf8Bytes (wchar_t v)
 }
 
 /// Returns the number of bytes in a UTF-8 sequence that starts with \p c.
-inline size_t Utf8SequenceBytes (uint8_t c)
+inline size_t Utf8SequenceBytes (wchar_t c)	// a wchar_t to keep c in a full register
 {
     // Count the leading bits. Header bits are 1 * nBytes followed by a 0.
     //	0 - single byte character. Take 7 bits (0xFF >> 1)
@@ -48,10 +48,9 @@ inline size_t Utf8SequenceBytes (uint8_t c)
     //	>2 - multibyte character. Take remaining bits, and get the next bytes.
     // All errors are ignored, since the user can not correct them.
     //
-    unsigned int mask = 0x80;
+    wchar_t mask = 0x80;
     size_t nBytes = 0;
-    const unsigned int ci (c);	// To keep c in a full register.
-    for (; ci & mask; ++nBytes)
+    for (; c & mask; ++nBytes)
 	mask >>= 1;
     return (nBytes += !nBytes); // A sequence is always at least 1 byte.
 }
