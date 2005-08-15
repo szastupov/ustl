@@ -52,7 +52,7 @@ inline size_t Utf8SequenceBytes (wchar_t c)	// a wchar_t to keep c in a full reg
     size_t nBytes = 0;
     for (; c & mask; ++nBytes)
 	mask >>= 1;
-    return (nBytes += !nBytes); // A sequence is always at least 1 byte.
+    return (nBytes ? nBytes : 1); // A sequence is always at least 1 byte.
 }
 
 //----------------------------------------------------------------------
