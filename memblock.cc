@@ -126,8 +126,7 @@ void memblock::assign (const void* p, size_type n)
 ///
 void memblock::reserve (size_type newSize, bool bExact)
 {
-    newSize += minimumFreeCapacity();
-    if (m_Capacity >= newSize)
+    if ((newSize += minimumFreeCapacity()) <= m_Capacity)
 	return;
     void* oldBlock (is_linked() ? NULL : data());
     if (!bExact)

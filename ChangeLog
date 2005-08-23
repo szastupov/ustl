@@ -3,7 +3,9 @@ Release 0.8
 	* construct/destruct will now disappear for integral types.
 		Integral types have no destructors/constructors.
 	* Field width should be padded with spaces, not zeroes.
-	* Added VectorRange macro
+	* Added VectorRange macro.
+	* Added relink() call to memlinks for faster resizing.
+		relink does the work of link, but without calling unlink.
 
 2005-06-28 Release 0.7-1
 	* Now compiles with gcc 4.0.0

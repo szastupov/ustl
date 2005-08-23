@@ -71,6 +71,8 @@ public:
     inline void		link (const cmemlink& l)		{ cmemlink::link (l.cdata(), l.readable_size()); }
     inline void		link (const void* f, const void* l)	{ cmemlink::link (f, l); }
 			OVERLOAD_POINTER_AND_SIZE_T_V2(link, const void*)
+    inline void		relink (const void* p, size_type n)	{ cmemlink::relink (p, n); m_Pos = 0; }
+    inline void		relink (const cmemlink& l)		{ relink (l.cdata(), l.readable_size()); }
     virtual void	unlink (void);
     inline uoff_t	pos (void) const	{ return (m_Pos); }
     inline const_iterator ipos (void) const	{ return (begin() + pos()); }

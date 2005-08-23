@@ -50,8 +50,7 @@ void cmemlink::link (const void* p, size_type n)
     if (!p && n)
 	throw bad_alloc (n);
     unlink();
-    m_CData = reinterpret_cast<const_pointer>(p);
-    m_Size = n;
+    relink (p, n);
 }
 
 /// \brief Resets all to 0.
@@ -94,15 +93,6 @@ void cmemlink::write_file (const char* filename, int mode) const
     }
     if (0 != close (fd))
 	throw file_exception ("close", filename);
-}
-
-/// Copies values from l
-const cmemlink& cmemlink::operator= (const cmemlink& l)
-{
-    unlink();
-    m_CData = l.m_CData;
-    m_Size = l.m_Size;
-    return (*this);
 }
 
 /// swaps the contents with \p l

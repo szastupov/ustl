@@ -49,6 +49,7 @@ public:
     typedef ptrdiff_t		difference_type;
     typedef const_pointer	const_iterator;
     typedef const_iterator	iterator;
+    typedef const cmemlink&	rcself_t;
 public:
 			cmemlink (void);
 			cmemlink (const void* p, size_type n);
@@ -58,18 +59,19 @@ public:
     inline void		link (const void* first, const void* last);
 			OVERLOAD_POINTER_AND_SIZE_T_V2(link, const void*)
     inline void		link (const cmemlink& l);
+    inline void		relink (const void* p, size_type n);
     virtual void	unlink (void);
-    const cmemlink&	operator= (const cmemlink& l);
+    inline rcself_t	operator= (const cmemlink& l)	{ link (l.m_CData, l.m_Size); return (*this); }
     bool		operator== (const cmemlink& l) const;
     void		swap (cmemlink& l);
-   inline const_pointer	cdata (void) const;
-    inline iterator	begin (void) const;
-    inline iterator	end (void) const;
-    inline size_type	size (void) const;
-    inline size_type	max_size (void) const;
-    inline size_type	readable_size (void) const;
-    inline bool		empty (void) const;
-    inline void		resize (size_type n);
+    inline size_type	size (void) const		{ return (m_Size); }
+    inline size_type	max_size (void) const		{ return (size()); }
+    inline size_type	readable_size (void) const	{ return (size()); }
+    inline bool		empty (void) const		{ return (!size()); }
+   inline const_pointer	cdata (void) const		{ return (m_CData); }
+    inline iterator	begin (void) const		{ return (iterator (m_CData)); }
+    inline iterator	end (void) const		{ return (begin() + size()); }
+    inline void		resize (size_type n)		{ m_Size = n; }
     inline void		read (istream&);
     void		write (ostream& os) const;
     size_type		stream_size (void) const;
@@ -78,54 +80,6 @@ private:
     const_pointer	m_CData;	///< Pointer to the data block (const)
     size_type		m_Size;		///< size of the data block
 };
-
-/// Returns the pointer to the internal data
-inline cmemlink::const_pointer cmemlink::cdata (void) const
-{
-    return (m_CData);
-}
-
-/// Returns the size of the block
-inline cmemlink::size_type cmemlink::size (void) const
-{
-    return (m_Size);
-}
-
-/// Returns the maximum size of the block (non-resizable, so always == size())
-inline cmemlink::size_type cmemlink::max_size (void) const
-{
-    return (m_Size);
-}
-
-/// Returns the readable size of the block.
-inline cmemlink::size_type cmemlink::readable_size (void) const
-{
-    return (size());
-}
-
-/// true if size() == 0
-inline bool cmemlink::empty (void) const
-{
-    return (size() == 0);
-}
-
-/// Resizes the block as seen by users of the class (no memory allocation)
-inline void cmemlink::resize (size_type n)
-{
-    m_Size = n;
-}
-
-/// Returns the pointer to the internal data
-inline cmemlink::iterator cmemlink::begin (void) const
-{
-    return (iterator (m_CData));
-}
-
-/// Returns the pointer to the end of the internal data
-inline cmemlink::iterator cmemlink::end (void) const
-{
-    return (begin() + size());
-}
 
 /// Links to \p l
 inline void cmemlink::link (const cmemlink& l)
@@ -137,6 +91,13 @@ inline void cmemlink::link (const cmemlink& l)
 inline void cmemlink::link (const void* first, const void* last)
 {
     link (first, distance (first, last));
+}
+
+/// A fast alternative to link which can be used when relinking to the same block (i.e. when it is resized)
+inline void cmemlink::relink (const void* p, size_type n)
+{
+    m_CData = reinterpret_cast<const_pointer>(p);
+    m_Size = n;
 }
 
 /// Reads the object from stream \p os

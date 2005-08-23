@@ -20,29 +20,28 @@ void WriteCML (const cmemlink& l)
 
 void TestCML (void)
 {
-    const size_t strTestLen = 13;
-    const char strTest[strTestLen] = "Hello world!";
-    const char* pstrTest = strTest; // const storage is sometimes copied on pointing
+    const char hello[] = "Hello world!";
+    const char* phello = hello; // const storage is sometimes copied on pointing
 
     cmemlink a, b;
-    a.link (pstrTest, strTestLen);
-    if (a.begin() != pstrTest) {
+    a.link (phello, VectorSize(hello));
+    if (a.begin() != phello) {
 	cout << "a.begin() failed: " << ios::hex << uintptr_t(a.begin());
-        cout << " != " << uintptr_t(pstrTest) << ios::dec << endl;
+        cout << " != " << uintptr_t(phello) << ios::dec << endl;
     }
-    a.link (pstrTest, pstrTest + strTestLen);
-    if (*(const char*)(a.begin() + 5) != strTest[5]) {
+    a.link (VectorRange (hello));
+    if (*(const char*)(a.begin() + 5) != hello[5]) {
 	cout << "begin()[5] failed: " << *(const char*)(a.begin() + 5);
-	cout << " != " << strTest[5] << endl;
+	cout << " != " << hello[5] << endl;
     }
-    if (0 != memcmp (a.begin(), strTest, strTestLen))
+    if (0 != memcmp (a.begin(), hello, VectorSize(hello)))
 	cout << "memcmp failed on cmemlink" << endl;
-    b.link (pstrTest, strTestLen);
+    b.static_link (hello);
     WriteCML (a);
     WriteCML (b);
     if (!(a == b))
 	cout << "operator== failed on cmemlink" << endl;
-    b.resize (strTestLen - 5);
+    b.resize (VectorSize(hello) - 5);
     a = b;
     WriteCML (a);
 }

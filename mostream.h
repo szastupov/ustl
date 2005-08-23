@@ -73,10 +73,12 @@ public:
     template <typename T>
     inline void		iwrite (const T& v);
     virtual void	unlink (void);
-    inline void		link (void* p, size_type n)		{ memlink::link (p, n); }
-    inline void		link (memlink& l)			{ memlink::link (l.data(), l.writable_size()); }
-    inline void		link (void* f, void* l)			{ memlink::link (f, l); }
+    inline void		link (void* p, size_type n)	{ memlink::link (p, n); }
+    inline void		link (memlink& l)		{ memlink::link (l.data(), l.writable_size()); }
+    inline void		link (void* f, void* l)		{ memlink::link (f, l); }
 			OVERLOAD_POINTER_AND_SIZE_T_V2(link, void*)
+    inline void		relink (void* p, size_type n)	{ memlink::relink (p, n); m_Pos = 0; }
+    inline void		relink (memlink& l)		{ relink (l.data(), l.writable_size()); }
 private:
     uoff_t		m_Pos;	///< Current write position.
 };

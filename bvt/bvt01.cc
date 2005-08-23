@@ -19,33 +19,32 @@ void WriteCML (const cmemlink& l)
 
 void TestML (void)
 {
-    memlink::value_type strTest[] = "abcdefghijklmnopqrstuvwzyz";
-    const size_t strTestLen = strlen((const char*) strTest);
-    memlink::const_pointer cstrTest = strTest;
+    char str[] = "abcdefghijklmnopqrstuvwzyz";
+    memlink::const_pointer cstr = str;
 
     memlink a, b;
-    a.link (strTest, strTestLen);
-    if (a.begin() != strTest)
+    a.static_link (str);
+    if (a.begin() != str)
 	cout << "begin() failed on memlink" << endl;
-    a.link (strTest, strTest + strTestLen);
-    if (a.begin() + 5 != &strTest[5])
+    a.link (VectorRange(str));
+    if (a.begin() + 5 != &str[5])
 	cout << "begin() + 5 failed on memlink" << endl;
-    if (0 != memcmp (a.begin(), strTest, strTestLen))
+    if (0 != memcmp (a.begin(), str, VectorSize(str)))
 	cout << "memcmp failed on memlink" << endl;
     WriteCML (a);
-    b.link (cstrTest, strTestLen);
+    b.link (cstr, VectorSize(str));
     if (b.begin() != NULL)
 	cout << "begin() of const failed on cmemlink" << endl;
-    if (b.cmemlink::begin() != cstrTest)
+    if (b.cmemlink::begin() != cstr)
 	cout << "begin() failed on cmemlink" << endl;
     WriteCML (b);
     if (!(a == b))
 	cout << "operator== failed on cmemlink" << endl;
-    b.resize (strTestLen - 2);
+    b.resize (VectorSize(str) - 2);
     a = b;
     if (a.begin() != NULL)
 	cout << "begin() after assignment failed on cmemlink" << endl;
-    a.link (strTest, strTestLen);
+    a.relink (str, VectorSize(str) - 1);
     WriteCML (a);
     a.insert (a.begin() + 5, 9);
     a.fill (a.begin() + 5, "-", 1, 9);
@@ -55,7 +54,7 @@ void TestML (void)
     WriteCML (a);
     a.fill (a.begin() + 5, "TEST", 4, 3); 
     WriteCML (a);
-    a.copy (cstrTest, strTestLen);
+    a.copy (cstr, VectorSize(str) - 1);
     WriteCML (a);
 }
 

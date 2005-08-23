@@ -60,6 +60,8 @@ public:
 			OVERLOAD_POINTER_AND_SIZE_T_V2(link, const void*)
     inline void		link (const void* first, const void* last)	{ link (first, distance (first, last)); }
     inline void		link (void* first, void* last)			{ link (first, distance (first, last)); }
+    inline void		relink (const void* p, size_type n)		{ cmemlink::relink (p, n); }
+    inline void		relink (void* p, size_type n);
     virtual void	unlink (void);
     inline void		copy (const cmemlink& l);
     inline void		copy (const void* p, size_type n);
@@ -100,6 +102,12 @@ inline void memlink::link (memlink& l)
 {
     cmemlink::link (l);
     m_Data = l.data();
+}
+
+inline void memlink::relink (void* p, size_type n)
+{
+    cmemlink::relink (p, n);
+    m_Data = reinterpret_cast<pointer>(p);
 }
 
 /// Reads object \p l from stream \p is

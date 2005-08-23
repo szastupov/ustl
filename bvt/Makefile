@@ -10,7 +10,7 @@ TOCLEAN	+= ${BVTS} bench
 
 .PHONY:	all run clean depend
 
-all:	stdtest.o ${BVTS} bench
+all:	stdtest.o ${BVTS} bench $(wildcard *.gch)
 
 run:	${BVTS}
 	@for i in ${BVTS}; do echo "Running $$i"; ./$$i < $$i.cc | diff $$i.std -; done
