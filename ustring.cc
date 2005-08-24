@@ -25,6 +25,10 @@ const string::size_type string::size_Terminator;
 const string::value_type string::c_Terminator;
 const char string::empty_string[string::size_Terminator] = "";
 
+typedef utf8in_iterator<string::const_iterator> utf8icstring_iterator;
+typedef utf8in_iterator<string::iterator> utf8istring_iterator;
+typedef utf8out_iterator<string::iterator> utf8ostring_iterator;
+
 //----------------------------------------------------------------------
 
 /// Creates an empty string.
@@ -97,7 +101,7 @@ void string::resize (size_type n)
 string::size_type string::length (void) const
 {
     size_type nc = 0;
-    utf8in_iterator<const_iterator> endfinder (begin());
+    utf8icstring_iterator endfinder (begin());
     for (; endfinder.base() < end(); ++ endfinder, ++ nc);
     return (nc);
 }
@@ -105,7 +109,7 @@ string::size_type string::length (void) const
 /// Returns an iterator to the character position \p c.
 string::const_iterator string::ichar (uoff_t c) const
 {
-    utf8in_iterator<const_iterator> cfinder (begin());
+    utf8icstring_iterator cfinder (begin());
     cfinder += c;
     return (cfinder.base());
 }
@@ -113,7 +117,7 @@ string::const_iterator string::ichar (uoff_t c) const
 /// Returns an iterator to the character position \p c.
 string::iterator string::ichar (uoff_t c)
 {
-    utf8in_iterator<iterator> cfinder (begin());
+    utf8istring_iterator cfinder (begin());
     cfinder += c;
     return (cfinder.base());
 }
@@ -121,7 +125,7 @@ string::iterator string::ichar (uoff_t c)
 /// Returns the character at position \p pos
 wchar_t string::char_at (uoff_t pos) const
 {
-    utf8in_iterator<const_iterator> cfinder (begin());
+    utf8icstring_iterator cfinder (begin());
     cfinder += pos;
     return (*cfinder);
 }
@@ -256,7 +260,7 @@ void string::insert (const uoff_t ip, const wchar_t* first, const wchar_t* last,
     for (uoff_t i = 0; i < nti; ++ i)
 	bti += Utf8Bytes(first[i]);
     ipp = iterator (memblock::insert (memblock::iterator(ipp), n * bti));
-    utf8out_iterator<iterator> uout (utf8out (ipp));
+    utf8ostring_iterator uout (utf8out (ipp));
     for (uoff_t j = 0; j < n; ++ j)
 	for (uoff_t k = 0; k < nti; ++ k, ++ uout)
 	    *uout = first[k];
@@ -304,7 +308,7 @@ string::iterator string::erase (iterator ep, size_type n)
 ///
 void string::erase (uoff_t ep, size_type n)
 {
-    utf8in_iterator<iterator> rfinder (begin());
+    utf8istring_iterator rfinder (begin());
     rfinder += ep;
     iterator first (rfinder.base());
     rfinder += n;
@@ -489,7 +493,7 @@ void string::read (istream& is)
 /// Writes the object to stream \p os
 void string::write (ostream& os) const
 {
-    *utf8out(os)++ = size();
+    *utf8out(os) = size();
     if (size() > os.remaining())
 	throw stream_bounds_exception ("write", "ustl::string", os.pos(), size(), os.remaining());
     os.write (cdata(), size());
