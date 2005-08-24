@@ -23,11 +23,11 @@ bench:	bench.o
 	@echo "Linking $@ ..."
 	@${LD} ${LDFLAGS} -o $@ $^ ${LIBS}
 
-%.o:	%.cc
+%.o:	%.cc $(wildcard *.gch)
 	@echo "    Compiling $< ..."
 	@${CXX} ${CXXFLAGS} -o $@ -c $<
 
-%.s:	%.cc
+%.s:	%.cc $(wildcard *.gch)
 	@echo "    Compiling $< to assembly ..."
 	@${CXX} ${CXXFLAGS} -S -o $@ -c $<
 
@@ -35,8 +35,6 @@ gch:	stdtest.h.gch
 stdtest.h.gch:	stdtest.h $(wildcard ../*.h)
 	@echo "    Creating precompiled header ..."
 	@${CXX} ${CXXFLAGS} -o $@ -c $<
-
-stdtest.o:	stdtest.cc stdtest.h $(wildcard *.gch)
 
 clean:
 	@echo "Removing generated files ..."
