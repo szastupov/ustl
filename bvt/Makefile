@@ -10,7 +10,7 @@ TOCLEAN	+= ${BVTS} bench
 
 .PHONY:	all run clean depend
 
-all:	stdtest.o ${BVTS} bench $(wildcard *.gch)
+all:	stdtest.o ${BVTS} bench
 
 run:	${BVTS}
 	@for i in ${BVTS}; do echo "Running $$i"; ./$$i < $$i.cc | diff $$i.std -; done
@@ -32,9 +32,11 @@ bench:	bench.o
 	@${CXX} ${CXXFLAGS} -S -o $@ -c $<
 
 gch:	stdtest.h.gch
-stdtest.h.gch:	stdtest.h
+stdtest.h.gch:	stdtest.h $(wildcard ../*.h)
 	@echo "    Creating precompiled header ..."
 	@${CXX} ${CXXFLAGS} -o $@ -c $<
+
+stdtest.o:	stdtest.cc stdtest.h $(wildcard *.gch)
 
 clean:
 	@echo "Removing generated files ..."
