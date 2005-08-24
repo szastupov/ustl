@@ -6,6 +6,7 @@ Release 0.8
 	* Added VectorRange macro.
 	* Added relink() call to memlinks for faster resizing.
 		relink does the work of link, but without calling unlink.
+	* Moved simd fill into ualgobase.cc
 
 2005-06-28 Release 0.7-1
 	* Now compiles with gcc 4.0.0

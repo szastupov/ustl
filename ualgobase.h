@@ -139,66 +139,15 @@ inline void copy_n_backward_fast (const void* first, const void* last, void* res
     memmove (advance (result, -nBytes), first, nBytes);
 }
 #endif
+extern "C" void fill_n8_fast (uint8_t* dest, size_t count, uint8_t v);
+extern "C" void fill_n16_fast (uint16_t* dest, size_t count, uint16_t v);
+extern "C" void fill_n32_fast (uint32_t* dest, size_t count, uint32_t v);
 
 //----------------------------------------------------------------------
 // Optimized versions for standard types
 //----------------------------------------------------------------------
 
 #if WANT_UNROLLED_COPY
-
-#if CPU_HAS_MMX
-    #define CARRIER_SIZE	32
-    #if CPU_HAS_3DNOW
-	#define MMX_RESET	"femms"
-	#define MMX_PREFETCH	"prefetch 512(%%esi)		\n\t"
-	#define MMX_PREFETCHW	"prefetchw 512(%%edi)		\n\t"
-    #else
-	#define MMX_RESET	"emms"
-	#define MMX_PREFETCH
-	#define MMX_PREFETCHW
-    #endif
-    #if CPU_HAS_SSE
-	#define UNROLLED_FILL_MMX_STORE		\
-	    "movntq %%mm0, (%%edi)  \n\t"	\
-	    "movntq %%mm0, 8(%%edi) \n\t"	\
-	    "movntq %%mm0, 16(%%edi)\n\t"	\
-	    "movntq %%mm0, 24(%%edi)\n\t"
-    #else
-	#define UNROLLED_FILL_MMX_STORE		\
-	    "movq %%mm0, (%%edi)  \n\t"		\
-	    "movq %%mm0, 8(%%edi) \n\t"		\
-	    "movq %%mm0, 16(%%edi)\n\t"		\
-	    "movq %%mm0, 24(%%edi)\n\t"
-    #endif
-    #define UNROLLED_FILL_LOOP(src, dest, count)\
-	const size_t nMMTs = 8 / sizeof(T);	\
-	T vv [nMMTs];				\
-	vv[0] = src;				\
-	asm volatile ("movq (%0), %%mm0" : : "g"(vv) : "mm0");\
-	switch (nMMTs) {			\
-	    case 8:	asm volatile ("punpcklbw %%mm0, %%mm0" : : : "mm0");\
-	    case 4:	asm volatile ("punpcklwd %%mm0, %%mm0" : : : "mm0");\
-	    case 2:	asm volatile ("punpckldq %%mm0, %%mm0" : : : "mm0");\
-	};					\
-	asm volatile (				\
-	    MMX_PREFETCHW			\
-	    "1: "				\
-	    UNROLLED_FILL_MMX_STORE		\
-	    "add $32, %%edi		\n\t"	\
-	    "dec %%ecx			\n\t"	\
-	    "jnz 1b			\n\t"	\
-	    MMX_RESET				\
-	    : "=&D"(dest)			\
-	    : "0"(dest), "c"(count)		\
-	    : "memory", "mm0");
-#else
-    #define CARRIER_SIZE	sizeof(unsigned long)
-    #define UNROLLED_FILL_LOOP(src, dest, count)		\
-	unsigned long *cdest ((unsigned long*) dest), cv;	\
-	pack_type (v, cv);					\
-	do { *cdest++ = cv; } while (--count);			\
-	dest = (T*) cdest;
-#endif
 
 template <typename T>
 inline T* unrolled_copy (const T* first, size_t count, T* result)
@@ -207,29 +156,6 @@ inline T* unrolled_copy (const T* first, size_t count, T* result)
     return (advance (result, count));
 }
 
-template <typename T>
-T* unrolled_fill (T* first, size_t count, const T v)
-{
-    const size_t multi = CARRIER_SIZE / sizeof(T);
-    size_t nCarriers = count / multi;
-    if (nCarriers > 2) {					// This is faster than count > 64 (???)
-	for (; uintptr_t(first) % CARRIER_SIZE; --count)	// This is faster than calculating nToAlign
-	    *first++ = v;
-	nCarriers = count / multi;
-	UNROLLED_FILL_LOOP(v, first, nCarriers);
-	count = count % multi;
-    }
-    for (; count; --count)
-	*first++ = v;
-    return (first);
-}
-#undef CARRIER_SIZE
-#undef UNROLLED_FILL_LOOP
-#undef UNROLLED_FILL_MMX_STORE
-#undef MMX_RESET
-#undef MMX_PREFETCH
-#undef MMX_PREFETCHW
-
 template <>
 inline uint8_t* copy_backward (const uint8_t* first, const uint8_t* last, uint8_t* result)
 {
@@ -237,6 +163,21 @@ inline uint8_t* copy_backward (const uint8_t* first, const uint8_t* last, uint8_
     return (result);
 }
 
+template <typename T>
+inline T* unrolled_fill (T* result, size_t count, T value)
+{
+    for (; count; --count, ++result)
+	*result = value;
+    return (result);
+}
+template <> inline uint8_t* unrolled_fill (uint8_t* result, size_t count, uint8_t value)
+    { fill_n8_fast (result, count, value); return (advance (result, count)); }
+template <> inline uint16_t* unrolled_fill (uint16_t* result, size_t count, uint16_t value)
+    { fill_n16_fast (result, count, value); return (advance (result, count)); }
+template <> inline uint32_t* unrolled_fill (uint32_t* result, size_t count, uint32_t value)
+    { fill_n32_fast (result, count, value); return (advance (result, count)); }
+
+#if CPU_HAS_MMX
 #define UNROLLED_COPY_SPECIALIZATION(type)						\
 template <> inline type* copy (const type* first, const type* last, type* result)	\
 { return (unrolled_copy (first, distance (first, last), result)); }			\
@@ -245,23 +186,20 @@ template <> inline type* copy_n (const type* first, size_t count, type* result)	
 #define UNROLLED_FILL_SPECIALIZATION(type)						\
 template <> inline void fill (type* first, type* last, const type& value)		\
 { unrolled_fill (first, distance (first, last), value); }				\
-template <> inline type* fill_n (type* first, size_t count, const type& value)	\
+template <> inline type* fill_n (type* first, size_t count, const type& value)		\
 { return (unrolled_fill (first, count, value)); }
 UNROLLED_COPY_SPECIALIZATION(uint8_t)
-UNROLLED_COPY_SPECIALIZATION(uint16_t)
 UNROLLED_FILL_SPECIALIZATION(uint8_t)
+UNROLLED_COPY_SPECIALIZATION(uint16_t)
 UNROLLED_FILL_SPECIALIZATION(uint16_t)
-#if CPU_HAS_MMX || (SIZE_OF_LONG > 4)
 UNROLLED_COPY_SPECIALIZATION(uint32_t)
 UNROLLED_FILL_SPECIALIZATION(uint32_t)
-#endif
-#if CPU_HAS_MMX
 UNROLLED_COPY_SPECIALIZATION(float)
 UNROLLED_FILL_SPECIALIZATION(float)
-#endif
 #undef UNROLLED_FILL_SPECIALIZATION
 #undef UNROLLED_COPY_SPECIALIZATION
 #endif // WANT_UNROLLED_COPY
+#endif // CPU_HAS_MMX
 
 // Specializations for void* and char*, aliasing the above optimized versions.
 //

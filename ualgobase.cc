@@ -14,13 +14,14 @@
 
 #include "ualgobase.h"
 
+#if __i386__
+
 namespace ustl {
 
 //----------------------------------------------------------------------
 // Copy functions
 //----------------------------------------------------------------------
 
-#if __i386__
 #if __GNUC__ >= 3
 static inline void movsb_dir_up (void) __attribute__((always_inline));
 static inline void movsb_dir_down (void) __attribute__((always_inline));
@@ -33,7 +34,7 @@ static inline void movsb_dir_down (void) { asm volatile ("std"); }
 
 static inline void movsb (const void*& src, size_t nBytes, void*& dest)
 {
-    asm volatile ("rep; movsb"
+    asm volatile ("rep;\n\tmovsb"
 	: "=&S"(src), "=&D"(dest), "=&c"(nBytes)
 	: "0"(src), "1"(dest), "2"(nBytes)
 	: "memory");
@@ -41,17 +42,26 @@ static inline void movsb (const void*& src, size_t nBytes, void*& dest)
 
 static inline void movsd (const void*& src, size_t nWords, void*& dest)
 {
-    asm volatile ("rep; movsl"
+    asm volatile ("rep;\n\tmovsl"
 	: "=&S"(src), "=&D"(dest), "=&c"(nWords)
 	: "0"(src), "1"(dest), "2"(nWords)
 	: "memory");
 }
+
+template <typename T> inline void stosv (T*&, size_t, T) {}
+template <> inline void stosv (uint8_t*& p, size_t n, uint8_t v)
+{ asm volatile ("rep;\n\tstosb" : "=&D"(p), "=c"(n) : "0"(p), "1"(n), "a"(v) : "memory"); }
+template <> inline void stosv (uint16_t*& p, size_t n, uint16_t v)
+{ asm volatile ("rep;\n\tstosw" : "=&D"(p), "=c"(n) : "0"(p), "1"(n), "a"(v) : "memory"); }
+template <> inline void stosv (uint32_t*& p, size_t n, uint32_t v)
+{ asm volatile ("rep;\n\tstosl" : "=&D"(p), "=c"(n) : "0"(p), "1"(n), "a"(v) : "memory"); }
 
 #if CPU_HAS_MMX
 #define MMX_ALIGN	16U	// Data must be aligned on this grain
 #define MMX_BS		32U	// Assembly routines copy data this many bytes at a time.
 
 static inline void simd_block_copy (const void* src, void* dest) __attribute__((always_inline));
+static inline void simd_block_store (uint8_t* dest) __attribute__((always_inline));
 static inline void simd_block_cleanup (void) __attribute__((always_inline));
 
 static inline void simd_block_copy (const void* src, void* dest)
@@ -63,7 +73,7 @@ static inline void simd_block_copy (const void* src, void* dest)
 	"movntps %%xmm0, (%%edi)	\n\t"
 	"movntps %%xmm1, 16(%%edi)"
 	: : "S"(src), "D"(dest)
-	: "memory", "xmm0", "xmm1", "xmm2", "xmm3");
+	: "memory", "xmm0", "xmm1");
     #else
     asm volatile (
 	"movq (%%esi), %%mm0	\n\t"
@@ -74,9 +84,27 @@ static inline void simd_block_copy (const void* src, void* dest)
 	"movq %%mm1, 8(%%edi)	\n\t"
 	"movq %%mm2, 16(%%edi)	\n\t"
 	"movq %%mm3, 24(%%edi)"
-	:
-	: "S"(src), "D"(dest)
+	: : "S"(src), "D"(dest)
 	: "memory", "mm0", "mm1", "mm2", "mm3", "st", "st(1)", "st(2)", "st(3)");
+    #endif
+}
+
+static inline void simd_block_store (uint8_t* dest)
+{
+    #if CPU_HAS_SSE
+    asm volatile (
+	"movntq %%mm0, %0\n\t"
+	"movntq %%mm0, %1\n\t"
+	"movntq %%mm0, %2\n\t"
+	"movntq %%mm0, %3"
+	: "=m"(dest[0]), "=m"(dest[8]), "=m"(dest[16]), "=m"(dest[24])::);
+    #else
+    asm volatile (
+	"movq %%mm0, %0	\n\t"
+	"movq %%mm0, %1	\n\t"
+	"movq %%mm0, %2	\n\t"
+	"movq %%mm0, %3"
+	: "=m"(dest[0]), "=m"(dest[8]), "=m"(dest[16]), "=m"(dest[24])::);
     #endif
 }
 
@@ -135,5 +163,67 @@ void copy_n_backward_fast (const void* first, const void* last, void* result)
 }
 #endif // __i386__
 
+//----------------------------------------------------------------------
+// Fill functions
+//----------------------------------------------------------------------
+
+#if CPU_HAS_MMX
+template <typename T> inline void build_block (T) {}
+template <> inline void build_block (uint8_t v)
+{
+    asm volatile (
+	"movd %0, %%mm0\n\tpunpcklbw %%mm0, %%mm0\n\tpshufw $0, %%mm0, %%mm0"
+	: : "g"(uint32_t(v)) : "mm0");
+}
+template <> inline void build_block (uint16_t v)
+{
+    asm volatile (
+	"movd %0, %%mm0\n\tpshufw $0, %%mm0, %%mm0"
+	: : "g"(uint32_t(v)) : "mm0");
+}
+template <> inline void build_block (uint32_t v)
+{
+    asm volatile (
+	"movd %0, %%mm0\n\tpunpckldq %%mm0, %%mm0"
+	: : "g"(uint32_t(v)) : "mm0");
+}
+
+static inline void simd_block_fill_loop (uint8_t*& dest, size_t count)
+{
+    prefetch (advance (dest, 512), 1, 0);
+    for (uoff_t i = 0; i < count; ++ i, dest += MMX_BS)
+	simd_block_store (dest);
+    simd_block_cleanup();
+    simd::reset_mmx();
+}
+
+template <typename T>
+inline void fill_n_fast (T* dest, size_t count, T v)
+{
+    size_t nHead = Align(uintptr_t(dest), MMX_ALIGN) - uintptr_t(dest) / sizeof(T);
+    nHead = min (nHead, count);
+    stosv (dest, nHead, v);
+    count -= nHead;
+    if (!(uintptr_t(dest) % MMX_ALIGN)) {
+	build_block (v);
+	simd_block_fill_loop ((uint8_t*&) dest, count * sizeof(T) / MMX_BS);
+	count %= MMX_BS;
+    }
+    stosv (dest, count, v);
+}
+
+void fill_n8_fast (uint8_t* dest, size_t count, uint8_t v)
+    { fill_n_fast (dest, count, v); }
+void fill_n16_fast (uint16_t* dest, size_t count, uint16_t v)
+    { fill_n_fast (dest, count, v); }
+void fill_n32_fast (uint32_t* dest, size_t count, uint32_t v)
+    { fill_n_fast (dest, count, v); }
+#else
+void fill_n8_fast (uint8_t* dest, size_t count, uint8_t v) { memset (dest, v, count); }
+void fill_n16_fast (uint16_t* dest, size_t count, uint16_t v) { stosv (dest, count, v); }
+void fill_n32_fast (uint32_t* dest, size_t count, uint32_t v) { stosv (dest, count, v); }
+#endif // CPU_HAS_MMX
+
 } // namespace ustl
+
 
