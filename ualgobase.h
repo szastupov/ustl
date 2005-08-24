@@ -176,6 +176,8 @@ template <> inline uint16_t* unrolled_fill (uint16_t* result, size_t count, uint
     { fill_n16_fast (result, count, value); return (advance (result, count)); }
 template <> inline uint32_t* unrolled_fill (uint32_t* result, size_t count, uint32_t value)
     { fill_n32_fast (result, count, value); return (advance (result, count)); }
+template <> inline float* unrolled_fill (float* result, size_t count, float value)
+    { fill_n32_fast ((uint32_t*) result, count, *((uint32_t*)&value)); return (advance (result, count)); }
 
 #if CPU_HAS_MMX
 #define UNROLLED_COPY_SPECIALIZATION(type)						\
