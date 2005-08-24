@@ -2,6 +2,13 @@ Release 0.8
 	* Implemented heap algorithms.
 	* construct/destruct will now disappear for integral types.
 		Integral types have no destructors/constructors.
+	* Fixed double-advance bug in utf8in_iterator.
+		Now the iterator reads a char on construction. This is not
+		always good, but without it the iterator is nonfunctional.
+		The problem is that when it is used with istream_iterator,
+		as is often the case, copying the iterator in operator* has
+		no real effect, since both still reference the same stream
+		and advance the stream position when reading.
 	* Field width should be padded with spaces, not zeroes.
 	* Added VectorRange macro.
 	* Added relink() call to memlinks for faster resizing.
