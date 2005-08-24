@@ -8,6 +8,7 @@
 
 void ObjectSerialization (void)
 {
+    #define RW(stream)	rws[stream.pos() == expect]
     const void* pBufC = NULL;
     void* pBuf = NULL;
     memblock buffer;
@@ -30,18 +31,18 @@ void ObjectSerialization (void)
     uoff_t expect = 0;
     ostream os (buffer);
     os << pBufC; expect += stream_size_of(pBufC);
-    cout << "Write const void*, pos is " << rws[os.pos() == expect] << endl;
+    cout << "Write const void*, pos is " << RW(os) << endl;
     os << pBuf; expect += stream_size_of(pBuf);
-    cout << "Write void*, pos is " << rws[os.pos() == expect] << endl;
+    cout << "Write void*, pos is " << RW(os) << endl;
     os << testString; expect += stream_size_of(testString);
-    cout << "Write string, pos is " << rws[os.pos() == expect] << endl;
+    cout << "Write string, pos is " << RW(os) << endl;
     os.align(); expect = Align (expect);
     os << const_cast<const string*>(&testString); expect += stream_size_of(&testString);
-    cout << "Write const string*, pos is " << rws[os.pos() == expect] << endl;
+    cout << "Write const string*, pos is " << RW(os) << endl;
     os << &testString; expect += stream_size_of(&testString);
-    cout << "Write string*, pos is " << rws[os.pos() == expect] << endl;
+    cout << "Write string*, pos is " << RW(os) << endl;
     os << tv; expect += stream_size_of(tv);
-    cout << "Write vector<uint16_t>(7), pos is " << rws[os.pos() == expect] << endl;
+    cout << "Write vector<uint16_t>(7), pos is " << RW(os) << endl;
     if (os.pos() != bufSize)
 	cout << "Incorrect number of bytes written: " << os.pos() << " of " << bufSize << endl;
     
@@ -49,30 +50,30 @@ void ObjectSerialization (void)
     expect = 0;
     is >> pBufC;
     expect += stream_size_of(pBufC);
-    cout << "Read const void*, pos is " << rws[is.pos() == expect];
+    cout << "Read const void*, pos is " << RW(is);
     cout << ", value is " << rws[pBufC == buffer.cdata()] << endl;
     is >> pBuf;
     expect += stream_size_of(pBuf);
-    cout << "Read void*, pos is " << rws[is.pos() == expect];
+    cout << "Read void*, pos is " << RW(is);
     cout << ", value is " << rws[pBuf == buffer.cdata()] << endl;
     testString.clear();
     is >> testString;
     expect += stream_size_of(testString);
-    cout << "Read string, pos is " << rws[is.pos() == expect] << ", value is " << testString << endl;
+    cout << "Read string, pos is " << RW(is) << ", value is " << testString << endl;
     is.align();
     expect = Align (expect);
     is >> pStrC;
     expect += stream_size_of(pStrC);
-    cout << "Read const string*, pos is " << rws[is.pos() == expect];
+    cout << "Read const string*, pos is " << RW(is);
     cout << ", value is " << rws[pStrC == &testString] << endl;
     is >> pStr;
     expect += stream_size_of(pStr);
-    cout << "Read string*, pos is " << rws[is.pos() == expect];
+    cout << "Read string*, pos is " << RW(is);
     cout << ", value is " << rws[pStr == &testString] << endl;
     vector<uint16_t> rv;
     is >> rv;
     expect += stream_size_of(rv);
-    cout << "Read vector<uint16_t>(" << rv.size() << "), pos is " << rws[is.pos() == expect];
+    cout << "Read vector<uint16_t>(" << rv.size() << "), pos is " << RW(is);
     cout << ", value is " << rws[rv == tv] << endl;
     if (is.pos() != bufSize)
 	cout << "Incorrect number of bytes read: " << is.pos() << " of " << bufSize << endl;
