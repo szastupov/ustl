@@ -204,11 +204,9 @@ inline void fill_n_fast (T* dest, size_t count, T v)
     nHead = min (nHead, count);
     stosv (dest, nHead, v);
     count -= nHead;
-    if (!(uintptr_t(dest) % MMX_ALIGN)) {
-	build_block (v);
-	simd_block_fill_loop ((uint8_t*&) dest, count * sizeof(T) / MMX_BS);
-	count %= MMX_BS;
-    }
+    build_block (v);
+    simd_block_fill_loop ((uint8_t*&) dest, count * sizeof(T) / MMX_BS);
+    count %= MMX_BS;
     stosv (dest, count, v);
 }
 
