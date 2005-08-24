@@ -10,6 +10,7 @@
 
 #include "cmemlink.h"
 #include "uexception.h"
+#include "strmsize.h"
 #ifdef WANT_STREAM_BOUNDS_CHECKING
     #include <typeinfo>
 #endif
@@ -113,31 +114,24 @@ public:
     typedef istream::size_type	size_type;
 public:
     explicit			istream_iterator (istream& is)
-				    : m_Is (is), m_v (T()), m_vPos (is.size()) {}
+				    : m_is (is), m_v (T()) { m_is >> m_v; }
  				istream_iterator (const istream_iterator& i)
-				    : m_Is (i.m_Is), m_v (i.m_v), m_vPos (i.m_vPos) {} 
-    inline const istream_iterator& operator= (const istream_iterator& i)
-				    { m_Is = i.m_Is; m_v = i.m_v; m_vPos = i.m_vPos; return (*this); }
+				    : m_is (i.m_is), m_v (i.m_v) {} 
     /// Reads and returns the next value.
-    inline const T&		operator* (void)
-    				{
-				    if (m_vPos != m_Is.pos()) {
-					m_Is >> m_v;
-					m_vPos = m_Is.pos();
-				    }
-				    return (m_v);
-				}
-    inline istream_iterator&	operator++ (void) { ++ m_vPos; return (*this); }
-    inline istream_iterator	operator++ (int) { istream_iterator old (*this); ++ m_vPos; return (old); }
-    inline istream_iterator&	operator+= (size_type n) { m_vPos += n; return (*this); }
-    inline bool			operator== (const istream_iterator& i) const
-				    { return (m_Is.pos() == i.m_Is.pos()); }
-    inline bool			operator< (const istream_iterator& i) const
-				    { return (m_Is.pos() < i.m_Is.pos()); }
+    inline const T&		operator* (void)	{ return (m_v); }
+    inline istream_iterator&	operator++ (void)	{ m_is >> m_v; return (*this); }
+    inline istream_iterator&	operator-- (void)	{ m_is.seek (m_is.pos() - 2 * stream_size_of(m_v)); return (operator++()); }
+    inline istream_iterator	operator++ (int)	{ istream_iterator old (*this); operator++(); return (old); }
+    inline istream_iterator	operator-- (int)	{ istream_iterator old (*this); operator--(); return (old); }
+    inline istream_iterator&	operator+= (size_type n)	{ while (n--) operator++(); return (*this); }
+    inline istream_iterator&	operator-= (size_type n)	{ m_is.seek (m_is.pos() - (n + 1) * stream_size_of(m_v)); return (operator++()); }
+    inline istream_iterator	operator- (size_type n) const			{ istream_iterator result (*this); return (result -= n); }
+    inline difference_type	operator- (const istream_iterator& i) const	{ return (distance (i.m_is.pos(), m_is.pos()) / stream_size_of(m_v)); }
+    inline bool			operator== (const istream_iterator& i) const	{ return (m_is.pos() == i.m_is.pos()); }
+    inline bool			operator< (const istream_iterator& i) const	{ return (m_is.pos() < i.m_is.pos()); }
 private:
-    istream&	m_Is;		///< The host stream.
+    istream&	m_is;		///< The host stream.
     T		m_v;		///< Last read value; cached to be returnable as a const reference.
-    uoff_t	m_vPos;		///< Current position.
 };
 
 //----------------------------------------------------------------------

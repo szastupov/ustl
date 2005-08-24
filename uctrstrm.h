@@ -16,7 +16,6 @@
 
 #include "mistream.h"
 #include "sostream.h"
-#include "strmsize.h"
 
 namespace ustl {
 
