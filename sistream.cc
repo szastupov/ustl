@@ -202,8 +202,7 @@ void istringstream::iread (wchar_t& v)
 	v = c;
     else {
 	ungetc();
-	istream_iterator<uint8_t> si (*this);
-	v = *utf8in(si); // istream_iterator already read ahead.
+	v = *utf8in((istream&) *this);
     }
 }
 

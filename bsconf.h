@@ -144,7 +144,7 @@ static SComponentInfo g_ComponentInfos [VectorSize(g_Components) / 3] = {
     { 0, "Builds the static library" },
     { 0, "Compiles the library with debugging information" },
     { 0, "Compiles the library with profiling (gprof) information" },
-    { 0, "Enable runtime bounds checking on stream reads/writes" },
+    { 1, "Disable runtime bounds checking on stream reads/writes" },
     { 1, "Removes support for standard cout/cin/cerr streams" },
     { 1, "Adds optimized specializations for copy/fill (<1k)" },
 #if __i386__ && __GNUC__ >= 3

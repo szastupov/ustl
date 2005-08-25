@@ -2,7 +2,20 @@ Release 0.8
 	* Implemented heap algorithms.
 	* construct/destruct will now disappear for integral types.
 		Integral types have no destructors/constructors.
-	* Fixed istream_iterator to read on construction as per standard.
+	* Fixed istream_iterator to read on construction and in operator++
+		as the standard says. Unfortunately, this makes it almost
+		totally useless, since using it as a source for copy will
+		always overread by one because copy will call ++ past the
+		end, which will read one element past the end. This behaviour
+		is understandable when reading to EOF (which is the only
+		example ever shown for using it), but worthless when you
+		have a fixed number of elements you want to read. I'm only
+		using it to implement utf8 from streams, so, having fixed
+		that to not overread, I'll chalk it up to standard
+		compliance. Read-to-EOF scenario doesn't work either in uSTL
+		because the stream will simply throw an exception when you
+		try to do that (which is the right thing to do, IMO)
+	* Made streams runtime bounds checking on by default.
 	* Added operator-- to istream_iterator to do unputs.
 		This works only once for variable-length types because there
 		is no way to know the length to back up to get the element
