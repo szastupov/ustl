@@ -73,6 +73,7 @@ public:
     template <typename T>
     inline void		iwrite (const T& v);
     virtual size_type	overflow (size_type = 1)	{ return (0); }
+    virtual bool	eof (void) const		{ return (false); }
     virtual void	unlink (void);
     inline void		link (void* p, size_type n)	{ memlink::link (p, n); }
     inline void		link (memlink& l)		{ memlink::link (l.data(), l.writable_size()); }

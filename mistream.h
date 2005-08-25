@@ -93,7 +93,8 @@ public:
     inline size_t	stream_size (void) const;
     template <typename T>
     inline void		iread (T& v);
-    virtual size_type	underflow (size_type = 1)	{ return (0); }
+    virtual size_type	underflow (size_type n = 1)	{ return (n = 0); }
+    virtual bool	eof (void) const		{ return (false); }
     inline void		ungetc (void)			{ seek (pos() - 1); }
 private:
     uoff_t		m_Pos;		///< The current read position.
@@ -101,22 +102,32 @@ private:
 
 //----------------------------------------------------------------------
 
+template <typename T, typename Stream>
+inline size_t required_stream_size (T, const Stream&) { return (1); }
+template <typename T>
+inline size_t required_stream_size (T v, const istream&) { return (stream_size_of(v)); }
+
+template <typename Stream>
+inline bool stream_at_eof (const Stream& stm)	{ return (stm.eof()); }
+template <>
+inline bool stream_at_eof (const istream&)	{ return (false); }
+
 /// \class istream_iterator
 /// \ingroup BinaryStreamIterators
 ///
 /// \brief An iterator over an istream to use with uSTL algorithms.
 ///
-template <class T>
+template <typename T, typename Stream = istream>
 class istream_iterator {
 public:
     typedef T			value_type;
     typedef ptrdiff_t		difference_type;
     typedef const value_type*	pointer;
     typedef const value_type&	reference;
-    typedef istream::size_type	size_type;
+    typedef size_t		size_type;
 public:
 				istream_iterator (void)		: m_pis (NULL), m_v() {}
-    explicit			istream_iterator (istream& is)	: m_pis (&is), m_v() { Read(); }
+    explicit			istream_iterator (Stream& is)	: m_pis (&is), m_v() { Read(); }
  				istream_iterator (const istream_iterator& i)	: m_pis (i.m_pis), m_v (i.m_v) {}
     /// Reads and returns the next value.
     inline const T&		operator* (void)	{ return (m_v); }
@@ -133,15 +144,19 @@ public:
 private:
     void Read (void)
     {
-	const size_t vsize (stream_size_of (m_v));
-	if (!m_pis || (m_pis->remaining() < vsize && m_pis->underflow (vsize) < vsize)) {
+	if (!m_pis)
+	    return;
+	const size_t rs (required_stream_size (m_v, *m_pis));
+	if (m_pis->remaining() < rs && m_pis->underflow (rs) < rs) {
 	    m_pis = NULL;
 	    return;
 	}
 	*m_pis >> m_v;
+	if (stream_at_eof (*m_pis))
+	    m_pis = NULL;
     }
 private:
-    istream*	m_pis;		///< The host stream.
+    Stream*	m_pis;		///< The host stream.
     T		m_v;		///< Last read value; cached to be returnable as a const reference.
 };
 

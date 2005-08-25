@@ -27,10 +27,12 @@ public:
     virtual		       ~fdostringstream (void);
     void			flush (void);
     int				format (const char* fmt, ...) __attribute__((__format__(__printf__, 2, 3)));
-    virtual size_t		overflow (size_t n = 1);
+    virtual size_type		overflow (size_type n = 1);
+    inline virtual bool		eof (void) const	{ return (m_bEOF); }
 private:
     string			m_Buffer;
     int				m_Fd;
+    bool			m_bEOF;
 };
 
 /// \class fdistringstream fdostream.h ustl.h
@@ -60,10 +62,12 @@ private:
 class fdistringstream : public istringstream {
 public:
     explicit			fdistringstream (int fd);
-    virtual size_t		underflow (size_t n = 1);
+    virtual size_type		underflow (size_type n = 1);
+    inline virtual bool		eof (void) const	{ return (m_bEOF); }
 private:
     string			m_Buffer;
     int				m_Fd;
+    bool			m_bEOF;
 };
 
 extern fdostringstream cout, cerr;
