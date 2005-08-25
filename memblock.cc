@@ -168,7 +168,7 @@ memblock::iterator memblock::erase (iterator start, size_type n)
 {
     const uoff_t ep = start - begin();
     assert (ep + n <= size());
-    memlink::erase (begin() + ep, n);
+    memlink::erase (start, n);
     memlink::resize (size() - n);
     return (begin() + ep);
 }
