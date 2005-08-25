@@ -74,6 +74,7 @@ void istringstream::iread (int32_t& v)
     int32_t base = m_Base;
     v = 0;
     char c = skip_delimiters();
+    const uoff_t numStartPos (pos());
     bool negative = (c == '-');
     if (negative && (remaining() || underflow()))
 	istream::iread (c);
@@ -104,7 +105,8 @@ void istringstream::iread (int32_t& v)
 	    break;
 	istream::iread (c);
     }
-    ungetc();
+    if (pos() > numStartPos)
+	ungetc();
     if (negative)
 	v = -v;
 }
@@ -115,6 +117,7 @@ void istringstream::iread (int64_t& v)
     int64_t base = m_Base;
     v = 0;
     char c = skip_delimiters();
+    const uoff_t numStartPos (pos());
     bool negative = (c == '-');
     if (negative && (remaining() || underflow()))
 	istream::iread (c);
@@ -145,7 +148,8 @@ void istringstream::iread (int64_t& v)
 	    break;
 	istream::iread (c);
     }
-    ungetc();
+    if (pos() > numStartPos)
+	ungetc();
     if (negative)
 	v = -v;
 }
@@ -157,6 +161,7 @@ void istringstream::iread (long long& v)
     long long base = m_Base;
     v = 0;
     char c = skip_delimiters();
+    const uoff_t numStartPos (pos());
     bool negative = (c == '-');
     if (negative && (remaining() || underflow()))
 	istream::iread (c);
@@ -187,7 +192,8 @@ void istringstream::iread (long long& v)
 	    break;
 	istream::iread (c);
     }
-    ungetc();
+    if (pos() > numStartPos)
+	ungetc();
     if (negative)
 	v = -v;
 }
@@ -198,7 +204,7 @@ void istringstream::iread (wchar_t& v)
     uint8_t c;
     operator>> (*this, c);
     size_t cs = Utf8SequenceBytes (c);
-    if (remaining() < cs && underflow() < cs)
+    if (remaining() < cs && underflow(cs) < cs)
 	v = c;
     else {
 	ungetc();
@@ -211,6 +217,7 @@ void istringstream::iread (double& v)
     register long base = m_Base;
     v = 0;
     char c = skip_delimiters();
+    const uoff_t numStartPos (pos());
     bool negative = (c == '-');
     bool beforedot = true;
     double divisor = 1.0;
@@ -242,7 +249,8 @@ void istringstream::iread (double& v)
 	    break;
 	istream::iread (c);
     }
-    ungetc();
+    if (pos() > numStartPos)
+	ungetc();
     if (negative)
 	v = -v;
 }
