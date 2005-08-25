@@ -27,7 +27,6 @@ public:
     virtual		       ~fdostringstream (void);
     void			flush (void);
     int				format (const char* fmt, ...) __attribute__((__format__(__printf__, 2, 3)));
-protected:
     virtual size_t		overflow (size_t n = 1);
 private:
     string			m_Buffer;
@@ -61,7 +60,6 @@ private:
 class fdistringstream : public istringstream {
 public:
     explicit			fdistringstream (int fd);
-protected:
     virtual size_t		underflow (size_t n = 1);
 private:
     string			m_Buffer;

@@ -93,6 +93,8 @@ public:
     inline size_t	stream_size (void) const;
     template <typename T>
     inline void		iread (T& v);
+    virtual size_type	underflow (size_type = 1)	{ return (0); }
+    inline void		ungetc (void)			{ seek (pos() - 1); }
 private:
     uoff_t		m_Pos;		///< The current read position.
 };
@@ -113,13 +115,12 @@ public:
     typedef const value_type&	reference;
     typedef istream::size_type	size_type;
 public:
-    explicit			istream_iterator (istream& is)
-				    : m_pis (&is), m_v (T()) { *m_pis >> m_v; }
- 				istream_iterator (const istream_iterator& i)
-				    : m_pis (i.m_pis), m_v (i.m_v) {} 
+				istream_iterator (void)		: m_pis (NULL), m_v() {}
+    explicit			istream_iterator (istream& is)	: m_pis (&is), m_v() { Read(); }
+ 				istream_iterator (const istream_iterator& i)	: m_pis (i.m_pis), m_v (i.m_v) {}
     /// Reads and returns the next value.
     inline const T&		operator* (void)	{ return (m_v); }
-    inline istream_iterator&	operator++ (void)	{ *m_pis >> m_v; return (*this); }
+    inline istream_iterator&	operator++ (void)	{ Read(); return (*this); }
     inline istream_iterator&	operator-- (void)	{ m_pis->seek (m_pis->pos() - 2 * stream_size_of(m_v)); return (operator++()); }
     inline istream_iterator	operator++ (int)	{ istream_iterator old (*this); operator++(); return (old); }
     inline istream_iterator	operator-- (int)	{ istream_iterator old (*this); operator--(); return (old); }
@@ -127,8 +128,18 @@ public:
     inline istream_iterator&	operator-= (size_type n)	{ m_pis->seek (m_pis->pos() - (n + 1) * stream_size_of(m_v)); return (operator++()); }
     inline istream_iterator	operator- (size_type n) const			{ istream_iterator result (*this); return (result -= n); }
     inline difference_type	operator- (const istream_iterator& i) const	{ return (distance (i.m_pis->pos(), m_pis->pos()) / stream_size_of(m_v)); }
-    inline bool			operator== (const istream_iterator& i) const	{ return (m_pis->pos() == i.m_pis->pos()); }
+    inline bool			operator== (const istream_iterator& i) const	{ return ((!m_pis && !i.m_pis) || (m_pis && i.m_pis && m_pis->pos() == i.m_pis->pos())); }
     inline bool			operator< (const istream_iterator& i) const	{ return (!i.m_pis || (m_pis && m_pis->pos() < i.m_pis->pos())); }
+private:
+    void Read (void)
+    {
+	const size_t vsize (stream_size_of (m_v));
+	if (!m_pis || (m_pis->remaining() < vsize && m_pis->underflow (vsize) < vsize)) {
+	    m_pis = NULL;
+	    return;
+	}
+	*m_pis >> m_v;
+    }
 private:
     istream*	m_pis;		///< The host stream.
     T		m_v;		///< Last read value; cached to be returnable as a const reference.

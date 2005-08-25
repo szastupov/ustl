@@ -47,8 +47,6 @@ public:
     void			read (memlink& buf);
     inline void			read_strz (string& str);
 protected:
-    inline virtual size_type	underflow (size_type = 1)	{ return (0); }
-    inline void			ungetc (void)			{ seek (pos() - sizeof(char)); }
     char			skip_delimiters (void);
 private:
     inline bool			is_delimiter (char c) const;
@@ -80,7 +78,7 @@ inline void istringstream::set_thousand_separator (char s)
 /// Reads a null-terminated character stream. This is not allowed in this class.
 inline void istringstream::read_strz (string&)
 {
-    assert (false && "Reading nul characters is not allowed from text streams");
+    assert (!"Reading nul characters is not allowed from text streams");
 }
 
 /// Reads one type as another.

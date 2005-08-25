@@ -12,9 +12,10 @@ Release 0.8
 		have a fixed number of elements you want to read. I'm only
 		using it to implement utf8 from streams, so, having fixed
 		that to not overread, I'll chalk it up to standard
-		compliance. Read-to-EOF scenario doesn't work either in uSTL
-		because the stream will simply throw an exception when you
-		try to do that (which is the right thing to do, IMO)
+		compliance.
+	* Made istream_iterator default constructible and implemented the
+		EOF check during reading. This should make read-to-EOF
+		scenario possible.
 	* Made streams runtime bounds checking on by default.
 	* Added operator-- to istream_iterator to do unputs.
 		This works only once for variable-length types because there
