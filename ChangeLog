@@ -22,6 +22,8 @@ Release 0.8
 		is no way to know the length to back up to get the element
 		before the currently cached one. Constant-length types can
 		be unput multiple times, and can use -= and - operators.
+	* fdistringstream underflow will no longer erase the entire buffer.
+		This helps to keep ungetc working most of the time.
 	* Similarly fixed utf8in_iterator to read on construction.
 		This fixed the double-advance bug in utf8in_iterator.
 	* Fixed utf8in_iterator to not read ahead (except in constructor)
