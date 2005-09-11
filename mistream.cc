@@ -104,6 +104,11 @@ void istream::unlink (void)
     m_Pos = 0;
 }
 
+istream::size_type istream::underflow (size_type)
+    { return (0); }
+bool istream::eof (void) const
+    { return (false); }
+
 //--------------------------------------------------------------------
 
 /// \brief Constructs a stream attached to nothing.
@@ -204,6 +209,11 @@ void ostream::swap (ostream& os)
     memlink::swap (os);
     ::ustl::swap (m_Pos, os.m_Pos);
 }
+
+ostream::size_type ostream::overflow (size_type)
+    { return (0); }
+bool ostream::eof (void) const
+    { return (false); }
 
 //--------------------------------------------------------------------
 

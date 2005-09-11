@@ -93,8 +93,8 @@ public:
     inline size_t	stream_size (void) const;
     template <typename T>
     inline void		iread (T& v);
-    virtual size_type	underflow (size_type n = 1)	{ return (n = 0); }
-    virtual bool	eof (void) const		{ return (false); }
+    virtual size_type	underflow (size_type n = 1);
+    virtual bool	eof (void) const;
     inline void		ungetc (void)			{ seek (pos() - 1); }
 private:
     uoff_t		m_Pos;		///< The current read position.

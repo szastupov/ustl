@@ -103,15 +103,16 @@ fdistringstream::size_type fdistringstream::underflow (size_type n)
     if (m_bEOF)
 	return (istringstream::underflow (n));
 
-    const size_t freeSpace = m_Buffer.size() - pos();
-    const size_t neededFreeSpace = max (n, m_Buffer.size() / 2);
-    const size_t nToErase = min (pos(), uoff_t(Align (max (0, ssize_t(neededFreeSpace - freeSpace)))));
+    const ssize_t freeSpace = m_Buffer.size() - pos();
+    const ssize_t neededFreeSpace = max (n, m_Buffer.size() / 2);
+    const size_t oughtToErase = Align (max (0, neededFreeSpace - freeSpace));
+    const size_t nToErase = min (pos(), oughtToErase);
     m_Buffer.memlink::erase (m_Buffer.begin(), nToErase);
     const uoff_t oldPos (pos() - nToErase);
 
     size_type br = oldPos;
-    if (m_Buffer.size() - pos() < neededFreeSpace) {
-	m_Buffer.resize (pos() + neededFreeSpace);
+    if (m_Buffer.size() - br < n) {
+	m_Buffer.resize (br + neededFreeSpace);
 	link (m_Buffer.data(), 0U);
     }
     while (br - oldPos < n) {
