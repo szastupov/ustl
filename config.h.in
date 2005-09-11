@@ -44,7 +44,7 @@
 #endif
 #if !defined(__GNUC__) || (__GNUC__ < 3)
     /// __alignof__ returns the recommended alignment for the type
-    #define __alignof__(v)	min(sizeof(v), c_DefaultAlignment)
+    #define __alignof__(v)	min(sizeof(v), sizeof(void*))
 #endif
 
 /// Define to 1 if you have the `atexit' function.
@@ -179,7 +179,7 @@
 #endif
 
 // Define to 1 if you have the <byteswap.h> header file.
-#if (__GNUG__ >= 3) // gcc 2.95 somehow doesn't recognize 'asm volatile'
+#if (__GNUC__ >= 3) // gcc 2.95 somehow doesn't recognize 'asm volatile' in libc byteswap.h
 #undef HAVE_BYTESWAP_H
 #endif
 

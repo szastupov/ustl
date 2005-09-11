@@ -92,11 +92,7 @@ inline T1 DivRU (T1 n1, T2 n2)
 }
 
 /// The alignment performed by default.
-#if defined(__GNUC__) && (__GNUC__ >= 3)
-    const size_t c_DefaultAlignment = __alignof__(void*);
-#else
-    const size_t c_DefaultAlignment = sizeof(void*);
-#endif
+const size_t c_DefaultAlignment = __alignof__(void*);
 
 /// \brief Rounds \p n up to be divisible by \p grain
 template <typename T>
@@ -292,12 +288,12 @@ inline bool TestAndSet (int* pm) __attribute__((always_inline));
 inline bool TestAndSet (int* pm)
 {
 #if CPU_HAS_CMPXCHG8
-    register bool rv;
+    bool rv;
     int oldVal (1);
     asm volatile ( // cmpxchg compares to %eax and swaps if equal
 	"cmpxchgl %3, %1\n\t"
 	"sete %0"
-	: "=r" (rv), "=m" (*pm), "=r" (oldVal)
+	: "=a" (rv), "=m" (*pm), "=r" (oldVal)
 	: "2" (oldVal), "a" (0)
 	: "memory");
     return (rv);
