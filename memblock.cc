@@ -204,11 +204,9 @@ void memblock::read_file (const char* filename)
 	throw file_exception ("open", filename);
     const size_type btr = writable_size();
     ssize_t br = ::read (fd, data(), btr);
-    if (size_type(br) != btr) {
-	close (fd);
-	throw file_exception ("read", filename);
-    }
     close (fd);
+    if (size_type(br) != btr)
+	throw file_exception ("read", filename);
 }
 
 } // namespace ustl
