@@ -44,6 +44,7 @@ make install
 %dir %{_prefix}/include/ustl/
 %{_prefix}/include/ustl/cmemlink.h
 %{_prefix}/include/ustl/config.h
+%{_prefix}/include/ustl/file.h
 %{_prefix}/include/ustl/fdostream.h
 %{_prefix}/include/ustl/memblock.h
 %{_prefix}/include/ustl/memlink.h

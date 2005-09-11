@@ -12,9 +12,7 @@
 #include "memblock.h"
 #include "ualgo.h"
 #include "umemory.h"
-#include <fcntl.h>
-#include <unistd.h>
-#include <sys/stat.h>
+#include "file.h"
 
 namespace ustl {
 
@@ -195,18 +193,13 @@ void memblock::read (istream& is)
 /// Reads the entire file \p "filename".
 void memblock::read_file (const char* filename)
 {
-    struct stat st;
-    if (stat (filename, &st))
-	throw file_exception ("stat", filename);
-    resize (st.st_size);
-    int fd = open (filename, O_RDONLY);
-    if (fd < 0)
-	throw file_exception ("open", filename);
-    const size_type btr = writable_size();
-    ssize_t br = ::read (fd, data(), btr);
-    close (fd);
-    if (size_type(br) != btr)
-	throw file_exception ("read", filename);
+    file f;
+    f.open (filename, file::for_Reading);
+    const off_t fsize (f.size());
+    reserve (fsize);
+    f.read (data(), fsize);
+    f.close();
+    resize (fsize);
 }
 
 } // namespace ustl

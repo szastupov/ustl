@@ -12,9 +12,7 @@
 #include "mostream.h"
 #include "strmsize.h"
 #include "ualgo.h"
-#include "uexception.h"
-#include <fcntl.h>
-#include <unistd.h>
+#include "file.h"
 
 namespace ustl {
 
@@ -82,17 +80,10 @@ cmemlink::size_type cmemlink::stream_size (void) const
 /// Writes the data to file \p "filename".
 void cmemlink::write_file (const char* filename, int mode) const
 {
-    int fd = open (filename, O_WRONLY | O_CREAT | O_TRUNC, mode);
-    if (fd < 0)
-	throw file_exception ("open", filename);
-    const size_type btw = readable_size();
-    ssize_t bw = ::write (fd, cdata(), btw);
-    if (size_type(bw) != btw) {
-	close (fd);
-	throw file_exception ("write", filename);
-    }
-    if (0 != close (fd))
-	throw file_exception ("close", filename);
+    file f;
+    f.open (filename, file::for_Writing, mode);
+    f.write (cdata(), readable_size());
+    f.close();
 }
 
 /// swaps the contents with \p l
