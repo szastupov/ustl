@@ -34,6 +34,8 @@
 /*--------------------------------------------------------------------*/
 
 #define VectorSize(v)	(sizeof(v) / sizeof(*v))
+#define foreachN(i,v,n)	for (i = 0; i != VectorSize(v) / n; ++ i)
+#define foreach(i,v)	foreachN(i,v,1)
 
 /*#define const*/
 /*typedef unsigned int	uint;*/
@@ -235,7 +237,7 @@ int main (int argc, const char* const* argv)
     SubstituteCustomVars();
     SubstituteEnvironment (1);
 
-    for (f = 0; f < VectorSize(g_Files); ++ f) {
+    foreach (f, g_Files) {
 	copy (g_Files[f], srcFile);
 	append (".in", srcFile);
 	ReadFile (srcFile);
@@ -282,7 +284,7 @@ static void PrintHelp (void)
 "\n");
     if (VectorSize(g_Components)) {
 	printf ("Options:\n");
-	for (i = 0; i < VectorSize(g_ComponentInfos); ++ i) {
+	foreach (i, g_ComponentInfos) {
 	    if (!g_ComponentInfos[i].m_Description[0])
 		continue;
 	    if (g_ComponentInfos[i].m_bDefaultOn)
@@ -335,7 +337,7 @@ static void GetConfigVarValues (int argc, cpchar_t const* argv)
 	    if (compare (argv[a] + apos, "out"))
 		apos += 3;
 	    ++ apos;
-	    for (cv = 0; cv < VectorSize(g_ComponentInfos); ++ cv)
+	    foreach (cv, g_ComponentInfos)
 		if (compare (argv[a] + apos, g_Components[cv * 3]))
 		    g_ComponentInfos[cv].m_bDefaultOn = (apos == 7);
 	} else {
@@ -406,7 +408,7 @@ static void FillInDefaultConfigVarValues (void)
     if (!*(g_ConfigVV [vv_oldincludedir]))
 	copy ("/usr/include", g_ConfigVV [vv_oldincludedir]);
 
-    for (i = 0; i < VectorSize(c_Defaults); ++ i)
+    foreach (i, c_Defaults)
 	DefaultConfigVarValue (c_Defaults[i].var, c_Defaults[i].base, c_Defaults[i].path);
 
     if (!*(g_ConfigVV [vv_prefix]))
@@ -435,7 +437,7 @@ static void DetermineHost (void)
     append ("unknown", g_ConfigVV [vv_host]);
 #endif
     append2 ("-", g_Uname.sysname, g_ConfigVV [vv_host]);
-    for (i = 0; i < VectorSize(g_HostTypes); ++ i)
+    foreach (i, g_HostTypes)
 	if (compare (g_Uname.sysname, g_HostTypes[i].sysname))
 	    g_SysType = g_HostTypes[i].type;
     if (compare (g_Uname.machine, "alpha"))
@@ -457,7 +459,7 @@ static int IsBadInstallDir (cpchar_t match)
 	"/sbin", "/usr/ucb", "/usr/afsws/bin"
     };
     uint i;
-    for (i = 0; i < VectorSize(c_BadDirs); ++ i)
+    foreach (i, c_BadDirs)
 	if (compare (match, c_BadDirs[i]))
 	    return (0);
     return (1);
@@ -473,7 +475,7 @@ static void FindPrograms (void)
     if (!path)
 	path = "";
 
-    for (i = 0; i < VectorSize(g_ProgLocs); ++ i) {
+    foreach (i, g_ProgLocs) {
 	fill_n (g_ProgLocs[i], sizeof(strbuf_t), 0);
 	fill_n (match, sizeof(strbuf_t), 0);
 	count = 0;
@@ -498,7 +500,7 @@ static void SubstitutePaths (void)
 {
     strbuf_t match;
     int cv;
-    for (cv = 0; cv < vv_last; ++ cv) {
+    foreach (cv, g_ConfigV) {
 	MakeSubstString (g_ConfigV [cv], match);
 	Substitute (match, g_ConfigVV [cv]);
     }
@@ -561,7 +563,7 @@ static void SubstituteEnvironment (int bForce)
     uint i;
     cpchar_t envval;
 
-    for (i = 0; i < VectorSize(g_EnvVars); ++ i) {
+    foreach (i, g_EnvVars) {
 	envval = getenv (g_EnvVars[i]);
 	if (!envval) {
 	    if (!bForce)
@@ -577,60 +579,50 @@ static void SubstitutePrograms (void)
 {
     uint i;
     strbuf_t match;
-    for (i = 0; i < VectorSize(g_ProgLocs); ++ i) {
+    foreach (i, g_ProgLocs) {
 	MakeSubstString (g_ProgVars [i * 4], match);
 	Substitute (match, g_ProgLocs [i]);
     }
 }
 
+#if defined(__GNUC__) && defined(__i386__)
+static uint cpuid_supported (void)
+{
+    uint forig, fnew;
+    /* Pop flags, toggle ID bit, push, pop. cpuid supported if changed. */
+    asm ("pushf\n\tpopl\t%0\n\t"
+	"mov\t%0, %1\n\txor\t$0x200000, %0\n\t"
+	"pushl\t%0\n\tpopf\n\tpushf\n\tpopl\t%0"
+	: "=r"(fnew), "=r"(forig));
+    return (fnew != forig);
+}
+
 static uint cpuid (void)
 {
-    uint caps = 0;
-#if defined(__GNUC__) && defined(__i386__)
-    const uint amdBits = 0xC9480000;
-    asm (
-	"pushf			\n\t"	/* First, test if cpuid instruction works */
-	"popl %%eax		\n\t"
-	"mov %%eax, %%ecx	\n\t"
-	"xor $0x200000, %%eax	\n\t"	/* Toggle the ID bit in one copy of eflags */
-	"pushl %%eax		\n\t"
-	"popf			\n\t"
-	"pushf			\n\t"
-	"popl %%eax		\n\t"	/* If the the flags are unchanged, cpuid is not supported */
-	"test %%eax, %%ecx	\n\t"
-	"jz 0f			\n\t"	/* This is a gcc local label jump */
-	"xor %%eax, %%eax	\n\t"	/* Ask whether feature list is supported */
-	"cpuid			\n\t"
-	"test %%eax,%%eax	\n\t"
-	"jz 0f			\n\t"
-	"mov $1, %%eax		\n\t"	/* Ask for feature list */
-	"cpuid			\n\t"
-	"and %1, %%edx		\n\t"	/* The inverse of the AMD bit constant below */
-	"and $1, %%ecx		\n\t"	/* Extract SSE3 bit from Intel extensions */
-	"shl $27, %%ecx		\n\t"
-	"or %%ecx, %%edx	\n\t"	/* ... and put it at bit 27 */
-	"mov %%edx, %0		\n\t"
-	"mov $0x80000000, %%eax	\n\t"
-	"cpuid			\n\t"
-	"test $0x80000000, %%eax\n\t"	/* Test for extended feature support */
-	"jz 0f			\n\t"
-	"mov $0x80000001, %%eax	\n\t"	/* AMD extensions */
-	"cpuid			\n\t"
-	"and %2, %%edx		\n\t"	/* Take only AMD specific bits */
-	"or %%edx, %0		\n\t"
-	"0:"
-	: "=m"(caps)
-	: "g"(~amdBits), "g"(amdBits)
-	: "cc", "%eax", "%ebx", "%ecx", "%edx");
-#endif
+    #define i_cpuid(a,r,c,d)	asm("cpuid":"=a"(r),"=c"(c),"=d"(d):"0"(a):"%ebx")
+    const uint amdBits = 0xC9480000, extFeatures = 0x80000000, amdExtensions = 0x80000001;
+    uint r, c, d, caps;
+    if (!cpuid_supported()) return (0);
+    i_cpuid (0, r, c, d);
+    if (!r) return (0);
+    i_cpuid (1, r, c, d);			/* Ask for feature list */
+    caps = (d & ~amdBits) | ((c & 1) << 27);	/* 27 is SSE3 bit */
+    i_cpuid (extFeatures, r, c, d);
+    if (r != extFeatures) {
+	i_cpuid (amdExtensions, r, c, d);
+	caps |= d & amdBits;
+    }
     return (caps);
 }
+#else
+static uint cpuid (void) { return (0); }
+#endif
 
 static void SubstituteCpuCaps (void)
 {
     uint i;
     g_CpuCapBits = cpuid();
-    for (i = 0; i < VectorSize(g_CpuCaps); ++ i)
+    foreach (i, g_CpuCaps)
 	if (g_CpuCapBits & (1 << g_CpuCaps[i].m_Bit))
 	    Substitute (g_CpuCaps[i].m_Disabled, g_CpuCaps[i].m_Enabled);
 }
@@ -726,7 +718,7 @@ static void SubstituteCustomVars (void)
 {
     uint i;
     strbuf_t match;
-    for (i = 0; i < VectorSize(g_CustomVars) / 2; ++ i) {
+    foreachN (i, g_CustomVars, 2) {
 	MakeSubstString (g_CustomVars [i * 2], match);
 	Substitute (match, g_CustomVars [i * 2 + 1]);
     }
@@ -742,9 +734,9 @@ static void SubstituteHeaders (void)
     copy (g_ConfigVV [vv_includedir], defaultPath);
     append2 (":", g_ConfigVV [vv_oldincludedir], defaultPath);
     append2 (":", g_ConfigVV [vv_gccincludedir], defaultPath);
-    for (i = 0; i < (uint) g_nCustomIncDirs; ++ i)
+    for (i = 0; i != (uint) g_nCustomIncDirs; ++ i)
 	append2 (":", g_CustomIncDirs [i], defaultPath);
-    for (i = 0; i < VectorSize(g_Headers) / 3; ++ i) {
+    foreachN (i, g_Headers, 3) {
 	for (pi = defaultPath; pi; pi = CopyPathEntry (pi, match)) {
 	    append2 ("/", g_Headers [i * 3], match);
 	    if (access (match, R_OK) == 0)
@@ -766,13 +758,13 @@ static void SubstituteLibs (void)
 	append (pi, defaultPath);
     append2 (":", g_ConfigVV [vv_libdir], defaultPath);
     append2 (":", g_ConfigVV [vv_gcclibdir], defaultPath);
-    for (i = 0; i < (uint) g_nCustomLibDirs; ++ i)
+    for (i = 0; i != (uint) g_nCustomLibDirs; ++ i)
 	append2 (":", g_CustomLibDirs [i], defaultPath);
 
-    for (i = 0; i < VectorSize(g_Libs) / 3; ++ i) {
+    foreachN (i, g_Libs, 3) {
 	ok = 0;
 	for (pi = defaultPath; pi; pi = CopyPathEntry (pi, match)) {
-	    for (k = 0; k < VectorSize(g_LibSuffixes); ++ k) {
+	    foreach (k, g_LibSuffixes) {
 		CopyPathEntry (pi, match);
 		append2 ("/lib", g_Libs [i * 3], match);
 		append (g_LibSuffixes [k], match);
@@ -789,7 +781,7 @@ static void SubstituteLibs (void)
 static void SubstituteFunctions (void)
 {
     uint i;
-    for (i = 0; i < VectorSize(g_Functions) / 3; ++ i)
+    foreachN (i, g_Functions, 3)
 	Substitute (g_Functions [i * 3 + 1], g_Functions [i * 3 + 2]);
     if (g_SysType == sys_Mac)
 	Substitute ("#define HAVE_STRSIGNAL 1", "#undef HAVE_STRSIGNAL");
@@ -800,7 +792,7 @@ static void SubstituteFunctions (void)
 static void SubstituteComponents (void)
 {
     uint i, isOn;
-    for (i = 0; i < VectorSize(g_Components) / 3; ++ i) {
+    foreachN (i, g_Components, 3) {
 	isOn = g_ComponentInfos[i].m_bDefaultOn;
 	Substitute (g_Components [i * 3 + 1 + !isOn], g_Components [i * 3 + 1 + isOn]);
     }
@@ -823,7 +815,7 @@ static void ExecuteSubstitutionList (void)
     int rsl, taill, delta;
     pchar_t cp;
 
-    for (i = 0; i < g_nSubs; ++ i) {
+    for (i = 0; i != g_nSubs; ++ i) {
 	rsl = StrLen (g_Subs[i * 2 + 1]);
 	delta = rsl - StrLen (g_Subs[i * 2]);
 	for (cp = g_Buf; cp < g_Buf + g_BufSize; ++ cp) {
