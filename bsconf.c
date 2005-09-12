@@ -84,6 +84,7 @@ static void SubstituteLibs (void);
 static void SubstituteFunctions (void);
 static void SubstituteComponents (void);
 static void SubstituteCustomVars (void);
+static void ApplySubstitutions (void);
 
 static void DetermineHost (void);
 static void DefaultConfigVarValue (EVV v, EVV root, cpchar_t suffix);
@@ -217,9 +218,6 @@ static strbuf_t g_Subs [MAX_SUBSTITUTIONS * 2];
 
 int main (int argc, const char* const* argv)
 {
-    uint f;
-    strbuf_t srcFile;
-
     GetConfigVarValues (--argc, ++argv);
     FillInDefaultConfigVarValues();
 
@@ -237,6 +235,14 @@ int main (int argc, const char* const* argv)
     SubstituteCustomVars();
     SubstituteEnvironment (1);
 
+    ApplySubstitutions();
+    return (0);
+}
+
+static void ApplySubstitutions (void)
+{
+    uint f;
+    strbuf_t srcFile;
     foreach (f, g_Files) {
 	copy (g_Files[f], srcFile);
 	append (".in", srcFile);
@@ -244,7 +250,6 @@ int main (int argc, const char* const* argv)
 	ExecuteSubstitutionList();
 	WriteFile (g_Files[f]);
     }
-    return (0);
 }
 
 static void PrintHelp (void)
@@ -321,7 +326,7 @@ static void GetConfigVarValues (int argc, cpchar_t const* argv)
 {
     int a, apos, cvl;
     uint cv;
-    for (cv = 0; cv < vv_last; ++ cv)
+    foreach (cv, g_ConfigVV)
 	fill_n (g_ConfigVV[cv], sizeof(strbuf_t), 0);
     /* --var=VALUE */
     for (a = 0; a < argc; ++ a) {
@@ -341,7 +346,7 @@ static void GetConfigVarValues (int argc, cpchar_t const* argv)
 		if (compare (argv[a] + apos, g_Components[cv * 3]))
 		    g_ComponentInfos[cv].m_bDefaultOn = (apos == 7);
 	} else {
-	    for (cv = 0; cv < vv_last; ++ cv)
+	    foreach (cv, g_ConfigV)
 		if (compare (argv[a] + apos, g_ConfigV[cv]))
 		    break;
 	    if (cv == vv_last)
@@ -461,8 +466,8 @@ static int IsBadInstallDir (cpchar_t match)
     uint i;
     foreach (i, c_BadDirs)
 	if (compare (match, c_BadDirs[i]))
-	    return (0);
-    return (1);
+	    return (1);
+    return (0);
 }
 
 static void FindPrograms (void)
@@ -478,6 +483,7 @@ static void FindPrograms (void)
     foreach (i, g_ProgLocs) {
 	fill_n (g_ProgLocs[i], sizeof(strbuf_t), 0);
 	fill_n (match, sizeof(strbuf_t), 0);
+	copy (".", match);
 	count = 0;
 	for (pi = path; pi; pi = CopyPathEntry (pi, match)) {
 	    /* Ignore "bad" versions of install, like autoconf does. */
@@ -538,19 +544,19 @@ static void SubstituteCFlags (void)
     Substitute ("@PROCESSOR_OPTS@", buf);
 
     buf[0] = 0;
-    #if __GNUC__ >= 3
-	#if __GNUC__ > 3 || __GNUC_MINOR__ >= 4
-	    append (" --param max-inline-insns-single=1024", buf);
-	    append (" --param large-function-growth=65535", buf);
-	    append (" --param inline-unit-growth=1024", buf);
-	#else
-	    append (" -finline-limit=65535", buf);
-	#endif
-	#if __GNUC__ >= 4
-	    append (" -fvisibility-inlines-hidden", buf);
-	#endif
+    #if __GNUC__ > 3 || __GNUC_MINOR__ >= 4
+	copy ("--param max-inline-insns-single=1024", buf);
+	append (" \\\n\t\t--param large-function-growth=65535", buf);
+	append (" \\\n\t\t--param inline-unit-growth=1024 @INLINE_OPTS@", buf);
+    #else
+	copy ("-finline-limit=65535 @INLINE_OPTS@", buf);
     #endif
     Substitute ("@INLINE_OPTS@", buf);
+    #if __GNUC__ >= 4
+	Substitute ("@INLINE_OPTS@", " \\\n\t\t-fvisibility-inlines-hidden");
+    #else
+	Substitute ("@INLINE_OPTS@", "");
+    #endif
 
     #ifdef __i386__
 	Substitute ("-fPIC", "");

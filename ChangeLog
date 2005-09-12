@@ -35,6 +35,8 @@ Release 0.8
 	* Added relink() call to memlinks for faster resizing.
 		relink does the work of link, but without calling unlink.
 	* Moved simd fill into ualgobase.cc
+	* configure now recompiles bsconf if its sources change.
+	* Fixed bsconf crash when all inline options are enabled.
 
 2005-06-28 Release 0.7-1
 	* Now compiles with gcc 4.0.0
