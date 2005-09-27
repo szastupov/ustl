@@ -98,14 +98,13 @@ const size_t c_DefaultAlignment = __alignof__(void*);
 template <typename T>
 inline T Align (T n, T grain = c_DefaultAlignment)
 {
+    T a, r = n % grain;
+    if (grain == 2) return (n + r);
     switch (grain) {
-	case 2:	return (n + n % 2);
-	case 4: case 8: case 16:
-	    return (n % grain ? (n & ~(grain - 1)) + grain : n);
-	default: {
-	    const T r = n % grain;
-	    return (r ? n + (grain - r) : n); }
+	case 4: case 8: case 16: a = (n & ~(grain - 1)) + grain; break;
+	default:		 a = n + (grain - r);
     };
+    return (r ? a : n);
 }
 
 /// Returns the recommended alignment for type \p T.
