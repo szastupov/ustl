@@ -26,7 +26,6 @@ public:
     explicit			fdostringstream (int fd);
     virtual		       ~fdostringstream (void);
     void			flush (void);
-    int				format (const char* fmt, ...) __attribute__((__format__(__printf__, 2, 3)));
     virtual size_type		overflow (size_type n = 1);
     inline virtual bool		eof (void) const	{ return (m_bEOF); }
 private:

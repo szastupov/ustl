@@ -71,21 +71,6 @@ fdostringstream::size_type fdostringstream::overflow (size_type n)
     return (remaining());
 }
 
-/// Equivalent to a sprintf on the string.
-int fdostringstream::format (const char* fmt, ...)
-{
-    if (remaining() < strlen(fmt) * 5)
-	flush();
-    va_list args;
-    va_start (args, fmt);
-    char* dest = reinterpret_cast<char*>(ipos());
-    int rv = vsnprintf (dest, remaining(), fmt, args);
-    if (rv > 0)
-	skip (rv);
-    va_end (args);
-    return (rv);
-}
-
 //----------------------------------------------------------------------
 
 /// Constructs a stream to read from \p fd.

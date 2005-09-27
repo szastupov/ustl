@@ -36,6 +36,8 @@ Release 0.8
 		relink does the work of link, but without calling unlink.
 	* Moved simd fill into ualgobase.cc
 	* configure now recompiles bsconf if its sources change.
+	* Fixed a rare off-by-one error in ostringstream vprintf.
+	* Removed fdostringstream printf, since ostringstream has it already.
 	* Fixed bsconf crash when all inline options are enabled.
 
 2005-06-28 Release 0.7-1
