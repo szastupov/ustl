@@ -44,7 +44,7 @@ fdostringstream::~fdostringstream (void)
 /// Flushes the buffer to the file.
 void fdostringstream::flush (void)
 {
-    while (pos() && overflow());
+    while (pos() && overflow (remaining()));
 }
 
 /// Called when more buffer space (\p n bytes) is needed.
@@ -60,7 +60,8 @@ fdostringstream::size_type fdostringstream::overflow (size_type n)
 	    if (errno != EAGAIN && errno != EINTR)
 		throw libc_exception ("write");
 	} else if (bwn == 0) {
-	    m_bEOF = true;
+	    if (pos() > bw)
+		m_bEOF = true;
 	    break;
 	} else
 	    bw += bwn;
