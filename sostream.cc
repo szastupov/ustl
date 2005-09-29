@@ -257,15 +257,14 @@ void ostringstream::write (const cmemlink& buf)
 /// Attempts to create more output space. Returns remaining().
 ostringstream::size_type ostringstream::overflow (size_type n)
 {
-    assert (n > remaining() && "Don't call overflow if you don't need to");
-    if (m_pResizable) {
+    if (m_pResizable && n > remaining()) {
 	const uoff_t oldPos (pos());
 	m_pResizable->reserve (oldPos + n, false);
 	m_pResizable->resize (oldPos + n);
 	link (*m_pResizable);
 	seek (oldPos);
     }
-    if (remaining() < n)
+    if (n > remaining())
 #ifdef WANT_STREAM_BOUNDS_CHECKING
 	throw stream_bounds_exception ("write", "text", pos(), n, remaining());
 #else
