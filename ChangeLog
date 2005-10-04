@@ -39,6 +39,7 @@ Release 0.8
 	* Fixed a rare off-by-one error in ostringstream vprintf.
 	* Removed fdostringstream printf, since ostringstream has it already.
 	* Fixed bsconf crash when all inline options are enabled.
+	* Fixed crash when NULL filename given to file_exception.
 
 2005-06-28 Release 0.7-1
 	* Now compiles with gcc 4.0.0

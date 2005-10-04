@@ -210,7 +210,8 @@ file_exception::file_exception (const char* operation, const char* filename) thr
   m_Filename()
 {
     set_format (xfmt_FileException);
-    strncpy (m_Filename, filename, PATH_MAX - 1);
+    if (filename)
+	strncpy (m_Filename, filename, PATH_MAX - 1);
 }
 
 /// Returns the name of the libc_exception.
