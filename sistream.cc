@@ -48,7 +48,8 @@ istringstream::istringstream (const cmemlink& source)
 
 void istringstream::set_delimiters (const char* delimiters)
 {
-    strncpy (m_Delimiters, delimiters, c_MaxDelimiters);
+    strncpy (m_Delimiters, delimiters, VectorSize(m_Delimiters));
+    m_Delimiters [VectorSize(m_Delimiters) - 1] = 0;
 }
 
 inline bool istringstream::is_delimiter (char c) const

@@ -210,8 +210,10 @@ file_exception::file_exception (const char* operation, const char* filename) thr
   m_Filename()
 {
     set_format (xfmt_FileException);
-    if (filename)
-	strncpy (m_Filename, filename, PATH_MAX - 1);
+    if (filename) {
+	strncpy (m_Filename, filename, VectorSize(m_Filename));
+	m_Filename [VectorSize(m_Filename) - 1] = 0;
+    }
 }
 
 /// Returns the name of the libc_exception.
@@ -234,7 +236,8 @@ void file_exception::read (istream& is)
     string filename;
     is >> filename;
     is.align();
-    strncpy (m_Filename, filename.c_str(), PATH_MAX - 1);
+    strncpy (m_Filename, filename.c_str(), VectorSize(m_Filename));
+    m_Filename [VectorSize(m_Filename) - 1] = 0;
 }
 
 /// Writes the exception into stream \p os.
