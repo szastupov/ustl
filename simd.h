@@ -18,7 +18,6 @@
 #ifndef SIMD_H_39BE2D970DF4BD00508CCFFB482496F9
 #define SIMD_H_39BE2D970DF4BD00508CCFFB482496F9
 
-#include "ualgo.h"
 #include "ulimits.h"
 #if HAVE_MATH_H
     #include <math.h>
@@ -35,7 +34,8 @@ namespace simd {
 template <typename Ctr, typename UnaryOperation>
 inline void packop (Ctr& op1, UnaryOperation op)
 {
-    transform (op1.begin(), op1.end(), op1.begin(), op);
+    foreach (typename Ctr::iterator, i, op1)
+	op (*i);
 }
 
 /// Applies \p op to each element in \p op1 and \p op2 and stores in \p op2.
@@ -43,7 +43,10 @@ template <typename Ctr, typename BinaryOperation>
 inline void packop (const Ctr& op1, Ctr& op2, BinaryOperation op)
 {
     assert (op2.size() <= op1.size());
-    transform (op2.begin(), op2.end(), op1.begin(), op2.begin(), op);
+    typename Ctr::const_iterator i1 (op1.begin());
+    typename Ctr::iterator i2 (op2.begin());
+    for (; i2 != op2.end(); ++i1, ++i2)
+	*i2 = op (*i2, *i1);
 }
 
 /// Applies \p op to corresponding elements in \p op1 and \p op2 and stores in \p result.
@@ -60,21 +63,27 @@ template <typename Ctr>
 inline void passign (const Ctr& op1, Ctr& result)
 {
     assert (op1.size() <= result.size());
-    copy (op1.begin(), op1.end(), result.begin());
+    typename Ctr::iterator d (result.begin());
+    foreach (typename Ctr::const_iterator, s, op1)
+	*d++ = *s;
 }
 
 /// Copies \p result.size() elements from \p op1 to \p result.
 template <typename Ctr>
 inline void ipassign (typename Ctr::const_iterator op1, Ctr& result)
 {
-    copy_n (op1, result.size(), result.begin());
+    foreach (typename Ctr::iterator, d, result)
+	*d = *op1++;
 }
 
 template <typename Ctr1, typename Ctr2, typename ConvertFunction>
 inline void pconvert (const Ctr1& op1, Ctr2& op2, ConvertFunction f)
 {
     assert (op1.size() <= op2.size());
-    transform (op1.begin(), op1.end(), op2.begin(), f);
+    typename Ctr1::const_iterator i1 (op1.begin());
+    typename Ctr2::iterator i2 (op2.begin());
+    for (; i1 != op1.end(); ++i1, ++i2)
+	*i2 = f (*i1);
 }
 
 // Functionoids for SIMD operations, like saturation arithmetic, shifts, etc.
