@@ -38,7 +38,7 @@ public:
     inline			tuple (const tuple<N,T2>& t);
     inline			tuple (const tuple<N,T>& t);
     inline			tuple (const_pointer v);
-    inline			tuple (void)			{ fill_n (m_v, N, T()); }
+    inline			tuple (void)			{ for (uoff_t i = 0; i < N; ++ i) m_v[i] = T(); }
     explicit inline		tuple (const_reference v0, const_reference v1 = T(), const_reference v2 = T(), const_reference v3 = T());
     inline iterator		begin (void)			{ return (m_v); }
     inline const_iterator	begin (void) const		{ return (m_v); }
