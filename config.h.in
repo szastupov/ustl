@@ -36,6 +36,13 @@
 	#define __attribute__(p)
     #endif
 #endif
+#if defined(__GNUC__) && (__GNUC__ >= 4)
+    #define DLL_EXPORT		__attribute__((visibility("default")))
+    #define DLL_LOCAL		__attribute__((visibility("hidden")))
+#else
+    #define DLL_EXPORT
+    #define DLL_LOCAL
+#endif
 #if defined(__GNUC__) && (__GNUC__ >= 3) && defined(__i386__)
     /// GCC 3+ supports the prefetch directive, which some CPUs use to improve caching
     #define prefetch(p,rw,loc)	__builtin_prefetch(p,rw,loc)
