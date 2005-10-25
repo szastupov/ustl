@@ -41,6 +41,7 @@ Release 0.8
 	* Fixed bsconf crash when all inline options are enabled.
 	* Fixed crash when NULL filename given to file_exception.
 	* Corrected potential buffer overflow in file_exception and sistream.
+	* Fixed string rfind for strings; was returning a wrong value sometimes.
 
 2005-06-28 Release 0.7-1
 	* Now compiles with gcc 4.0.0
