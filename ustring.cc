@@ -385,17 +385,15 @@ string::const_iterator string::rfind (const string& s, const_iterator pos) const
 {
     if (!pos) pos = end();
     assert (pos >= begin() && pos <= end());
-    if (s.empty() || s.size() > size_type(distance (pos, end())))
-	return (begin());
     // Match from the tail, iterating backwards.
     const_iterator d = --pos;
     const_iterator sp = begin() + s.size() - 1;
     const_iterator m = s.end() - 1;
     for (uoff_t i = 0; d > sp && i < s.size(); -- d)
 	for (i = 0; i < s.size(); ++ i)
-	    if (*(m - i) != *(d - i))
+	    if (m[-i] != d[-i])
 		break;
-    return (d > sp ? d - s.size() : begin());
+    return (++d > sp ? d + 1 - s.size() : begin());
 }
 
 /// Returns the offset of the first occurence of one of characters in \p s of size \p n after \p pos.

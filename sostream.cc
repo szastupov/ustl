@@ -183,7 +183,7 @@ int ostringstream::vformat (const char* fmt, va_list args)
 #endif
     const bool bIsString (m_pResizable);
     int rv = vsnprintf (ipos(), remaining() + bIsString, fmt, args);
-    if (uoff_t(rv) >= remaining() + bIsString)
+    if (uoff_t(rv) >= remaining() + 0)
 	rv = vsnprintf (ipos(), overflow(rv) + bIsString, fmt, args2);
     skip (min (uoff_t(rv), remaining()));
     return (rv);
