@@ -25,8 +25,7 @@
 
 static cpchar_t g_Files [] = {
     "Common.mk",
-    "config.h",
-    "ustl.spec"
+    "config.h"
 };
 
 /* Values substitute @VARNAME@ */
@@ -173,7 +172,4 @@ static cpchar_t g_CustomVars [] = {
     "LIB_MINOR",		LIB_MINOR,
     "LIB_BUILD",		LIB_BUILD
 };
-
-/* Maximum size of the subsititution list. bsconf warns on overflow. */
-#define MAX_SUBSTITUTIONS	256
 
