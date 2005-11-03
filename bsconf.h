@@ -13,10 +13,12 @@
  * "gcc" in config.h.
 */
 
+#define BSCONF_VERSION		0x03
+
 #define PACKAGE_NAME		"ustl"
 #define LIB_MAJOR		"0"
-#define LIB_MINOR		"7"
-#define LIB_BUILD		"1"
+#define LIB_MINOR		"8"
+#define LIB_BUILD		"0"
 
 #define PACKAGE_VERSION		LIB_MAJOR "." LIB_MINOR
 #define PACKAGE_TARNAME		PACKAGE_NAME
@@ -25,7 +27,8 @@
 
 static cpchar_t g_Files [] = {
     "Common.mk",
-    "config.h"
+    "config.h",
+    "ustl.spec"
 };
 
 /* Values substitute @VARNAME@ */

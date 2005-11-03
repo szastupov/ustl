@@ -98,6 +98,9 @@ typedef struct {
 /*- Global variables -------------------------------------------------*/
 
 #include "bsconf.h"
+#if !defined(BSCONF_VERSION) || BSCONF_VERSION < 0x03
+#error Your bsconf.h file is too old; please update its format.
+#endif
 
 static cpchar_t g_ConfigV [vv_last] = {
     "prefix",
@@ -449,7 +452,7 @@ static void PrintHelp (void)
 static void PrintVersion (void)
 {
     printf (PACKAGE_NAME " configure " PACKAGE_VERSION "\n"
-	    "\nUsing bsconf package version 0.1\n"
+	    "\nUsing bsconf package version 0.3\n"
 	    "Copyright (c) 2003-2005, Mike Sharov <msharov@users.sourceforge.net>\n"
 	    "This configure script and the bsconf package are free software.\n"
 	    "Unlimited permission to copy, distribute, and modify is granted.\n");
@@ -844,12 +847,6 @@ static void SubstituteHostOptions (void)
 
     Substitute ("#undef LSTAT_FOLLOWS_SLASHED_SYMLINK", "#define LSTAT_FOLLOWS_SLASHED_SYMLINK 1");
     Substitute ("#undef HAVE_STAT_EMPTY_STRING_BUG", "/* #undef HAVE_STAT_EMPTY_STRING_BUG */");
-
-    Substitute ("#undef PACKAGE_BUGREPORT",	"#define PACKAGE_BUGREPORT \"" PACKAGE_BUGREPORT "\"");
-    Substitute ("#undef PACKAGE_NAME",		"#define PACKAGE_NAME \"" PACKAGE_NAME "\"");
-    Substitute ("#undef PACKAGE_STRING",	"#define PACKAGE_STRING \"" PACKAGE_STRING "\"");
-    Substitute ("#undef PACKAGE_TARNAME",	"#define PACKAGE_TARNAME \"" PACKAGE_TARNAME "\"");
-    Substitute ("#undef PACKAGE_VERSION",	"#define PACKAGE_VERSION \"" PACKAGE_VERSION "\"");
 
     if (g_SysType == sys_Linux)
 	Substitute ("#undef HAVE_RINTF", "#define HAVE_RINTF 1");

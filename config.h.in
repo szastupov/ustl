@@ -197,18 +197,14 @@
 // signed char and unsigned char. This will create overloads for char.
 #undef HAVE_THREE_CHAR_TYPES
 
-#ifdef DEFINE_USTL_PACKAGE_STRINGS
 // Define to the address where bug reports for this package should be sent.
-#undef PACKAGE_BUGREPORT
-// Define to the full name of this package.
-#undef PACKAGE_NAME
-// Define to the full name and version of this package.
-#undef PACKAGE_STRING
+#define USTL_BUGREPORT	"@PACKAGE_BUGREPORT@"
 // Define to the one symbol short name of this package.
-#undef PACKAGE_TARNAME
+#define USTL_NAME	"@PACKAGE_NAME@"
+// Define to the full name and version of this package.
+#define USTL_STRING	"@PACKAGE_NAME@ @PACKAGE_VERSION@"
 // Define to the version of this package.
-#undef PACKAGE_VERSION
-#endif
+#define USTL_VERSION	0x@LIB_MAJOR@@LIB_MINOR@@LIB_BUILD@
 
 // Define as the return type of signal handlers (`int' or `void').
 #undef RETSIGTYPE

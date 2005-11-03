@@ -1,7 +1,8 @@
 Release 0.8
-	* Implemented heap algorithms.
+	* Updated bsconf to use malloc instead of static buffers.
 	* construct/destruct will now disappear for integral types.
 		Integral types have no destructors/constructors.
+	* Implemented some heap algorithms.
 	* Fixed istream_iterator to read on construction and in operator++
 		as the standard says. Unfortunately, this makes it almost
 		totally useless, since using it as a source for copy will
