@@ -439,40 +439,6 @@ inline void stable_sort (Container& ctr, Compare comp)
     stable_sort (ctr.begin(), ctr.end(), comp);
 }
 
-/// Converts the given const_iterator into an iterator.
-///
-template <typename Container>
-inline typename Container::iterator unconst (typename Container::const_iterator i, Container& ctr)
-{
-    const Container& cctr = ctr;
-    return (ctr.begin() + (i - cctr.begin()));
-}
-
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
-
-#define IBYI(Iter1, Iter2, Ctr1, Ctr2)	\
-template <typename Container1, typename Container2>	\
-inline typename Container2::Iter2 ibyi (typename Container1::Iter1 idx, Ctr1& ctr1, Ctr2& ctr2)	\
-{							\
-    assert (ctr1.size() == ctr2.size());		\
-    return (ctr2.begin() + (idx - ctr1.begin()));	\
-}
-
-IBYI(const_iterator, const_iterator, const Container1, const Container2)
-IBYI(iterator, iterator, Container1, Container2)
-IBYI(const_iterator, iterator, const Container1, Container2)
-IBYI(iterator, const_iterator, Container1, const Container2)
-
-#else // DOXYGEN
-
-#error This declaration is for doxygen only; it is not compiled.
-
-/// Converts a const_iterator in one container into a const_iterator in another container.
-template <typename Container1, typename Container2>
-inline typename Container2::iterator ibyi (typename Container1::iterator idx, Container1& ctr1, Container2& ctr2) {}
-
-#endif // DOXYGEN
-
 } // namespace ustl
 
 #endif
