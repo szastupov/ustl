@@ -12,7 +12,7 @@ s1 == s4
 56789 == 56789
 &s1[7] = 89012345678901234567890
 initial:		123456789012345678901234567890
-erase(5,find(9))	123459012345678901234567890
+erase(5,find(9)-5)	123459012345678901234567890
 erase(5,5)		1234545678901234567890
 push_back('x')		1234545678901234567890x
 pop_back()
@@ -21,7 +21,8 @@ replace(0,5,@)		@45678#901234567890
 8 found at 7
 9 found at 8
 7 rfound at 26
-X rfound at 30
+67 rfound at 25
+X was not rfound
 [456] found at 3
 [456] last found at 25
 s2 is empty [], capacity 5 bytes

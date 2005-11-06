@@ -315,11 +315,11 @@ void string::erase (uoff_t ep, size_type n)
 }
 
 /// Replaces range [\p start, \p start + \p len] with string \p s.
-void string::replace (iterator first, iterator last, const_pointer s, size_type n)
+void string::replace (iterator first, iterator last, const_pointer s)
 {
     if (!s)
 	s = empty_string;
-    replace (first, last, s, s + strlen(s), n);
+    replace (first, last, s, s + strlen(s));
 }
 
 /// Replaces range [\p start, \p start + \p len] with \p count instances of string \p s.
@@ -340,102 +340,86 @@ void string::replace (iterator first, iterator last, const_pointer i1, const_poi
 }
 
 /// Returns the offset of the first occurence of \p c after \p pos.
-string::const_iterator string::find (const_reference c, const_iterator pos) const
+uoff_t string::find (const_reference c, uoff_t pos) const
 {
-    if (!pos) pos = begin();
-    assert (pos >= begin() && pos <= end());
-    const_iterator found = ::ustl::find (pos, end(), c);
-    return (found ? found : end());
+    const_iterator found = ::ustl::find (iat(pos), end(), c);
+    return (found < end() ? distance(begin(),found) : npos);
 }
 
 /// Returns the offset of the first occurence of substring \p s of length \p n after \p pos.
-string::const_iterator string::find (const string& s, const_iterator pos) const
+uoff_t string::find (const string& s, uoff_t pos) const
 {
-    if (!pos) pos = begin();
-    assert (pos >= begin() && pos <= end());
-    if (s.empty() || ptrdiff_t(s.size()) > distance (pos, end()))
-	return (end());
+    if (s.empty() || s.size() > size() - pos)
+	return (npos);
     const uoff_t endi = s.size() - 1;
     const_reference endchar = s[endi];
     uoff_t lastPos = endi;
     while (lastPos-- && s[lastPos] != endchar);
     const size_type skip = endi - lastPos;
-    const_iterator i = pos + endi;
+    const_iterator i = iat(pos) + endi;
     for (; i < end() && (i = ::ustl::find (i, end(), endchar)) < end(); i += skip)
 	if (memcmp (i - endi, s.c_str(), s.size()) == 0)
-	    return (i - endi);
-    return (end());
+	    return (distance (begin(), i) - endi);
+    return (npos);
 }
 
 /// Returns the offset of the last occurence of character \p c after \p pos.
-string::const_iterator string::rfind (const_reference c, const_iterator pos) const
+uoff_t string::rfind (const_reference c, uoff_t pos) const
 {
-    if (!pos) pos = begin();
-    assert (pos >= begin() && pos <= end());
-    for (const_iterator first = end(); first >= pos; -- first)
-	if (*first == c)
-	    return (first);
-    return (end());
+    for (int i = min(pos,size()-1); i >= 0; --i)
+	if (at(i) == c)
+	    return (i);
+    return (npos);
 }
 
 /// Returns the offset of the last occurence of substring \p s of size \p n after \p pos.
-string::const_iterator string::rfind (const string& s, const_iterator pos) const
+uoff_t string::rfind (const string& s, uoff_t pos) const
 {
-    if (!pos) pos = end();
-    assert (pos >= begin() && pos <= end());
     // Match from the tail, iterating backwards.
-    const_iterator d = --pos;
+    const_iterator d = iat(pos) - 1;
     const_iterator sp = begin() + s.size() - 1;
     const_iterator m = s.end() - 1;
     for (uoff_t i = 0; d > sp && i < s.size(); -- d)
 	for (i = 0; i < s.size(); ++ i)
 	    if (m[-i] != d[-i])
 		break;
-    return (++d > sp ? d + 1 - s.size() : begin());
+    return (d > sp ? distance (begin(), d + 2 - s.size()) : npos);
 }
 
 /// Returns the offset of the first occurence of one of characters in \p s of size \p n after \p pos.
-string::const_iterator string::find_first_of (const string& s, const_iterator pos) const
+uoff_t string::find_first_of (const string& s, uoff_t pos) const
 {
-    if (!pos) pos = begin();
-    assert (pos >= begin() && pos <= end());
-    while (pos < end())
-	if (s.find (*pos++) != s.end())
-	    return (--pos);
-    return (end());
+    for (uoff_t i = min(pos,size()); i < size(); ++ i)
+	if (s.find (at(i)) != npos)
+	    return (i);
+    return (npos);
 }
 
 /// Returns the offset of the first occurence of one of characters not in \p s of size \p n after \p pos.
-string::const_iterator string::find_first_not_of (const string& s, const_iterator pos) const
+uoff_t string::find_first_not_of (const string& s, uoff_t pos) const
 {
-    if (!pos) pos = begin();
-    assert (pos >= begin() && pos <= end());
-    while (pos < end())
-	if (s.find (*pos++) == s.end())
-	    return (--pos);
-    return (end());
+    for (uoff_t i = min(pos,size()); i < size(); ++ i)
+	if (s.find (at(i)) == npos)
+	    return (i);
+    return (npos);
 }
 
 /// Returns the offset of the last occurence of one of characters in \p s of size \p n after \p pos.
-string::const_iterator string::find_last_of (const string& s, const_iterator pos) const
+uoff_t string::find_last_of (const string& s, uoff_t pos) const
 {
-    if (!pos) pos = end();
-    assert (pos >= begin() && pos <= end());
-    while (--pos < end())
-	if (s.find (*pos) != s.end())
-	    return (pos);
-    return (end());
+    for (int i = min(pos,size()-1); i >= 0; -- i)
+	if (s.find (at(i)) != npos)
+	    return (i);
+    return (npos);
 }
 
 /// Returns the offset of the last occurence of one of characters not in \p s of size \p n after \p pos.
-string::const_iterator string::find_last_not_of (const string& s, const_iterator pos) const
+uoff_t string::find_last_not_of (const string& s, uoff_t pos) const
 {
-    if (!pos) pos = end();
-    assert (pos >= begin() && pos <= end());
-    while (--pos < end())
-	if (s.find (*pos) == s.end())
-	    return (pos);
-    return (end());
+    for (int i = min(pos,size()-1); i >= 0; -- i)
+	if (s.find (at(i)) == npos)
+	    return (i);
+    return (npos);
 }
 
 /// Equivalent to a vsprintf on the string.

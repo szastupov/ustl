@@ -1,4 +1,9 @@
 Release 0.8
+	* API CHANGE: changed all string's find members to return offsets
+		instead of iterators. That's what the STL standard requires.
+		Also added standard-required replace/inserts with offset
+		arguments. Yes, this is a bit painful. I was using it a lot...
+		But it's all for the better. I promise!
 	* Updated bsconf to use malloc instead of static buffers.
 	* construct/destruct will now disappear for integral types.
 		Integral types have no destructors/constructors.

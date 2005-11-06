@@ -75,8 +75,8 @@ void TestString (void)
     cout << "&s1[7] = " << tail << endl;
 
     cout << "initial:\t\t" << s1.data() << endl;
-    cout << "erase(5,find(9))\t";
-    s1.erase (s1.begin() + 5, s1.find ('9'));
+    cout << "erase(5,find(9)-5)\t";
+    s1.erase (5, s1.find ('9')-5);
     cout << s1 << endl;
     cout << "erase(5,5)\t\t";
     s1.erase (s1.begin() + 5, 2U);
@@ -95,20 +95,24 @@ void TestString (void)
     assert (!*s1.end());
     cout << s1 << endl;
     cout << "replace(0,5,@)\t\t";
-    s1.replace (s1.begin(), s1.begin() + 5, '@');
+    s1.replace (s1.begin(), s1.begin() + 5, 1, '@');
     assert (!*s1.end());
     cout << s1 << endl;
 
     s1 = c_TestString1;
-    cout << "8 found at " << s1.find ('8') - s1.begin() << endl;
-    cout << "9 found at " << s1.find ("9") - s1.begin() << endl;
-    cout << "7 rfound at " << s1.rfind ('7') - s1.begin() << endl;
-    cout << "X rfound at " << s1.rfind ('X') - s1.begin() << endl;
-    string::const_iterator poundfound = s1.find ("#");
-    if (poundfound != s1.end())
-	cout << "# found at " << poundfound - s1.begin() << endl;
-    cout << "[456] found at " << s1.find_first_of ("456") - s1.begin() << endl;
-    cout << "[456] last found at " << s1.find_last_of ("456") - s1.begin() << endl;
+    cout << "8 found at " << s1.find ('8') << endl;
+    cout << "9 found at " << s1.find ("9") << endl;
+    cout << "7 rfound at " << s1.rfind ('7') << endl;
+    cout << "67 rfound at " << s1.rfind ("67") << endl;
+    if (s1.rfind("X") == string::npos)
+	cout << "X was not rfound" << endl;
+    else
+	cout << "X rfound at " << s1.rfind ("X") << endl;
+    uoff_t poundfound = s1.find ("#");
+    if (poundfound != string::npos)
+	cout << "# found at " << poundfound << endl;
+    cout << "[456] found at " << s1.find_first_of ("456") << endl;
+    cout << "[456] last found at " << s1.find_last_of ("456") << endl;
 
     s2.clear();
     assert (!*s2.end());
