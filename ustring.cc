@@ -266,23 +266,24 @@ void string::insert (const uoff_t ip, const wchar_t* first, const wchar_t* last,
 }
 
 /// Inserts character \p c into this string at \p start.
-void string::insert (iterator start, const_reference c, size_type n)
+string::iterator string::insert (iterator start, const_reference c, size_type n)
 {
     start = iterator (memblock::insert (memblock::iterator(start), n));
     fill_n (start, n, c);
     *end() = c_Terminator;
+    return (start);
 }
 
 /// Inserts \p count instances of string \p s at offset \p start.
-void string::insert (iterator start, const_pointer s, size_type n)
+string::iterator string::insert (iterator start, const_pointer s, size_type n)
 {
     if (!s)
 	s = empty_string;
-    insert (start, s, s + strlen(s), n);
+    return (insert (start, s, s + strlen(s), n));
 }
 
 /// Inserts [first,last] \p n times.
-void string::insert (iterator start, const_pointer first, const_pointer last, size_type n)
+string::iterator string::insert (iterator start, const_pointer first, const_pointer last, size_type n)
 {
     assert (first <= last);
     assert (begin() <= start && end() >= start);
@@ -290,6 +291,7 @@ void string::insert (iterator start, const_pointer first, const_pointer last, si
     start = iterator (memblock::insert (memblock::iterator(start), distance(first, last) * n));
     fill (memblock::iterator(start), first, distance(first, last), n);
     *end() = c_Terminator;
+    return (start);
 }
 
 /// Erases \p size bytes at \p start.

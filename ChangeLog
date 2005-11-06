@@ -4,6 +4,7 @@ Release 0.8
 		Also added standard-required replace/inserts with offset
 		arguments. Yes, this is a bit painful. I was using it a lot...
 		But it's all for the better. I promise!
+	* Iterator-based string insert now return an iterator, like vector.
 	* Updated bsconf to use malloc instead of static buffers.
 	* construct/destruct will now disappear for integral types.
 		Integral types have no destructors/constructors.

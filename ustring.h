@@ -125,11 +125,11 @@ public:
     inline bool			operator> (const_pointer s) const	{ return (0 < compare (s)); }
     void			insert (const uoff_t ip, wchar_t c, size_type n = 1);
     void			insert (const uoff_t ip, const wchar_t* first, const wchar_t* last, const size_type n = 1);
-    void			insert (iterator start, const_reference c, size_type n = 1);
-    void			insert (iterator start, const_pointer s, size_type n = 1);
-    void			insert (iterator start, const_pointer first, const_iterator last, size_type n = 1);
-    inline void			insert (uoff_t ip, const_pointer s, size_type nlen)	{ insert (iat(ip), s, s + nlen); }
-    inline void			insert (uoff_t ip, size_type n, value_type c)		{ insert (iat(ip), c, n); }
+    iterator			insert (iterator start, const_reference c, size_type n = 1);
+    iterator			insert (iterator start, const_pointer s, size_type n = 1);
+    iterator			insert (iterator start, const_pointer first, const_iterator last, size_type n = 1);
+    inline void			insert (uoff_t ip, const_pointer s, size_type nlen)		{ insert (iat(ip), s, s + nlen); }
+    inline void			insert (uoff_t ip, size_type n, value_type c)			{ insert (iat(ip), c, n); }
     inline void			insert (uoff_t ip, const string& s, uoff_t sp, size_type slen)	{ insert (iat(ip), s.iat(sp), s.iat(sp + slen)); }
     iterator			erase (iterator start, size_type size = 1);
     void			erase (uoff_t start, size_type size = 1);
