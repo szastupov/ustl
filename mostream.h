@@ -10,6 +10,7 @@
 
 #include "memlink.h"
 #include "uexception.h"
+#include "utf8.h"
 #include <typeinfo>
 
 namespace ustl {
@@ -119,6 +120,18 @@ public:
 private:
     ostream&	m_Os;
 };
+
+//----------------------------------------------------------------------
+
+typedef ostream_iterator<utf8subchar_t> ostream_iterator_for_utf8;
+typedef utf8out_iterator<ostream_iterator_for_utf8> utf8ostream_iterator;
+
+/// Returns a UTF-8 adaptor writing to \p os.
+inline utf8ostream_iterator utf8out (ostream& os)
+{
+    ostream_iterator_for_utf8 si (os);
+    return (utf8ostream_iterator (si));
+}
 
 //----------------------------------------------------------------------
 

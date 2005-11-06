@@ -163,7 +163,6 @@
 #include "ustl/uspecial.h"
 #include "ustl/sistream.h"
 #include "ustl/uiosfunc.h"
-#include "ustl/utf8.h"
 #include "ustl/umap.h"
 #include "ustl/umultimap.h"
 #include "ustl/ustack.h"

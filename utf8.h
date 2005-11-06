@@ -25,6 +25,9 @@
 #ifndef UTF8_H_3D7AEEEB3A88928D4D280B785F78B6F4
 #define UTF8_H_3D7AEEEB3A88928D4D280B785F78B6F4
 
+#include "uiterator.h"
+#include <wchar.h>
+
 namespace ustl {
 
 //----------------------------------------------------------------------
@@ -190,26 +193,6 @@ template <typename Iterator>
 inline utf8in_iterator<Iterator> utf8in (Iterator i)
 {
     return (utf8in_iterator<Iterator> (i));
-}
-
-typedef istream_iterator<utf8subchar_t> istream_iterator_for_utf8;
-typedef utf8in_iterator<istream_iterator_for_utf8> utf8istream_iterator;
-
-/// Returns a UTF-8 adaptor reading from \p is.
-inline utf8istream_iterator utf8in (istream& is)
-{
-    istream_iterator_for_utf8 si (is);
-    return (utf8istream_iterator (si));
-}
-
-typedef ostream_iterator<utf8subchar_t> ostream_iterator_for_utf8;
-typedef utf8out_iterator<ostream_iterator_for_utf8> utf8ostream_iterator;
-
-/// Returns a UTF-8 adaptor writing to \p os.
-inline utf8ostream_iterator utf8out (ostream& os)
-{
-    ostream_iterator_for_utf8 si (os);
-    return (utf8ostream_iterator (si));
 }
 
 //----------------------------------------------------------------------

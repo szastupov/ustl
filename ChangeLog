@@ -5,6 +5,7 @@ Release 0.8
 		arguments. Yes, this is a bit painful. I was using it a lot...
 		But it's all for the better. I promise!
 	* Iterator-based string insert now return an iterator, like vector.
+	* Added more wchar_t overloads to string, include append and assign.
 	* Updated bsconf to use malloc instead of static buffers.
 	* construct/destruct will now disappear for integral types.
 		Integral types have no destructors/constructors.

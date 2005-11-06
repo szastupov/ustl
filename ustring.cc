@@ -12,7 +12,6 @@
 #include "ustring.h"
 #include "mistream.h"
 #include "mostream.h"
-#include "utf8.h"
 #include "ualgo.h"
 #include <stdio.h>	// for vsnprintf (in string::format)
 

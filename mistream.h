@@ -11,6 +11,7 @@
 #include "cmemlink.h"
 #include "uexception.h"
 #include "strmsize.h"
+#include "utf8.h"
 #ifdef WANT_STREAM_BOUNDS_CHECKING
     #include <typeinfo>
 #endif
@@ -159,6 +160,18 @@ private:
     Stream*	m_pis;		///< The host stream.
     T		m_v;		///< Last read value; cached to be returnable as a const reference.
 };
+
+//----------------------------------------------------------------------
+
+typedef istream_iterator<utf8subchar_t> istream_iterator_for_utf8;
+typedef utf8in_iterator<istream_iterator_for_utf8> utf8istream_iterator;
+
+/// Returns a UTF-8 adaptor reading from \p is.
+inline utf8istream_iterator utf8in (istream& is)
+{
+    istream_iterator_for_utf8 si (is);
+    return (utf8istream_iterator (si));
+}
 
 //----------------------------------------------------------------------
 

@@ -10,6 +10,8 @@
 #ifndef UITERATOR_H_5BCA176C7214A30F2069E2614D2DC226
 #define UITERATOR_H_5BCA176C7214A30F2069E2614D2DC226
 
+#include "utypes.h"
+
 namespace ustl {
 
 //----------------------------------------------------------------------

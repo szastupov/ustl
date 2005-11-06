@@ -9,7 +9,6 @@
 #include "sistream.h"
 #include "sostream.h"
 #include "ustring.h"
-#include "utf8.h"
 
 namespace ustl {
 

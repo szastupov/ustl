@@ -10,7 +10,7 @@
 #define USTRING_H
 
 #include "memblock.h"
-#include "uiterator.h"
+#include "utf8.h"
 #include <stdarg.h>	// for va_list, va_start, and va_end (in string::format)
 
 namespace ustl {
@@ -53,12 +53,16 @@ public:
     typedef char		value_type;
     typedef value_type*		pointer;
     typedef const value_type*	const_pointer;
+    typedef wchar_t		wvalue_type;
+    typedef wvalue_type*	wpointer;
+    typedef const wvalue_type*	const_wpointer;
     typedef pointer		iterator;
     typedef const_pointer	const_iterator;
     typedef value_type&		reference;
     typedef value_type		const_reference;
     typedef ::ustl::reverse_iterator<iterator>		reverse_iterator;
     typedef ::ustl::reverse_iterator<const_iterator>	const_reverse_iterator;
+    typedef utf8in_iterator<const_iterator>		utf8_iterator;
 public:
     static const uoff_t npos = static_cast<uoff_t>(-1);			///< Value that means the end of string.
     static const value_type c_Terminator = 0;				///< String terminator
@@ -80,6 +84,7 @@ public:
     inline size_type		max_size (void) const	{ return (memblock::max_size() - size_Terminator); }
     inline size_type		capacity (void) const	{ return (memblock::capacity() ? memblock::capacity() - size_Terminator : 0); }
     void			resize (size_type n);
+    inline void			clear (void)		{ resize (0); }
     inline const_iterator	begin (void) const	{ return (const_iterator (memblock::begin())); }
     inline iterator		begin (void)		{ return (iterator (memblock::begin())); }
     inline const_iterator	end (void) const	{ return (const_iterator (memblock::end())); }
@@ -88,19 +93,25 @@ public:
     inline reverse_iterator	rbegin (void)		{ return (reverse_iterator (end())); }
   inline const_reverse_iterator	rend (void) const	{ return (const_reverse_iterator (begin())); }
     inline reverse_iterator	rend (void)		{ return (reverse_iterator (begin())); }
+    inline utf8_iterator	utf8_begin (void) const	{ return (utf8_iterator (begin())); }
+    inline utf8_iterator	utf8_end (void) const	{ return (utf8_iterator (end())); }
     inline const_reference	at (uoff_t pos) const	{ assert (pos <= size() && begin()); return (*(begin() + pos)); }
     inline reference		at (uoff_t pos)		{ assert (pos <= size() && begin()); return (*(begin() + pos)); }
     inline const_iterator	iat (uoff_t pos) const	{ return (begin() + min (pos, size())); }
     inline iterator		iat (uoff_t pos)	{ return (begin() + min (pos, size())); }
-    wchar_t			char_at (uoff_t pos) const;
-    inline void			assign (const_iterator i1, const_iterator i2)	{ assign (i1, distance (i1, i2)); }
-    void	    		assign (const_pointer s, size_type len);
-    void	    		assign (const_pointer s);
+    wvalue_type			char_at (uoff_t pos) const;
     inline void			append (const_iterator i1, const_iterator i2)	{ append (i1, distance (i1, i2)); }
     void	   		append (const_pointer s, size_type len);
     void	   		append (const_pointer s);
     void			append (size_type n, const_reference c);
-    void			append (size_type n, wchar_t c);
+    void			append (size_type n, wvalue_type c);
+    inline void			append (const_wpointer s1, const_wpointer s2)	{ insert (size(), s1, s2); }
+    inline void			append (const_wpointer s)			{ append (s, s + wcslen(s)); }
+    inline void			assign (const_iterator i1, const_iterator i2)	{ assign (i1, distance (i1, i2)); }
+    void	    		assign (const_pointer s, size_type len);
+    void	    		assign (const_pointer s);
+    inline void			assign (const_wpointer s1, const_wpointer s2)	{ clear(); append (s1, s2); }
+    inline void			assign (const_wpointer s1)			{ clear(); append (s1); }
     size_type			copyto (pointer p, size_type n, const_iterator start) const;
     inline int			compare (const string& s) const	{ return (compare (begin(), end(), s.begin(), s.end())); }
     inline int			compare (const_pointer s) const	{ return (compare (begin(), end(), s, NULL)); }
@@ -110,10 +121,12 @@ public:
     inline const string&	operator= (const string& s)	{ assign (s.begin(), s.end()); return (*this); }
     inline const string&	operator= (const_reference c)	{ assign (&c, 1); return (*this); }
     inline const string&	operator= (const_pointer s)	{ assign (s); return (*this); }
+    inline const string&	operator= (const_wpointer s)	{ assign (s); return (*this); }
     inline const string&	operator+= (const string& s)	{ append (s.begin(), s.size()); return (*this); }
     inline const string&	operator+= (const_reference c)	{ append (1, c); return (*this); }
     inline const string&	operator+= (const_pointer s)	{ append (s); return (*this); }
-    inline const string&	operator+= (wchar_t c)		{ append (1, c); return (*this); }
+    inline const string&	operator+= (wvalue_type c)	{ append (1, c); return (*this); }
+    inline const string&	operator+= (const_wpointer s)	{ append (s); return (*this); }
     inline string		operator+ (const string& s) const;
     bool			operator== (const string& s) const;
     bool			operator== (const_pointer s) const;
@@ -123,8 +136,8 @@ public:
     inline bool			operator< (const_pointer s) const	{ return (0 > compare (s)); }
     inline bool			operator< (const_reference c) const	{ return (0 > compare (begin(), end(), &c, &c + 1)); }
     inline bool			operator> (const_pointer s) const	{ return (0 < compare (s)); }
-    void			insert (const uoff_t ip, wchar_t c, size_type n = 1);
-    void			insert (const uoff_t ip, const wchar_t* first, const wchar_t* last, const size_type n = 1);
+    void			insert (const uoff_t ip, wvalue_type c, size_type n = 1);
+    void			insert (const uoff_t ip, const_wpointer first, const_wpointer last, const size_type n = 1);
     iterator			insert (iterator start, const_reference c, size_type n = 1);
     iterator			insert (iterator start, const_pointer s, size_type n = 1);
     iterator			insert (iterator start, const_pointer first, const_iterator last, size_type n = 1);
@@ -136,9 +149,8 @@ public:
     inline iterator		erase (iterator first, const_iterator last)	{ return (erase (first, size_type(distance(first,last)))); }
 				OVERLOAD_POINTER_AND_SIZE_T_V2(erase, iterator)
     inline void			push_back (const_reference c)	{ append (1, c); }
-    inline void			push_back (wchar_t c)		{ append (1, c); }
+    inline void			push_back (wvalue_type c)	{ append (1, c); }
     inline void			pop_back (void)			{ resize (size() - 1); }
-    inline void			clear (void)			{ resize (0); }
     void			replace (iterator first, iterator last, const_pointer s);
     void			replace (iterator first, iterator last, const_pointer i1, const_pointer i2, size_type n = 1);
     inline void			replace (iterator first, iterator last, const string& s)			{ replace (first, last, s.begin(), s.end()); }
