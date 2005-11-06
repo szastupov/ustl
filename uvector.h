@@ -86,6 +86,7 @@ public:
     inline void			manage (pointer p, size_type n)		{ m_Data.manage (p, n * sizeof(T)); }
     inline bool			is_linked (void) const			{ return (m_Data.is_linked()); }
     inline void			unlink (void)				{ m_Data.unlink(); }
+    inline void			copy_link (void)			{ m_Data.copy_link(); }
     inline void			link (const_pointer p, size_type n)	{ m_Data.link (p, n * sizeof(T)); }
     inline void			link (pointer p, size_type n)		{ m_Data.link (p, n * sizeof(T)); }
     inline void			link (const vector<T>& v)		{ m_Data.link (v); }

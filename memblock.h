@@ -34,6 +34,7 @@ public:
     explicit			memblock (const memlink& b);
 				memblock (const memblock& b);
     virtual		       ~memblock (void);
+    virtual void		unlink (void);
     inline void			assign (const cmemlink& l)	{ assign (l.cdata(), l.readable_size()); }
     inline const memblock&	operator= (const cmemlink& l)	{ assign (l); return (*this); }
     inline const memblock&	operator= (const memlink& l)	{ assign (l); return (*this); }
@@ -51,7 +52,7 @@ public:
     inline void			manage (memlink& l)		{ manage (l.begin(), l.size()); }
     void			deallocate (void) throw();
     void			manage (void* p, size_type n);
-    virtual void		unlink (void);
+    void			copy_link (void);
     void			read (istream& is);
     void			read_file (const char* filename);
 protected:

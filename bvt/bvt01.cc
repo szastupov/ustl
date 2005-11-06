@@ -33,7 +33,7 @@ void TestML (void)
 	cout << "memcmp failed on memlink" << endl;
     WriteCML (a);
     b.link (cstr, VectorSize(str));
-    if (b.begin() != NULL)
+    if (b.data() != NULL)
 	cout << "begin() of const failed on cmemlink" << endl;
     if (b.cmemlink::begin() != cstr)
 	cout << "begin() failed on cmemlink" << endl;
@@ -42,7 +42,7 @@ void TestML (void)
 	cout << "operator== failed on cmemlink" << endl;
     b.resize (VectorSize(str) - 2);
     a = b;
-    if (a.begin() != NULL)
+    if (a.data() != NULL)
 	cout << "begin() after assignment failed on cmemlink" << endl;
     a.relink (str, VectorSize(str) - 1);
     WriteCML (a);

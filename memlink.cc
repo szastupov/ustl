@@ -109,10 +109,10 @@ void memlink::read (istream& is)
 /// Copies data from \p p, \p n to the linked block starting at \p start.
 void memlink::copy (iterator start, const void* p, size_type n)
 {
-    assert (m_Data || !n);
+    assert (data() || !n);
     assert (p || !n);
     assert (start >= begin() && start + n <= end());
-    if (p && n && p != m_Data)
+    if (p && n && p != data())
 	copy_n (const_iterator(p), n, start);
 }
 
@@ -125,7 +125,7 @@ void memlink::copy (iterator start, const void* p, size_type n)
 ///
 void memlink::fill (iterator start, const void* p, size_type elSize, size_type elCount)
 {
-    assert (m_Data || !elCount || !elSize);
+    assert (data() || !elCount || !elSize);
     assert (start >= begin() && start + elSize * elCount <= end());
     if (elSize == 1)
 	fill_n (start, elCount, *reinterpret_cast<const uint8_t*>(p));
@@ -139,7 +139,7 @@ void memlink::fill (iterator start, const void* p, size_type elSize, size_type e
 /// The contents of the uncovered bytes is undefined.
 void memlink::insert (iterator start, size_type n)
 {
-    assert (m_Data || !n);
+    assert (data() || !n);
     assert (cmemlink::begin() || !n);
     assert (start >= begin() && start + n <= end());
     rotate (start, end() - n, end());
@@ -149,7 +149,7 @@ void memlink::insert (iterator start, size_type n)
 /// The contents of the uncovered bytes is undefined.
 void memlink::erase (iterator start, size_type n)
 {
-    assert (m_Data || !n);
+    assert (data() || !n);
     assert (cmemlink::begin() || !n);
     assert (start >= begin() && start + n <= end());
     rotate (start, start + n, end());

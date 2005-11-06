@@ -33,13 +33,18 @@ void TestMB (void)
 	cout << "memcmp failed on memblock" << endl;
     WriteCML (a);
     b.link (cstrTest, strTestLen);
-    if (b.begin() != NULL)
+    if (b.data() != NULL)
 	cout << "begin() of const failed on memblock" << endl;
     if (b.cmemlink::begin() != cstrTest)
 	cout << "cmemlink::begin() failed on memblock" << endl;
     WriteCML (b);
     if (!(a == b))
 	cout << "operator== failed on memblock" << endl;
+    b.copy_link();
+    if (b.data() == NULL || b.cdata() == cstrTest)
+	cout << "copy_link failed on memblock" << endl;
+    if (!(a == b))
+	cout << "copy_link didn't copy" << endl;
     b.resize (strTestLen - 2);
     a = b;
     if (a.begin() == b.begin())

@@ -141,7 +141,6 @@ void string::assign (const_pointer s)
 /// Assigns itself the value of string \p s of length \p len.
 void string::assign (const_pointer s, size_type len)
 {
-    assert ((s < begin() || s >= end() || len == size()) && "Self-assignment can not resize");
     while (len && s[len - 1] == c_Terminator)
 	-- len;
     resize (len);
@@ -159,7 +158,6 @@ void string::append (const_pointer s)
 /// Appends to itself the value of string \p s of length \p len.
 void string::append (const_pointer s, size_type len)
 {
-    assert ((s < begin() || s >= end() || size() + len < capacity()) && "Appending a string to itself with autoresize is not supported");
     while (len && s[len - 1] == c_Terminator)
 	-- len;
     resize (size() + len);

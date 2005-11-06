@@ -71,7 +71,7 @@ public:
     const memlink&	operator= (const memlink& l);
     void		swap (memlink& l);
     inline pointer	data (void)			{ return (m_Data); }
-    inline iterator	begin (void)			{ return (iterator (m_Data)); }
+    inline iterator	begin (void)			{ assert ((data() || !cdata()) && "This container has no modifiable data. What you probably want is to first make a writable copy with copy_link."); return (iterator (data())); }
     inline iterator	end (void)			{ return (begin() + size()); }
     inline const_iterator	begin (void) const	{ return (cmemlink::begin()); }
     inline const_iterator	end (void) const	{ return (cmemlink::end()); }

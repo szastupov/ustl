@@ -91,7 +91,7 @@ void memblock::deallocate (void) throw()
 	assert (data() && "Internal error: read-only block is marked as allocated space");
 	free (data());
     }
-    memblock::unlink();
+    unlink();
 }
 
 /// Assumes control of the memory block \p p of size \p n.
@@ -99,11 +99,20 @@ void memblock::deallocate (void) throw()
 void memblock::manage (void* p, size_type n)
 {
     assert (p || !n);
-    assert (!data() || !m_Capacity);	// Can't link to an allocated block.
+    assert (!m_Capacity && "Already managing something. deallocate or unlink first.");
     link (p, n);
     m_Capacity = n;
 }
 
+/// "Instantiate" a linked block by allocating and copying the linked data.
+void memblock::copy_link (void)
+{
+    const cmemlink l (*this);
+    if (is_linked())
+	unlink();
+    assign (l);
+}
+ 
 /// Copies data from \p p, \p n.
 void memblock::assign (const void* p, size_type n)
 {
