@@ -145,6 +145,14 @@ public:
     const_iterator		find_first_not_of (const string& s, const_iterator pos = NULL) const;
     const_iterator		find_last_of (const string& s, const_iterator pos = NULL) const;
     const_iterator		find_last_not_of (const string& s, const_iterator pos = NULL) const;
+    inline iterator		find (const_reference c, iterator pos = NULL)		{ return (unconst (find (c, const_iterator(pos)), *this)); }
+    inline iterator		find (const string& s, iterator pos = NULL)		{ return (unconst (find (s, const_iterator(pos)), *this)); }
+    inline iterator		rfind (const_reference c, iterator pos = NULL)		{ return (unconst (rfind (c, const_iterator(pos)), *this)); }
+    inline iterator		rfind (const string& s, iterator pos = NULL)		{ return (unconst (rfind (s, const_iterator(pos)), *this)); }
+    inline iterator		find_first_of (const string& s, iterator pos = NULL)	{ return (unconst (find_first_of (s, const_iterator(pos)), *this)); }
+    inline iterator		find_first_not_of (const string& s, iterator pos = NULL){ return (unconst (find_first_not_of (s, const_iterator(pos)), *this)); }
+    inline iterator		find_last_of (const string& s, iterator pos = NULL)	{ return (unconst (find_last_of (s, const_iterator(pos)), *this)); }
+    inline iterator		find_last_not_of (const string& s, iterator pos = NULL)	{ return (unconst (find_last_not_of (s, const_iterator(pos)), *this)); }
     int				vformat (const char* fmt, va_list args);
     int				format (const char* fmt, ...) __attribute__((__format__(__printf__, 2, 3)));
     void			read (istream&);
