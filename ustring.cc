@@ -51,7 +51,14 @@ string::string (const string& s)
     if (s.is_linked())
 	link (s.c_str(), s.size());
     else
-	operator= (s);
+	assign (s);
+}
+
+/// Assigns itself a [o,o+n) substring of \p s.
+string::string (const string& s, uoff_t o, size_type n)
+: memblock()
+{
+    assign (s, o, n);
 }
 
 /// Links to \p s
@@ -173,7 +180,7 @@ string::size_type string::copyto (pointer p, size_type n, const_iterator start) 
 /// \li 0 if this string is equal to string \p s
 /// \li -1 if this string is less than string \p s
 ///
-int string::compare (const_iterator first1, const_iterator last1, const_iterator first2, const_iterator last2) const
+/*static*/ int string::compare (const_iterator first1, const_iterator last1, const_iterator first2, const_iterator last2)
 {
     assert (first1 <= last1 && (first2 <= last2 || !last2) && "Negative ranges result in memory allocation errors.");
     const size_type len1 = distance (first1, last1);

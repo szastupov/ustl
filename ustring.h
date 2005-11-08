@@ -71,6 +71,7 @@ public:
 public:
 				string (void);
 				string (const string& s);
+				string (const string& s, uoff_t o, size_type n);
     explicit			string (const cmemlink& l);
 				string (const_pointer s);
 				string (const_pointer s, size_type len);
@@ -104,15 +105,19 @@ public:
     void			append (size_type n, wvalue_type c);
     inline void			append (const_wpointer s1, const_wpointer s2)	{ insert (size(), s1, s2); }
     inline void			append (const_wpointer s)			{ append (s, s + wcslen(s)); }
+    inline void			append (const string& s)			{ append (s.begin(), s.end()); }
+    inline void			append (const string& s, uoff_t o, size_type n)	{ append (s.iat(o), s.iat(o+n)); }
     inline void			assign (const_iterator i1, const_iterator i2)	{ assign (i1, distance (i1, i2)); }
     void	    		assign (const_pointer s, size_type len);
     void	    		assign (const_pointer s);
     inline void			assign (const_wpointer s1, const_wpointer s2)	{ clear(); append (s1, s2); }
     inline void			assign (const_wpointer s1)			{ clear(); append (s1); }
+    inline void			assign (const string& s)			{ assign (s.begin(), s.end()); }
+    inline void			assign (const string& s, uoff_t o, size_type n)	{ assign (s.iat(o), s.iat(o+n)); }
     size_type			copyto (pointer p, size_type n, const_iterator start) const;
     inline int			compare (const string& s) const	{ return (compare (begin(), end(), s.begin(), s.end())); }
     inline int			compare (const_pointer s) const	{ return (compare (begin(), end(), s, NULL)); }
-    int				compare (const_iterator first1, const_iterator last1, const_iterator first2, const_iterator last2) const;
+    static int			compare (const_iterator first1, const_iterator last1, const_iterator first2, const_iterator last2);
     inline			operator const value_type* (void) const;
     inline			operator value_type* (void);
     inline const string&	operator= (const string& s)	{ assign (s.begin(), s.end()); return (*this); }
@@ -158,6 +163,7 @@ public:
     inline void			replace (uoff_t rp, size_type n, const_pointer s, size_type slen)		{ replace (iat(rp), iat(rp + n), s, s + slen); }
     inline void			replace (uoff_t rp, size_type n, const_pointer s)				{ replace (iat(rp), iat(rp + n), string(s)); }
     inline void			replace (uoff_t rp, size_type n, size_type count, value_type c)			{ replace (iat(rp), iat(rp + n), count, c); }
+    inline string		substr (uoff_t o, size_type n) const	{ return (string (*this, o, n)); }
     uoff_t			find (const_reference c, uoff_t pos = 0) const;
     uoff_t			find (const string& s, uoff_t pos = 0) const;
     uoff_t			rfind (const_reference c, uoff_t pos = npos) const;

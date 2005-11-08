@@ -43,6 +43,7 @@ Release 0.8
 	* Added VectorRange macro.
 	* Added relink() call to memlinks for faster resizing.
 		relink does the work of link, but without calling unlink.
+	* Added to string substr and like functions.
 	* Moved simd fill into ualgobase.cc
 	* configure now recompiles bsconf if its sources change.
 	* Fixed a rare off-by-one error in ostringstream vprintf.
