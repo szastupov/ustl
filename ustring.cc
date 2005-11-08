@@ -105,30 +105,6 @@ string::size_type string::length (void) const
     return (nc);
 }
 
-/// Returns an iterator to the character position \p c.
-string::const_iterator string::ichar (uoff_t c) const
-{
-    utf8icstring_iterator cfinder (begin());
-    cfinder += c;
-    return (cfinder.base());
-}
-
-/// Returns an iterator to the character position \p c.
-string::iterator string::ichar (uoff_t c)
-{
-    utf8istring_iterator cfinder (begin());
-    cfinder += c;
-    return (cfinder.base());
-}
-
-/// Returns the character at position \p pos
-wchar_t string::char_at (uoff_t pos) const
-{
-    utf8icstring_iterator cfinder (begin());
-    cfinder += pos;
-    return (*cfinder);
-}
-
 /// Assigns itself the value of string \p s
 void string::assign (const_pointer s)
 {
@@ -243,7 +219,9 @@ string::size_type string::minimumFreeCapacity (void) const
 ///
 void string::insert (const uoff_t ip, wchar_t c, size_type n)
 {
-    iterator ipp = ichar (ip);
+    utf8istring_iterator cfinder (begin());
+    cfinder += ip;
+    iterator ipp (cfinder.base());
     ipp = iterator (memblock::insert (memblock::iterator(ipp), n * Utf8Bytes(c)));
     fill_n (utf8out (ipp), n, c);
     *end() = c_Terminator;
@@ -252,7 +230,9 @@ void string::insert (const uoff_t ip, wchar_t c, size_type n)
 /// Inserts sequence of wide characters at \p ip.
 void string::insert (const uoff_t ip, const wchar_t* first, const wchar_t* last, const size_type n)
 {
-    iterator ipp = ichar (ip);
+    utf8istring_iterator cfinder (begin());
+    cfinder += ip;
+    iterator ipp (cfinder.base());
     size_type nti = distance (first, last), bti = 0;
     for (uoff_t i = 0; i < nti; ++ i)
 	bti += Utf8Bytes(first[i]);

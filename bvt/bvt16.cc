@@ -10,7 +10,7 @@ void Widen (const string& str, vector<wchar_t>& result)
 {
     result.clear();
     result.resize (str.length());
-    copy (utf8in (str.begin()), utf8in (str.end()), result.begin());
+    copy (str.utf8_begin(), str.utf8_end(), result.begin());
 }
 
 void DumpWchars (const vector<wchar_t>& v)
@@ -65,13 +65,13 @@ void TestUTF8 (void)
     ws.insert (3, VectorRange(c_WChars), 2);
     ws.insert (ws.length(), wchar_t(5678));
     cout << "Values[" << ws.length() << "]:";
-    for (uoff_t j = 0; j < ws.length(); ++ j)
-	cout << ' ' << (uint32_t) ws.char_at(j);
+    for (string::utf8_iterator j = ws.utf8_begin(); j < ws.utf8_end(); ++ j)
+	cout << ' ' << (uint32_t) *j;
     cout << endl;
 
     cout << "Character offsets:";
-    for (size_t k = 0; k < ws.length(); ++ k)
-	cout << ' ' << distance (ws.begin(), ws.ichar(k));
+    for (string::utf8_iterator k = ws.utf8_begin(); k < ws.utf8_end(); ++ k)
+	cout << ' ' << distance (ws.begin(), k.base());
     cout << endl;
 
     cout << "Erasing character " << ws.length() - 1 << ": ";

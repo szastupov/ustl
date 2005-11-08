@@ -77,8 +77,6 @@ public:
 				string (const_pointer s1, const_pointer s2);
     explicit			string (size_type n, value_type c = c_Terminator);
     size_type			length (void) const;
-    const_iterator		ichar (uoff_t c) const;
-    iterator			ichar (uoff_t c);
     inline pointer		data (void)		{ return (string::pointer (memblock::data())); }
     inline const_pointer	c_str (void) const	{ return (string::const_pointer (memblock::cdata())); }
     inline size_type		max_size (void) const	{ return (memblock::max_size() - size_Terminator); }
@@ -99,7 +97,6 @@ public:
     inline reference		at (uoff_t pos)		{ assert (pos <= size() && begin()); return (*(begin() + pos)); }
     inline const_iterator	iat (uoff_t pos) const	{ return (begin() + min (pos, size())); }
     inline iterator		iat (uoff_t pos)	{ return (begin() + min (pos, size())); }
-    wvalue_type			char_at (uoff_t pos) const;
     inline void			append (const_iterator i1, const_iterator i2)	{ append (i1, distance (i1, i2)); }
     void	   		append (const_pointer s, size_type len);
     void	   		append (const_pointer s);

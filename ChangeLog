@@ -4,6 +4,7 @@ Release 0.8
 		Also added standard-required replace/inserts with offset
 		arguments. Yes, this is a bit painful. I was using it a lot...
 		But it's all for the better. I promise!
+	* Removed char_at and ichar from string; use utf8_begin/end instead.
 	* Iterator-based string insert now return an iterator, like vector.
 	* Added more wchar_t overloads to string, include append and assign.
 	* Updated bsconf to use malloc instead of static buffers.
