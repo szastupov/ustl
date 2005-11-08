@@ -97,7 +97,8 @@ public:
     inline WChar		operator* (void) const	{ return (m_v); }
     inline utf8in_iterator&	operator++ (void)	{ ++m_i; Read(); return (*this); }
     inline utf8in_iterator	operator++ (int)	{ utf8in_iterator old (*this); operator++(); return (old); }
-    inline utf8in_iterator&	operator+= (size_t n)	{ while (n--) operator++(); return (*this); }
+    inline utf8in_iterator&	operator+= (uoff_t n)	{ while (n--) operator++(); return (*this); }
+    inline utf8in_iterator	operator+ (uoff_t n)	{ utf8in_iterator v (*this); return (v += n); }
     inline bool			operator== (const utf8in_iterator& i) const	{ return (m_i == i.m_i); }
     inline bool			operator< (const utf8in_iterator& i) const	{ return (m_i < i.m_i); }
     difference_type		operator- (const utf8in_iterator& i) const;
