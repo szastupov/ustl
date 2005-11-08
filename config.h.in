@@ -6,6 +6,15 @@
 #ifndef CONFIG_H_01E33670634DAAC779EE5FF41CCBB36F
 #define CONFIG_H_01E33670634DAAC779EE5FF41CCBB36F
 
+// Define to the one symbol short name of this package.
+#define USTL_NAME	"@PACKAGE_NAME@"
+// Define to the full name and version of this package.
+#define USTL_STRING	"@PACKAGE_NAME@ @PACKAGE_VERSION@"
+// Define to the version of this package.
+#define USTL_VERSION	0x@LIB_MAJOR@@LIB_MINOR@@LIB_BUILD@
+// Define to the address where bug reports for this package should be sent.
+#define USTL_BUGREPORT	"@PACKAGE_BUGREPORT@"
+
 /// Define to 1 if you want stream operations to throw exceptions on
 /// insufficient data or insufficient space. All these errors should
 /// be preventable in output code; the input code should verify the
@@ -196,15 +205,6 @@
 // Define to 1 if your compiler treats char as a separate type along with
 // signed char and unsigned char. This will create overloads for char.
 #undef HAVE_THREE_CHAR_TYPES
-
-// Define to the address where bug reports for this package should be sent.
-#define USTL_BUGREPORT	"@PACKAGE_BUGREPORT@"
-// Define to the one symbol short name of this package.
-#define USTL_NAME	"@PACKAGE_NAME@"
-// Define to the full name and version of this package.
-#define USTL_STRING	"@PACKAGE_NAME@ @PACKAGE_VERSION@"
-// Define to the version of this package.
-#define USTL_VERSION	0x@LIB_MAJOR@@LIB_MINOR@@LIB_BUILD@
 
 // Define as the return type of signal handlers (`int' or `void').
 #undef RETSIGTYPE
