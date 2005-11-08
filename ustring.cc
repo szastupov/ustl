@@ -351,7 +351,7 @@ uoff_t string::find (const string& s, uoff_t pos) const
     return (npos);
 }
 
-/// Returns the offset of the last occurence of character \p c after \p pos.
+/// Returns the offset of the last occurence of character \p c before \p pos.
 uoff_t string::rfind (const_reference c, uoff_t pos) const
 {
     for (int i = min(pos,size()-1); i >= 0; --i)
@@ -360,7 +360,7 @@ uoff_t string::rfind (const_reference c, uoff_t pos) const
     return (npos);
 }
 
-/// Returns the offset of the last occurence of substring \p s of size \p n after \p pos.
+/// Returns the offset of the last occurence of substring \p s of size \p n before \p pos.
 uoff_t string::rfind (const string& s, uoff_t pos) const
 {
     // Match from the tail, iterating backwards.
@@ -392,7 +392,7 @@ uoff_t string::find_first_not_of (const string& s, uoff_t pos) const
     return (npos);
 }
 
-/// Returns the offset of the last occurence of one of characters in \p s of size \p n after \p pos.
+/// Returns the offset of the last occurence of one of characters in \p s of size \p n before \p pos.
 uoff_t string::find_last_of (const string& s, uoff_t pos) const
 {
     for (int i = min(pos,size()-1); i >= 0; -- i)
@@ -401,7 +401,7 @@ uoff_t string::find_last_of (const string& s, uoff_t pos) const
     return (npos);
 }
 
-/// Returns the offset of the last occurence of one of characters not in \p s of size \p n after \p pos.
+/// Returns the offset of the last occurence of one of characters not in \p s of size \p n before \p pos.
 uoff_t string::find_last_not_of (const string& s, uoff_t pos) const
 {
     for (int i = min(pos,size()-1); i >= 0; -- i)
