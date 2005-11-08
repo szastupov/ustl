@@ -209,8 +209,8 @@ inline string string::operator+ (const string& s) const
 
 #define PTR_STRING_CMP(op, impl)	\
 inline bool op (const char* s1, const string& s2) { return impl; }
-PTR_STRING_CMP (operator==, (s1 == s2))
-PTR_STRING_CMP (operator!=, (s1 != s2))
+PTR_STRING_CMP (operator==, (s2 == s1))
+PTR_STRING_CMP (operator!=, (s2 != s1))
 PTR_STRING_CMP (operator<,  (s2 >  s1))
 PTR_STRING_CMP (operator<=, (s2 >= s1))
 PTR_STRING_CMP (operator>,  (s2 <  s1))
