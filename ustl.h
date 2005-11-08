@@ -40,26 +40,6 @@
 /// are, of course, also available for use as data buffers wherever those are
 /// needed, and streams that efficiently read and write binary data into them
 /// are also available.
-///
-/// \section Differences
-///
-/// The main difference you will notice when using uSTL, is that objects in
-/// containers may sometimes undergo bitwise copy. To ensure that this does
-/// not harm your objects you need to design them not to contain any pointers
-/// to data inside themselves or other objects. I have not encountered any
-/// situation when such pointers were needed, but if you have one and do not
-/// know how to work around the limitation, I would be happy to give it a try.
-///
-/// \section install Installation
-///
-/// You should have received a copy of the configure script with your distribution.
-/// Then run \c configure with parameters appropriate for your system (usually none).
-/// Finally, run \c make and \c make \c install to compile the shared library and
-/// install it, along with necessary headers into system-standard directories (see
-/// \c LIBDIR and \c INCDIR in Common.mk for values). To use the library, include
-/// \c ustl.h and link to \c -lustl . Tutorials on using STL are numerous on the
-/// web and the information in there mostly applies, except for iostream usage,
-/// which is not supported in uSTL for philosophical reasons.
 //
 /// \defgroup Containers Containers
 /// Here you'll find all the containers for your objects and data.
