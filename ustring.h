@@ -24,23 +24,11 @@ namespace ustl {
 /// Differences from C++ standard:
 ///	string is a class, not a template. Wide characters are assumed to be
 ///		encoded with utf8 at all times except when rendering or editing.
-///	all functions work with iterators instead of indexes. This makes for
-///		a cleaner syntax in most cases, and, of course, a cleaner
-///		implementation. The exception to expression clarity is the
-///		code that changes the string based on fixed offsets. You can
-///		bite it and use begin() offsets, but a better solution is to
-///		simply not do it. Code written in that manner is too
-///		inflexible. Search for separators, or use the replace call.
 /// 	format member function - strstreams on the string are possible, but
 /// 		are in many cases inconvenient because they hardcode not only
 /// 		the locations of substitutions, but also the constant text in
 /// 		between. Such behaviour makes string localization all but
-/// 		impossible. Another constant gripe is the requirement for
-/// 		space precomputation for strings. string::format will
-/// 		reallocate the string, if needed, to hold the entire output.
-/// 		(That's only for glibc > 2.0.6. See code for comments)
-/// 		Also, take care not to pass in untrusted format strings lest
-/// 		they contain a %n, which causes a nasty security hole.
+/// 		impossible. 
 /// 	const char* cast operator. It is much clearer to use this than having
 /// 		to type .c_str() every time. A side effect of this is that
 /// 		const operator[] is no longer needed (gcc will warn about an
