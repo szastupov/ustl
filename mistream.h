@@ -163,18 +163,6 @@ private:
 
 //----------------------------------------------------------------------
 
-typedef istream_iterator<utf8subchar_t> istream_iterator_for_utf8;
-typedef utf8in_iterator<istream_iterator_for_utf8> utf8istream_iterator;
-
-/// Returns a UTF-8 adaptor reading from \p is.
-inline utf8istream_iterator utf8in (istream& is)
-{
-    istream_iterator_for_utf8 si (is);
-    return (utf8istream_iterator (si));
-}
-
-//----------------------------------------------------------------------
-
 /// Sets the current read position to \p newPos
 inline void istream::seek (uoff_t newPos)
 {
@@ -274,6 +262,20 @@ ISTREAM_OPERATOR(unsigned long)
 ISTREAM_OPERATOR(long long)
 ISTREAM_OPERATOR(unsigned long long)
 #endif
+
+//----------------------------------------------------------------------
+
+typedef istream_iterator<utf8subchar_t> istream_iterator_for_utf8;
+typedef utf8in_iterator<istream_iterator_for_utf8> utf8istream_iterator;
+
+/// Returns a UTF-8 adaptor reading from \p is.
+inline utf8istream_iterator utf8in (istream& is)
+{
+    istream_iterator_for_utf8 si (is);
+    return (utf8istream_iterator (si));
+}
+
+//----------------------------------------------------------------------
 
 } // namespace ustl
 
