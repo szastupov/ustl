@@ -104,16 +104,10 @@ void TestStreams (void)
     cout << endl;
 
     cout << "Binary dump:" << endl;
-    const unsigned char* pc = reinterpret_cast<const unsigned char*>(b.cdata());
-    const unsigned char* pcEnd = pc + b.size();
-    const size_t c_nCharsPerLine = 8;
-    const unsigned char* pcNL = pc + c_nCharsPerLine;
-    while (pc < pcEnd) {
-	if (pc == pcNL) {
-	    cout << "" << endl;
-	    pcNL += c_nCharsPerLine;
-	}
-	cout.format ("%02X ", *pc++);
+    foreach (memblock::const_iterator, pc, b) {
+	if (pc > b.begin() && !(distance(b.begin(), pc) % 8))
+	    cout << endl;
+	cout.format ("%02X ", uint8_t(*pc));
     }
     cout << endl;
 }
