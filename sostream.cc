@@ -176,15 +176,15 @@ int ostringstream::vformat (const char* fmt, va_list args)
 {
 #if HAVE_VA_COPY
     va_list args2;
-    __va_copy (args2, args);    // Because vsnprintf will iterate over args, changing them.
+    __va_copy (args2, args);    // Some vsnprintf implementations change args.
 #else
     #define args2 args
 #endif
     const bool bIsString (m_pResizable);
-    int rv = vsnprintf (ipos(), remaining() + bIsString, fmt, args);
-    if (uoff_t(rv) >= remaining() + bIsString)
-	rv = vsnprintf (ipos(), overflow(rv) + bIsString, fmt, args2);
-    skip (min (uoff_t(rv), remaining()));
+    size_t rv = vsnprintf (ipos(), remaining() + bIsString, fmt, args);
+    if (rv >= remaining() + bIsString && rv < overflow(rv) + bIsString)
+	rv = vsnprintf (ipos(), remaining() + bIsString, fmt, args2);
+    skip (min (rv, remaining()));
     return (rv);
 }
 
