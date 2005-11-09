@@ -97,14 +97,14 @@ static inline void simd_block_store (uint8_t* dest)
 	"movntq %%mm0, %1\n\t"
 	"movntq %%mm0, %2\n\t"
 	"movntq %%mm0, %3"
-	: "=m"(dest[0]), "=m"(dest[8]), "=m"(dest[16]), "=m"(dest[24])::);
+	: "=m"(dest[0]), "=m"(dest[8]), "=m"(dest[16]), "=m"(dest[24]));
     #else
     asm volatile (
 	"movq %%mm0, %0	\n\t"
 	"movq %%mm0, %1	\n\t"
 	"movq %%mm0, %2	\n\t"
 	"movq %%mm0, %3"
-	: "=m"(dest[0]), "=m"(dest[8]), "=m"(dest[16]), "=m"(dest[24])::);
+	: "=m"(dest[0]), "=m"(dest[8]), "=m"(dest[16]), "=m"(dest[24]));
     #endif
 }
 
