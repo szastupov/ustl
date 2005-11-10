@@ -16,13 +16,14 @@
 
 #include "utypes.h"
 #include <assert.h>
-#ifdef HAVE_BYTESWAP_H
+#if HAVE_BYTESWAP_H
     #include <byteswap.h>
 #else
-    #define bswap_16(v)	(((v) << 8) | ((v) >> 8))
-    #define bswap_32(v)	(((v) << 24) | (((v) & 0xFF00) << 8) | (((v) >> 8) & 0xFF00) | ((v) >> 24))
+    inline uint16_t bswap_16 (uint16_t v)	{ return (v << 8 | v >> 8); }
+    inline uint32_t bswap_32 (uint32_t v)	{ return (v << 24 | (v & 0xFF00) << 8 | (v >> 8) & 0xFF00 | v >> 24); }
     #ifdef HAVE_INT64_T
-    #define bswap_64(v)	((uint64_t(bswap_32(uint32_t(v))) << 32) | bswap_32(uint32_t(v >> 32)))
+    inline uint64_t bswap_64 (uint64_t v)	{ return ((uint64_t(bswap_32(v)) << 32) | bswap_32(v >> 32)); }
+    #define bswap_64 bswap_64
     #endif
 #endif
 
