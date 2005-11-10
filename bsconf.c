@@ -685,7 +685,7 @@ static void SubstituteCFlags (void)
 	    copy ("-finline-limit=65535", &buf);
 	#endif
 	#if __GNUC__ >= 4
-	    append (" \\\n\t\t-fvisibility-inlines-hidden");
+	    append (" \\\n\t\t-fvisibility-inlines-hidden", &buf);
 	#endif
     #endif
     Substitute ("@INLINE_OPTS@", S(buf));
@@ -770,6 +770,8 @@ static void SubstituteCpuCaps (void)
 
 static void SubstituteHostOptions (void)
 {
+    static const short int boCheck = 0x0001;
+    static const char boNames[2][16] = { "BIG_ENDIAN", "LITTLE_ENDIAN" };
     char buf [128];
     if (g_SysType == sys_Mac)
 	Substitute ("@SYSWARNS@", "-Wno-long-double");
@@ -847,6 +849,8 @@ static void SubstituteHostOptions (void)
 
     if (g_SysType == sys_Linux)
 	Substitute ("#undef HAVE_RINTF", "#define HAVE_RINTF 1");
+
+    Substitute ("@BYTE_ORDER@", boNames [(uint)(*((const char*)&boCheck))]);
 }
 
 static void SubstituteCustomVars (void)

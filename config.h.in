@@ -232,6 +232,11 @@
 #undef SIZE_OF_BOOL 
 #undef SIZE_T_IS_LONG
 
+// Byte order macros, converted in utypes.h
+#define USTL_LITTLE_ENDIAN	4321
+#define USTL_BIG_ENDIAN		1234
+#define USTL_BYTE_ORDER		USTL_@BYTE_ORDER@
+
 // Extended CPU capabilities
 #undef CPU_HAS_FPU
 #undef CPU_HAS_EXT_DEBUG
