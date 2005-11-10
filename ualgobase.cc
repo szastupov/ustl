@@ -14,9 +14,13 @@
 
 #include "ualgobase.h"
 
-#if __i386__
-
 namespace ustl {
+
+// Generic version for implementing fill_nX_fast on non-i386 architectures.
+template <typename T> inline void stosv (T*& p, size_t n, T v)
+    { while (n--) *p++ = v; }
+
+#if __i386__
 
 //----------------------------------------------------------------------
 // Copy functions
@@ -48,7 +52,6 @@ static inline void movsd (const void*& src, size_t nWords, void*& dest)
 	: "memory");
 }
 
-template <typename T> inline void stosv (T*&, size_t, T) {}
 template <> inline void stosv (uint8_t*& p, size_t n, uint8_t v)
 { asm volatile ("rep;\n\tstosb" : "=&D"(p), "=c"(n) : "0"(p), "1"(n), "a"(v) : "memory"); }
 template <> inline void stosv (uint16_t*& p, size_t n, uint16_t v)
