@@ -1,4 +1,4 @@
-Release 0.8
+2005-11-10 Release 0.8
 	* API CHANGE: changed all string's find members to return offsets
 		instead of iterators. That's what the STL standard requires.
 		Also added standard-required replace/inserts with offset
@@ -10,7 +10,6 @@ Release 0.8
 	* Updated bsconf to use malloc instead of static buffers.
 	* construct/destruct will now disappear for integral types.
 		Integral types have no destructors/constructors.
-	* Implemented some heap algorithms.
 	* Fixed istream_iterator to read on construction and in operator++
 		as the standard says. Unfortunately, this makes it almost
 		totally useless, since using it as a source for copy will
@@ -40,6 +39,7 @@ Release 0.8
 		read past the end of the string if it isn't 0-terminated.
 		(Although it will still do so if you call ++)
 	* Field width should be padded with spaces, not zeroes.
+	* Implemented some heap algorithms.
 	* Added VectorRange macro.
 	* Added relink() call to memlinks for faster resizing.
 		relink does the work of link, but without calling unlink.
