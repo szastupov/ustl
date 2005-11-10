@@ -42,7 +42,7 @@ static void OnUnexpected (void)
 /// Installs OnSignal as handler for signals.
 static void InstallCleanupHandlers (void)
 {
-    static const int c_Signals[] = {
+    static const uint8_t c_Signals[] = {
 	SIGINT, SIGQUIT, SIGILL,  SIGTRAP, SIGABRT,
 	SIGIOT, SIGBUS,  SIGFPE,  SIGSEGV, SIGTERM,
 	SIGIO,  SIGCHLD
