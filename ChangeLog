@@ -58,6 +58,8 @@ Release 0.8
 	* Removed all usage of "y" in SIMD asm blocks; gcc<4-> movd, not movq.
 		This fixes problems with MMX fround on some platforms.
 	* Removed SSE3 detection from bsconf; it just doesn't work!
+	* Added BYTE_ORDER detection in bsconf.
+	* Made BYTE_ORDER and bswap always defined.
 
 2005-06-28 Release 0.7-1
 	* Now compiles with gcc 4.0.0

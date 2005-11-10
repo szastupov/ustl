@@ -50,6 +50,11 @@
 	#define LLONG_MIN	ULLONG_MAX
     #endif
 #endif
+#ifndef BYTE_ORDER
+    #define LITTLE_ENDIAN	USTL_LITTLE_ENDIAN
+    #define BIG_ENDIAN		USTL_BIG_ENDIAN
+    #define BYTE_ORDER		USTL_BYTE_ORDER
+#endif
 
 typedef size_t		uoff_t;		///< A type for storing offsets into blocks measured by size_t.
 typedef uint32_t	hashvalue_t;	///< Value type returned by the hash functions.

@@ -18,6 +18,12 @@
 #include <assert.h>
 #ifdef HAVE_BYTESWAP_H
     #include <byteswap.h>
+#else
+    #define bswap_16(v)	(((v) << 8) | ((v) >> 8))
+    #define bswap_32(v)	(((v) << 24) | (((v) & 0xFF00) << 8) | (((v) >> 8) & 0xFF00) | ((v) >> 24))
+    #ifdef HAVE_INT64_T
+    #define bswap_64(v)	((uint64_t(bswap_32(uint32_t(v))) << 32) | bswap_32(uint32_t(v >> 32)))
+    #endif
 #endif
 
 namespace ustl {
@@ -191,8 +197,6 @@ inline size_t size_of_elements (size_t n, const T*)
     return (n * sizeof(T));
 }
 
-#ifdef HAVE_BYTESWAP_H
-
 template <typename T>
 inline T bswap (const T& v)
 {
@@ -206,20 +210,19 @@ inline T bswap (const T& v)
     };
 }
 
-#if __BYTE_ORDER == __BIG_ENDIAN
+#if BYTE_ORDER == BIG_ENDIAN
 template <typename T> inline T le_to_native (const T& v) { return (bswap (v)); }
 template <typename T> inline T be_to_native (const T& v) { return (v); }
 template <typename T> inline T native_to_le (const T& v) { return (bswap (v)); }
 template <typename T> inline T native_to_be (const T& v) { return (v); }
-#elif __BYTE_ORDER == __LITTLE_ENDIAN
+#elif BYTE_ORDER == LITTLE_ENDIAN
 template <typename T> inline T le_to_native (const T& v) { return (v); }
 template <typename T> inline T be_to_native (const T& v) { return (bswap (v)); }
 template <typename T> inline T native_to_le (const T& v) { return (v); }
 template <typename T> inline T native_to_be (const T& v) { return (bswap (v)); }
 #else
-    #error Your system does not define __BYTE_ORDER. Please define it in config.h
-#endif // __BYTE_ORDER
-#endif // HAVE_BYTESWAP_H
+    #error Your system does not define BYTE_ORDER. Please upgrade your libc.
+#endif // BYTE_ORDER
 
 /// Template for for_each to call delete
 template <typename T>
