@@ -26,7 +26,6 @@
 #define UTF8_H_3D7AEEEB3A88928D4D280B785F78B6F4
 
 #include "uiterator.h"
-#include <wchar.h>
 
 namespace ustl {
 
