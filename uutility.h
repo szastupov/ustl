@@ -32,7 +32,7 @@ namespace ustl {
 #endif
 
 /// Expands into a begin,end expression for the given static vector; useful for algorithm arguments.
-#define VectorRange(v)	(v), (v) + VectorSize(v)
+#define VectorRange(v)	(v)+0, (v)+VectorSize(v)	// +0 makes it work under gcc 2.95
 
 /// Returns the number of bits in the given type
 #define BitsInType(t)	(sizeof(t) * CHAR_BIT)
