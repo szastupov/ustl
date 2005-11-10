@@ -529,16 +529,14 @@ string s;
 ostringstream os (s);
 os &lt;&lt; "Writing " &lt;&lt; n &lt;&lt; " objects into string s" &lt;&lt; endl;
 </pre><p>
-And that's pretty much it. File streams are not implemented and
-probably won't be, since I'm quite biased against using streams with
-anything but memory blocks. To read a file under the uSTL design, create
-a string buffer, read_file, and then attach a stream to it. This way
-is far friendlier to merging with asynchronous event-driven frameworks
-(i.e. pretty much any X-based UI system) where you're not allowed to
-sit around waiting for file input. It also allows abstraction of all
-file operations in the same manner as uSTL abstracts memory management
-from containers, and supporting cool stuff like data filter chaining,
-network transparency, etc.
+And that's pretty much it for the standard streams. File streams are not
+implemented yet.  If you need to read a file now, create a string buffer,
+read_file, and then attach a stream to it. This way is far friendlier
+to merging with asynchronous event-driven frameworks (i.e. pretty much
+any X-based UI system) where you're not allowed to sit around waiting for
+file input. It also allows abstraction of all file operations in the same
+manner as uSTL abstracts memory management from containers, and supporting
+cool stuff like data filter chaining, network transparency, etc.
 </p><p>
 istream and ostream, which are not really usable by themselves in the
 standard implementation, are hijacked by uSTL to implement binary data
@@ -563,12 +561,12 @@ is, it is necessary to consider proper data alignment; for example,
 a 4 byte int can not be written at stream offset 2. Some architectures
 (Macs) actually crash when doing it; Intel processors just do it slowly.
 Hence the need to pack the data to a proper "grain". The default align
-call will pack to the maximum necessary grain, but can be given an argument
-to change that. In case you're wondering, the reason for all these
-idiosyncracies is optimization. The smallest and fastest possible code
-to dump your stuff into a binary file is produced by this method.
-uSTL defines flow operators to write integral values, strings, and containers,
-but you can custom-serialize your objects like this:
+call will pack to the maximum necessary grain, but can be given an
+argument to change that. In case you're wondering, the reason for all
+these idiosyncracies is optimization. The smallest and fastest possible
+code to dump your stuff into a binary file is produced by this method.
+uSTL defines flow operators to write integral values, strings, and
+containers, but you can custom-serialize your objects like this:
 </p><pre>
 namespace myns {
 

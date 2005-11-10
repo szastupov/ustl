@@ -54,6 +54,10 @@ Release 0.8
 	* Fixed string rfind for strings; was returning a wrong value sometimes.
 	* Added copy_link call to memblock to make a copy of linked data.
 	* Added assert to memlink begin() to warn when writing to a const block.
+	* Makefile now correctly uses ${MAKE} to recurse.
+	* Removed all usage of "y" in SIMD asm blocks; gcc<4-> movd, not movq.
+		This fixes problems with MMX fround on some platforms.
+	* Removed SSE3 detection from bsconf; it just doesn't work!
 
 2005-06-28 Release 0.7-1
 	* Now compiles with gcc 4.0.0

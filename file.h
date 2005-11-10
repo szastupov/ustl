@@ -15,6 +15,7 @@ namespace ustl {
 
 /// \class file file.h ustl/file.h
 /// \brief Wraps the libc file descriptor API with exception throwing.
+/// \warning Don't use this! It's a crutch until ifstream is implemented.
 class file {
 public:
     enum EOpenMode {
