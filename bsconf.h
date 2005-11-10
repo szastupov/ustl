@@ -100,6 +100,9 @@ static cpchar_t g_Libs [] = {
 #elif __GNUC__ >= 3
     "gcc",		"-lgcc_s",			"-lgcc",
     "gcc_eh",		"-lgcc_s",			"-lgcc_eh",
+#else
+    "gcc",		"",				"-lgcc",
+    "gcc_eh",		"",				"",
 #endif
     "c",		"",				"-lc"
 };

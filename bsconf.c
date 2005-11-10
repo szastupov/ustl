@@ -281,11 +281,11 @@ static void buf_free (pbuf_t p)
 static void ReadFile (cpchar_t filename, pbuf_t buf)
 {
     struct stat st;
-    if (stat (filename, &st))
-	FatalError ("stat");
     FILE* fp = fopen (filename, "r");
     if (!fp)
 	FatalError ("open");
+    if (fstat (fileno(fp), &st))
+	FatalError ("stat");
     buf_clear (buf);
     buf->used = fread (buf_addspace (buf, st.st_size + 1), 1, st.st_size, fp);
     if (((int) buf->used) < 0)
@@ -676,19 +676,19 @@ static void SubstituteCFlags (void)
     #endif
     Substitute ("@PROCESSOR_OPTS@", S(buf));
 
-    #if __GNUC__ > 3 || __GNUC_MINOR__ >= 4
-	copy (" --param max-inline-insns-single=1024", &buf);
-	append (" \\\n\t\t--param large-function-growth=65535", &buf);
-	append (" \\\n\t\t--param inline-unit-growth=1024 @INLINE_OPTS@", &buf);
-    #else
-	copy ("-finline-limit=65535 @INLINE_OPTS@", &buf);
+    #if __GNUC__ >= 3
+	#if __GNUC__ > 3 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 4)
+	    copy (" --param max-inline-insns-single=1024", &buf);
+	    append (" \\\n\t\t--param large-function-growth=65535", &buf);
+	    append (" \\\n\t\t--param inline-unit-growth=1024", &buf);
+	#else
+	    copy ("-finline-limit=65535", &buf);
+	#endif
+	#if __GNUC__ >= 4
+	    append (" \\\n\t\t-fvisibility-inlines-hidden");
+	#endif
     #endif
     Substitute ("@INLINE_OPTS@", S(buf));
-    #if __GNUC__ >= 4
-	Substitute ("@INLINE_OPTS@", " \\\n\t\t-fvisibility-inlines-hidden");
-    #else
-	Substitute ("@INLINE_OPTS@", "");
-    #endif
 
     #ifdef __i386__
 	Substitute ("-fPIC", "");
