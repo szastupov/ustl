@@ -67,32 +67,27 @@ void TestUtility (void)
 	cout << "No 64bit types available on this platform" << endl;
     #endif
     cout << endl;
-    #ifdef HAVE_BYTESWAP_H
-	uint16_t v1 = 0x1234;
-	cout << "byteswap.h exists." << endl;
-	cout << "bswap(" << v1 << ") = " << bswap(v1) << endl;
-	cout << "le_to_native(" << v1 << ") = " << le_to_native(v1) << endl;
-	cout << "be_to_native(" << v1 << ") = " << be_to_native(v1) << endl;
-	cout << "native_to_le(" << v1 << ") = " << native_to_le(v1) << endl;
-	cout << "native_to_be(" << v1 << ") = " << native_to_be(v1) << endl;
-	uint32_t v2 = 0x12345678;
-	cout << "bswap(" << v2 << ") = " << bswap(v2) << endl;
-	cout << "le_to_native(" << v2 << ") = " << le_to_native(v2) << endl;
-	cout << "be_to_native(" << v2 << ") = " << be_to_native(v2) << endl;
-	cout << "native_to_le(" << v2 << ") = " << native_to_le(v2) << endl;
-	cout << "native_to_be(" << v2 << ") = " << native_to_be(v2) << endl;
-	#ifdef bswap_64
-	    uint64_t v3 = UINT64_C(0x123456789ABCDEF0);
-	    cout << "bswap(" << v3 << ") = " << bswap(v3) << endl;
-	    cout << "le_to_native(" << v3 << ") = " << le_to_native(v3) << endl;
-	    cout << "be_to_native(" << v3 << ") = " << be_to_native(v3) << endl;
-	    cout << "native_to_le(" << v3 << ") = " << native_to_le(v3) << endl;
-	    cout << "native_to_be(" << v3 << ") = " << native_to_be(v3) << endl;
-	#else
-	    cout << "No 64bit types available on this platform" << endl;
-	#endif
+    uint16_t v1 = 0x1234;
+    cout << "bswap(" << v1 << ") = " << bswap(v1) << endl;
+    cout << "le_to_native(" << v1 << ") = " << le_to_native(v1) << endl;
+    cout << "be_to_native(" << v1 << ") = " << be_to_native(v1) << endl;
+    cout << "native_to_le(" << v1 << ") = " << native_to_le(v1) << endl;
+    cout << "native_to_be(" << v1 << ") = " << native_to_be(v1) << endl;
+    uint32_t v2 = 0x12345678;
+    cout << "bswap(" << v2 << ") = " << bswap(v2) << endl;
+    cout << "le_to_native(" << v2 << ") = " << le_to_native(v2) << endl;
+    cout << "be_to_native(" << v2 << ") = " << be_to_native(v2) << endl;
+    cout << "native_to_le(" << v2 << ") = " << native_to_le(v2) << endl;
+    cout << "native_to_be(" << v2 << ") = " << native_to_be(v2) << endl;
+    #ifdef bswap_64
+	uint64_t v3 = UINT64_C(0x123456789ABCDEF0);
+	cout << "bswap(" << v3 << ") = " << bswap(v3) << endl;
+	cout << "le_to_native(" << v3 << ") = " << le_to_native(v3) << endl;
+	cout << "be_to_native(" << v3 << ") = " << be_to_native(v3) << endl;
+	cout << "native_to_le(" << v3 << ") = " << native_to_le(v3) << endl;
+	cout << "native_to_be(" << v3 << ") = " << native_to_be(v3) << endl;
     #else
-	cout << "byteswap.h does not exist." << endl;
+	cout << "No 64bit types available on this platform" << endl;
     #endif
     cout << ios::dec << endl;
     cout << "absv(12) = " << absv(12) << endl;
