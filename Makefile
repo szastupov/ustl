@@ -92,11 +92,11 @@ ${INCDIR}/${LIBNAME}.h.gch:	${INCS}
 clean:
 	@echo "Removing generated files ..."
 	@${RM} -f ${OBJS} ${TOCLEAN} *.rpo
-	@+make -C bvt clean
+	@+${MAKE} -C bvt clean
 
 depend: ${SRCS}
 	@${CXX} ${CXXFLAGS} -M ${SRCS} > .depend;
-	@+make -C bvt depend
+	@+${MAKE} -C bvt depend
 
 dox:
 	@${DOXYGEN} ${DOCT}
@@ -110,7 +110,7 @@ DDOCTAR	= ${LIBNAME}-docs-${MAJOR}.${MINOR}-${BUILD}.tar.bz2
 dist:
 	mkdir ${TMPDIR}/${DISTNAM}
 	cp -r . ${TMPDIR}/${DISTNAM}
-	+make -C ${TMPDIR}/${DISTNAM} dox dist-clean
+	+${MAKE} -C ${TMPDIR}/${DISTNAM} dox dist-clean
 	(cd ${TMPDIR}; tar jcf ${DISTDIR}/${DDOCTAR} ${DISTNAM}/docs/html)
 	(cd ${TMPDIR}/${DISTNAM}; rm -rf CVS; cd bvt; rm -rf CVS; cd ../docs; rm -rf CVS html)
 	(cd ${TMPDIR}; tar jcf ${DISTDIR}/${DISTTAR} ${DISTNAM}; rm -rf ${DISTNAM})
