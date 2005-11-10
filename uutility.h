@@ -220,8 +220,6 @@ template <typename T> inline T le_to_native (const T& v) { return (v); }
 template <typename T> inline T be_to_native (const T& v) { return (bswap (v)); }
 template <typename T> inline T native_to_le (const T& v) { return (v); }
 template <typename T> inline T native_to_be (const T& v) { return (bswap (v)); }
-#else
-    #error Your system does not define BYTE_ORDER. Please upgrade your libc.
 #endif // BYTE_ORDER
 
 /// Template for for_each to call delete
