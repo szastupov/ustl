@@ -16,7 +16,7 @@ void TestBswap (T v)
 #if BYTE_ORDER == LITTLE_ENDIAN
     const T vbe (vsw), vle (v);
 #elif BYTE_ORDER == BIG_ENDIAN
-    const T vbe (v), vle (vle);
+    const T vbe (v), vle (vsw);
 #endif
     static const char ok[2][4] = { "bad", "ok" };
     cout << "bswap(" << v << ") = " << vsw << endl;
