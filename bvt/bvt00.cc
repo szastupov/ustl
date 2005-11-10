@@ -34,6 +34,8 @@ void TestCML (void)
 	cout << "begin()[5] failed: " << *(const char*)(a.begin() + 5);
 	cout << " != " << hello[5] << endl;
     }
+    if (a.size() != VectorSize(hello))
+	cout << "link to VectorRange doesn't work" << endl;
     if (0 != memcmp (a.begin(), hello, VectorSize(hello)))
 	cout << "memcmp failed on cmemlink" << endl;
     b.static_link (hello);
