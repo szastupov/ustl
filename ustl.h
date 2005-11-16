@@ -141,8 +141,6 @@
 #define USTL_H_6A5A10410D2CD7FC2D78FE470F045EB7
 
 #include "ustl/uspecial.h"
-#include "ustl/sistream.h"
-#include "ustl/uiosfunc.h"
 #include "ustl/umap.h"
 #include "ustl/umultimap.h"
 #include "ustl/ustack.h"
@@ -150,7 +148,7 @@
 #ifndef WITHOUT_CIN_COUT_CERR
     #include "ustl/fdostream.h"
 #else
-    #include "ustl/sostream.h"
+    #include "ustl/sistream.h"
 #endif
 #include "ustl/unumeric.h"
 #include "ustl/ulist.h"

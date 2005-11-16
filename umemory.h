@@ -115,12 +115,9 @@ template <typename ForwardIterator>
 inline void destroy (ForwardIterator first, ForwardIterator last) throw()
 {
     typedef typename iterator_traits<ForwardIterator>::value_type value_type;
-    if (!numeric_limits<value_type>::is_integral) {
-	while (first < last) {
+    if (!numeric_limits<value_type>::is_integral)
+	for (; first < last; ++ first)
 	    destroy (&*first);
-	    ++ first;
-	}
-    }
 }
 
 /// Casts \p p to the type of the second pointer argument.
