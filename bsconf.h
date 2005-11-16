@@ -17,7 +17,7 @@
 
 #define PACKAGE_NAME		"ustl"
 #define LIB_MAJOR		"0"
-#define LIB_MINOR		"8"
+#define LIB_MINOR		"9"
 #define LIB_BUILD		"0"
 
 #define PACKAGE_VERSION		LIB_MAJOR "." LIB_MINOR
