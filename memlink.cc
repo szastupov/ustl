@@ -11,6 +11,7 @@
 #include "mistream.h"
 #include "memlink.h"
 #include "ualgo.h"
+#include "ustdxept.h"
 
 namespace ustl {
 
@@ -95,14 +96,14 @@ void memlink::unlink (void)
 /// Reads the object from stream \p s
 void memlink::read (istream& is)
 {
-    size_type n;
+    uint32_t n;
     is >> n;
-    const size_type btr = min (n, size());
-    if (is.remaining() < btr)
-	throw stream_bounds_exception ("read", "ustl::memlink", is.pos(), btr, is.remaining());
-    is.read (data(), btr);
-    resize (btr);
-    is.skip (n - btr);
+    if (is.remaining() < n)
+	throw stream_bounds_exception ("read", "ustl::memlink", is.pos(), n, is.remaining());
+    if (n > size())
+	throw length_error ("memlink can not increase the size of the linked storage for reading");
+    resize (n);
+    is.read (data(), n);
     is.align();
 }
 

@@ -451,7 +451,7 @@ size_t string::stream_size (void) const
 /// Reads the object from stream \p os
 void string::read (istream& is)
 {
-    size_t n = *utf8in(is);
+    const uint32_t n = *utf8in(is);
     if (n > is.remaining())
 	throw stream_bounds_exception ("read", "ustl::string", is.pos(), n, is.remaining());
     resize (n);
@@ -461,10 +461,12 @@ void string::read (istream& is)
 /// Writes the object to stream \p os
 void string::write (ostream& os) const
 {
-    *utf8out(os) = size();
-    if (size() > os.remaining())
-	throw stream_bounds_exception ("write", "ustl::string", os.pos(), size(), os.remaining());
-    os.write (cdata(), size());
+    const uint32_t sz (size());
+    assert (sz == size() && "No support for writing strings larger than 4G");
+    *utf8out(os) = sz;
+    if (sz > os.remaining())
+	throw stream_bounds_exception ("write", "ustl::string", os.pos(), sz, os.remaining());
+    os.write (cdata(), sz);
 }
 
 /// Returns a hash value for [first, last)

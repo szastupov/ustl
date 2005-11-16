@@ -66,15 +66,18 @@ void cmemlink::unlink (void)
 /// Writes the object to stream \p os
 void cmemlink::write (ostream& os) const
 {
-    os << size();
-    os.write (cdata(), size());
+    const uint32_t sz (size());
+    assert (sz == size() && "No support for writing memblocks larger than 4G");
+    os << sz;
+    os.write (cdata(), sz);
     os.align();
 }
 
 /// Returns the number of bytes required to write this object to a stream.
 cmemlink::size_type cmemlink::stream_size (void) const
 {
-    return (Align (stream_size_of(m_Size) + size()));
+    const uint32_t sz (size());
+    return (Align (stream_size_of (sz) + sz));
 }
 
 /// Writes the data to file \p "filename".
