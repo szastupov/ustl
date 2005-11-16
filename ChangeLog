@@ -1,3 +1,8 @@
+Release 0.9
+	* Format change: containers will now write their size as a uint32_t
+		instead of size_t to allow binary compatibility with 64 bit
+		architectures. On 32 bit machines this makes no difference.
+
 2005-11-10 Release 0.8
 	* API CHANGE: changed all string's find members to return offsets
 		instead of iterators. That's what the STL standard requires.

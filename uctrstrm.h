@@ -16,6 +16,7 @@
 
 #include "mistream.h"
 #include "sostream.h"
+#include "uiosfunc.h"
 
 namespace ustl {
 
@@ -88,10 +89,9 @@ size_t nr_container_stream_size (const Container& v)
     size_t s = 0;
     if (numeric_limits<value_type>::is_integral)
 	s += v.size() * stream_size_of(value_type());
-    else {
+    else
 	foreach (vciter_t, i, v)
 	    s += stream_size_of(*i);
-    }
     return (s);
 }
 
@@ -103,14 +103,15 @@ size_t nr_container_stream_size (const Container& v)
 template <typename Container>
 istream& container_read (istream& is, Container& v)
 {
-    typedef typename Container::size_type size_type;
     typedef typename Container::value_type value_type;
     typedef typename Container::iterator iterator;
-    size_type n;
+    uint32_t n;
     is >> n;
-    const size_type expectedSize = n * stream_size_of(value_type());
+    const size_t expectedSize = n * stream_size_of(value_type());
     if (expectedSize > is.remaining())
 	throw stream_bounds_exception ("read", typeid(v).name(), is.pos(), expectedSize, is.remaining());
+    if (alignof(value_type()) > 4)
+	is >> ios::talign<value_type>();
     v.resize (n);
     nr_container_read (is, v);
     is.align();
@@ -121,7 +122,10 @@ istream& container_read (istream& is, Container& v)
 template <typename Container>
 ostream& container_write (ostream& os, const Container& v)
 {
-    os << v.size();
+    typedef typename Container::value_type value_type;
+    os << uint32_t (v.size());
+    if (alignof(value_type()) > 4)
+	os << ios::talign<value_type>();
     nr_container_write (os, v);
     os.align();
     return (os);
@@ -131,7 +135,11 @@ ostream& container_write (ostream& os, const Container& v)
 template <typename Container>
 size_t container_stream_size (const Container& v)
 {
-    return (Align (stream_size_of(v.size()) + nr_container_stream_size (v)));
+    typedef typename Container::value_type value_type;
+    size_t sizeSize = stream_size_of (uint32_t (v.size()));
+    if (alignof(value_type()) > 4)
+	sizeSize = Align (sizeSize, alignof(value_type()));
+    return (Align (sizeSize + nr_container_stream_size (v)));
 }
 
 /// \brief Writes element \p v into stream \p os as text.
