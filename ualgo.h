@@ -51,7 +51,7 @@ inline InputIterator find (InputIterator first, InputIterator last, const Equali
 /// \ingroup SearchingAlgorithms
 ///
 template <typename ForwardIterator>
-inline ForwardIterator adjacent_find (ForwardIterator first, ForwardIterator last)
+ForwardIterator adjacent_find (ForwardIterator first, ForwardIterator last)
 {
     if (first != last)
 	for (ForwardIterator prev = first; ++first != last; ++ prev)
@@ -64,7 +64,7 @@ inline ForwardIterator adjacent_find (ForwardIterator first, ForwardIterator las
 /// \ingroup SearchingAlgorithms
 ///
 template <typename InputIterator>
-inline pair<InputIterator,InputIterator>
+pair<InputIterator,InputIterator>
 mismatch (InputIterator first1, InputIterator last1, InputIterator first2)
 {
     while (first1 != last1 && *first1 == *first2)
@@ -180,7 +180,7 @@ inline void generate (ForwardIterator first, ForwardIterator last, Generator gen
 template <typename OutputIterator, typename Generator>
 inline OutputIterator generate_n (OutputIterator first, size_t n, Generator gen)
 {
-    for (size_t i = 0; i != n; ++i, ++first)
+    for (uoff_t i = 0; i != n; ++i, ++first)
 	*first = gen();
     return (first);
 }
@@ -274,7 +274,7 @@ void inplace_merge (InputIterator first, InputIterator middle, InputIterator las
 /// \ingroup MutatingAlgorithms
 ///
 template <typename InputIterator, typename OutputIterator, typename T>
-inline OutputIterator remove_copy (InputIterator first, InputIterator last, OutputIterator result, const T& value)
+OutputIterator remove_copy (InputIterator first, InputIterator last, OutputIterator result, const T& value)
 {
     for (; first != last; ++first) {
 	if (!(*first == value)) {
@@ -364,7 +364,7 @@ inline ForwardIterator unique (ForwardIterator first, ForwardIterator last)
 /// \ingroup SearchingAlgorithms
 ///
 template <typename ForwardIterator, typename LessThanComparable>
-inline ForwardIterator lower_bound (ForwardIterator first, ForwardIterator last, const LessThanComparable& value)
+ForwardIterator lower_bound (ForwardIterator first, ForwardIterator last, const LessThanComparable& value)
 {
     ForwardIterator mid;
     while (first != last) {
@@ -392,7 +392,7 @@ inline ForwardIterator binary_search (ForwardIterator first, ForwardIterator las
 /// \ingroup SearchingAlgorithms
 ///
 template <typename ForwardIterator, typename LessThanComparable>
-inline ForwardIterator upper_bound (ForwardIterator first, ForwardIterator last, const LessThanComparable& value)
+ForwardIterator upper_bound (ForwardIterator first, ForwardIterator last, const LessThanComparable& value)
 {
     ForwardIterator mid;
     while (first != last) {
@@ -422,7 +422,7 @@ inline pair<ForwardIterator,ForwardIterator> equal_range (ForwardIterator first,
 /// \ingroup MutatingAlgorithms
 ///
 template <typename RandomAccessIterator>
-inline void random_shuffle (RandomAccessIterator first, RandomAccessIterator last)
+void random_shuffle (RandomAccessIterator first, RandomAccessIterator last)
 {
     for (; first != last; ++ first)
 	iterator_swap (first, first + (rand() % distance (first, last)));
