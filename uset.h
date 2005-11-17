@@ -41,11 +41,11 @@ public:
     inline const set<T>&	operator= (const set<T>& v);
     inline void			assign (const_iterator i1, const_iterator i2);
     inline void			push_back (const_reference v);
-    const_iterator		find (const_reference v) const;
-    iterator			find (const_reference v);
+    inline const_iterator	find (const_reference v) const;
+    inline iterator		find (const_reference v);
     iterator			insert (const_reference v);
     inline void			insert (const_iterator i1, const_iterator i2);
-    void			erase (const_reference v);
+    inline void			erase (const_reference v);
     inline iterator		erase (iterator ep);
     inline iterator		erase (iterator ep1, iterator ep2);
     inline void			clear (void)		{ vector<T>::clear(); }
@@ -103,14 +103,14 @@ inline void set<T>::assign (const_iterator i1, const_iterator i2)
 
 /// Returns the iterator to an element with value of \p v.
 template <typename T>
-typename set<T>::const_iterator set<T>::find (const_reference v) const
+inline typename set<T>::const_iterator set<T>::find (const_reference v) const
 {
     return (binary_search (begin(), end(), v));
 }
 
 /// Returns the iterator to an element with value of \p v.
 template <typename T>
-typename set<T>::iterator set<T>::find (const_reference v)
+inline typename set<T>::iterator set<T>::find (const_reference v)
 {
     return (binary_search (begin(), end(), v));
 }
@@ -146,7 +146,7 @@ inline void set<T>::insert (const_iterator i1, const_iterator i2)
 
 /// Erases the element with value \p v.
 template <typename T>
-void set<T>::erase (const_reference v)
+inline void set<T>::erase (const_reference v)
 {
     iterator ip = binary_search (begin(), end(), v);
     if (ip != end())
