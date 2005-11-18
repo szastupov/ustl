@@ -68,8 +68,8 @@ public:
     size_type			length (void) const;
     inline pointer		data (void)		{ return (string::pointer (memblock::data())); }
     inline const_pointer	c_str (void) const	{ return (string::const_pointer (memblock::cdata())); }
-    inline size_type		max_size (void) const	{ return (memblock::max_size() - size_Terminator); }
-    inline size_type		capacity (void) const	{ return (memblock::capacity() ? memblock::capacity() - size_Terminator : 0); }
+    inline size_type		max_size (void) const	{ size_type s (memblock::max_size()); return (s - !!s); }
+    inline size_type		capacity (void) const	{ size_type c (memblock::capacity()); return (c - !!c); }
     void			resize (size_type n);
     inline void			clear (void)		{ resize (0); }
     inline const_iterator	begin (void) const	{ return (const_iterator (memblock::begin())); }
