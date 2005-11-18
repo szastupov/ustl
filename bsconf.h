@@ -87,7 +87,6 @@ static cpchar_t	g_Headers [] = {
     "time.h",		"#undef HAVE_TIME_H",		"#define HAVE_TIME_H 1",
     "unistd.h",		"#undef HAVE_UNISTD_H",		"#define HAVE_UNISTD_H 1",
     "math.h",		"#undef HAVE_MATH_H",		"#define HAVE_MATH_H 1",
-    "byteswap.h",	"#undef HAVE_BYTESWAP_H",	"#define HAVE_BYTESWAP_H 1",
     "stdlib.h",		"#undef HAVE_STDLIB_H",		"#define HAVE_STDLIB_H 1"
 };
 

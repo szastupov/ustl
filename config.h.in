@@ -194,11 +194,6 @@
 #define STDUNIX_HEADERS 1
 #endif
 
-// Define to 1 if you have the <byteswap.h> header file.
-#if (__GNUC__ >= 3) // gcc 2.95 somehow doesn't recognize 'asm volatile' in libc byteswap.h
-#undef HAVE_BYTESWAP_H
-#endif
-
 // Define to 1 if `lstat' dereferences a symlink specified with a trailing slash.
 #undef LSTAT_FOLLOWS_SLASHED_SYMLINK
 
