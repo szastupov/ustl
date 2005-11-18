@@ -14,23 +14,10 @@
 
 namespace ustl {
 
-/// Default constructor.
-ostringstream::ostringstream (void)
+/// Creates an output string stream linked to the given memory area.
+ostringstream::ostringstream (void* p, size_t n)
 : ostream (),
-  m_pResizable (NULL),
-  m_Flags (0),
-  m_Base (10),
-  m_Precision (2),
-  m_Width (0),
-  m_DecimalSeparator ('.'),
-  m_ThousandSeparator (',')
-{
-}
-
-/// Creates a stream for writing into \p p of size \p n.
-ostringstream::ostringstream (void* p, size_type n)
-: ostream (),
-  m_pResizable (NULL),
+  m_Buffer (),
   m_Flags (0),
   m_Base (10),
   m_Precision (2),
@@ -41,13 +28,10 @@ ostringstream::ostringstream (void* p, size_type n)
     link (p, n);
 }
 
-/// Creates a stream for writing into string \p dest.
-///
-/// dest may be resized by the stream if insufficient space is available.
-///
-ostringstream::ostringstream (string& dest)
+/// Creates an output string stream, initializing the buffer with v.
+ostringstream::ostringstream (const string& v)
 : ostream (),
-  m_pResizable (NULL),
+  m_Buffer (v),
   m_Flags (0),
   m_Base (10),
   m_Precision (2),
@@ -55,21 +39,15 @@ ostringstream::ostringstream (string& dest)
   m_DecimalSeparator ('.'),
   m_ThousandSeparator (',')
 {
-    link (dest);
+    ostream::link (m_Buffer);
 }
 
-/// Creates a stream for writing into fixed block \p dest.
-ostringstream::ostringstream (memlink& dest)
-: ostream (),
-  m_pResizable (NULL),
-  m_Flags (0),
-  m_Base (10),
-  m_Precision (2),
-  m_Width (0),
-  m_DecimalSeparator ('.'),
-  m_ThousandSeparator (',')
+/// Copies \p s to the internal buffer.
+void ostringstream::str (const string& s)
 {
-    link (dest);
+    m_Buffer = s;
+    ostream::link (m_Buffer);
+    seek (m_Buffer.size());
 }
 
 /// Writes a single character into the stream.
@@ -180,10 +158,9 @@ int ostringstream::vformat (const char* fmt, va_list args)
 #else
     #define args2 args
 #endif
-    const bool bIsString (m_pResizable);
-    size_t rv = vsnprintf (ipos(), remaining() + bIsString, fmt, args);
-    if (rv >= remaining() + bIsString && rv < overflow(rv) + bIsString)
-	rv = vsnprintf (ipos(), remaining() + bIsString, fmt, args2);
+    size_t rv = vsnprintf (ipos(), remaining(), fmt, args);
+    if (rv >= remaining() && rv < overflow(rv + 1))
+	rv = vsnprintf (ipos(), remaining(), fmt, args2);
     skip (min (rv, remaining()));
     return (rv);
 }
@@ -221,20 +198,11 @@ void ostringstream::iwrite (ios::fmtflags f)
 }
 
 /// Links to string \p l as resizable.
-void ostringstream::link (string& l)
+void ostringstream::link (void* p, size_t n)
 {
-    if (l.is_linked())
-	l.reserve (l.capacity());
-    assert (l.data() && "The output string buffer must not be read-only");
-    ostream::link (l);
-    m_pResizable = &l;
-}
-
-/// Unlinks the stream from its bound buffer.
-void ostringstream::unlink (void)
-{
-    ostream::unlink();
-    m_pResizable = NULL;
+    assert ((p || !n) && "The output string buffer must not be read-only");
+    ostream::link (p, n);
+    m_Buffer.link (p, n);
 }
 
 /// Writes the contents of \p buffer of \p size into the stream.
@@ -256,19 +224,15 @@ void ostringstream::write (const cmemlink& buf)
 /// Attempts to create more output space. Returns remaining().
 ostringstream::size_type ostringstream::overflow (size_type n)
 {
-    if (m_pResizable && n > remaining()) {
+    if (n > remaining()) {
 	const uoff_t oldPos (pos());
-	m_pResizable->reserve (oldPos + n, false);
-	m_pResizable->resize (oldPos + n);
-	link (*m_pResizable);
+	m_Buffer.reserve (oldPos + n, false);
+	m_Buffer.resize (oldPos + n);
+	ostream::link (m_Buffer);
 	seek (oldPos);
     }
     if (n > remaining())
-#ifdef WANT_STREAM_BOUNDS_CHECKING
 	throw stream_bounds_exception ("write", "text", pos(), n, remaining());
-#else
-	assert (remaining() >= n && "Buffer overrun. Check your stream size calculations.");
-#endif
     return (remaining());
 }
 

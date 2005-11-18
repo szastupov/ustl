@@ -9,9 +9,9 @@
 #ifndef SOSTREAM_H_5323DC8C26E181D43278F2F53FDCF19F
 #define SOSTREAM_H_5323DC8C26E181D43278F2F53FDCF19F
 
+#include "ustring.h"
 #include "mostream.h"
 #include "uios.h"
-#include <stdarg.h>
 
 namespace ustl {
 
@@ -24,10 +24,8 @@ class string;
 ///
 class ostringstream : public ostream {
 public:
-				ostringstream (void);
-				ostringstream (void* p, size_type n);
-    explicit			ostringstream (string& dest);
-    explicit			ostringstream (memlink& dest);
+				ostringstream (const string& v = string::empty_string);
+				ostringstream (void* p, size_t n);
     void			iwrite (uint8_t v);
     void			iwrite (wchar_t v);
     void			iwrite (int v);
@@ -51,23 +49,24 @@ public:
     inline void			set_decimal_separator (char c)	{ m_DecimalSeparator = c; }
     inline void			set_thousand_separator (char c)	{ m_ThousandSeparator = c; }
     inline void			set_precision (uint16_t v)	{ m_Precision = v; }
-    inline void			link (void* p, size_type n)	{ ostream::link (p, n); }
-    inline void			link (memlink& l)		{ ostream::link (l); }
-    void			link (string& l);
-    virtual void		unlink (void);
+    void			link (void* p, size_type n);
+    inline void			link (memlink& l)		{ link (l.data(), l.writable_size()); }
+    inline const string&	str (void) const		{ return (m_Buffer); }
+    void			str (const string& s);
     void			write (const void* buffer, size_type size);
     void			write (const cmemlink& buf);
     inline void			write_strz (const char*)	{ assert (!"Writing nul characters into a text stream is not allowed"); }
     virtual size_type		overflow (size_type n = 1);
 protected:
     void			write_buffer (const char* buf, size_type bufSize);
+    inline void			reserve (size_type n)		{ m_Buffer.reserve (n, false); }
 private:
     inline char*		encode_dec (char* fmt, uint32_t n) const;
     void			fmtstring (char* fmt, const char* typestr, bool bInteger) const;
     template <typename T>
     inline void			sprintf_iwrite (T v, const char* typestr);
 private:
-    string*			m_pResizable;		///< Pointer to the buffer, if resizable.
+    string			m_Buffer;		///< The output buffer.
     uint32_t			m_Flags;		///< See ios::fmtflags.
     uint16_t			m_Base;			///< Numeric base for writing numbers.
     uint16_t			m_Precision;		///< Number of digits after the decimal separator.

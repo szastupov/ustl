@@ -1,4 +1,9 @@
 Release 0.9
+	* API CHANGE: ostringstream now works like std::ostringstream, with
+		an internal buffer instead of writing to an external one
+		through a link. Instead of passing the buffer to the ctor,
+		write directly to a default-constructed stream object and
+		assign buf = os.str() when finished.
 	* Format change: containers will now write their size as a uint32_t
 		instead of size_t to allow binary compatibility with 64 bit
 		architectures. On 32 bit machines this makes no difference.

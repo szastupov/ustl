@@ -28,9 +28,7 @@ void TestStringStreams (void)
     double d = magic_Double;
     bool bv = magic_Bool;
 
-    string b;
-    ostringstream os (b);
-
+    ostringstream os;
     os << c << endl;
     os << uc << endl;
     os << bv << endl;
@@ -42,7 +40,6 @@ void TestStringStreams (void)
     os << d << endl;
     os << si << endl;
     os << usi << endl << ends; 
-    b.resize (os.pos());
     cout << os.pos() << " bytes written" << endl;
 
     c = 0;
@@ -52,7 +49,7 @@ void TestStringStreams (void)
     f = 0; d = 0;
     si = usi = 0;
 
-    istringstream is (b);
+    istringstream is (os.str());
     is >> c;
     is >> uc;
     is >> bv;
@@ -80,7 +77,7 @@ void TestStringStreams (void)
     cout << endl;
 
     cout << "Dump:" << endl;
-    cout << reinterpret_cast<const char*>(b.cdata()) << endl;
+    cout << os.str().cdata() << endl;
     cout << endl;
 }
 

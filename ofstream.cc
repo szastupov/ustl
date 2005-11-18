@@ -28,11 +28,10 @@ fdostringstream cerr (STDERR_FILENO);
 /// Constructs a stream for writing to \p fd.
 fdostringstream::fdostringstream (int fd)
 : ostringstream (),
-  m_Buffer (255),
   m_Fd (fd),
   m_bEOF (false)
 {
-    link (m_Buffer);
+    reserve (255);
 }
 
 /// Default destructor.

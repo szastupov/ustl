@@ -525,9 +525,9 @@ cerr.format ("You objects are at 0x%08X\n", &amp;o);
 </pre><p>
 String-writing streams are also available:
 </p><pre>
-string s;
-ostringstream os (s);
-os &lt;&lt; "Writing " &lt;&lt; n &lt;&lt; " objects into string s" &lt;&lt; endl;
+ostringstream os;
+os &lt;&lt; "Writing " &lt;&lt; n &lt;&lt; " objects somewhere" &lt;&lt; endl;
+cout &lt;&lt; os.str() &lt;&lt; endl;
 </pre><p>
 And that's pretty much it for the standard streams. File streams are not
 implemented yet.  If you need to read a file now, create a string buffer,
