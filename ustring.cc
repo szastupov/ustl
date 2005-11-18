@@ -8,7 +8,6 @@
 //	STL basic_string equivalent functionality.
 //
 
-#include "utypes.h"
 #include "ustring.h"
 #include "mistream.h"
 #include "mostream.h"

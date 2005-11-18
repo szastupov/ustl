@@ -9,6 +9,8 @@
 #ifndef ULIMITS_H_1C2192EA3821E0811BBAF86B0F048364
 #define ULIMITS_H_1C2192EA3821E0811BBAF86B0F048364
 
+#include "utypes.h"
+
 namespace ustl {
 
 /// \class numeric_limits ulimits.h ustl.h

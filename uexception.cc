@@ -6,7 +6,6 @@
 // uexception.cc
 //
 
-#include "utypes.h"
 #include "uexception.h"
 #include "ustring.h"
 #include "mistream.h"
