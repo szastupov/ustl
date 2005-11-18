@@ -40,6 +40,7 @@ void TestStringStreams (void)
     os << d << endl;
     os << si << endl;
     os << usi << endl << ends; 
+    os.flush();
     cout << os.pos() << " bytes written" << endl;
 
     c = 0;

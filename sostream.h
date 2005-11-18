@@ -56,6 +56,7 @@ public:
     void			write (const void* buffer, size_type size);
     void			write (const cmemlink& buf);
     inline void			write_strz (const char*)	{ assert (!"Writing nul characters into a text stream is not allowed"); }
+    void			flush (void);
     virtual size_type		overflow (size_type n = 1);
 protected:
     void			write_buffer (const char* buf, size_type bufSize);

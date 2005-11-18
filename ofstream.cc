@@ -43,6 +43,7 @@ fdostringstream::~fdostringstream (void)
 /// Flushes the buffer to the file.
 void fdostringstream::flush (void)
 {
+    ostringstream::flush();
     while (pos() && overflow (remaining()));
 }
 

@@ -221,6 +221,12 @@ void ostringstream::write (const cmemlink& buf)
     ostream::write (buf);
 }
 
+/// Flushes the internal buffer by truncating it at the current position.
+void ostringstream::flush (void)
+{
+    m_Buffer.resize (pos());
+}
+
 /// Attempts to create more output space. Returns remaining().
 ostringstream::size_type ostringstream::overflow (size_type n)
 {
