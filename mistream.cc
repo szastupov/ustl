@@ -86,9 +86,14 @@ void istream::read (memlink& buf)
     read (buf.begin(), buf.size());
 }
 
-/// No reading into an input stream allowed, so this is a NOP.
-void istream::read (istream&)
+/// Reads at most \p n bytes into \p s.
+istream::size_type istream::readsome (void* s, size_type n)
 {
+    if (remaining() < n)
+	underflow (n);
+    const size_type ntr (min (n, remaining()));
+    read (s, ntr);
+    return (ntr);
 }
 
 /// Writes all unread bytes into \p os.
@@ -103,11 +108,6 @@ void istream::unlink (void)
     cmemlink::unlink();
     m_Pos = 0;
 }
-
-istream::size_type istream::underflow (size_type)
-    { return (0); }
-bool istream::eof (void) const
-    { return (false); }
 
 //--------------------------------------------------------------------
 
@@ -209,11 +209,6 @@ void ostream::swap (ostream& os)
     memlink::swap (os);
     ::ustl::swap (m_Pos, os.m_Pos);
 }
-
-ostream::size_type ostream::overflow (size_type)
-    { return (0); }
-bool ostream::eof (void) const
-    { return (false); }
 
 //--------------------------------------------------------------------
 

@@ -101,6 +101,7 @@ fdistringstream::size_type fdistringstream::underflow (size_type n)
 	m_Buffer.resize (br + neededFreeSpace);
 	link (m_Buffer.data(), 0U);
     }
+    cout.flush();
     while (br - oldPos < n) {
 	errno = 0;
 	ssize_t brn = ::read (m_Fd, m_Buffer.begin() + br, m_Buffer.size() - br);
@@ -117,6 +118,13 @@ fdistringstream::size_type fdistringstream::underflow (size_type n)
     link (m_Buffer.data(), br);
     seek (oldPos);
     return (remaining());
+}
+
+/// Flushes the input.
+void fdistringstream::sync (void)
+{
+    istringstream::sync();
+    underflow (0U);
 }
 
 //----------------------------------------------------------------------

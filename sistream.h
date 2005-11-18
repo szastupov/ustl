@@ -10,10 +10,9 @@
 #define SISTREAM_H_0CCA102229A49F5D65EE852E62B27CE2
 
 #include "mistream.h"
+#include "ustring.h"
 
 namespace ustl {
-
-class string;
 
 /// \class istringstream sistream.h ustl.h
 /// \ingroup TextStreams
@@ -39,6 +38,18 @@ public:
 #if HAVE_LONG_LONG && (!HAVE_INT64_T || SIZE_OF_LONG_LONG > 8)
     void			iread (long long& v);
 #endif
+    inline string		str (void) const	{ string s; s.link (*this); return (s); }
+    inline void			str (const string& s)	{ link (s); }
+    int				get (void);
+    inline void			get (char& c)	{ c = get(); }
+    void			get (char* p, size_type n, char delim = '\n');
+    void			get (string& s, char delim = '\n');
+    void			getline (char* p, size_type n, char delim = '\n');
+    void			getline (string& s, char delim = '\n');
+    void			ignore (size_type n, char delim = '\0');
+    inline char			peek (void)	{ int8_t v; iread (v); ungetc(); return (v); }
+    inline void			putback (char)	{ ungetc(); }
+    inline void			unget (void)	{ ungetc(); }
     void			set_delimiters (const char* delimiters);
     inline void			set_base (short base);
     inline void			set_decimal_separator (char s);
@@ -46,6 +57,7 @@ public:
     void			read (void* buffer, size_type size);
     void			read (memlink& buf);
     inline void			read_strz (string& str);
+    inline void			sync (void)		{ skip (remaining()); }
 protected:
     char			skip_delimiters (void);
 private:

@@ -8,6 +8,15 @@ Release 0.9
 		instead of size_t to allow binary compatibility with 64 bit
 		architectures. On 32 bit machines this makes no difference.
 	* Abandoned any attempt to use the goddamned byteswap.h.
+	* Added most remaining i/ostringstream functions that make sense in
+		this implementation: str, put, get, getline, ignore, peek,
+		readsome, putback, unget, tellg, seekg, sync, flush, seekp,
+		tellp, good. The rest will probably not be implemented at
+		all, since they reference streambufs which don't exist in uSTL.
+	* Non-working stubs for fail and operator! in i/ostreams.
+		For now, open always throws a file_exception instead.
+	* Do cout.flush() before read in cin, like std does.
+	* max_size() on linked objects should return size(), because it is.
 
 2005-11-10 Release 0.8
 	* API CHANGE: changed all string's find members to return offsets

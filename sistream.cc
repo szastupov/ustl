@@ -13,9 +13,10 @@
 namespace ustl {
 
 namespace ios {
-    const char* c_DefaultDelimiters = " \t\n\r;:,.?";
+    const char c_DefaultDelimiters [istringstream::c_MaxDelimiters] = " \t\n\r;:,.?";
 }
 
+/// Default constructor.
 istringstream::istringstream (void)
 : istream (),
   m_Base (10),
@@ -45,15 +46,16 @@ istringstream::istringstream (const cmemlink& source)
     set_delimiters (ios::c_DefaultDelimiters);
 }
 
+/// Sets delimiters to the contents of \p delimiters.
 void istringstream::set_delimiters (const char* delimiters)
 {
-    strncpy (m_Delimiters, delimiters, VectorSize(m_Delimiters));
-    m_Delimiters [VectorSize(m_Delimiters) - 1] = 0;
+    fill (VectorRange (m_Delimiters), '\0');
+    strncpy (m_Delimiters, delimiters, VectorSize(m_Delimiters)-1);
 }
 
 inline bool istringstream::is_delimiter (char c) const
 {
-    return (NULL != memchr (m_Delimiters, c, c_MaxDelimiters));
+    return (memchr (m_Delimiters, c, VectorSize(m_Delimiters)-1));
 }
 
 char istringstream::skip_delimiters (void)
@@ -327,6 +329,62 @@ void istringstream::read (memlink& buf)
 	assert (remaining() >= buf.size());
 #endif
     istream::read (buf);
+}
+
+/// Reads one character from the stream.
+int istringstream::get (void)
+{
+    int8_t v = 0;
+    if (remaining() || underflow())
+	istream::iread (v);
+    return (v);
+}
+
+/// Reads characters into \p s until \p delim is found (but not stored or extracted)
+void istringstream::get (string& s, char delim)
+{
+    getline (s, delim);
+    if (!s.empty() && pos() > 0 && ipos()[-1] == delim)
+	ungetc();
+}
+
+/// Reads characters into \p p,n until \p delim is found (but not stored or extracted)
+void istringstream::get (char* p, size_type n, char delim)
+{
+    assert (p && !n && "A non-empty buffer is required by this implementation");
+    string s;
+    get (s, delim);
+    const size_t ntc (min (n - 1, s.size()));
+    memcpy (p, s, ntc);
+    p[ntc] = 0;
+}
+
+/// Reads characters into \p s until \p delim is extracted (but not stored)
+void istringstream::getline (string& s, char delim)
+{
+    char oldDelim [VectorSize(m_Delimiters)];
+    copy (VectorRange (m_Delimiters), oldDelim);
+    fill (VectorRange (m_Delimiters), '\0');
+    m_Delimiters[0] = delim;
+    iread (s);
+    copy (VectorRange (oldDelim), m_Delimiters);
+}
+
+/// Reads characters into \p p,n until \p delim is extracted (but not stored)
+void istringstream::getline (char* p, size_type n, char delim)
+{
+    assert (p && !n && "A non-empty buffer is required by this implementation");
+    string s;
+    getline (s, delim);
+    const size_t ntc (min (n - 1, s.size()));
+    memcpy (p, s, ntc);
+    p[ntc] = 0;
+}
+
+/// Extract until \p delim or \p n chars have been read.
+void istringstream::ignore (size_type n, char delim)
+{
+    while (n-- && (remaining() || underflow()) && get() != delim);
 }
 
 } // namespace ustl

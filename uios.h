@@ -56,7 +56,7 @@ namespace ios {
     };
 
     /// Default word delimiters for stringstreams.
-    extern const char* c_DefaultDelimiters;
+    extern const char c_DefaultDelimiters [16];
 } // namespace ios
 } // namespace ustl
 

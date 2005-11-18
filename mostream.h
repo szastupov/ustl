@@ -11,6 +11,7 @@
 #include "memlink.h"
 #include "uexception.h"
 #include "utf8.h"
+#include "uios.h"
 #include <typeinfo>
 
 namespace ustl {
@@ -73,8 +74,12 @@ public:
     inline size_t	stream_size (void) const;
     template <typename T>
     inline void		iwrite (const T& v);
-    virtual size_type	overflow (size_type = 1);
-    virtual bool	eof (void) const;
+    inline virtual size_type	overflow (size_type = 1){ return (remaining()); }
+    inline virtual bool	eof (void) const		{ return (!remaining()); }
+    inline bool		good (void) const		{ return (!eof()); }
+    inline bool		bad (void) const		{ return (eof()); }
+    inline bool		fail (void) const		{ return (false); }
+    inline bool		operator! (void) const		{ return (fail()); }
     virtual void	unlink (void);
     inline void		link (void* p, size_type n)	{ memlink::link (p, n); }
     inline void		link (memlink& l)		{ memlink::link (l.data(), l.writable_size()); }
@@ -82,6 +87,8 @@ public:
 			OVERLOAD_POINTER_AND_SIZE_T_V2(link, void*)
     inline void		relink (void* p, size_type n)	{ memlink::relink (p, n); m_Pos = 0; }
     inline void		relink (memlink& l)		{ relink (l.data(), l.writable_size()); }
+    inline void		seekp (off_t p, ios::seekdir d = ios::beg);
+    inline off_t	tellp (void) const		{ return (pos()); }
 private:
     uoff_t		m_Pos;	///< Current write position.
 };
@@ -147,10 +154,20 @@ inline void ostream::seek (uoff_t newPos)
     m_Pos = newPos;
 }
 
-/// Sets the current read position to \p newPos
+/// Sets the current write position to \p newPos
 inline void ostream::seek (const_iterator newPos)
 {
     seek (distance (begin(), const_cast<iterator>(newPos)));
+}
+
+/// Sets the current write position to \p p based on \p d.
+inline void ostream::seekp (off_t p, ios::seekdir d)
+{
+    switch (d) {
+	case ios::beg:	seek (p); break;
+	case ios::cur:	seek (pos() + p); break;
+	case ios::end:	seek (size() - p); break;
+    }
 }
 
 /// Skips \p nBytes without writing anything.

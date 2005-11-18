@@ -12,6 +12,7 @@
 #include "uexception.h"
 #include "strmsize.h"
 #include "utf8.h"
+#include "uios.h"
 #ifdef WANT_STREAM_BOUNDS_CHECKING
     #include <typeinfo>
 #endif
@@ -89,14 +90,21 @@ public:
     void		read (void* buffer, size_type size);
     void		read (memlink& buf);
     void		read_strz (string& str);
-    void		read (istream& is);
+    inline void		read (istream&)		{ }
+    size_type		readsome (void* s, size_type n);
     void		write (ostream& is) const;
     inline size_t	stream_size (void) const;
     template <typename T>
     inline void		iread (T& v);
-    virtual size_type	underflow (size_type n = 1);
-    virtual bool	eof (void) const;
-    inline void		ungetc (void)			{ seek (pos() - 1); }
+    inline virtual size_type	underflow (size_type = 1)	{ return (remaining()); }
+    inline virtual bool	eof (void) const	{ return (!remaining()); }
+    inline bool		good (void) const	{ return (!eof()); }
+    inline bool		bad (void) const	{ return (eof()); }
+    inline bool		fail (void) const	{ return (false); }
+    inline bool		operator! (void) const	{ return (fail()); }
+    inline void		ungetc (void)		{ seek (pos() - 1); }
+    inline off_t	tellg (void) const	{ return (pos()); }
+    inline void		seekg (off_t p, ios::seekdir d = ios::beg);
 private:
     uoff_t		m_Pos;		///< The current read position.
 };
@@ -179,6 +187,16 @@ inline void istream::seek (uoff_t newPos)
 inline void istream::seek (const_iterator newPos)
 {
     seek (distance (begin(), newPos));
+}
+
+/// Sets the current write position to \p p based on \p d.
+inline void istream::seekg (off_t p, ios::seekdir d)
+{
+    switch (d) {
+	case ios::beg:	seek (p); break;
+	case ios::cur:	seek (pos() + p); break;
+	case ios::end:	seek (size() - p); break;
+    }
 }
 
 /// Skips \p nBytes without reading them.

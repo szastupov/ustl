@@ -11,7 +11,6 @@
 
 #include "ustring.h"
 #include "mostream.h"
-#include "uios.h"
 
 namespace ustl {
 
@@ -42,6 +41,7 @@ public:
     void			iwrite (long long v);
     void			iwrite (unsigned long long v);
 #endif
+    inline void			put (char c)			{ iwrite (c); }
     int				vformat (const char* fmt, va_list args);
     int				format (const char* fmt, ...) __attribute__((__format__(__printf__, 2, 3)));
     inline void			set_base (uint16_t b)		{ m_Base = b; }

@@ -40,7 +40,8 @@ class fdistringstream : public istringstream {
 public:
     explicit			fdistringstream (int fd);
     virtual size_type		underflow (size_type n = 1);
-    inline virtual bool		eof (void) const	{ return (m_bEOF); }
+    inline virtual bool		eof (void) const	{ return (m_bEOF && istringstream::eof()); }
+    void			sync (void);
 private:
     string			m_Buffer;
     int				m_Fd;
