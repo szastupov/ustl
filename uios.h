@@ -88,11 +88,14 @@ public:
     inline bool		bad (void) const		{ return (rdstate() & badbit); }
     inline bool		good (void) const		{ return (rdstate() == goodbit); }
     inline bool		fail (void) const		{ return (rdstate() & (badbit | failbit)); }
+    inline bool		eof (void) const		{ return (rdstate() & eofbit); }
     inline bool		operator! (void) const		{ return (fail()); }
     inline void		clear (iostate v = goodbit)	{ m_State = v; }
     inline void		setstate (iostate v)		{ m_State |= v; }
     inline iostate	exceptions (void) const		{ return (m_Exceptions); }
     inline iostate	exceptions (iostate v)		{ return (m_Exceptions = v); }
+protected:
+    inline bool		set_and_throw (iostate v)	{ setstate(v); return (exceptions() & v); }
 private:
     uint16_t		m_State;	///< Open state, using ios::iostate_bits.
     uint16_t		m_Exceptions;	///< Exception flags, using ios::iostate_bits.
