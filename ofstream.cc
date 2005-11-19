@@ -28,8 +28,7 @@ fdostringstream cerr (STDERR_FILENO);
 /// Constructs a stream for writing to \p fd.
 fdostringstream::fdostringstream (int fd)
 : ostringstream (),
-  m_Fd (fd),
-  m_bEOF (false)
+  m_Fd (fd)
 {
     reserve (255);
 }
@@ -49,7 +48,7 @@ void fdostringstream::flush (void)
 /// Called when more buffer space (\p n bytes) is needed.
 fdostringstream::size_type fdostringstream::overflow (size_type n)
 {
-    if (m_bEOF || (n > remaining() && n < capacity() - pos()))
+    if (eof() || (n > remaining() && n < capacity() - pos()))
 	return (ostringstream::overflow (n));
     size_type bw = 0;
     while (!bw) {
@@ -60,7 +59,8 @@ fdostringstream::size_type fdostringstream::overflow (size_type n)
 		throw libc_exception ("write");
 	} else if (bwn == 0) {
 	    if (pos() > bw)
-		m_bEOF = true;
+		if (set_and_throw (eofbit | failbit))
+		    throw stream_bounds_exception ("write", "byte", pos() - bw, n, bw);
 	    break;
 	} else
 	    bw += bwn;
@@ -77,15 +77,14 @@ fdostringstream::size_type fdostringstream::overflow (size_type n)
 fdistringstream::fdistringstream (int fd)
 : istringstream (),
   m_Buffer (255),
-  m_Fd (fd),
-  m_bEOF (false)
+  m_Fd (fd)
 {
     link (m_Buffer.data(), 0U);
 }
 
 fdistringstream::size_type fdistringstream::underflow (size_type n)
 {
-    if (m_bEOF)
+    if (eof())
 	return (istringstream::underflow (n));
 
     const ssize_t freeSpace = m_Buffer.size() - pos();
@@ -108,7 +107,8 @@ fdistringstream::size_type fdistringstream::underflow (size_type n)
 	    if (errno != EAGAIN && errno != EINTR)
 		throw libc_exception ("read");
 	} else if (brn == 0) {
-	    m_bEOF = true;
+	    if (set_and_throw (eofbit | failbit))
+		throw stream_bounds_exception ("write", "byte", pos() - br, n, br);
 	    break;
 	} else
 	    br += brn;

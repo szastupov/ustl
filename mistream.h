@@ -78,6 +78,7 @@ public:
     inline void		relink (const void* p, size_type n)	{ cmemlink::relink (p, n); m_Pos = 0; }
     inline void		relink (const cmemlink& l)		{ relink (l.cdata(), l.readable_size()); }
     virtual void	unlink (void);
+    inline virtual size_type	underflow (size_type = 1)	{ return (remaining()); }
     inline uoff_t	pos (void) const	{ return (m_Pos); }
     inline const_iterator ipos (void) const	{ return (begin() + pos()); }
     inline size_type	remaining (void) const	{ return (size() - pos()); }
@@ -98,12 +99,6 @@ public:
     inline size_t	stream_size (void) const	{ return (remaining()); }
     template <typename T>
     inline void		iread (T& v);
-    inline virtual size_type	underflow (size_type = 1)	{ return (remaining()); }
-    inline virtual bool	eof (void) const	{ return (!remaining()); }
-    inline bool		good (void) const	{ return (!eof()); }
-    inline bool		bad (void) const	{ return (eof()); }
-    inline bool		fail (void) const	{ return (false); }
-    inline bool		operator! (void) const	{ return (fail()); }
     inline void		ungetc (void)		{ seek (pos() - 1); }
     inline off_t	tellg (void) const	{ return (pos()); }
     inline void		seekg (off_t p, seekdir d = beg);

@@ -78,11 +78,6 @@ public:
     template <typename T>
     inline void		iwrite (const T& v);
     inline virtual size_type	overflow (size_type = 1){ return (remaining()); }
-    inline virtual bool	eof (void) const		{ return (!remaining()); }
-    inline bool		good (void) const		{ return (!eof()); }
-    inline bool		bad (void) const		{ return (eof()); }
-    inline bool		fail (void) const		{ return (false); }
-    inline bool		operator! (void) const		{ return (fail()); }
     virtual void	unlink (void);
     inline void		link (void* p, size_type n)	{ memlink::link (p, n); }
     inline void		link (memlink& l)		{ memlink::link (l.data(), l.writable_size()); }
@@ -103,7 +98,7 @@ private:
 ///
 /// \brief An iterator over an ostream to use with uSTL algorithms.
 ///
-template <class T>
+template <typename T, typename Stream = ostream>
 class ostream_iterator {
 public:
     typedef T			value_type;
@@ -112,7 +107,7 @@ public:
     typedef value_type&		reference;
     typedef ostream::size_type	size_type;
 public:
-    inline explicit		ostream_iterator (ostream& os)
+    inline explicit		ostream_iterator (Stream& os)
 				    : m_Os (os) {}
     inline			ostream_iterator (const ostream_iterator& iter)
 				    : m_Os (iter.m_Os) {} 
@@ -128,7 +123,7 @@ public:
     inline bool			operator< (const ostream_iterator& i) const
 				    { return (m_Os.pos() < i.m_Os.pos()); }
 private:
-    ostream&	m_Os;
+    Stream&	m_Os;
 };
 
 //----------------------------------------------------------------------
