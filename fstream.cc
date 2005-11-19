@@ -57,7 +57,7 @@ void fstream::attach (int nfd, const char* filename)
     assert (filename && "Don't do that");
     clear (goodbit);
     if (nfd < 0 && set_and_throw (badbit))
-	throw file_exception ("fstream::attach", filename);
+	throw file_exception ("attach", filename);
     close();
     m_fd = nfd;
     m_Filename = filename;
@@ -100,7 +100,7 @@ void fstream::open (const char* filename, openmode mode, mode_t perms)
     clear (goodbit);
     int nfd = ::open (filename, om_to_flags(mode), perms);
     if (nfd < 0 && set_and_throw (badbit))
-	throw file_exception ("fstream::open", filename);
+	throw file_exception ("open", filename);
     close();
     m_fd = nfd;
     m_Filename = filename;
@@ -110,7 +110,7 @@ void fstream::open (const char* filename, openmode mode, mode_t perms)
 void fstream::close (void)
 {
     if (m_fd >= 0 && ::close(m_fd) && set_and_throw (badbit | failbit))
-	throw file_exception ("fstream::close", name());
+	throw file_exception ("close", name());
     detach();
 }
 
@@ -119,7 +119,7 @@ off_t fstream::seek (off_t n, seekdir whence)
 {
     off_t p = lseek (m_fd, n, whence);
     if (p < 0 && set_and_throw (failbit))
-	throw file_exception ("fstream::seek", name());
+	throw file_exception ("seek", name());
     return (p);
 }
 
@@ -140,11 +140,11 @@ off_t fstream::read (void* p, off_t n)
 	    btr -= brn;
 	else if (!brn) {
 	    if (set_and_throw (eofbit | failbit))
-		throw stream_bounds_exception ("fstream::read", name(), pos() - br, n, br);
+		throw stream_bounds_exception ("read", name(), pos() - br, n, br);
 	    break;
 	} else if (errno != EINTR) {
 	    if (errno != EAGAIN && set_and_throw (failbit))
-		throw file_exception ("fstream::read", name());
+		throw file_exception ("read", name());
 	    break;
 	}
     }
@@ -162,11 +162,11 @@ off_t fstream::write (const void* p, off_t n)
 	    btw -= bwn;
 	else if (!bwn) {
 	    if (set_and_throw (eofbit | failbit))
-		throw stream_bounds_exception ("fstream::write", name(), pos() - bw, n, bw);
+		throw stream_bounds_exception ("write", name(), pos() - bw, n, bw);
 	    break;
 	} else if (errno != EINTR) {
 	    if (errno != EAGAIN && set_and_throw (failbit))
-		throw file_exception ("fstream::write", name());
+		throw file_exception ("write", name());
 	    break;
 	}
     }

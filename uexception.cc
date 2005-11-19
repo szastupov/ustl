@@ -172,10 +172,10 @@ const char* libc_exception::what (void) const throw()
     return ("libc function failed");
 }
 
-/// Returns a descriptive error message. fmt="%s: %m (%d)"
+/// Returns a descriptive error message. fmt="%s: %m"
 void libc_exception::info (string& msgbuf, const char* fmt) const throw()
 {
-    if (!fmt) fmt = "%s: %m (%d)";
+    if (!fmt) fmt = "%s: %m";
     try { msgbuf.format (fmt, m_Operation, m_Errno, m_Errno); } catch (...) {}
 }
 
@@ -221,11 +221,11 @@ const char* file_exception::what (void) const throw()
     return ("file exception");
 }
 
-/// Returns a descriptive error message. fmt="%s %s: %s (%d)"
+/// Returns a descriptive error message. fmt="%s %s: %m"
 void file_exception::info (string& msgbuf, const char* fmt) const throw()
 {
-    if (!fmt) fmt = "%s %s: %s (%d)";
-    try { msgbuf.format (fmt, m_Operation, m_Filename, strerror(m_Errno), m_Errno); } catch (...) {}
+    if (!fmt) fmt = "%s %s: %m";
+    try { msgbuf.format (fmt, m_Operation, m_Filename, m_Errno, m_Errno); } catch (...) {}
 }
 
 /// Reads the exception from stream \p is.
