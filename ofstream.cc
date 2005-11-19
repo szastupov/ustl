@@ -43,14 +43,13 @@ fdostringstream::~fdostringstream (void)
 /// Flushes the buffer to the file.
 void fdostringstream::flush (void)
 {
-    ostringstream::flush();
     while (pos() && overflow (remaining()));
 }
 
 /// Called when more buffer space (\p n bytes) is needed.
 fdostringstream::size_type fdostringstream::overflow (size_type n)
 {
-    if (m_bEOF)
+    if (m_bEOF || (n > remaining() && n < capacity() - pos()))
 	return (ostringstream::overflow (n));
     size_type bw = 0;
     while (!bw) {
