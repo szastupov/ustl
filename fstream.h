@@ -45,7 +45,6 @@ public:
     inline void		seekp (off_t n, seekdir whence = beg)	{ seek (n, whence); }
     inline const string& name (void) const	{ return (m_Filename); }
 private:
-    inline bool		set_and_throw (iostate v)	{ setstate(v); return (exceptions() & v); }
     static int		om_to_flags (openmode m);
 private:
     int			m_fd;		///< Currently open file descriptor.
