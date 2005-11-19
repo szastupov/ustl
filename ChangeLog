@@ -12,7 +12,7 @@ Release 0.9
 		related functions into it. The only problem with this is that
 		end() conflicts with seekdir end, so you'll need to use
 		ios scope when you want the latter.
-	* Implemented fstream.
+	* Implemented fstream and used it in ifstream/ofstream.
 	* file.h/cc was removed; fstream replaces its functionality.
 	* Abandoned any attempt to use the goddamned byteswap.h.
 	* Added most remaining i/ostringstream functions that make sense in

@@ -28,7 +28,7 @@ public:
     void			flush (void);
     virtual size_type		overflow (size_type n = 1);
 private:
-    int				m_Fd;
+    fstream			m_File;
 };
 
 /// \class fdistringstream fdostream.h ustl.h
@@ -41,7 +41,7 @@ public:
     void			sync (void);
 private:
     string			m_Buffer;
-    int				m_Fd;
+    fstream			m_File;
 };
 
 extern fdostringstream cout, cerr;

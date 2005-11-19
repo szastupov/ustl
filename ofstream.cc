@@ -28,7 +28,7 @@ fdostringstream cerr (STDERR_FILENO);
 /// Constructs a stream for writing to \p fd.
 fdostringstream::fdostringstream (int fd)
 : ostringstream (),
-  m_Fd (fd)
+  m_File (fd)
 {
     reserve (255);
 }
@@ -50,21 +50,8 @@ fdostringstream::size_type fdostringstream::overflow (size_type n)
 {
     if (eof() || (n > remaining() && n < capacity() - pos()))
 	return (ostringstream::overflow (n));
-    size_type bw = 0;
-    while (!bw) {
-	errno = 0;
-	ssize_t bwn = ::write (m_Fd, cdata() + bw, pos() - bw);
-	if (bwn < 0) {
-	    if (errno != EAGAIN && errno != EINTR)
-		throw libc_exception ("write");
-	} else if (bwn == 0) {
-	    if (pos() > bw)
-		if (set_and_throw (eofbit | failbit))
-		    throw stream_bounds_exception ("write", "byte", pos() - bw, n, bw);
-	    break;
-	} else
-	    bw += bwn;
-    }
+    size_type bw = m_File.write (cdata(), pos());
+    clear (m_File.rdstate());
     erase (begin(), bw);
     if (remaining() < n)
 	ostringstream::overflow (n);
@@ -77,7 +64,7 @@ fdostringstream::size_type fdostringstream::overflow (size_type n)
 fdistringstream::fdistringstream (int fd)
 : istringstream (),
   m_Buffer (255),
-  m_Fd (fd)
+  m_File (fd)
 {
     link (m_Buffer.data(), 0U);
 }
@@ -100,19 +87,11 @@ fdistringstream::size_type fdistringstream::underflow (size_type n)
 	link (m_Buffer.data(), 0U);
     }
     cout.flush();
-    while (br - oldPos < n) {
-	errno = 0;
-	ssize_t brn = ::read (m_Fd, m_Buffer.begin() + br, m_Buffer.size() - br);
-	if (brn < 0) {
-	    if (errno != EAGAIN && errno != EINTR)
-		throw libc_exception ("read");
-	} else if (brn == 0) {
-	    if (set_and_throw (eofbit | failbit))
-		throw stream_bounds_exception ("write", "byte", pos() - br, n, br);
-	    break;
-	} else
-	    br += brn;
-    }
+
+    while (br - oldPos < n && m_File.good())
+	br += m_File.readsome (m_Buffer.begin() + br, m_Buffer.size() - br);
+    clear (m_File.rdstate());
+
     m_Buffer[br] = string::c_Terminator;
     link (m_Buffer.data(), br);
     seek (oldPos);
