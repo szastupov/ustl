@@ -9,10 +9,9 @@
 //
 
 #include "cmemlink.h"
-#include "sostream.h"
+#include "fdostream.h"
 #include "strmsize.h"
 #include "ualgo.h"
-#include "file.h"
 
 namespace ustl {
 
@@ -89,8 +88,9 @@ cmemlink::size_type cmemlink::stream_size (void) const
 /// Writes the data to file \p "filename".
 void cmemlink::write_file (const char* filename, int mode) const
 {
-    file f;
-    f.open (filename, file::for_Writing, mode);
+    fstream f;
+    f.exceptions (fstream::allbadbits);
+    f.open (filename, fstream::out | fstream::trunc, mode);
     f.write (cdata(), readable_size());
     f.close();
 }

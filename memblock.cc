@@ -12,7 +12,8 @@
 #include "memblock.h"
 #include "ualgo.h"
 #include "umemory.h"
-#include "file.h"
+#include "fstream.h"
+#include <errno.h>
 
 namespace ustl {
 
@@ -202,8 +203,9 @@ void memblock::read (istream& is)
 /// Reads the entire file \p "filename".
 void memblock::read_file (const char* filename)
 {
-    file f;
-    f.open (filename, file::for_Reading);
+    fstream f;
+    f.exceptions (fstream::allbadbits);
+    f.open (filename, fstream::in);
     const off_t fsize (f.size());
     reserve (fsize);
     f.read (data(), fsize);
