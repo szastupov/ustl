@@ -51,7 +51,7 @@ fstream::~fstream (void) throw()
     clear (ios::goodbit);
     exceptions (ios::goodbit);
     close();
-    assert (!(m_State & ios::badbit) && "close failed in the destructor! This may lead to loss of user data. Please call close() manually and either enable exceptions or check the badbit.");
+    assert (!(rdstate() & ios::badbit) && "close failed in the destructor! This may lead to loss of user data. Please call close() manually and either enable exceptions or check the badbit.");
 }
 
 /// Attaches to the given \p nfd.
@@ -64,6 +64,13 @@ void fstream::attach (int nfd, const char* filename)
     close();
     m_fd = nfd;
     m_Filename = filename;
+}
+
+/// Detaches from the current fd.
+void fstream::detach (void)
+{
+    m_fd = -1;
+    m_Filename.clear();
 }
 
 /// Converts openmode bits into libc open flags.
@@ -107,8 +114,22 @@ void fstream::close (void)
 {
     if (m_fd >= 0 && ::close(m_fd) && set_and_throw (ios::badbit | ios::failbit))
 	throw file_exception ("fstream::close", name());
-    m_fd = -1;
-    m_Filename.clear();
+    detach();
+}
+
+/// Moves the current file position to \p n.
+off_t fstream::seek (off_t n, ios::seekdir whence)
+{
+    off_t p = lseek (m_fd, n, whence);
+    if (p < 0 && set_and_throw (ios::failbit))
+	throw file_exception ("fstream::seek", name());
+    return (p);
+}
+
+/// Returns the current file position.
+off_t fstream::pos (void) const
+{
+    return (lseek (m_fd, 0, SEEK_CUR));
 }
 
 /// Reads \p n bytes into \p p.
@@ -122,7 +143,7 @@ off_t fstream::read (void* p, off_t n)
 	    btr -= brn;
 	else if (!brn) {
 	    if (set_and_throw (ios::eofbit | ios::failbit))
-		throw stream_bounds_exception ("fstream::read", name(), lseek(m_fd,0,SEEK_CUR) - br, n, br);
+		throw stream_bounds_exception ("fstream::read", name(), pos() - br, n, br);
 	    break;
 	} else if (errno != EINTR) {
 	    if (errno != EAGAIN && set_and_throw (ios::failbit))
@@ -144,7 +165,7 @@ off_t fstream::write (const void* p, off_t n)
 	    btw -= bwn;
 	else if (!bwn) {
 	    if (set_and_throw (ios::eofbit | ios::failbit))
-		throw stream_bounds_exception ("fstream::write", name(), lseek(m_fd,0,SEEK_CUR) - bw, n, bw);
+		throw stream_bounds_exception ("fstream::write", name(), pos() - bw, n, bw);
 	    break;
 	} else if (errno != EINTR) {
 	    if (errno != EAGAIN && set_and_throw (ios::failbit))
@@ -153,21 +174,6 @@ off_t fstream::write (const void* p, off_t n)
 	}
     }
     return (n - btw);
-}
-
-/// Moves the current file position to \p n.
-off_t fstream::seek (off_t n, ios::seekdir whence)
-{
-    off_t p = lseek (m_fd, n, whence);
-    if (p < 0 && set_and_throw (ios::failbit))
-	throw file_exception ("fstream::seek", name());
-    return (p);
-}
-
-/// Returns the current file position.
-off_t fstream::pos (void) const
-{
-    return (lseek (m_fd, 0, SEEK_CUR));
 }
 
 /// Returns the file size.

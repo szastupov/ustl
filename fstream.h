@@ -30,6 +30,7 @@ public:
 		       ~fstream (void) throw();
     void		open (const char* filename, ios::openmode mode, mode_t perms = 0644);
     void		attach (int nfd, const char* filename = string::empty_string);
+    void		detach (void);
     void		close (void);
     off_t		read (void* p, off_t n);
     off_t		write (const void* p, off_t n);
