@@ -11,7 +11,7 @@
 
 #include "sistream.h"
 #include "sostream.h"
-#include "ustring.h"
+#include "fstream.h"
 
 #ifndef WITHOUT_CIN_COUT_CERR
 namespace ustl {

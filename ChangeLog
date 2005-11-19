@@ -7,6 +7,7 @@ Release 0.9
 	* Format change: containers will now write their size as a uint32_t
 		instead of size_t to allow binary compatibility with 64 bit
 		architectures. On 32 bit machines this makes no difference.
+	* Implemented fstream.
 	* Abandoned any attempt to use the goddamned byteswap.h.
 	* Added most remaining i/ostringstream functions that make sense in
 		this implementation: str, put, get, getline, ignore, peek,

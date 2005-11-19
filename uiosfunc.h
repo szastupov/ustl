@@ -96,7 +96,6 @@ inline ostringstream& operator<< (ostringstream& os, const ios::base& op)	{ retu
 } // namespace ustl
 
 CAST_STREAMABLE(ustl::ios::fmtflags, uint32_t)
-CAST_STREAMABLE(ustl::ios::openmode, uint32_t)
 CAST_STREAMABLE(ustl::ios::seekdir, uint32_t)
 
 #endif
