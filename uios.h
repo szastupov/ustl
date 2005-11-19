@@ -21,7 +21,8 @@ const char endl = '\n';		///< End of line character.
 const char ends = '\0';		///< End of string character.
 
 /// Defines types and constants used by all stream classes.
-namespace ios {
+class ios_base {
+public:
     /// Used to set parameters for stringstreams
     enum fmtflags {
 	boolalpha	= (1 << 0),
@@ -80,8 +81,9 @@ namespace ios {
     typedef uint32_t		iostate;	///< Holds iostate_bits for a file stream.
     typedef file_exception	failure;	///< Thrown by fstream on errors.
 
-    extern const char c_DefaultDelimiters [16];	///< Default word delimiters for stringstreams.
-} // namespace ios
+    static const char c_DefaultDelimiters [16];	///< Default word delimiters for stringstreams.
+};
+
 } // namespace ustl
 
 #endif

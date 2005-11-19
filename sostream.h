@@ -36,11 +36,12 @@ public:
     void			iwrite (bool v);
     void			iwrite (const char* s);
     void			iwrite (const string& v);
-    void			iwrite (ios::fmtflags f);
+    void			iwrite (fmtflags f);
 #if HAVE_LONG_LONG
     void			iwrite (long long v);
     void			iwrite (unsigned long long v);
 #endif
+    inline size_type		max_size (void) const		{ return (m_Buffer.max_size()); }
     inline void			put (char c)			{ iwrite (c); }
     int				vformat (const char* fmt, va_list args);
     int				format (const char* fmt, ...) __attribute__((__format__(__printf__, 2, 3)));
@@ -61,6 +62,7 @@ public:
 protected:
     void			write_buffer (const char* buf, size_type bufSize);
     inline void			reserve (size_type n)		{ m_Buffer.reserve (n, false); }
+    inline size_type		capacity (void) const		{ return (m_Buffer.capacity()); }
 private:
     inline char*		encode_dec (char* fmt, uint32_t n) const;
     void			fmtstring (char* fmt, const char* typestr, bool bInteger) const;
@@ -68,7 +70,7 @@ private:
     inline void			sprintf_iwrite (T v, const char* typestr);
 private:
     string			m_Buffer;		///< The output buffer.
-    uint32_t			m_Flags;		///< See ios::fmtflags.
+    uint32_t			m_Flags;		///< See ios_base::fmtflags.
     uint16_t			m_Base;			///< Numeric base for writing numbers.
     uint16_t			m_Precision;		///< Number of digits after the decimal separator.
     uint16_t			m_Width;		///< Field width.
@@ -89,7 +91,7 @@ OSTRSTREAM_OPERATOR (char*,		const char*)
 OSTRSTREAM_OPERATOR (uint8_t*,		const char*)
 OSTRSTREAM_OPERATOR (const uint8_t*,	const char*)
 OSTRSTREAM_OPERATOR (const string&,	const string&)
-OSTRSTREAM_OPERATOR (ios::fmtflags,	ios::fmtflags)
+OSTRSTREAM_OPERATOR (ios_base::fmtflags,ios_base::fmtflags)
 OSTRSTREAM_OPERATOR (int8_t,		uint8_t)
 OSTRSTREAM_OPERATOR (uint8_t,		uint8_t)
 OSTRSTREAM_OPERATOR (short int,		int)

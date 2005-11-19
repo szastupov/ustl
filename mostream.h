@@ -48,11 +48,13 @@ class string;
 ///     write (fd, b, b.size());
 /// \endcode
 ///
-class ostream : public memlink {
+class ostream : public memlink, public ios_base {
 public:
 			ostream (void);
 			ostream (void* p, size_type n);
     explicit		ostream (const memlink& source);
+    inline iterator	end (void)			{ return (memlink::end()); }
+    inline const_iterator	end (void) const	{ return (memlink::end()); }
     inline void		seek (uoff_t newPos);
     inline void		seek (const_iterator newPos);
     inline void		skip (size_type nBytes);
@@ -67,11 +69,12 @@ public:
     inline void		write (const cmemlink& buf);
     void		write_strz (const char* str);
     void		read (istream& is);
-    void		write (ostream& os) const;
+    inline void		write (ostream& os) const	{ os.write (begin(), pos()); }
+    void		text_write (ostringstream& os) const;
+    inline size_t	stream_size (void) const	{ return (pos()); }
     void		insert (iterator start, size_type size);
     void		erase (iterator start, size_type size);
     void		swap (ostream& os);
-    inline size_t	stream_size (void) const;
     template <typename T>
     inline void		iwrite (const T& v);
     inline virtual size_type	overflow (size_type = 1){ return (remaining()); }
@@ -87,7 +90,7 @@ public:
 			OVERLOAD_POINTER_AND_SIZE_T_V2(link, void*)
     inline void		relink (void* p, size_type n)	{ memlink::relink (p, n); m_Pos = 0; }
     inline void		relink (memlink& l)		{ relink (l.data(), l.writable_size()); }
-    inline void		seekp (off_t p, ios::seekdir d = ios::beg);
+    inline void		seekp (off_t p, seekdir d = beg);
     inline off_t	tellp (void) const		{ return (pos()); }
 private:
     uoff_t		m_Pos;	///< Current write position.
@@ -161,12 +164,12 @@ inline void ostream::seek (const_iterator newPos)
 }
 
 /// Sets the current write position to \p p based on \p d.
-inline void ostream::seekp (off_t p, ios::seekdir d)
+inline void ostream::seekp (off_t p, seekdir d)
 {
     switch (d) {
-	case ios::beg:	seek (p); break;
-	case ios::cur:	seek (pos() + p); break;
-	case ios::end:	seek (size() - p); break;
+	case beg:	seek (p); break;
+	case cur:	seek (pos() + p); break;
+	case ios_base::end:	seek (size() - p); break;
     }
 }
 
@@ -199,12 +202,6 @@ inline ostream::size_type ostream::align_size (size_type grain) const
 inline void ostream::write (const cmemlink& buf)
 {
     write (buf.begin(), buf.size());
-}
-
-/// Returns number of bytes written.
-inline size_t ostream::stream_size (void) const
-{
-    return (pos());
 }
 
 /// Writes type T into the stream via a direct pointer cast.

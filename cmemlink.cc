@@ -9,7 +9,7 @@
 //
 
 #include "cmemlink.h"
-#include "mostream.h"
+#include "sostream.h"
 #include "strmsize.h"
 #include "ualgo.h"
 #include "file.h"
@@ -71,6 +71,12 @@ void cmemlink::write (ostream& os) const
     os << sz;
     os.write (cdata(), sz);
     os.align();
+}
+
+/// Writes the object to stream \p os
+void cmemlink::text_write (ostringstream& os) const
+{
+    os.write (begin(), readable_size());
 }
 
 /// Returns the number of bytes required to write this object to a stream.

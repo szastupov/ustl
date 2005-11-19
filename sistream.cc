@@ -12,9 +12,7 @@
 
 namespace ustl {
 
-namespace ios {
-    const char c_DefaultDelimiters [istringstream::c_MaxDelimiters] = " \t\n\r;:,.?";
-}
+const char ios_base::c_DefaultDelimiters [istringstream::c_MaxDelimiters] = " \t\n\r;:,.?";
 
 /// Default constructor.
 istringstream::istringstream (void)
@@ -23,7 +21,7 @@ istringstream::istringstream (void)
   m_DecimalSeparator ('.'),
   m_ThousandSeparator ('\0')
 {
-    set_delimiters (ios::c_DefaultDelimiters);
+    set_delimiters (c_DefaultDelimiters);
 }
 
 istringstream::istringstream (const void* p, size_type n)
@@ -33,7 +31,7 @@ istringstream::istringstream (const void* p, size_type n)
   m_ThousandSeparator ('\0')
 {
     link (p, n);
-    set_delimiters (ios::c_DefaultDelimiters);
+    set_delimiters (c_DefaultDelimiters);
 }
 
 istringstream::istringstream (const cmemlink& source)
@@ -43,7 +41,7 @@ istringstream::istringstream (const cmemlink& source)
   m_ThousandSeparator ('\0')
 {
     link (source);
-    set_delimiters (ios::c_DefaultDelimiters);
+    set_delimiters (c_DefaultDelimiters);
 }
 
 /// Sets delimiters to the contents of \p delimiters.

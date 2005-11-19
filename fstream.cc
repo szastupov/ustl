@@ -20,17 +20,17 @@ namespace ustl {
 fstream::fstream (void)
 : m_Filename (),
   m_fd (-1),
-  m_State (ios::goodbit),
-  m_Exceptions (ios::goodbit)
+  m_State (goodbit),
+  m_Exceptions (goodbit)
 {
 }
 
 /// Opens \p filename in \p mode.
-fstream::fstream (const char* filename, ios::openmode mode)
+fstream::fstream (const char* filename, openmode mode)
 : m_Filename (),
   m_fd (-1),
-  m_State (ios::goodbit),
-  m_Exceptions (ios::goodbit)
+  m_State (goodbit),
+  m_Exceptions (goodbit)
 {
     open (filename, mode);
 }
@@ -39,8 +39,8 @@ fstream::fstream (const char* filename, ios::openmode mode)
 fstream::fstream (int nfd, const char* filename)
 : m_Filename (),
   m_fd (-1),
-  m_State (ios::goodbit),
-  m_Exceptions (ios::goodbit)
+  m_State (goodbit),
+  m_Exceptions (goodbit)
 {
     attach (nfd, filename);
 }
@@ -48,18 +48,18 @@ fstream::fstream (int nfd, const char* filename)
 /// Destructor. Closes if still open, but without throwing.
 fstream::~fstream (void) throw()
 {
-    clear (ios::goodbit);
-    exceptions (ios::goodbit);
+    clear (goodbit);
+    exceptions (goodbit);
     close();
-    assert (!(rdstate() & ios::badbit) && "close failed in the destructor! This may lead to loss of user data. Please call close() manually and either enable exceptions or check the badbit.");
+    assert (!(rdstate() & badbit) && "close failed in the destructor! This may lead to loss of user data. Please call close() manually and either enable exceptions or check the badbit.");
 }
 
 /// Attaches to the given \p nfd.
 void fstream::attach (int nfd, const char* filename)
 {
     assert (filename && "Don't do that");
-    clear (ios::goodbit);
-    if (nfd < 0 && set_and_throw (ios::badbit))
+    clear (goodbit);
+    if (nfd < 0 && set_and_throw (badbit))
 	throw file_exception ("fstream::attach", filename);
     close();
     m_fd = nfd;
@@ -74,9 +74,9 @@ void fstream::detach (void)
 }
 
 /// Converts openmode bits into libc open flags.
-/*static*/ int fstream::om_to_flags (ios::openmode m)
+/*static*/ int fstream::om_to_flags (openmode m)
 {
-    static const int s_OMFlags [ios::nombits] = {
+    static const int s_OMFlags [nombits] = {
 	0,		// in
 	O_CREAT,	// out
 	O_APPEND,	// app
@@ -87,22 +87,22 @@ void fstream::detach (void)
 	0,		// nocreate
 	O_NOCTTY	// noctty
     };
-    int flags = (m - 1) & O_ACCMODE;	// ios::in and ios::out
+    int flags = (m - 1) & O_ACCMODE;	// in and out
     for (uoff_t i = 0; i < VectorSize(s_OMFlags); ++ i)
 	if (m & (1 << i))
 	    flags |= s_OMFlags[i];
-    if (m & ios::nocreate)
+    if (m & nocreate)
 	flags &= ~O_CREAT;
     return (flags);
 }
 
 /// \brief Opens \p filename in the given mode.
 /// \warning The string at \p filename must exist until the object is closed.
-void fstream::open (const char* filename, ios::openmode mode, mode_t perms)
+void fstream::open (const char* filename, openmode mode, mode_t perms)
 {
-    clear (ios::goodbit);
+    clear (goodbit);
     int nfd = ::open (filename, om_to_flags(mode), perms);
-    if (nfd < 0 && set_and_throw (ios::badbit))
+    if (nfd < 0 && set_and_throw (badbit))
 	throw file_exception ("fstream::open", filename);
     close();
     m_fd = nfd;
@@ -112,16 +112,16 @@ void fstream::open (const char* filename, ios::openmode mode, mode_t perms)
 /// Closes the file and throws on error.
 void fstream::close (void)
 {
-    if (m_fd >= 0 && ::close(m_fd) && set_and_throw (ios::badbit | ios::failbit))
+    if (m_fd >= 0 && ::close(m_fd) && set_and_throw (badbit | failbit))
 	throw file_exception ("fstream::close", name());
     detach();
 }
 
 /// Moves the current file position to \p n.
-off_t fstream::seek (off_t n, ios::seekdir whence)
+off_t fstream::seek (off_t n, seekdir whence)
 {
     off_t p = lseek (m_fd, n, whence);
-    if (p < 0 && set_and_throw (ios::failbit))
+    if (p < 0 && set_and_throw (failbit))
 	throw file_exception ("fstream::seek", name());
     return (p);
 }
@@ -142,11 +142,11 @@ off_t fstream::read (void* p, off_t n)
 	if (brn > 0)
 	    btr -= brn;
 	else if (!brn) {
-	    if (set_and_throw (ios::eofbit | ios::failbit))
+	    if (set_and_throw (eofbit | failbit))
 		throw stream_bounds_exception ("fstream::read", name(), pos() - br, n, br);
 	    break;
 	} else if (errno != EINTR) {
-	    if (errno != EAGAIN && set_and_throw (ios::failbit))
+	    if (errno != EAGAIN && set_and_throw (failbit))
 		throw file_exception ("fstream::read", name());
 	    break;
 	}
@@ -164,11 +164,11 @@ off_t fstream::write (const void* p, off_t n)
 	if (bwn > 0)
 	    btw -= bwn;
 	else if (!bwn) {
-	    if (set_and_throw (ios::eofbit | ios::failbit))
+	    if (set_and_throw (eofbit | failbit))
 		throw stream_bounds_exception ("fstream::write", name(), pos() - bw, n, bw);
 	    break;
 	} else if (errno != EINTR) {
-	    if (errno != EAGAIN && set_and_throw (ios::failbit))
+	    if (errno != EAGAIN && set_and_throw (failbit))
 		throw file_exception ("fstream::write", name());
 	    break;
 	}

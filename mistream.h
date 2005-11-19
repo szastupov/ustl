@@ -8,7 +8,7 @@
 #ifndef MISTREAM_H_103AEF1F266C04AA1A817D38705983DA
 #define MISTREAM_H_103AEF1F266C04AA1A817D38705983DA
 
-#include "cmemlink.h"
+#include "memlink.h"
 #include "uexception.h"
 #include "strmsize.h"
 #include "utf8.h"
@@ -64,12 +64,13 @@ class string;
 ///	assert (is.pos() == b.size()); 
 /// \endcode
 ///
-class istream : public cmemlink {
+class istream : public cmemlink, public ios_base {
 public:
 			istream (void);
 			istream (const void* p, size_type n);
     explicit		istream (const cmemlink& source);
     explicit		istream (const ostream& source);
+    inline iterator	end (void) const			{ return (cmemlink::end()); }
     inline void		link (const void* p, size_type n)	{ cmemlink::link (p, n); }
     inline void		link (const cmemlink& l)		{ cmemlink::link (l.cdata(), l.readable_size()); }
     inline void		link (const void* f, const void* l)	{ cmemlink::link (f, l); }
@@ -88,12 +89,13 @@ public:
     inline void		align (size_type grain = c_DefaultAlignment);
     void		swap (istream& is);
     void		read (void* buffer, size_type size);
-    void		read (memlink& buf);
+    inline void		read (memlink& buf)	{ read (buf.begin(), buf.writable_size()); }
     void		read_strz (string& str);
-    inline void		read (istream&)		{ }
     size_type		readsome (void* s, size_type n);
-    void		write (ostream& is) const;
-    inline size_t	stream_size (void) const;
+    inline void		read (istream&)			{ }
+    void		write (ostream& os) const;
+    void		text_write (ostringstream& os) const;
+    inline size_t	stream_size (void) const	{ return (remaining()); }
     template <typename T>
     inline void		iread (T& v);
     inline virtual size_type	underflow (size_type = 1)	{ return (remaining()); }
@@ -104,7 +106,7 @@ public:
     inline bool		operator! (void) const	{ return (fail()); }
     inline void		ungetc (void)		{ seek (pos() - 1); }
     inline off_t	tellg (void) const	{ return (pos()); }
-    inline void		seekg (off_t p, ios::seekdir d = ios::beg);
+    inline void		seekg (off_t p, seekdir d = beg);
 private:
     uoff_t		m_Pos;		///< The current read position.
 };
@@ -190,12 +192,12 @@ inline void istream::seek (const_iterator newPos)
 }
 
 /// Sets the current write position to \p p based on \p d.
-inline void istream::seekg (off_t p, ios::seekdir d)
+inline void istream::seekg (off_t p, seekdir d)
 {
     switch (d) {
-	case ios::beg:	seek (p); break;
-	case ios::cur:	seek (pos() + p); break;
-	case ios::end:	seek (size() - p); break;
+	case beg:	seek (p); break;
+	case cur:	seek (pos() + p); break;
+	case ios_base::end:	seek (size() - p); break;
     }
 }
 
@@ -222,12 +224,6 @@ inline bool istream::aligned (size_type grain) const
 inline void istream::align (size_type grain)
 {
     seek (Align (pos(), grain));
-}
-
-/// Returns number of unread bytes.
-inline size_t istream::stream_size (void) const
-{
-    return (remaining());
 }
 
 /// Reads type T from the stream via a direct pointer cast.

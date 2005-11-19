@@ -16,6 +16,7 @@ namespace ustl {
 
 class istream;
 class ostream;
+class ostringstream;
 
 /// \class cmemlink cmemlink.h ustl.h
 /// \ingroup MemoryManagement
@@ -56,12 +57,12 @@ public:
 			cmemlink (const cmemlink& l);
     inline virtual     ~cmemlink (void) {}
     void		link (const void* p, size_type n);
-    inline void		link (const void* first, const void* last);
 			OVERLOAD_POINTER_AND_SIZE_T_V2(link, const void*)
-    inline void		link (const cmemlink& l);
+    inline void		link (const cmemlink& l)	{ link (l.begin(), l.size()); }
+    inline void		link (const void* first, const void* last)	{ link (first, distance (first, last)); }
     inline void		relink (const void* p, size_type n);
     virtual void	unlink (void);
-    inline rcself_t	operator= (const cmemlink& l)	{ link (l.m_CData, l.m_Size); return (*this); }
+    inline rcself_t	operator= (const cmemlink& l)	{ link (l); return (*this); }
     bool		operator== (const cmemlink& l) const;
     void		swap (cmemlink& l);
     inline size_type	size (void) const		{ return (m_Size); }
@@ -69,41 +70,24 @@ public:
     inline size_type	readable_size (void) const	{ return (size()); }
     inline bool		empty (void) const		{ return (!size()); }
    inline const_pointer	cdata (void) const		{ return (m_CData); }
-    inline iterator	begin (void) const		{ return (iterator (m_CData)); }
+    inline iterator	begin (void) const		{ return (iterator (cdata())); }
     inline iterator	end (void) const		{ return (begin() + size()); }
     inline void		resize (size_type n)		{ m_Size = n; }
-    inline void		read (istream&);
+    inline void		read (istream&)			{ assert (!"ustl::cmemlink is a read-only object."); }
     void		write (ostream& os) const;
     size_type		stream_size (void) const;
+    void		text_write (ostringstream& os) const;
     void		write_file (const char* filename, int mode = 0644) const;
 private:
     const_pointer	m_CData;	///< Pointer to the data block (const)
     size_type		m_Size;		///< size of the data block
 };
 
-/// Links to \p l
-inline void cmemlink::link (const cmemlink& l)
-{
-    link (l.begin(), l.size());
-}
-
-/// Links to iterator range \p first - \p last
-inline void cmemlink::link (const void* first, const void* last)
-{
-    link (first, distance (first, last));
-}
-
 /// A fast alternative to link which can be used when relinking to the same block (i.e. when it is resized)
 inline void cmemlink::relink (const void* p, size_type n)
 {
     m_CData = reinterpret_cast<const_pointer>(p);
     m_Size = n;
-}
-
-/// Reads the object from stream \p os
-inline void cmemlink::read (istream&)
-{
-    assert (!"ustl::cmemlink is a read-only object.");
 }
 
 // Specialization for stream alignment

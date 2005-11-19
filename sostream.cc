@@ -80,7 +80,7 @@ void ostringstream::fmtstring (char* fmt, const char* typestr, bool bInteger) co
     *fmt++ = '%';
     if (m_Width)
 	fmt = encode_dec (fmt, m_Width);
-    if (m_Flags & ios::left)
+    if (m_Flags & left)
 	*fmt++ = '-';
     if (!bInteger) {
 	*fmt++ = '.';
@@ -94,7 +94,7 @@ void ostringstream::fmtstring (char* fmt, const char* typestr, bool bInteger) co
 	else if (m_Base == 8)
 	    fmt[-1] = 'o';
     } else {
-	if (m_Flags & ios::scientific)
+	if (m_Flags & scientific)
 	    fmt[-1] = 'E';
     }
     *fmt = 0;
@@ -177,23 +177,15 @@ int ostringstream::format (const char* fmt, ...)
 }
 
 /// Sets the flag \p f in the stream.
-void ostringstream::iwrite (ios::fmtflags f)
+void ostringstream::iwrite (fmtflags f)
 {
     switch (f) {
-	case ios::oct:		set_base (8); break;
-	case ios::dec:		set_base (10); break;
-	case ios::hex:		set_base (16); break;
-	case ios::left:
-	    m_Flags |= ios::left;
-	    m_Flags &= ~ios::right;
-	    break;
-	case ios::right:
-	    m_Flags |= ios::right;
-	    m_Flags &= ~ios::left;
-	    break;
-	default:
-	    m_Flags |= f;
-	    break;
+	case oct:	set_base (8);	break;
+	case dec:	set_base (10);	break;
+	case hex:	set_base (16);	break;
+	case left:	m_Flags |= left; m_Flags &= ~right; break;
+	case right:	m_Flags |= right; m_Flags &= ~left; break;
+	default:	m_Flags |= f;	break;
     }
 }
 

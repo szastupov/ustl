@@ -224,6 +224,9 @@ STD_STREAMABLE(istream)
 STD_STREAMABLE(ostream)
 STD_STREAMABLE(string)
 STD_STREAMABLE(exception)
+TEXT_STREAMABLE(cmemlink)
+TEXT_STREAMABLE(istream)
+TEXT_STREAMABLE(ostream)
 TEXT_STREAMABLE(exception)
 
 #endif

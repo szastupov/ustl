@@ -12,7 +12,9 @@
 #include "sostream.h"
 
 namespace ustl {
-namespace ios {
+
+class ios : public ios_base {
+public:
     /// \class align uiosfunc.h ustl.h
     /// \ingroup StreamFunctors
     /// \brief Stream functor to allow inline align() calls.
@@ -81,8 +83,7 @@ namespace ios {
     private:
 	const size_t		m_Base;
     };
-
-} // namespace ios
+};
 
 inline istream& operator>> (istream& is, const ios::skip& op)	{ return (op.apply (is)); }
 inline ostream& operator<< (ostream& os, const ios::skip& op)	{ return (op.apply (os)); }

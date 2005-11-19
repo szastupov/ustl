@@ -7,6 +7,11 @@ Release 0.9
 	* Format change: containers will now write their size as a uint32_t
 		instead of size_t to allow binary compatibility with 64 bit
 		architectures. On 32 bit machines this makes no difference.
+	* Made ios_base and ios classes instead of namespaces and derived
+		all stream objects from ios_base. Pulled up state and all
+		related functions into it. The only problem with this is that
+		end() conflicts with seekdir end, so you'll need to use
+		ios scope when you want the latter.
 	* Implemented fstream.
 	* Abandoned any attempt to use the goddamned byteswap.h.
 	* Added most remaining i/ostringstream functions that make sense in

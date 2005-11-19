@@ -9,7 +9,7 @@
 //
 
 #include "mistream.h"
-#include "mostream.h"
+#include "sostream.h"
 #include "ustring.h"
 #include "ualgo.h"
 
@@ -80,12 +80,6 @@ void istream::read_strz (string& str)
     skip (strl + 1);
 }
 
-/// Reads \p buf.size() bytes into \p buf.
-void istream::read (memlink& buf)
-{
-    read (buf.begin(), buf.size());
-}
-
 /// Reads at most \p n bytes into \p s.
 istream::size_type istream::readsome (void* s, size_type n)
 {
@@ -98,6 +92,12 @@ istream::size_type istream::readsome (void* s, size_type n)
 
 /// Writes all unread bytes into \p os.
 void istream::write (ostream& os) const
+{
+    os.write (ipos(), remaining());
+}
+
+/// Writes the object to stream \p os.
+void istream::text_write (ostringstream& os) const
 {
     os.write (ipos(), remaining());
 }
@@ -176,15 +176,15 @@ void ostream::write_strz (const char* str)
     iwrite (string::c_Terminator);
 }
 
-/// Equivalent to istream::write(os)
+/// Writes all available data from \p is.
 void ostream::read (istream& is)
 {
     is.write (*this);
     is.seek (is.size());
 }
 
-/// Copy currently written bytes into \p os.
-void ostream::write (ostream& os) const
+/// Writes all written data to \p os.
+void ostream::text_write (ostringstream& os) const
 {
     os.write (begin(), pos());
 }
