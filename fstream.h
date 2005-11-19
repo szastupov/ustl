@@ -12,6 +12,8 @@
 #include "uios.h"
 #include "ustring.h"
 
+struct stat;
+
 namespace ustl {
 
 /// \class fstream fstream.h ustl.h
@@ -32,18 +34,26 @@ public:
     void		attach (int nfd, const char* filename = string::empty_string);
     void		detach (void);
     void		close (void);
+    void		sync (void);
     off_t		read (void* p, off_t n);
     off_t		readsome (void* p, off_t n);
     off_t		write (const void* p, off_t n);
     off_t		size (void) const;
     off_t		seek (off_t n, seekdir whence = beg);
     off_t		pos (void) const;
+    void		stat (struct stat& rs) const;
+    int			ioctl (const char* rname, int request, long argument);
+    inline int		ioctl (const char* rname, int request, void* argument)	{ return (fstream::ioctl (rname, request, intptr_t(argument))); }
+    memlink		mmap (off_t n, off_t offset = 0);
+    void		munmap (memlink& l);
+    void		msync (memlink& l);
     inline int		fd (void) const		{ return (m_fd); }
     inline bool		is_open (void) const	{ return (fd() >= 0); }
     inline off_t	tellg (void) const	{ return (pos()); }
     inline off_t	tellp (void) const	{ return (pos()); }
     inline void		seekg (off_t n, seekdir whence = beg)	{ seek (n, whence); }
     inline void		seekp (off_t n, seekdir whence = beg)	{ seek (n, whence); }
+    inline void		flush (void)		{ sync(); }
     inline const string& name (void) const	{ return (m_Filename); }
 private:
     static int		om_to_flags (openmode m);
@@ -51,6 +61,9 @@ private:
     int			m_fd;		///< Currently open file descriptor.
     string		m_Filename;	///< Currently open filename.
 };
+
+/// Argument macro for fstream::ioctl. Use like fs.ioctl (IOCTLID (TCGETS), &ts).
+#define IOCTLID(bit)	"ioctl("#bit")", bit
 
 }
 

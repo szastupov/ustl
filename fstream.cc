@@ -13,6 +13,8 @@
 #include <unistd.h>
 #include <errno.h>
 #include <sys/stat.h>
+#include <sys/mman.h>
+#include <sys/ioctl.h>
 
 namespace ustl {
 
@@ -179,8 +181,55 @@ off_t fstream::size (void) const
 {
     struct stat st;
     st.st_size = 0;
-    fstat (m_fd, &st);
+    stat (st);
     return (st.st_size);
+}
+
+/// Synchronizes the file's data and status with the disk.
+void fstream::sync (void)
+{
+    if (fsync (m_fd) && set_and_throw (failbit))
+	throw file_exception ("sync", name());
+}
+
+/// Get the stat structure.
+void fstream::stat (struct stat& rs) const
+{
+    if (fstat (m_fd, &rs))
+	throw file_exception ("stat", name());
+}
+
+/// Calls the given ioctl. Use IOCTLID macro to pass in both \p name and \p request.
+int fstream::ioctl (const char* rname, int request, long argument)
+{
+    int rv = ::ioctl (m_fd, request, argument);
+    if (rv < 0)
+	throw file_exception (rname, name());
+    return (rv);
+}
+
+/// Memory-maps the file and returns a link to it.
+memlink fstream::mmap (off_t n, off_t offset)
+{
+    void* result = ::mmap (NULL, n, PROT_READ | PROT_WRITE, MAP_SHARED, m_fd, offset);
+    if (result == MAP_FAILED)
+	throw file_exception ("mmap", name());
+    return (memlink (result, n));
+}
+
+/// Unmaps a memory-mapped area.
+void fstream::munmap (memlink& l)
+{
+    if (::munmap (l.data(), l.size()))
+	throw file_exception ("munmap", name());
+    l.unlink();
+}
+
+/// Synchronizes a memory-mapped area.
+void fstream::msync (memlink& l)
+{
+    if (::msync (l.data(), l.size(), MS_ASYNC | MS_INVALIDATE))
+	throw file_exception ("msync", name());
 }
 
 } // namespace ustl
