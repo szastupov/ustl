@@ -132,23 +132,24 @@ off_t fstream::pos (void) const
 /// Reads \p n bytes into \p p.
 off_t fstream::read (void* p, off_t n)
 {
-    off_t btr (n);
-    while (btr) {
-	const off_t br (n - btr);
-	ssize_t brn = ::read (m_fd, advance(p,br), btr);
-	if (brn > 0)
-	    btr -= brn;
-	else if (!brn) {
-	    if (set_and_throw (eofbit | failbit))
-		throw stream_bounds_exception ("read", name(), pos() - br, n, br);
-	    break;
-	} else if (errno != EINTR) {
-	    if (errno != EAGAIN && set_and_throw (failbit))
-		throw file_exception ("read", name());
-	    break;
-	}
-    }
-    return (n - btr);
+    off_t br (0);
+    while (br < n && good())
+	br += readsome (advance (p, br), n - br);
+    return (br);
+}
+
+/// Reads at most \p n bytes into \p p, stopping when it feels like it.
+off_t fstream::readsome (void* p, off_t n)
+{
+    ssize_t brn;
+    do { brn = ::read (m_fd, p, n); } while (brn < 0 && errno == EINTR);
+    if (brn > 0)
+	return (brn);
+    if (brn < 0 && errno != EAGAIN && set_and_throw (failbit))
+	throw file_exception ("read", name());
+    if (!brn && set_and_throw (eofbit | failbit))
+	throw stream_bounds_exception ("read", name(), pos(), n, 0);
+    return (0);
 }
 
 /// Writes \p n bytes from \p p.

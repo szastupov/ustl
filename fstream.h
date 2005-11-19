@@ -33,6 +33,7 @@ public:
     void		detach (void);
     void		close (void);
     off_t		read (void* p, off_t n);
+    off_t		readsome (void* p, off_t n);
     off_t		write (const void* p, off_t n);
     off_t		size (void) const;
     off_t		seek (off_t n, seekdir whence = beg);
