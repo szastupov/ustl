@@ -18,29 +18,26 @@ namespace ustl {
 
 /// Default constructor.
 fstream::fstream (void)
-: m_Filename (),
+: ios_base (),
   m_fd (-1),
-  m_State (goodbit),
-  m_Exceptions (goodbit)
+  m_Filename ()
 {
 }
 
 /// Opens \p filename in \p mode.
 fstream::fstream (const char* filename, openmode mode)
-: m_Filename (),
+: ios_base (),
   m_fd (-1),
-  m_State (goodbit),
-  m_Exceptions (goodbit)
+  m_Filename ()
 {
     open (filename, mode);
 }
 
 /// Attaches to \p nfd of \p filename.
 fstream::fstream (int nfd, const char* filename)
-: m_Filename (),
+: ios_base (),
   m_fd (-1),
-  m_State (goodbit),
-  m_Exceptions (goodbit)
+  m_Filename ()
 {
     attach (nfd, filename);
 }

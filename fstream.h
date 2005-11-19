@@ -44,23 +44,12 @@ public:
     inline void		seekg (off_t n, seekdir whence = beg)	{ seek (n, whence); }
     inline void		seekp (off_t n, seekdir whence = beg)	{ seek (n, whence); }
     inline const string& name (void) const	{ return (m_Filename); }
-    inline iostate	rdstate (void) const	{ return (m_State); }
-    inline bool		bad (void) const	{ return (rdstate() & badbit); }
-    inline bool		good (void) const	{ return (rdstate() == goodbit); }
-    inline bool		fail (void) const	{ return (rdstate() & (badbit | failbit)); }
-    inline bool		operator! (void) const	{ return (fail()); }
-    inline void		clear (iostate v = goodbit)	{ m_State = v; }
-    inline void		setstate (iostate v)		{ m_State |= v; }
-    inline iostate	exceptions (void) const		{ return (m_Exceptions); }
-    inline iostate	exceptions (iostate v)		{ return (m_Exceptions = v); }
 private:
     inline bool		set_and_throw (iostate v)	{ setstate(v); return (exceptions() & v); }
     static int		om_to_flags (openmode m);
 private:
-    string		m_Filename;	///< Currently open filename.
     int			m_fd;		///< Currently open file descriptor.
-    uint16_t		m_State;	///< Open state, using ios::iostate_bits.
-    uint16_t		m_Exceptions;	///< Exception flags, using ios::iostate_bits.
+    string		m_Filename;	///< Currently open filename.
 };
 
 }
