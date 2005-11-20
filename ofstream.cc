@@ -63,6 +63,14 @@ void ofstream::flush (void)
     clear (m_File.rdstate());
 }
 
+/// Seeks to \p p based on \p d.
+void ofstream::seekp (off_t p, seekdir d)
+{
+    flush();
+    m_File.seekp (p, d);
+    clear (m_File.rdstate());
+}
+
 /// Called when more buffer space (\p n bytes) is needed.
 ofstream::size_type ofstream::overflow (size_type n)
 {
@@ -133,6 +141,15 @@ void ifstream::sync (void)
     istringstream::sync();
     underflow (0U);
     m_File.sync();
+    clear (m_File.rdstate());
+}
+
+/// Seeks to \p p based on \p d.
+void ifstream::seekg (off_t p, seekdir d)
+{
+    m_Buffer.clear();
+    link (m_Buffer);
+    m_File.seekg (p, d);
     clear (m_File.rdstate());
 }
 

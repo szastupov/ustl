@@ -30,6 +30,8 @@ public:
     inline iostate	exceptions (iostate v)	{ ostringstream::exceptions(v); return (m_File.exceptions(v)); }
     inline void		setstate (iostate v)	{ ostringstream::setstate(v); m_File.setstate(v); }
     inline void		clear (iostate v = goodbit)	{ ostringstream::clear(v); m_File.clear(v); }
+    inline off_t	tellp (void) const	{ return (m_File.tellp() + ostringstream::tellp()); }
+    void		seekp (off_t p, seekdir d = beg);
     void		flush (void);
     virtual size_type	overflow (size_type n = 1);
 private:
@@ -50,6 +52,8 @@ public:
     inline iostate	exceptions (iostate v)	{ istringstream::exceptions(v); return (m_File.exceptions(v)); }
     inline void		setstate (iostate v)	{ istringstream::setstate(v); m_File.setstate(v); }
     inline void		clear (iostate v = goodbit)	{ istringstream::clear(v); m_File.clear(v); }
+    inline off_t	tellg (void) const	{ return (m_File.tellg() - remaining()); }
+    void		seekg (off_t p, seekdir d = beg);
     void		sync (void);
     virtual size_type	underflow (size_type n = 1);
 private:
