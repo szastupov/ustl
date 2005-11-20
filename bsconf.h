@@ -131,7 +131,6 @@ static cpchar_t g_Components [] = {
     "debug",		"#DEBUG\t\t= 1",			"DEBUG\t\t= 1 ",
     "profile",		"#PROFILE\t= 1",			"PROFILE\t\t= 1 ",
     "bounds",		"#undef WANT_STREAM_BOUNDS_CHECKING",	"#define WANT_STREAM_BOUNDS_CHECKING 1 ",
-    "cout",		"#define WITHOUT_CIN_COUT_CERR 1",	"#undef WITHOUT_CIN_COUT_CERR",
     "fastcopy",		"#undef WANT_UNROLLED_COPY",		"#define WANT_UNROLLED_COPY 1 ",
 #if __i386__ && __GNUC__ >= 3
     "mmx",		"#undef WANT_MMX",			"#define WANT_MMX 1 ",
@@ -149,7 +148,6 @@ static SComponentInfo g_ComponentInfos [VectorSize(g_Components) / 3] = {
     { 0, "Compiles the library with debugging information" },
     { 0, "Compiles the library with profiling (gprof) information" },
     { 1, "Disable runtime bounds checking on stream reads/writes" },
-    { 1, "Removes support for standard cout/cin/cerr streams" },
     { 1, "Adds optimized specializations for copy/fill" },
 #if __i386__ && __GNUC__ >= 3
     { 1, "Enables use of MMX/SSE/3dNow! instructions" },

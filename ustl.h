@@ -145,11 +145,7 @@
 #include "ustl/umultimap.h"
 #include "ustl/ustack.h"
 #include "ustl/uqueue.h"
-#ifndef WITHOUT_CIN_COUT_CERR
-    #include "ustl/fdostream.h"
-#else
-    #include "ustl/sistream.h"
-#endif
+#include "ustl/fdostream.h"
 #include "ustl/unumeric.h"
 #include "ustl/ulist.h"
 #include "ustl/uheap.h"

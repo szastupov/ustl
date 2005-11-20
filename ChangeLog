@@ -9,6 +9,7 @@ Release 0.9
 		architectures. On 32 bit machines this makes no difference.
 	* Renamed fdostringstream to ofstream.
 	* Renamed fdistringstream to ifstream.
+	* Removed --without-cout configure option.
 	* Made ios_base and ios classes instead of namespaces and derived
 		all stream objects from ios_base. Pulled up state and all
 		related functions into it. The only problem with this is that

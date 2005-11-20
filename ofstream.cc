@@ -14,7 +14,6 @@
 #include <stdio.h>
 #include <stdarg.h>
 
-#ifndef WITHOUT_CIN_COUT_CERR
 namespace ustl {
 
 //----------------------------------------------------------------------
@@ -140,5 +139,4 @@ void ifstream::sync (void)
 //----------------------------------------------------------------------
 
 } // namespace ustl
-#endif // WITHOUT_CIN_COUT_CERR
 

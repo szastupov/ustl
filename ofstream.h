@@ -13,7 +13,6 @@
 #include "sostream.h"
 #include "fstream.h"
 
-#ifndef WITHOUT_CIN_COUT_CERR
 namespace ustl {
 
 /// \class ofstream fdostream.h ustl.h
@@ -63,6 +62,5 @@ extern ifstream cin;
 
 } // namespace ustl
 
-#endif
 #endif
 

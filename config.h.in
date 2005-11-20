@@ -30,11 +30,6 @@
 /// Define to 1 if you want to build without libstdc++
 #undef WITHOUT_LIBSTDCPP
 
-/// Define to 1 if you don't want the standard streams.
-/// You will not be able to run bvt tests if you do this.
-///
-#undef WITHOUT_CIN_COUT_CERR
-
 /// Define GNU extensions if unavailable.
 #ifndef __GNUC__
     /// GCC (and some other compilers) define '__attribute__'; ustl is using this
