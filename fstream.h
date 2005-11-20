@@ -42,11 +42,14 @@ public:
     off_t		seek (off_t n, seekdir whence = beg);
     off_t		pos (void) const;
     void		stat (struct stat& rs) const;
-    int			ioctl (const char* rname, int request, long argument);
+    int			ioctl (const char* rname, int request, long argument = 0);
     inline int		ioctl (const char* rname, int request, void* argument)	{ return (fstream::ioctl (rname, request, intptr_t(argument))); }
+    int			fcntl (const char* rname, int request, long argument = 0);
+    inline int		fcntl (const char* rname, int request, void* argument)	{ return (fstream::fcntl (rname, request, intptr_t(argument))); }
     memlink		mmap (off_t n, off_t offset = 0);
     void		munmap (memlink& l);
     void		msync (memlink& l);
+    void		set_nonblock (bool v = true);
     inline int		fd (void) const		{ return (m_fd); }
     inline bool		is_open (void) const	{ return (fd() >= 0); }
     inline off_t	tellg (void) const	{ return (pos()); }
@@ -63,7 +66,8 @@ private:
 };
 
 /// Argument macro for fstream::ioctl. Use like fs.ioctl (IOCTLID (TCGETS), &ts).
-#define IOCTLID(bit)	"ioctl("#bit")", bit
+#define IOCTLID(r)	"ioctl("#r")", r
+#define FCNTLID(r)	"fcntl("#r")", r
 
 }
 

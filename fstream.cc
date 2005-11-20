@@ -203,7 +203,16 @@ void fstream::stat (struct stat& rs) const
 int fstream::ioctl (const char* rname, int request, long argument)
 {
     int rv = ::ioctl (m_fd, request, argument);
-    if (rv < 0)
+    if (rv < 0 && set_and_throw (failbit))
+	throw file_exception (rname, name());
+    return (rv);
+}
+
+/// Calls the given fcntl. Use FCNTLID macro to pass in both \p name and \p request.
+int fstream::fcntl (const char* rname, int request, long argument)
+{
+    int rv = ::fcntl (m_fd, request, argument);
+    if (rv < 0 && set_and_throw (failbit))
 	throw file_exception (rname, name());
     return (rv);
 }
@@ -230,6 +239,15 @@ void fstream::msync (memlink& l)
 {
     if (::msync (l.data(), l.size(), MS_ASYNC | MS_INVALIDATE))
 	throw file_exception ("msync", name());
+}
+
+void fstream::set_nonblock (bool v)
+{
+    int curf = fcntl (FCNTLID (F_GETFL));
+    if (curf < 0) return;
+    if (v) curf |=  O_NONBLOCK;
+    else   curf &= ~O_NONBLOCK;
+    fcntl (FCNTLID (F_SETFL), curf);
 }
 
 } // namespace ustl
