@@ -7,6 +7,8 @@ Release 0.9
 	* Format change: containers will now write their size as a uint32_t
 		instead of size_t to allow binary compatibility with 64 bit
 		architectures. On 32 bit machines this makes no difference.
+	* Renamed fdostringstream to ofstream.
+	* Renamed fdistringstream to ifstream.
 	* Made ios_base and ios classes instead of namespaces and derived
 		all stream objects from ios_base. Pulled up state and all
 		related functions into it. The only problem with this is that

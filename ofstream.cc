@@ -3,7 +3,7 @@
 // Copyright (C) 2005 by Mike Sharov <msharov@users.sourceforge.net>
 // This file is free software, distributed under the MIT License.
 //
-// fdostringstream.cc
+// ofstream.cc
 //
 
 #include "fdostream.h"
@@ -19,34 +19,53 @@ namespace ustl {
 
 //----------------------------------------------------------------------
 
-fdistringstream cin  (STDIN_FILENO);
-fdostringstream cout (STDOUT_FILENO);
-fdostringstream cerr (STDERR_FILENO);
+ifstream cin  (STDIN_FILENO);
+ofstream cout (STDOUT_FILENO);
+ofstream cerr (STDERR_FILENO);
 
 //----------------------------------------------------------------------
 
-/// Constructs a stream for writing to \p fd.
-fdostringstream::fdostringstream (int fd)
+/// Default constructor.
+ofstream::ofstream (void)
 : ostringstream (),
-  m_File (fd)
+  m_File ()
 {
     reserve (255);
 }
 
+/// Constructs a stream for writing to \p fd.
+ofstream::ofstream (int fd)
+: ostringstream (),
+  m_File (fd)
+{
+    clear (m_File.rdstate());
+    reserve (255);
+}
+
+/// Constructs a stream for writing to \p filename.
+ofstream::ofstream (const char* filename, openmode mode)
+: ostringstream (),
+  m_File (filename, mode)
+{
+    clear (m_File.rdstate());
+}
+
 /// Default destructor.
-fdostringstream::~fdostringstream (void)
+ofstream::~ofstream (void)
 {
     try { flush(); } catch (...) {}
 }
 
 /// Flushes the buffer to the file.
-void fdostringstream::flush (void)
+void ofstream::flush (void)
 {
     while (pos() && overflow (remaining()));
+    m_File.sync();
+    clear (m_File.rdstate());
 }
 
 /// Called when more buffer space (\p n bytes) is needed.
-fdostringstream::size_type fdostringstream::overflow (size_type n)
+ofstream::size_type ofstream::overflow (size_type n)
 {
     if (eof() || (n > remaining() && n < capacity() - pos()))
 	return (ostringstream::overflow (n));
@@ -61,7 +80,7 @@ fdostringstream::size_type fdostringstream::overflow (size_type n)
 //----------------------------------------------------------------------
 
 /// Constructs a stream to read from \p fd.
-fdistringstream::fdistringstream (int fd)
+ifstream::ifstream (int fd)
 : istringstream (),
   m_Buffer (255),
   m_File (fd)
@@ -69,7 +88,18 @@ fdistringstream::fdistringstream (int fd)
     link (m_Buffer.data(), 0U);
 }
 
-fdistringstream::size_type fdistringstream::underflow (size_type n)
+/// Constructs a stream to read from \p filename.
+ifstream::ifstream (const char* filename, openmode mode)
+: istringstream (),
+  m_Buffer (255),
+  m_File (filename, mode)
+{
+    clear (m_File.rdstate());
+    link (m_Buffer.data(), 0U);
+}
+
+/// Reads at least \p n more bytes and returns available bytes.
+ifstream::size_type ifstream::underflow (size_type n)
 {
     if (eof())
 	return (istringstream::underflow (n));
@@ -99,10 +129,12 @@ fdistringstream::size_type fdistringstream::underflow (size_type n)
 }
 
 /// Flushes the input.
-void fdistringstream::sync (void)
+void ifstream::sync (void)
 {
     istringstream::sync();
     underflow (0U);
+    m_File.sync();
+    clear (m_File.rdstate());
 }
 
 //----------------------------------------------------------------------
