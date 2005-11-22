@@ -247,8 +247,8 @@ template <>					\
 inline void pconvert (const tuple<n,type1>& oin, tuple<n,type2>& oout, optype<type1,type2>)
 
 #if CPU_HAS_MMX
-#define STD_MMX_ARGS	"=o"(oout.at(0)) : "o"(oin.at(0)) : "mm0", "memory"
-#define DBL_MMX_ARGS	"=o"(oout.at(0)), "=o"(oout.at(2)) : "o"(oin.at(0)), "o"(oin.at(2)) : "mm0", "mm1", "memory"
+#define STD_MMX_ARGS	"=m"(oout[0]) : "m"(oin[0]) : "mm0", "st", "memory"
+#define DBL_MMX_ARGS	"=m"(oout[0]), "=m"(oout[2]) : "m"(oin[0]), "m"(oin[2]) : "mm0", "mm1", "st", "st(1)", "memory"
 #define MMX_PKOP2_SPEC(n,type,optype,instruction)	\
 SIMD_PKOP2_SPEC(n,type,optype)		\
 { asm ("movq %0, %%mm0\n\t" #instruction " %1, %%mm0\n\tmovq %%mm0, %0" : STD_MMX_ARGS); reset_mmx(); }
@@ -263,10 +263,10 @@ SIMD_PASSIGN_SPEC(n,type)		\
 { asm ("movq %0, %%mm0\n\tmovq %1, %%mm1\n\tmovq %%mm0, %0\n\tmovq %%mm1, %1" : DBL_MMX_ARGS); reset_mmx(); }
 #define MMX_IPASSIGN_SPEC(n,type)	\
 SIMD_IPASSIGN_SPEC(n,type)		\
-{ asm ("movq %1, %%mm0\n\tmovq %%mm0, %0" : "=o"(oout.at(0)) : "o"(oin[0]) : "mm0", "memory"); reset_mmx(); }
+{ asm ("movq %1, %%mm0\n\tmovq %%mm0, %0" : STD_MMX_ARGS); reset_mmx(); }
 #define MMX_DBL_IPASSIGN_SPEC(n,type)	\
 SIMD_IPASSIGN_SPEC(n,type)		\
-{ asm ("movq %0, %%mm0\n\tmovq %1, %%mm1\n\tmovq %%mm0, %0\n\tmovq %%mm1, %1" : "=o"(oout.at(0)), "=o"(oout.at(2)) : "o"(oin[0]), "o"(oin[2]) : "mm0", "mm1", "memory"); reset_mmx(); }
+{ asm ("movq %0, %%mm0\n\tmovq %1, %%mm1\n\tmovq %%mm0, %0\n\tmovq %%mm1, %1" : DBL_MMX_ARGS); reset_mmx(); }
 
 MMX_PASSIGN_SPEC(8,uint8_t)
 MMX_PKOP2_SPEC(8,uint8_t,plus,paddb)
@@ -391,17 +391,16 @@ MMX_DBL_IPASSIGN_SPEC(4,int32_t)
 #endif // CPU_HAS_MMX
 
 #if CPU_HAS_SSE
-#define STD_SSE_ARGS	"=o"(oout.at(0)) : "o"(oin.at(0)) : "xmm0", "memory"
+#define STD_SSE_ARGS	"=m"(oout[0]) : "m"(oin[0]) : "xmm0", "memory"
 #define SSE_PKOP2_SPEC(n,type,optype,instruction)	\
 SIMD_PKOP2_SPEC(n,type,optype)		\
-{ asm ("movups %0, %%xmm0\n\tmovups %1, %%xmm1\n\t" #instruction " %%xmm1, %%xmm0\n\tmovups %%xmm0, %0" : STD_SSE_ARGS);	}
+{ asm ("movups %0, %%xmm0\n\tmovups %1, %%xmm1\n\t" #instruction " %%xmm1, %%xmm0\n\tmovups %%xmm0, %0" : STD_SSE_ARGS);}
 #define SSE_PASSIGN_SPEC(n,type)			\
 SIMD_PASSIGN_SPEC(n,type)		\
-{ asm ("movups %1, %%xmm0\n\tmovups %%xmm0, %0" : STD_SSE_ARGS);	}
-#define STD_SSE_I_ARGS(ptr_t)		"=o"(oout.at(0)) : "o"(oin[0]) : "xmm0", "memory"
+{ asm ("movups %1, %%xmm0\n\tmovups %%xmm0, %0" : STD_SSE_ARGS);}
 #define SSE_IPASSIGN_SPEC(n,type)	\
 SIMD_IPASSIGN_SPEC(n,type)		\
-{ asm ("movups %1, %%xmm0\n\tmovups %%xmm0, %0" : STD_SSE_I_ARGS(v4sf_t));}
+{ asm ("movups %1, %%xmm0\n\tmovups %%xmm0, %0" : STD_SSE_ARGS);}
 SSE_PASSIGN_SPEC(4,float)
 SSE_PASSIGN_SPEC(4,int32_t)
 SSE_PASSIGN_SPEC(4,uint32_t)
@@ -420,9 +419,7 @@ SIMD_CONVERT_SPEC(4,float,int32_t,fround) {
 	 "cvtps2pi %3, %%mm1\n\t"
 	 "movq %%mm0, %0\n\t"
 	 "movq %%mm1, %1"
-	 : "=o"(oout.at(0)), "=o"(oout.at(2))
-	 : "o"(oin.at(0)), "o"(oin.at(2))
-	 : "mm0", "mm1", "st", "st(1)");
+	 : DBL_MMX_ARGS);
     reset_mmx();
 }
 SIMD_CONVERT_SPEC(4,int32_t,float,fround) {
@@ -430,9 +427,7 @@ SIMD_CONVERT_SPEC(4,int32_t,float,fround) {
 	 "shufps $0x4E,%%xmm0,%%xmm0\n\t"
 	 "cvtpi2ps %1, %%xmm0\n\t"
 	 "movups %%xmm0, %0"
-	 : "=o"(oout.at(0))
-	 : "o"(oin.at(0)), "o"(oin.at(2))
-	 : "xmm0");
+	 : "=m"(oout[0]) : "m"(oin[0]), "m"(oin[2]) : "xmm0", "memory");
 }
 template <> inline int32_t fround<float,int32_t>::operator()(const float& a) const {
     register int32_t rv;
