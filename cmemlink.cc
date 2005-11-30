@@ -9,7 +9,7 @@
 //
 
 #include "cmemlink.h"
-#include "fdostream.h"
+#include "ofstream.h"
 #include "strmsize.h"
 #include "ualgo.h"
 

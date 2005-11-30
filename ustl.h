@@ -145,7 +145,7 @@
 #include "ustl/umultimap.h"
 #include "ustl/ustack.h"
 #include "ustl/uqueue.h"
-#include "ustl/fdostream.h"
+#include "ustl/ofstream.h"
 #include "ustl/unumeric.h"
 #include "ustl/ulist.h"
 #include "ustl/uheap.h"

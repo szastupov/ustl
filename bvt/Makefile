@@ -1,4 +1,4 @@
-include ../Common.mk
+include ../Config.mk
 
 BVTCCS	= $(wildcard bvt*.cc)
 SRCS	= ${BVTCCS} bench.cc stdtest.cc

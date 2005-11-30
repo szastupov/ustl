@@ -1,4 +1,4 @@
-include Common.mk
+include Config.mk
 
 SRCS	= $(wildcard *.cc)
 INCS	= $(filter-out bsconf.%,$(wildcard *.h)) ustl.tbff

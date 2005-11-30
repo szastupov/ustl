@@ -6,7 +6,7 @@
 // ofstream.cc
 //
 
-#include "fdostream.h"
+#include "ofstream.h"
 #include "ustring.h"
 #include "uexception.h"
 #include <unistd.h>
