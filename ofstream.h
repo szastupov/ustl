@@ -21,7 +21,7 @@ namespace ustl {
 class ofstream : public ostringstream {
 public:
 			ofstream (void);
-    explicit		ofstream (int fd);
+    explicit		ofstream (int Fd);
     explicit		ofstream (const char* filename, openmode mode = out);
     virtual	       ~ofstream (void);
     inline void		open (const char* filename, openmode mode = out) { m_File.open (filename, mode); clear (m_File.rdstate()); }
@@ -30,7 +30,13 @@ public:
     inline iostate	exceptions (iostate v)	{ ostringstream::exceptions(v); return (m_File.exceptions(v)); }
     inline void		setstate (iostate v)	{ ostringstream::setstate(v); m_File.setstate(v); }
     inline void		clear (iostate v = goodbit)	{ ostringstream::clear(v); m_File.clear(v); }
-    inline off_t	tellp (void) const	{ return (m_File.tellp() + ostringstream::tellp()); }
+    inline off_t	tellp (void) const		{ return (m_File.tellp() + ostringstream::tellp()); }
+    inline int		fd (void) const			{ return (m_File.fd()); }
+    inline void		stat (struct stat& rs) const	{ m_File.stat (rs); }
+    inline void		set_nonblock (bool v = true)	{ m_File.set_nonblock (v); }
+    inline int		ioctl (const char* rname, int request, long argument = 0)	{ return (m_File.ioctl (rname, request, argument)); }
+    inline int		ioctl (const char* rname, int request, int argument)		{ return (m_File.ioctl (rname, request, argument)); }
+    inline int		ioctl (const char* rname, int request, void* argument)		{ return (m_File.ioctl (rname, request, argument)); }
     void		seekp (off_t p, seekdir d = beg);
     void		flush (void);
     virtual size_type	overflow (size_type n = 1);
@@ -44,7 +50,7 @@ private:
 class ifstream : public istringstream {
 public:
 			ifstream (void);
-    explicit		ifstream (int fd);
+    explicit		ifstream (int Fd);
     explicit		ifstream (const char* filename, openmode mode = in);
     inline void		open (const char* filename, openmode mode = in)	{ m_File.open (filename, mode); clear (m_File.rdstate()); }
     inline void		close (void)		{ m_File.close(); clear (m_File.rdstate()); }
@@ -52,7 +58,13 @@ public:
     inline iostate	exceptions (iostate v)	{ istringstream::exceptions(v); return (m_File.exceptions(v)); }
     inline void		setstate (iostate v)	{ istringstream::setstate(v); m_File.setstate(v); }
     inline void		clear (iostate v = goodbit)	{ istringstream::clear(v); m_File.clear(v); }
-    inline off_t	tellg (void) const	{ return (m_File.tellg() - remaining()); }
+    inline off_t	tellg (void) const		{ return (m_File.tellg() - remaining()); }
+    inline int		fd (void) const			{ return (m_File.fd()); }
+    inline void		stat (struct stat& rs) const	{ m_File.stat (rs); }
+    inline void		set_nonblock (bool v = true)	{ m_File.set_nonblock (v); }
+    inline int		ioctl (const char* rname, int request, long argument = 0)	{ return (m_File.ioctl (rname, request, argument)); }
+    inline int		ioctl (const char* rname, int request, int argument)		{ return (m_File.ioctl (rname, request, argument)); }
+    inline int		ioctl (const char* rname, int request, void* argument)		{ return (m_File.ioctl (rname, request, argument)); }
     void		seekg (off_t p, seekdir d = beg);
     void		sync (void);
     virtual size_type	underflow (size_type n = 1);

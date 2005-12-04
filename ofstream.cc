@@ -32,10 +32,10 @@ ofstream::ofstream (void)
     reserve (255);
 }
 
-/// Constructs a stream for writing to \p fd.
-ofstream::ofstream (int fd)
+/// Constructs a stream for writing to \p Fd.
+ofstream::ofstream (int Fd)
 : ostringstream (),
-  m_File (fd)
+  m_File (Fd)
 {
     clear (m_File.rdstate());
     reserve (255);
@@ -86,11 +86,11 @@ ofstream::size_type ofstream::overflow (size_type n)
 
 //----------------------------------------------------------------------
 
-/// Constructs a stream to read from \p fd.
-ifstream::ifstream (int fd)
+/// Constructs a stream to read from \p Fd.
+ifstream::ifstream (int Fd)
 : istringstream (),
   m_Buffer (255),
-  m_File (fd)
+  m_File (Fd)
 {
     link (m_Buffer.data(), 0U);
 }

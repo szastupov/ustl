@@ -43,8 +43,10 @@ public:
     off_t		pos (void) const;
     void		stat (struct stat& rs) const;
     int			ioctl (const char* rname, int request, long argument = 0);
+    inline int		ioctl (const char* rname, int request, int argument)	{ return (fstream::ioctl (rname, request, long(argument))); }
     inline int		ioctl (const char* rname, int request, void* argument)	{ return (fstream::ioctl (rname, request, intptr_t(argument))); }
     int			fcntl (const char* rname, int request, long argument = 0);
+    inline int		fcntl (const char* rname, int request, int argument)	{ return (fstream::fcntl (rname, request, long(argument))); }
     inline int		fcntl (const char* rname, int request, void* argument)	{ return (fstream::fcntl (rname, request, intptr_t(argument))); }
     memlink		mmap (off_t n, off_t offset = 0);
     void		munmap (memlink& l);
