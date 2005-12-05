@@ -73,9 +73,9 @@ STD_BINARY_FUNCTOR (equal_to,		bool,	(a == b))
 STD_BINARY_FUNCTOR (not_equal_to,	bool,	(!(a == b)))
 STD_BINARY_FUNCTOR (greater,		bool,	(b < a))
 STD_BINARY_FUNCTOR (less,		bool,	(a < b))
-STD_BINARY_FUNCTOR (greater_equal,	bool,	(b < a || a == b))
-STD_BINARY_FUNCTOR (less_equal,		bool,	(a < b || a == b))
-STD_BINARY_FUNCTOR (compare,		int,	(a < b ? -1 : (a == b ? 0 : 1)))
+STD_BINARY_FUNCTOR (greater_equal,	bool,	(!(a < b)))
+STD_BINARY_FUNCTOR (less_equal,		bool,	(!(b < a)))
+STD_BINARY_FUNCTOR (compare,		int,	(a < b ? -1 : (b < a)))
 STD_UNARY_FUNCTOR  (identity,		T,	(a))
 
 template <class T1, class T2> struct project1st	: public binary_function<T1,T2,T1>    { inline const T1& operator()(const T1& a, const T2&) const { return (a); } };

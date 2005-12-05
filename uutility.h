@@ -171,7 +171,7 @@ inline T absv (T v)
 template <typename T>
 inline T sign (T v)
 {
-    return (0 < v ? 1 : (v < 0 ? -1 : 0));
+    return (v < 0 ? -1 : (0 < v));
 }
 
 /// Returns the absolute value of the distance i1 and i2
@@ -263,14 +263,14 @@ inline bool operator> (const T& x, const T& y)
 template <typename T>
 inline bool operator<= (const T& x, const T& y)
 {
-    return (x == y || x < y);
+    return (!(y < x));
 }
 
 /// Template of making >= from < and ==
 template <typename T>
 inline bool operator>= (const T& x, const T& y)
 {
-    return (x == y || y < x);
+    return (!(x < y));
 }
 
 /// Packs \p s multiple times into \p b. Useful for loop unrolling.
@@ -323,10 +323,11 @@ namespace simd {
     /// Call after you are done using SIMD algorithms for 64 bit tuples.
 #if CPU_HAS_MMX
     inline void reset_mmx (void) __attribute__((always_inline));
+    #define ALL_MMX_REGS_CHANGELIST "mm0","mm1","mm2","mm3","mm4","mm5","mm6","mm7","st","st(1)","st(2)","st(3)","st(4)","st(5)","st(6)","st(7)"
     #if CPU_HAS_3DNOW
-	inline void reset_mmx (void) { asm ("femms":::"mm0","mm1","mm2","mm3","mm4","mm5","mm6","mm7","st","st(1)","st(2)","st(3)","st(4)","st(5)","st(6)","st(7)"); }
+	inline void reset_mmx (void) { asm ("femms":::ALL_MMX_REGS_CHANGELIST); }
     #else
-	inline void reset_mmx (void) { asm ("emms":::"mm0","mm1","mm2","mm3","mm4","mm5","mm6","mm7","st","st(1)","st(2)","st(3)","st(4)","st(5)","st(6)","st(7)"); }
+	inline void reset_mmx (void) { asm ("emms":::ALL_MMX_REGS_CHANGELIST); }
     #endif
 #else
     inline void reset_mmx (void) {}

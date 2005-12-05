@@ -27,6 +27,7 @@ Release 0.9
 		For now, open always throws a file_exception instead.
 	* Do cout.flush() before read in cin, like std does.
 	* max_size() on linked objects should return size(), because it is.
+	* >=, <=, and compare templates no longer require == (>= is !<)
 
 2005-11-10 Release 0.8
 	* API CHANGE: changed all string's find members to return offsets
