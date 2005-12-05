@@ -1,7 +1,11 @@
+################ Library version #####################################
+
 LIBNAME		= @LIBNAME@
 MAJOR		= @LIB_MAJOR@
 MINOR		= @LIB_MINOR@
 BUILD		= @LIB_BUILD@
+
+################ Progams #############################################
 
 CC		= @CC@ 
 CXX		= @CXX@ 
@@ -10,8 +14,13 @@ AR		= @AR@
 RANLIB		= @RANLIB@
 DOXYGEN		= @DOXYGEN@
 INSTALL		= @INSTALL@
-RM		= @RM@
-LN		= @LN@
+
+INSTALLDIR	= ${INSTALL} -d
+INSTALLLIB	= ${INSTALL} -p -m 644
+INSTALLEXE	= ${INSTALL} -p -m 755
+INSTALLDATA	= ${INSTALL} -p -m 644
+
+################ Destination #########################################
 
 prefix		= @prefix@
 exec_prefix	= @exec_prefix@
@@ -19,10 +28,7 @@ BINDIR		= @bindir@
 INCDIR		= @includedir@
 LIBDIR		= @libdir@
 
-INSTALLDIR	= ${INSTALL} -d
-INSTALLLIB	= ${INSTALL} -p -m 644
-INSTALLEXE	= ${INSTALL} -p -m 755
-INSTALLDATA	= ${INSTALL} -p -m 644
+################ Compiler options ####################################
 
 CWARNOPTS	= -Werror -Wall -W -Wpointer-arith -Wno-cast-align \
 		-Wcast-qual -Wwrite-strings -Wshadow -Wredundant-decls @SYSWARNS@
@@ -35,7 +41,6 @@ CUSTOMLIBDIR	=@CUSTOMLIBDIR@
 #BUILD_SHARED	= 1
 #BUILD_STATIC	= 1
 #DEBUG		= 1
-#PROFILE	= 1
 #STANDALONE	= -nodefaultlibs
 
 CFLAGS		= @CFLAGS@ \
@@ -52,11 +57,9 @@ else
     CXXFLAGS	+= -O3 -DNDEBUG=1
     LDFLAGS	+= 
 endif
-ifdef PROFILE
-    CFLAGS	+= -pg
-    CXXFLAGS	+= -pg
-    LDFLAGS	+= -pg
-endif
+
+################ Linker options ######################################
+
 ifdef STANDALONE
     LANG_LIBS	= @libgcc@ @libc@
     LIBS	+= @libsupc++@ @libgcc_eh@ ${LANG_LIBS}
@@ -66,12 +69,4 @@ ifdef BUILD_SHARED
     CXXFLAGS	+= -fPIC
 endif
 SHBLDFL		= @SHBLDFL@
-
-LIBA		= lib${LIBNAME}.a
-LIBSO		= lib${LIBNAME}.so
-ifdef MAJOR
-LIBSOLNK	= ${LIBSO}.${MAJOR}.${MINOR}
-LIBSOBLD	= ${LIBSO}.${MAJOR}.${MINOR}.${BUILD}
-endif
-TOCLEAN		+= ${LIBSO} ${LIBA} ${LIBSOBLD}
 

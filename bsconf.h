@@ -55,9 +55,7 @@ static cpchar_t g_ProgVars [] = {
     "AR",	"ar",		"ar",		"echo",
     "RANLIB",	"ranlib",	"ranlib",	"touch",
     "DOXYGEN",	"doxygen",	"doxygen",	"echo",
-    "INSTALL",	"install",	"install -c",	"cp",
-    "RM",	"rm",		"rm -f",	"rm",
-    "LN",	"ln",		"ln -sf",	"cp"
+    "INSTALL",	"install",	"install -c",	"cp"
 };
 
 /*   NAME               IF NOT FOUND                    IF FOUND */
@@ -129,7 +127,6 @@ static cpchar_t g_Components [] = {
     "shared",		"#BUILD_SHARED\t= 1",			"BUILD_SHARED\t= 1 ",
     "static",		"#BUILD_STATIC\t= 1",			"BUILD_STATIC\t= 1 ",
     "debug",		"#DEBUG\t\t= 1",			"DEBUG\t\t= 1 ",
-    "profile",		"#PROFILE\t= 1",			"PROFILE\t\t= 1 ",
     "bounds",		"#undef WANT_STREAM_BOUNDS_CHECKING",	"#define WANT_STREAM_BOUNDS_CHECKING 1 ",
     "fastcopy",		"#undef WANT_UNROLLED_COPY",		"#define WANT_UNROLLED_COPY 1 ",
 #if __i386__ && __GNUC__ >= 3
@@ -146,11 +143,10 @@ static SComponentInfo g_ComponentInfos [VectorSize(g_Components) / 3] = {
     { 1, "Builds the shared library (if supported by the OS)" },
     { 0, "Builds the static library" },
     { 0, "Compiles the library with debugging information" },
-    { 0, "Compiles the library with profiling (gprof) information" },
     { 1, "Disable runtime bounds checking on stream reads/writes" },
-    { 1, "Adds optimized specializations for copy/fill" },
+    { 1, "Disable specializations for copy/fill" },
 #if __i386__ && __GNUC__ >= 3
-    { 1, "Enables use of MMX/SSE/3dNow! instructions" },
+    { 1, "Disable use of MMX/SSE/3dNow! instructions" },
 #endif
 #if (__GNUC__ >= 3)
     { 0, "Link with libstdc++" },

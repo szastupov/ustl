@@ -1,13 +1,55 @@
 include Config.mk
 
+################ Source files ##########################################
+
 SRCS	= $(wildcard *.cc)
 INCS	= $(filter-out bsconf.%,$(wildcard *.h)) ustl.tbff
 OBJS	= $(SRCS:.cc=.o)
 DOCT	= ustldoc.in
 
-TOCLEAN	+= config.status config.log
+################ Library link names ####################################
 
-########################################################################
+LIBA	= lib${LIBNAME}.a
+LIBSO	= lib${LIBNAME}.so
+ifdef MAJOR
+LIBSOLNK= ${LIBSO}.${MAJOR}.${MINOR}
+LIBSOBLD= ${LIBSO}.${MAJOR}.${MINOR}.${BUILD}
+endif
+TOCLEAN	+= ${LIBSO} ${LIBA} ${LIBSOBLD}
+
+################ Compilation ###########################################
+
+%.o:	%.cc
+	@echo "    Compiling $< ..."
+	@${CXX} ${CXXFLAGS} -o $@ -c $<
+
+%.s:	%.cc
+	@echo "    Compiling $< to assembly ..."
+	@${CXX} ${CXXFLAGS} -S -o $@ -c $<
+
+%.h.gch:	%.h
+	@echo "    Compiling $< ..."
+	@${CXX} ${CXXFLAGS} -o $@ -c $<
+
+gch:	${INCDIR}/${LIBNAME}.h.gch
+${INCDIR}/${LIBNAME}.h.gch:	${INCS}
+	@echo "    Creating precompiled header ..."
+	@${CXX} ${CXXFLAGS} -o $@ -c ${INCDIR}/${LIBNAME}.h
+
+${LIBA}:	${OBJS}
+	@echo "Linking $@ ..."
+	@${AR} r $@ $?
+	@${RANLIB} $@
+
+${LIBSOBLD}:	${OBJS}
+	@echo "Linking $@ ..."
+	@${LD} ${LDFLAGS} ${SHBLDFL} -o $@ $^ ${LIBS}
+
+html:
+dox:
+	@${DOXYGEN} ${DOCT}
+
+################ Installation ##########################################
 
 .PHONY:	all install uninstall install-incs uninstall-inst
 
@@ -27,26 +69,22 @@ install:	install-static
 uninstall:	uninstall-static
 endif
 
-${LIBA}:	${OBJS}
-	@echo "Linking $@ ..."
-	@${AR} r $@ $?
-	@${RANLIB} $@
-
-${LIBSOBLD}:	${OBJS}
-	@echo "Linking $@ ..."
-	@${LD} ${LDFLAGS} ${SHBLDFL} -o $@ $^ ${LIBS}
-
 .PHONY: install-static install-shared uninstall-static uninstall-shared
+.PHONY:	gch clean depend dox html check dist distclean maintainer-clean
 
 install-shared: ${LIBSOBLD} install-incs
 	@echo "Installing ${LIBSOBLD} to ${LIBDIR} ..."
 	@${INSTALLDIR} ${LIBDIR}
 	@${INSTALLLIB} ${LIBSOBLD} ${LIBDIR}
-	@(cd ${LIBDIR}; ${RM} ${LIBSO} ${LIBSOLNK}; ${LN} -sf ${LIBSOBLD} ${LIBSO}; ${LN} -sf ${LIBSOBLD} ${LIBSOLNK})
+	@(cd ${LIBDIR}; \
+	    rm -f ${LIBSO} ${LIBSOLNK}; \
+	    ln -sf ${LIBSOBLD} ${LIBSO}; \
+	    ln -sf ${LIBSOBLD} ${LIBSOLNK})
 
 uninstall-shared: uninstall-incs
 	@echo "Removing ${LIBSOBLD} from ${LIBDIR} ..."
-	@${RM} -f ${LIBDIR}/${LIBSO} ${LIBDIR}/${LIBSOLNK} ${LIBDIR}/${LIBSOBLD}
+	@(cd ${LIBDIR}; \
+	    rm -f ${LIBSO} ${LIBSOLNK} ${LIBSOBLD})
 
 install-static: ${LIBA} install-incs
 	@echo "Installing ${LIBA} to ${LIBDIR} ..."
@@ -55,7 +93,7 @@ install-static: ${LIBA} install-incs
 
 uninstall-static: uninstall-incs
 	@echo "Removing ${LIBA} from ${LIBDIR} ..."
-	@${RM} -f ${LIBDIR}/${LIBA}
+	@rm -f ${LIBDIR}/${LIBA}
 
 install-incs: ${INCS}
 	@echo "Installing headers to ${INCDIR} ..."
@@ -67,39 +105,22 @@ install-incs: ${INCS}
 
 uninstall-incs:
 	@echo "Removing headers from ${INCDIR} ..."
-	@${RM} -rf ${INCDIR}/${LIBNAME} ${INCDIR}/${LIBNAME}.h
+	@rm -rf ${INCDIR}/${LIBNAME} ${INCDIR}/${LIBNAME}.h
 
-
-%.o:	%.cc
-	@echo "    Compiling $< ..."
-	@${CXX} ${CXXFLAGS} -o $@ -c $<
-
-%.s:	%.cc
-	@echo "    Compiling $< to assembly ..."
-	@${CXX} ${CXXFLAGS} -S -o $@ -c $<
-
-%.h.gch:	%.h
-	@echo "    Compiling $< ..."
-	@${CXX} ${CXXFLAGS} -o $@ -c $<
-
-.PHONY:	gch clean depend dox dist dist-clean maintainer-clean
-
-gch:	${INCDIR}/${LIBNAME}.h.gch
-${INCDIR}/${LIBNAME}.h.gch:	${INCS}
-	@echo "    Creating precompiled header ..."
-	@${CXX} ${CXXFLAGS} -o $@ -c ${INCDIR}/${LIBNAME}.h
+################ Maintenance ###########################################
 
 clean:
 	@echo "Removing generated files ..."
-	@${RM} -f ${OBJS} ${TOCLEAN} *.rpo
+	@rm -f ${OBJS} ${TOCLEAN} *.rpo
 	@+${MAKE} -C bvt clean
 
 depend: ${SRCS}
 	@${CXX} ${CXXFLAGS} -M ${SRCS} > .depend;
 	@+${MAKE} -C bvt depend
 
-dox:
-	@${DOXYGEN} ${DOCT}
+check:	install
+	@echo "Compiling and running build verification tests ..."
+	@+${MAKE} -C bvt run
 
 TMPDIR	= /tmp
 DISTDIR	= ${HOME}/stored
@@ -115,10 +136,10 @@ dist:
 	(cd ${TMPDIR}/${DISTNAM}; rm -rf CVS; cd bvt; rm -rf CVS; cd ../docs; rm -rf CVS html)
 	(cd ${TMPDIR}; tar jcf ${DISTDIR}/${DISTTAR} ${DISTNAM}; rm -rf ${DISTNAM})
 
-dist-clean:	clean
+distclean:	clean
 	@rm -f Common.mk config.h ${LIBNAME}.spec bsconf.o bsconf .depend bvt/.depend
 
-maintainer-clean: dist-clean
+maintainer-clean: distclean
 	@rm -rf docs/html
 
 -include .depend
