@@ -17,7 +17,16 @@ LIBSOBLD= ${LIBSO}.${MAJOR}.${MINOR}.${BUILD}
 endif
 TOCLEAN	+= ${LIBSO} ${LIBA} ${LIBSOBLD}
 
+ifdef BUILD_SHARED
+ALLLIBS	+= ${LIBSOBLD}
+endif
+ifdef BUILD_STATIC
+ALLLIBS	+= ${LIBA}
+endif
+
 ################ Compilation ###########################################
+
+all:	${ALLLIBS}
 
 %.o:	%.cc
 	@echo "    Compiling $< ..."
@@ -55,16 +64,13 @@ dox:
 
 ifdef BUILD_SHARED
 ifdef BUILD_STATIC
-all:		${LIBA} ${LIBSOBLD}
 install:	install-static install-shared
 uninstall:	uninstall-static uninstall-shared
 else
-all:		${LIBSOBLD}
 install:	install-shared
 uninstall:	uninstall-shared
 endif
 else
-all:		${LIBA}
 install:	install-static
 uninstall:	uninstall-static
 endif
