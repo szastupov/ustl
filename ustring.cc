@@ -185,7 +185,7 @@ string::size_type string::copyto (pointer p, size_type n, const_iterator start) 
     const size_type len1 = distance (first1, last1);
     const size_type len2 = last2 ? distance (first2, last2) : strlen(first2);
     int rv = memcmp (first1, first2, min (len1, len2));
-    return (rv ? rv : sign (int(len1) - len2));
+    return (rv ? rv : sign (int(len1 - len2)));
 }
 
 /// Returns true if this string is equal to string \p s.
