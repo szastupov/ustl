@@ -52,10 +52,10 @@ public:
     inline void			reserve (size_type n, bool bExact = true);
     inline void			resize (size_type n, bool bExact = true);
     inline size_type		capacity (void) const		{ return (m_Data.capacity() / sizeof(T));	}
-    inline size_type		size (void) const		{ return (m_Data.size() / sizeof(T));	}
+    inline size_type		size (void) const		{ return (m_Data.size() / sizeof(T));		}
     inline size_type		max_size (void) const		{ return (m_Data.max_size() / sizeof(T));	}
     inline bool			empty (void) const		{ return (m_Data.empty());			}
-    inline iterator		begin (void)			{ return (iterator (m_Data.begin()));	}
+    inline iterator		begin (void)			{ return (iterator (m_Data.begin()));		}
     inline const_iterator	begin (void) const		{ return (const_iterator (m_Data.begin()));	}
     inline iterator		end (void)			{ return (iterator (m_Data.end()));		}
     inline const_iterator	end (void) const		{ return (const_iterator (m_Data.end()));	}
@@ -63,15 +63,18 @@ public:
     inline const_reverse_iterator	rbegin (void) const	{ return (const_reverse_iterator (end()));	}
     inline reverse_iterator		rend (void)		{ return (reverse_iterator (begin()));		}
     inline const_reverse_iterator	rend (void) const	{ return (const_reverse_iterator (begin()));	}
-    inline reference		at (size_type i);
-    inline const_reference	at (size_type i) const;
-    inline reference		operator[] (size_type i);
-    inline const_reference	operator[] (size_type i) const;
-    inline reference		front (void);
-    inline const_reference	front (void) const;
-    inline reference		back (void);
-    inline const_reference	back (void) const;
-    inline void			push_back (const T& v = T());
+    inline iterator		iat (size_type i)		{ assert (i <= size()); return (begin() + i); }
+    inline const_iterator	iat (size_type i) const		{ assert (i <= size()); return (begin() + i); }
+    inline reference		at (size_type i)		{ assert (i < size()); return (begin()[i]); }
+    inline const_reference	at (size_type i) const		{ assert (i < size()); return (begin()[i]); }
+    inline reference		operator[] (size_type i)	{ return (at (i)); }
+    inline const_reference	operator[] (size_type i) const	{ return (at (i)); }
+    inline reference		front (void)			{ return (at(0)); }
+    inline const_reference	front (void) const		{ return (at(0)); }
+    inline reference		back (void)			{ assert (!empty()); return (end()[-1]); }
+    inline const_reference	back (void) const		{ assert (!empty()); return (end()[-1]); }
+    inline void			push_back (void);
+    inline void			push_back (const T& v);
     inline void			pop_back (void)			{ m_Data.memlink::resize (m_Data.size() - sizeof(T)); }
     inline void			clear (void)			{ m_Data.clear(); }
     void			deallocate (void) throw();
@@ -107,9 +110,8 @@ void vector<T>::reserve (size_type n, bool bExact)
 {
     const size_type oldCapacity = capacity();
     m_Data.reserve (n * sizeof(T), bExact);
-    const size_type newCapacity = capacity();
-    if (newCapacity > oldCapacity)
-	construct (begin() + oldCapacity, begin() + newCapacity);
+    if (capacity() > oldCapacity)
+	construct (begin() + oldCapacity, begin() + capacity());
 }
 
 /// Resizes the vector to contain \p n elements.
@@ -125,8 +127,7 @@ void vector<T>::resize (size_type n, bool bExact)
 template <typename T>
 void vector<T>::deallocate (void) throw()
 {
-    if (capacity())
-	destroy (begin(), begin() + capacity());
+    destroy (begin(), begin() + capacity());
     m_Data.deallocate();
 }
 
@@ -179,68 +180,6 @@ vector<T>::~vector (void) throw()
     deallocate();
 }
 
-/// Returns the reference to the i'th element.
-template <typename T>
-inline typename vector<T>::reference vector<T>::at (uoff_t i1)
-{
-    assert (i1 < size());
-    return (*(begin() + i1));
-}
-
-/// Returns the const reference to the i'th element.
-template <typename T>
-inline typename vector<T>::const_reference vector<T>::at (uoff_t i2) const
-{
-    assert (i2 < size());
-    return (*(begin() + i2));
-}
-
-/// Returns the reference to the i'th element.
-template <typename T>
-inline typename vector<T>::reference vector<T>::operator[] (uoff_t i3)
-{
-    return (at(i3));
-}
-
-/// Returns the const reference to the i'th element.
-template <typename T>
-inline typename vector<T>::const_reference vector<T>::operator[] (uoff_t i4) const
-{
-    return (at(i4));
-}
-
-/// Returns the reference to the first element.
-template <typename T>
-inline typename vector<T>::reference vector<T>::front (void)
-{
-    assert (size() > 0);
-    return (*begin());
-}
-
-/// Returns the const reference to the first element.
-template <typename T>
-inline typename vector<T>::const_reference vector<T>::front (void) const
-{
-    assert (size() > 0);
-    return (*begin());
-}
-
-/// Returns the reference to the last element.
-template <typename T>
-inline typename vector<T>::reference vector<T>::back (void)
-{
-    assert (size() > 0);
-    return (*(end() - 1));
-}
-
-/// Returns the const reference to the last element.
-template <typename T>
-inline typename vector<T>::const_reference vector<T>::back (void) const
-{
-    assert (size() > 0);
-    return (*(end() - 1));
-}
-
 /// Copies the range [\p i1, \p i2]
 template <typename T>
 inline void vector<T>::assign (const_iterator i1, const_iterator i2)
@@ -270,9 +209,9 @@ inline const vector<T>& vector<T>::operator= (const vector<T>& v)
 template <typename T>
 typename vector<T>::iterator vector<T>::insert_space (iterator ip, size_type n)
 {
-    const uoff_t ipi = distance (begin(), ip);
+    const uoff_t ipmi = distance (m_Data.begin(), memblock::iterator(ip));
     reserve (size() + n, false);
-    return (iterator (m_Data.insert (memblock::iterator(begin() + ipi), n * sizeof(T))));
+    return (iterator (m_Data.insert (m_Data.iat(ipmi), n * sizeof(T))));
 }
 
 /// Inserts \p n elements with value \p v at offsets \p ip.
@@ -288,8 +227,7 @@ typename vector<T>::iterator vector<T>::insert (iterator ip, size_type n, const 
 template <typename T>
 typename vector<T>::iterator vector<T>::insert (iterator ip, const T& v)
 {
-    ip = insert_space (ip, 1);
-    *ip = v;
+    *(ip = insert_space (ip, 1)) = v;
     return (ip);
 }
 
@@ -318,12 +256,19 @@ inline typename vector<T>::iterator vector<T>::erase (iterator ep1, iterator ep2
     return (erase (ep1, distance(ep1, ep2)));
 }
 
+/// Inserts a default value at the end of the vector.
+template <typename T>
+inline void vector<T>::push_back (void)
+{
+    resize (size() + 1, false);
+}
+
 /// Inserts value \p v at the end of the vector.
 template <typename T>
 void vector<T>::push_back (const T& v)
 {
-    resize (size() + 1, false);
-    *(end() - 1) = v;
+    push_back();
+    back() = v;
 }
 
 /// Use with vector classes to allocate and link to stack space. \p n is in elements.

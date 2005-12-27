@@ -71,7 +71,8 @@ public:
     inline bool		empty (void) const		{ return (!size()); }
    inline const_pointer	cdata (void) const		{ return (m_CData); }
     inline iterator	begin (void) const		{ return (iterator (cdata())); }
-    inline iterator	end (void) const		{ return (begin() + size()); }
+    inline iterator	iat (size_type i) const		{ assert (i <= size()); return (begin() + i); }
+    inline iterator	end (void) const		{ return (iat (size())); }
     inline void		resize (size_type n)		{ m_Size = n; }
     inline void		read (istream&)			{ assert (!"ustl::cmemlink is a read-only object."); }
     void		write (ostream& os) const;

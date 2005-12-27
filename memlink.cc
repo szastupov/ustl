@@ -130,10 +130,8 @@ void memlink::fill (iterator start, const void* p, size_type elSize, size_type e
     assert (start >= begin() && start + elSize * elCount <= end());
     if (elSize == 1)
 	fill_n (start, elCount, *reinterpret_cast<const uint8_t*>(p));
-    else {
-	while (elCount--)
-	    start = copy_n (const_iterator(p), elSize, start);
-    }
+    else while (elCount--)
+	start = copy_n (const_iterator(p), elSize, start);
 }
 
 /// Shifts the data in the linked block from \p start to \p start + \p n.

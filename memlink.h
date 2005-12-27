@@ -72,9 +72,11 @@ public:
     void		swap (memlink& l);
     inline pointer	data (void)			{ return (m_Data); }
     inline iterator	begin (void)			{ assert ((data() || !cdata()) && "This container has no modifiable data. What you probably want is to first make a writable copy with copy_link."); return (iterator (data())); }
-    inline iterator	end (void)			{ return (begin() + size()); }
+    inline iterator	iat (size_type i)		{ assert (i <= size()); return (begin() + i); }
+    inline iterator	end (void)			{ return (iat (size())); }
     inline const_iterator	begin (void) const	{ return (cmemlink::begin()); }
     inline const_iterator	end (void) const	{ return (cmemlink::end()); }
+    inline const_iterator	iat (size_type i) const	{ return (cmemlink::iat (i)); }
     void		fill (iterator start, const void* p, size_type elsize, size_type elCount = 1);
     void		insert (iterator start, size_type size);
     void		erase (iterator start, size_type size);
