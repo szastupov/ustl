@@ -17,14 +17,21 @@ LIBSOBLD= ${LIBSO}.${MAJOR}.${MINOR}.${BUILD}
 endif
 TOCLEAN	+= ${LIBSO} ${LIBA} ${LIBSOBLD}
 
+ALLINST	= install-incs
 ifdef BUILD_SHARED
 ALLLIBS	+= ${LIBSOBLD}
+ALLINST	+= install-shared
 endif
 ifdef BUILD_STATIC
 ALLLIBS	+= ${LIBA}
+ALLINST	+= install-static
 endif
 
 ################ Compilation ###########################################
+
+.PHONY:	all install uninstall install-incs uninstall-incs
+.PHONY: install-static install-shared uninstall-static uninstall-shared
+.PHONY:	clean depend dox html check dist distclean maintainer-clean
 
 all:	${ALLLIBS}
 
@@ -35,15 +42,6 @@ all:	${ALLLIBS}
 %.s:	%.cc
 	@echo "    Compiling $< to assembly ..."
 	@${CXX} ${CXXFLAGS} -S -o $@ -c $<
-
-%.h.gch:	%.h
-	@echo "    Compiling $< ..."
-	@${CXX} ${CXXFLAGS} -o $@ -c $<
-
-gch:	${INCDIR}/${LIBNAME}.h.gch
-${INCDIR}/${LIBNAME}.h.gch:	${INCS}
-	@echo "    Creating precompiled header ..."
-	@${CXX} ${CXXFLAGS} -o $@ -c ${INCDIR}/${LIBNAME}.h
 
 ${LIBA}:	${OBJS}
 	@echo "Linking $@ ..."
@@ -60,25 +58,10 @@ dox:
 
 ################ Installation ##########################################
 
-.PHONY:	all install uninstall install-incs uninstall-inst
+install:	${ALLINST}
+uninstall:	$(subst install,uninstall,${ALLINST})
 
-ifdef BUILD_SHARED
-ifdef BUILD_STATIC
-install:	install-static install-shared
-uninstall:	uninstall-static uninstall-shared
-else
-install:	install-shared
-uninstall:	uninstall-shared
-endif
-else
-install:	install-static
-uninstall:	uninstall-static
-endif
-
-.PHONY: install-static install-shared uninstall-static uninstall-shared
-.PHONY:	gch clean depend dox html check dist distclean maintainer-clean
-
-install-shared: ${LIBSOBLD} install-incs
+install-shared: ${LIBSOBLD}
 	@echo "Installing ${LIBSOBLD} to ${LIBDIR} ..."
 	@${INSTALLDIR} ${LIBDIR}
 	@${INSTALLLIB} ${LIBSOBLD} ${LIBDIR}
@@ -87,17 +70,17 @@ install-shared: ${LIBSOBLD} install-incs
 	    ln -sf ${LIBSOBLD} ${LIBSO}; \
 	    ln -sf ${LIBSOBLD} ${LIBSOLNK})
 
-uninstall-shared: uninstall-incs
+uninstall-shared:
 	@echo "Removing ${LIBSOBLD} from ${LIBDIR} ..."
 	@(cd ${LIBDIR}; \
 	    rm -f ${LIBSO} ${LIBSOLNK} ${LIBSOBLD})
 
-install-static: ${LIBA} install-incs
+install-static: ${LIBA}
 	@echo "Installing ${LIBA} to ${LIBDIR} ..."
 	@${INSTALLDIR} ${LIBDIR}
 	@${INSTALLLIB} ${LIBA} ${LIBDIR}
 
-uninstall-static: uninstall-incs
+uninstall-static:
 	@echo "Removing ${LIBA} from ${LIBDIR} ..."
 	@rm -f ${LIBDIR}/${LIBA}
 
