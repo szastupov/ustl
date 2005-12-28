@@ -115,8 +115,8 @@ void ostringstream::iwrite (int v)		{ sprintf_iwrite (v, "d"); }
 void ostringstream::iwrite (unsigned int v)	{ sprintf_iwrite (v, "u"); }
 void ostringstream::iwrite (long v)		{ sprintf_iwrite (v, "ld"); }
 void ostringstream::iwrite (unsigned long v)	{ sprintf_iwrite (v, "lu"); }
-void ostringstream::iwrite (float v)		{ simd::reset_mmx(); sprintf_iwrite (v, "f"); }
-void ostringstream::iwrite (double v)		{ simd::reset_mmx(); sprintf_iwrite (v, "lf"); }
+void ostringstream::iwrite (float v)		{ sprintf_iwrite (v, "f"); }
+void ostringstream::iwrite (double v)		{ sprintf_iwrite (v, "lf"); }
 #if HAVE_LONG_LONG
 void ostringstream::iwrite (long long v)	{ sprintf_iwrite (v, "lld"); }
 void ostringstream::iwrite (unsigned long long v) { sprintf_iwrite (v, "llu"); }
@@ -168,7 +168,6 @@ int ostringstream::vformat (const char* fmt, va_list args)
 /// Equivalent to a sprintf on the string.
 int ostringstream::format (const char* fmt, ...)
 {
-    simd::reset_mmx();
     va_list args;
     va_start (args, fmt);
     const int rv = vformat (fmt, args);

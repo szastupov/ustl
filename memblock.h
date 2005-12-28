@@ -56,7 +56,7 @@ public:
     void			read (istream& is);
     void			read_file (const char* filename);
 protected:
-    virtual size_type		minimumFreeCapacity (void) const;
+    inline virtual size_type	minimumFreeCapacity (void) const { return (0); }
 private:
     size_type			m_Capacity;	///< Number of bytes allocated by Resize.
 };

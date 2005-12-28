@@ -11,7 +11,7 @@
 
 #ifdef WITHOUT_LIBSTDCPP
 
-void* operator new (size_t n) throw (ustl::bad_alloc)
+void* throwing_malloc (size_t n) throw (ustl::bad_alloc)
 {
     void* p = malloc (n);
     if (!p)
@@ -19,21 +19,7 @@ void* operator new (size_t n) throw (ustl::bad_alloc)
     return (p);
 }
 
-void* operator new[] (size_t n) throw (ustl::bad_alloc)
-{
-    void* p = malloc (n);
-    if (!p)
-	throw ustl::bad_alloc (n);
-    return (p);
-}
-
-void operator delete (void* p) throw()
-{
-    if (p)
-	free (p);
-}
-
-void operator delete[] (void* p) throw()
+void free_nullok (void* p) throw()
 {
     if (p)
 	free (p);

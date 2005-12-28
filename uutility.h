@@ -171,7 +171,7 @@ inline T absv (T v)
 template <typename T>
 inline T sign (T v)
 {
-    return (v < 0 ? -1 : (0 < v));
+    return ((0 < v) - (v < 0));
 }
 
 /// Returns the absolute value of the distance i1 and i2

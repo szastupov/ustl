@@ -53,13 +53,20 @@ fstream::~fstream (void) throw()
     assert (!(rdstate() & badbit) && "close failed in the destructor! This may lead to loss of user data. Please call close() manually and either enable exceptions or check the badbit.");
 }
 
+/// Sets state \p s and throws depending on the exception setting.
+void fstream::set_and_throw (iostate s, const char* op)
+{
+    if (ios_base::set_and_throw (s))
+	throw file_exception (op, name());
+}
+
 /// Attaches to the given \p nfd.
 void fstream::attach (int nfd, const char* filename)
 {
     assert (filename && "Don't do that");
     clear (goodbit);
-    if (nfd < 0 && set_and_throw (badbit))
-	throw file_exception ("attach", filename);
+    if (nfd < 0 && ios_base::set_and_throw (badbit))
+	throw file_exception ("open", filename);
     close();
     m_fd = nfd;
     m_Filename = filename;
@@ -99,20 +106,15 @@ void fstream::detach (void)
 /// \warning The string at \p filename must exist until the object is closed.
 void fstream::open (const char* filename, openmode mode, mode_t perms)
 {
-    clear (goodbit);
     int nfd = ::open (filename, om_to_flags(mode), perms);
-    if (nfd < 0 && set_and_throw (badbit))
-	throw file_exception ("open", filename);
-    close();
-    m_fd = nfd;
-    m_Filename = filename;
+    attach (nfd, filename);
 }
 
 /// Closes the file and throws on error.
 void fstream::close (void)
 {
-    if (m_fd >= 0 && ::close(m_fd) && set_and_throw (badbit | failbit))
-	throw file_exception ("close", name());
+    if (m_fd >= 0 && ::close(m_fd))
+	set_and_throw (badbit | failbit, "close");
     detach();
 }
 
@@ -120,8 +122,8 @@ void fstream::close (void)
 off_t fstream::seek (off_t n, seekdir whence)
 {
     off_t p = lseek (m_fd, n, whence);
-    if (p < 0 && set_and_throw (failbit))
-	throw file_exception ("seek", name());
+    if (p < 0)
+	set_and_throw (failbit, "seek");
     return (p);
 }
 
@@ -147,9 +149,9 @@ off_t fstream::readsome (void* p, off_t n)
     do { brn = ::read (m_fd, p, n); } while (brn < 0 && errno == EINTR);
     if (brn > 0)
 	return (brn);
-    if (brn < 0 && errno != EAGAIN && set_and_throw (failbit))
-	throw file_exception ("read", name());
-    if (!brn && set_and_throw (eofbit | failbit))
+    if (brn < 0 && errno != EAGAIN)
+	set_and_throw (failbit, "read");
+    if (!brn && ios_base::set_and_throw (eofbit | failbit))
 	throw stream_bounds_exception ("read", name(), pos(), n, 0);
     return (0);
 }
@@ -164,12 +166,12 @@ off_t fstream::write (const void* p, off_t n)
 	if (bwn > 0)
 	    btw -= bwn;
 	else if (!bwn) {
-	    if (set_and_throw (eofbit | failbit))
+	    if (ios_base::set_and_throw (eofbit | failbit))
 		throw stream_bounds_exception ("write", name(), pos() - bw, n, bw);
 	    break;
 	} else if (errno != EINTR) {
-	    if (errno != EAGAIN && set_and_throw (failbit))
-		throw file_exception ("write", name());
+	    if (errno != EAGAIN)
+		set_and_throw (failbit, "write");
 	    break;
 	}
     }
@@ -188,8 +190,8 @@ off_t fstream::size (void) const
 /// Synchronizes the file's data and status with the disk.
 void fstream::sync (void)
 {
-    if (fsync (m_fd) && set_and_throw (failbit))
-	throw file_exception ("sync", name());
+    if (fsync (m_fd))
+	set_and_throw (failbit, "sync");
 }
 
 /// Get the stat structure.
@@ -203,8 +205,8 @@ void fstream::stat (struct stat& rs) const
 int fstream::ioctl (const char* rname, int request, long argument)
 {
     int rv = ::ioctl (m_fd, request, argument);
-    if (rv < 0 && set_and_throw (failbit))
-	throw file_exception (rname, name());
+    if (rv < 0)
+	set_and_throw (failbit, rname);
     return (rv);
 }
 
@@ -212,8 +214,8 @@ int fstream::ioctl (const char* rname, int request, long argument)
 int fstream::fcntl (const char* rname, int request, long argument)
 {
     int rv = ::fcntl (m_fd, request, argument);
-    if (rv < 0 && set_and_throw (failbit))
-	throw file_exception (rname, name());
+    if (rv < 0)
+	set_and_throw (failbit, rname);
     return (rv);
 }
 
@@ -222,7 +224,7 @@ memlink fstream::mmap (off_t n, off_t offset)
 {
     void* result = ::mmap (NULL, n, PROT_READ | PROT_WRITE, MAP_SHARED, m_fd, offset);
     if (result == MAP_FAILED)
-	throw file_exception ("mmap", name());
+	set_and_throw (failbit, "mmap");
     return (memlink (result, n));
 }
 
@@ -230,7 +232,7 @@ memlink fstream::mmap (off_t n, off_t offset)
 void fstream::munmap (memlink& l)
 {
     if (::munmap (l.data(), l.size()))
-	throw file_exception ("munmap", name());
+	set_and_throw (failbit, "munmap");
     l.unlink();
 }
 
@@ -238,7 +240,7 @@ void fstream::munmap (memlink& l)
 void fstream::msync (memlink& l)
 {
     if (::msync (l.data(), l.size(), MS_ASYNC | MS_INVALIDATE))
-	throw file_exception ("msync", name());
+	set_and_throw (failbit, "msync");
 }
 
 void fstream::set_nonblock (bool v)

@@ -14,25 +14,39 @@
 
 namespace ustl {
 
-static const xfmt_t	xfmt_LogicError		= 2;
-static const xfmt_t	xfmt_RuntimeError	= 3;
+enum { 
+    xfmt_ErrorMessage = 2,
+    xfmt_LogicError = xfmt_ErrorMessage,
+    xfmt_RuntimeError = xfmt_ErrorMessage
+};
 
 /// \class logic_error ustdxept.h ustl.h
 /// \ingroup Exceptions
 ///
 /// \brief Logic errors represent problems in the internal logic of the program.
 ///
-class logic_error : public exception {
+class error_message : public exception {
 public:
-    explicit		logic_error (const char* arg) throw();
-    virtual	       ~logic_error (void) throw();
-    virtual const char*	what (void) const throw();
+    explicit		error_message (const char* arg) throw();
+    virtual	       ~error_message (void) throw();
+    inline virtual const char*	what (void) const throw() { return ("error"); }
     virtual void	info (string& msgbuf, const char* fmt = NULL) const throw();
     virtual void	read (istream& is);
     virtual void	write (ostream& os) const;
     virtual size_t	stream_size (void) const;
 protected:
     string		m_Arg;
+};
+
+/// \class logic_error ustdxept.h ustl.h
+/// \ingroup Exceptions
+///
+/// \brief Logic errors represent problems in the internal logic of the program.
+///
+class logic_error : public error_message {
+public:
+    inline explicit		logic_error (const char* arg) throw() : error_message (arg) {}
+    inline virtual const char*	what (void) const throw() { return ("logic error"); }
 };
 
 /// \class domain_error ustdxept.h ustl.h
@@ -42,8 +56,8 @@ protected:
 ///
 class domain_error : public logic_error {
 public:
-    explicit		domain_error (const char* arg) throw();
-    virtual const char*	what (void) const throw();
+    inline explicit		domain_error (const char* arg) throw() : logic_error (arg) {}
+    inline virtual const char*	what (void) const throw() { return ("domain error"); }
 };
 
 /// \class invalid_argument ustdxept.h ustl.h
@@ -53,8 +67,8 @@ public:
 ///
 class invalid_argument : public logic_error {
 public:
-    explicit		invalid_argument (const char* arg) throw();
-    virtual const char*	what (void) const throw();
+    inline explicit		invalid_argument (const char* arg) throw() : logic_error (arg) {}
+    inline virtual const char*	what (void) const throw() { return ("invalid argument"); }
 };
 
 /// \class length_error ustdxept.h ustl.h
@@ -64,8 +78,8 @@ public:
 ///
 class length_error : public logic_error {
 public:
-    explicit		length_error (const char* arg) throw();
-    virtual const char*	what (void) const throw();
+    inline explicit		length_error (const char* arg) throw() : logic_error (arg) {} 
+    inline virtual const char*	what (void) const throw() { return ("length error"); }
 };
 
 /// \class out_of_range ustdxept.h ustl.h
@@ -75,8 +89,8 @@ public:
 ///
 class out_of_range : public logic_error {
 public:
-    explicit		out_of_range (const char* arg) throw();
-    virtual const char*	what (void) const throw();
+    inline explicit		out_of_range (const char* arg) throw() : logic_error (arg) {}
+    inline virtual const char*	what (void) const throw() { return ("out of range"); }
 };
 
 /// \class runtime_error ustdxept.h ustl.h
@@ -84,17 +98,10 @@ public:
 ///
 /// \brief Reports errors that are dependent on the data being processed.
 ///
-class runtime_error : public exception {
+class runtime_error : public error_message {
 public:
-    explicit		runtime_error (const char* arg) throw();
-    virtual	       ~runtime_error (void) throw();
-    virtual const char*	what (void) const throw();
-    virtual void	info (string& msgbuf, const char* fmt = NULL) const throw();
-    virtual void	read (istream& is);
-    virtual void	write (ostream& os) const;
-    virtual size_t	stream_size (void) const;
-protected:
-    string		m_Arg;
+    inline explicit		runtime_error (const char* arg) throw() : error_message (arg) {}
+    inline virtual const char*	what (void) const throw() { return ("runtime error"); }
 };
 
 /// \class range_error ustdxept.h ustl.h
@@ -104,8 +111,8 @@ protected:
 ///
 class range_error : public runtime_error {
 public:
-    explicit		range_error (const char* arg) throw();
-    virtual const char*	what (void) const throw();
+    inline explicit		range_error (const char* arg) throw() : runtime_error (arg) {}
+    inline virtual const char*	what (void) const throw() { return ("range error"); }
 };
 
 /// \class overflow_error ustdxept.h ustl.h
@@ -115,8 +122,8 @@ public:
 ///
 class overflow_error : public runtime_error {
 public:
-    explicit		overflow_error (const char* arg) throw();
-    virtual const char*	what (void) const throw();
+    inline explicit		overflow_error (const char* arg) throw() : runtime_error (arg) {}
+    inline virtual const char*	what (void) const throw() { return ("overflow error"); }
 };
 
 /// \class underflow_error ustdxept.h ustl.h
@@ -126,8 +133,8 @@ public:
 ///
 class underflow_error : public runtime_error {
 public:
-    explicit		underflow_error (const char* arg) throw();
-    virtual const char*	what (void) const throw();
+    inline explicit		underflow_error (const char* arg) throw() : runtime_error (arg) {}
+    inline virtual const char*	what (void) const throw() { return ("underflow error"); }
 };
 
 } // namespace ustl

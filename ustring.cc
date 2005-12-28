@@ -37,13 +37,6 @@ string::string (void)
 }
 
 /// Assigns itself the value of string \p s
-string::string (const cmemlink& s)
-: memblock ()
-{
-    assign (const_iterator (s.begin()), s.size());
-}
-
-/// Assigns itself the value of string \p s
 string::string (const string& s)
 : memblock()
 {
@@ -53,13 +46,6 @@ string::string (const string& s)
 	assign (s);
 }
 
-/// Assigns itself a [o,o+n) substring of \p s.
-string::string (const string& s, uoff_t o, size_type n)
-: memblock()
-{
-    assign (s, o, n);
-}
-
 /// Links to \p s
 string::string (const_pointer s)
 : memblock ()
@@ -67,21 +53,6 @@ string::string (const_pointer s)
     if (!s)
 	s = empty_string;
     link (s, strlen(s));
-}
-
-/// Copies the value of \p s of length \p len into itself.
-string::string (const_pointer s, size_type len)
-: memblock ()
-{
-    assign (s, len);
-}
-
-/// Copies into itself the string data between \p s1 and \p s2
-string::string (const_pointer s1, const_pointer s2)
-: memblock ()
-{
-    assert (s1 <= s2 && "Negative ranges result in memory allocation errors.");
-    assign (s1, s2);
 }
 
 /// Creates a string of length \p n filled with character \p c.
@@ -97,18 +68,6 @@ void string::resize (size_type n)
 {
     memblock::resize (n);
     at(n) = c_Terminator;
-}
-
-/// Returns the length of the string in characters.
-/// This may be different from the value returned by size() if
-/// you have non-ascii characters (UTF-8) in the string.
-///
-string::size_type string::length (void) const
-{
-    size_type nc = 0;
-    utf8icstring_iterator endfinder (begin());
-    for (; endfinder.base() < end(); ++ endfinder, ++ nc);
-    return (nc);
 }
 
 /// Assigns itself the value of string \p s
@@ -152,15 +111,6 @@ void string::append (size_type n, value_type c)
     fill_n (end() - n, n, c);
 }
 
-/// Appends to itself \p n characters of value \p c.
-void string::append (size_type n, wchar_t c)
-{
-    iterator ipp (end());
-    ipp = iterator (memblock::insert (memblock::iterator(ipp), n * Utf8Bytes(c)));
-    fill_n (utf8out (ipp), n, c);
-    *end() = c_Terminator;
-}
-
 /// Copies into itself at offset \p start, the value of string \p p of length \p n.
 string::size_type string::copyto (pointer p, size_type n, const_iterator start) const
 {
@@ -182,16 +132,10 @@ string::size_type string::copyto (pointer p, size_type n, const_iterator start) 
 /*static*/ int string::compare (const_iterator first1, const_iterator last1, const_iterator first2, const_iterator last2)
 {
     assert (first1 <= last1 && (first2 <= last2 || !last2) && "Negative ranges result in memory allocation errors.");
-    const size_type len1 = distance (first1, last1);
-    const size_type len2 = last2 ? distance (first2, last2) : strlen(first2);
+    const size_type len1 = distance (first1, last1), len2 = distance (first2, last2);
+    const int rvbylen = sign (int(len1 - len2));
     int rv = memcmp (first1, first2, min (len1, len2));
-    return (rv ? rv : sign (int(len1 - len2)));
-}
-
-/// Returns true if this string is equal to string \p s.
-bool string::operator== (const string& s) const
-{
-    return (size() == s.size() && 0 == memcmp (c_str(), s.c_str(), size()));
+    return (rv ? rv : rvbylen);
 }
 
 /// Returns true if this string is equal to string \p s.
@@ -199,13 +143,15 @@ bool string::operator== (const_pointer s) const
 {
     if (!s)
 	s = empty_string;
-    const size_type slen = strlen(s);
-    return (size() == slen && 0 == memcmp (c_str(), s, size()));
+    return (size() == strlen(s) && 0 == memcmp (c_str(), s, size()));
 }
 
-string::size_type string::minimumFreeCapacity (void) const
+/// Returns the beginning of character \p i.
+string::iterator string::utf8_iat (uoff_t i)
 {
-    return (size_Terminator);
+    utf8istring_iterator cfinder (begin());
+    cfinder += i;
+    return (cfinder.base());
 }
 
 /// Inserts wide character \p c at \p ip \p n times as a UTF-8 string.
@@ -213,15 +159,13 @@ string::size_type string::minimumFreeCapacity (void) const
 /// \p ip is a character position, not a byte position, and must fall in
 /// the 0 through length() range.
 /// The first argument is not an iterator because it is rather difficult
-/// to get one. You'd have to use ((utf8in(s.begin()) + n).base()) as the first
+/// to get one. You'd have to use ((utf8begin() + n).base()) as the first
 /// argument, which is rather ugly. Besides, then this insert would be
 /// ambiguous with the regular character insert.
 ///
 void string::insert (const uoff_t ip, wchar_t c, size_type n)
 {
-    utf8istring_iterator cfinder (begin());
-    cfinder += ip;
-    iterator ipp (cfinder.base());
+    iterator ipp (utf8_iat (ip));
     ipp = iterator (memblock::insert (memblock::iterator(ipp), n * Utf8Bytes(c)));
     fill_n (utf8out (ipp), n, c);
     *end() = c_Terminator;
@@ -230,9 +174,7 @@ void string::insert (const uoff_t ip, wchar_t c, size_type n)
 /// Inserts sequence of wide characters at \p ip.
 void string::insert (const uoff_t ip, const wchar_t* first, const wchar_t* last, const size_type n)
 {
-    utf8istring_iterator cfinder (begin());
-    cfinder += ip;
-    iterator ipp (cfinder.base());
+    iterator ipp (utf8_iat (ip));
     size_type nti = distance (first, last), bti = 0;
     for (uoff_t i = 0; i < nti; ++ i)
 	bti += Utf8Bytes(first[i]);
@@ -287,11 +229,9 @@ string::iterator string::erase (iterator ep, size_type n)
 ///
 void string::erase (uoff_t ep, size_type n)
 {
-    utf8istring_iterator rfinder (begin());
-    rfinder += ep;
-    iterator first (rfinder.base());
-    rfinder += n;
-    memblock::erase (first, distance (first, rfinder.base()));
+    iterator first (utf8_iat(ep));
+    size_t nbytes (utf8_iat(ep + n) - first);
+    memblock::erase (first, nbytes);
     *end() = c_Terminator;
 }
 
@@ -310,8 +250,7 @@ void string::replace (iterator first, iterator last, const_pointer i1, const_poi
     assert (n || distance(first, last));
     assert (first >= begin() && first <= end() && last >= first && last <= end());
     assert ((i1 < begin() || i1 >= end() || abs_distance(i1,i2) * n + size() < capacity()) && "Replacement by self can not autoresize");
-    const size_type bte = distance(first, last);
-    const size_type bti = distance(i1, i2) * n;
+    const size_type bte = distance(first, last), bti = distance(i1, i2) * n;
     if (bti < bte)
 	first = iterator (memblock::erase (memblock::iterator(first), bte - bti));
     else if (bte < bti)
@@ -356,7 +295,6 @@ uoff_t string::rfind (const_reference c, uoff_t pos) const
 /// Returns the offset of the last occurence of substring \p s of size \p n before \p pos.
 uoff_t string::rfind (const string& s, uoff_t pos) const
 {
-    // Match from the tail, iterating backwards.
     const_iterator d = iat(pos) - 1;
     const_iterator sp = begin() + s.size() - 1;
     const_iterator m = s.end() - 1;
@@ -427,7 +365,6 @@ int string::vformat (const char* fmt, va_list args)
 /// Equivalent to a sprintf on the string.
 int string::format (const char* fmt, ...)
 {
-    simd::reset_mmx();
     va_list args;
     va_start (args, fmt);
     const int rv = vformat (fmt, args);
@@ -444,11 +381,20 @@ size_t string::stream_size (void) const
 /// Reads the object from stream \p os
 void string::read (istream& is)
 {
-    const uint32_t n = *utf8in(is);
-    if (n > is.remaining())
-	throw stream_bounds_exception ("read", "ustl::string", is.pos(), n, is.remaining());
-    resize (n);
-    is.read (data(), size());
+    char szbuf [8];
+    is >> szbuf[0];
+    uint32_t szsz (Utf8SequenceBytes (szbuf[0]) - 1), n = 0;
+    if (is.remaining() >= szsz) {
+	is.read (szbuf + 1, szsz);
+	n = *utf8in(szbuf);
+	if (is.remaining() >= n) {
+	    resize (n);
+	    is.read (data(), size());
+	} else goto underflow;
+    } else {
+	underflow:
+	throw stream_bounds_exception ("read", "ustl::string", is.pos(), szsz + n, is.remaining());
+    }
 }
 
 /// Writes the object to stream \p os
@@ -456,9 +402,15 @@ void string::write (ostream& os) const
 {
     const uint32_t sz (size());
     assert (sz == size() && "No support for writing strings larger than 4G");
-    *utf8out(os) = sz;
-    if (sz > os.remaining())
-	throw stream_bounds_exception ("write", "ustl::string", os.pos(), sz, os.remaining());
+
+    char szbuf [8];
+    utf8out_iterator<char*> szout (szbuf);
+    *szout = sz;
+    uint32_t szsz = distance (szbuf, szout.base());
+
+    if (szsz + sz > os.remaining())
+	throw stream_bounds_exception ("write", "ustl::string", os.pos(), szsz + sz, os.remaining());
+    os.write (szbuf, szsz);
     os.write (cdata(), sz);
 }
 

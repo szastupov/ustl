@@ -59,13 +59,12 @@ public:
 public:
 				string (void);
 				string (const string& s);
-				string (const string& s, uoff_t o, size_type n);
-    explicit			string (const cmemlink& l);
+    inline			string (const string& s, uoff_t o, size_type n);
+    inline explicit		string (const cmemlink& l);
 				string (const_pointer s);
-				string (const_pointer s, size_type len);
-				string (const_pointer s1, const_pointer s2);
+    inline			string (const_pointer s, size_type len);
+    inline			string (const_pointer s1, const_pointer s2);
     explicit			string (size_type n, value_type c = c_Terminator);
-    size_type			length (void) const;
     inline pointer		data (void)		{ return (string::pointer (memblock::data())); }
     inline const_pointer	c_str (void) const	{ return (string::const_pointer (memblock::cdata())); }
     inline size_type		max_size (void) const	{ size_type s (memblock::max_size()); return (s - !!s); }
@@ -82,15 +81,16 @@ public:
     inline reverse_iterator	rend (void)		{ return (reverse_iterator (begin())); }
     inline utf8_iterator	utf8_begin (void) const	{ return (utf8_iterator (begin())); }
     inline utf8_iterator	utf8_end (void) const	{ return (utf8_iterator (end())); }
-    inline const_reference	at (uoff_t pos) const	{ assert (pos <= size() && begin()); return (*(begin() + pos)); }
-    inline reference		at (uoff_t pos)		{ assert (pos <= size() && begin()); return (*(begin() + pos)); }
+    inline const_reference	at (uoff_t pos) const	{ assert (pos <= size() && begin()); return (begin()[pos]); }
+    inline reference		at (uoff_t pos)		{ assert (pos <= size() && begin()); return (begin()[pos]); }
     inline const_iterator	iat (uoff_t pos) const	{ return (begin() + min (pos, size())); }
     inline iterator		iat (uoff_t pos)	{ return (begin() + min (pos, size())); }
+    inline size_type		length (void) const	{ return (distance (utf8_begin(), utf8_end())); }
     inline void			append (const_iterator i1, const_iterator i2)	{ append (i1, distance (i1, i2)); }
     void	   		append (const_pointer s, size_type len);
     void	   		append (const_pointer s);
     void			append (size_type n, const_reference c);
-    void			append (size_type n, wvalue_type c);
+    inline void			append (size_type n, wvalue_type c)		{ insert (size(), c, n); }
     inline void			append (const_wpointer s1, const_wpointer s2)	{ insert (size(), s1, s2); }
     inline void			append (const_wpointer s)			{ const_wpointer se (s); for (;se&&*se;++se); append (s, se); }
     inline void			append (const string& s)			{ append (s.begin(), s.end()); }
@@ -102,9 +102,9 @@ public:
     inline void			assign (const_wpointer s1)			{ clear(); append (s1); }
     inline void			assign (const string& s)			{ assign (s.begin(), s.end()); }
     inline void			assign (const string& s, uoff_t o, size_type n)	{ assign (s.iat(o), s.iat(o+n)); }
-    size_type			copyto (pointer p, size_type n, const_iterator start) const;
+    size_type			copyto (pointer p, size_type n, const_iterator start = NULL) const;
     inline int			compare (const string& s) const	{ return (compare (begin(), end(), s.begin(), s.end())); }
-    inline int			compare (const_pointer s) const	{ return (compare (begin(), end(), s, NULL)); }
+    inline int			compare (const_pointer s) const	{ return (compare (begin(), end(), s, s + strlen(s))); }
     static int			compare (const_iterator first1, const_iterator last1, const_iterator first2, const_iterator last2);
     inline			operator const value_type* (void) const;
     inline			operator value_type* (void);
@@ -118,7 +118,7 @@ public:
     inline const string&	operator+= (wvalue_type c)	{ append (1, c); return (*this); }
     inline const string&	operator+= (const_wpointer s)	{ append (s); return (*this); }
     inline string		operator+ (const string& s) const;
-    bool			operator== (const string& s) const;
+    inline bool			operator== (const string& s) const	{ return (memblock::operator== (s)); }
     bool			operator== (const_pointer s) const;
     inline bool			operator== (const_reference c) const	{ return (size() == 1 && c == at(0)); }
     inline bool			operator!= (const_pointer s) const	{ return (!operator== (s)); }
@@ -166,9 +166,42 @@ public:
     void			write (ostream& os) const;
     size_t			stream_size (void) const;
     static hashvalue_t		hash (const char* f1, const char* l1);
+private:
+    DLL_LOCAL iterator		utf8_iat (uoff_t i);
 protected:
-    virtual size_type		minimumFreeCapacity (void) const;
+    inline virtual size_type	minimumFreeCapacity (void) const { return (size_Terminator); }
 };
+
+//----------------------------------------------------------------------
+
+/// Assigns itself the value of string \p s
+inline string::string (const cmemlink& s)
+: memblock ()
+{
+    assign (const_iterator (s.begin()), s.size());
+}
+
+/// Assigns itself a [o,o+n) substring of \p s.
+inline string::string (const string& s, uoff_t o, size_type n)
+: memblock()
+{
+    assign (s, o, n);
+}
+
+/// Copies the value of \p s of length \p len into itself.
+inline string::string (const_pointer s, size_type len)
+: memblock ()
+{
+    assign (s, len);
+}
+
+/// Copies into itself the string data between \p s1 and \p s2
+inline string::string (const_pointer s1, const_pointer s2)
+: memblock ()
+{
+    assert (s1 <= s2 && "Negative ranges result in memory allocation errors.");
+    assign (s1, s2);
+}
 
 /// Returns the pointer to the first character.
 inline string::operator const string::value_type* (void) const

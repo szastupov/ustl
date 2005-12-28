@@ -131,9 +131,9 @@ inline void copy_n_fast (const void* src, size_t count, void* dest)
     { memcpy (dest, src, count); }
 #endif
 #if __i386__
-extern "C" void copy_n_backward_fast (const void* first, const void* last, void* result);
+extern "C" void copy_backward_fast (const void* first, const void* last, void* result);
 #else
-inline void copy_n_backward_fast (const void* first, const void* last, void* result)
+inline void copy_backward_fast (const void* first, const void* last, void* result)
 {
     const size_t nBytes (distance (first, last));
     memmove (advance (result, -nBytes), first, nBytes);
@@ -159,7 +159,7 @@ inline T* unrolled_copy (const T* first, size_t count, T* result)
 template <>
 inline uint8_t* copy_backward (const uint8_t* first, const uint8_t* last, uint8_t* result)
 {
-    copy_n_backward_fast (first, last, result);
+    copy_backward_fast (first, last, result);
     return (result);
 }
 

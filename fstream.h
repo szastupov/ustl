@@ -61,7 +61,8 @@ public:
     inline void		flush (void)		{ sync(); }
     inline const string& name (void) const	{ return (m_Filename); }
 private:
-    static int		om_to_flags (openmode m);
+   DLL_LOCAL static int	om_to_flags (openmode m);
+    DLL_LOCAL void	set_and_throw (iostate s, const char* op);
 private:
     int			m_fd;		///< Currently open file descriptor.
     string		m_Filename;	///< Currently open filename.

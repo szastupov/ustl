@@ -9,6 +9,7 @@
 #define MEMLINK_H_798D25827C8E322D2D7E734B169FF5FC
 
 #include "cmemlink.h"
+#include "ualgo.h"
 
 namespace ustl {
 
@@ -46,29 +47,30 @@ public:
     typedef cmemlink::pointer		const_pointer;
     typedef cmemlink::const_iterator	const_iterator;
     typedef pointer			iterator;
+    typedef const memlink&		rcself_t;
 public:
-			memlink (void);
-			memlink (void* p, size_type n);
-			memlink (const void* p, size_type n);
-			memlink (const memlink& l);
-    explicit		memlink (const cmemlink& l);
-    inline void		link (const void* p, size_type n)		{ cmemlink::link (p, n); }
-    void		link (void* p, size_type n);
-    inline void		link (const cmemlink& l)			{ cmemlink::link (l); }
-    inline void		link (memlink& l);
+    inline		memlink (void)				: cmemlink(), m_Data(NULL) {}
+    inline		memlink (void* p, size_type n)		: cmemlink (p, n), m_Data (pointer(p)) {}
+    inline		memlink (const void* p, size_type n)	: cmemlink (p, n), m_Data (NULL) {}
+    inline		memlink (rcself_t l)			: cmemlink (l), m_Data (l.m_Data) {}
+    inline explicit	memlink (const cmemlink& l)		: cmemlink (l), m_Data (NULL) {}
+    inline void		link (const void* p, size_type n)	{ cmemlink::link (p, n); }
+    inline void		link (void* p, size_type n)		{ cmemlink::link (p, n); m_Data = pointer(p); }
+    inline void		link (const cmemlink& l)		{ cmemlink::link (l); }
+    inline void		link (memlink& l)			{ cmemlink::link (l); m_Data = l.m_Data; }
 			OVERLOAD_POINTER_AND_SIZE_T_V2(link, void*)
 			OVERLOAD_POINTER_AND_SIZE_T_V2(link, const void*)
     inline void		link (const void* first, const void* last)	{ link (first, distance (first, last)); }
     inline void		link (void* first, void* last)			{ link (first, distance (first, last)); }
-    inline void		relink (const void* p, size_type n)		{ cmemlink::relink (p, n); }
-    inline void		relink (void* p, size_type n);
-    virtual void	unlink (void);
+    inline void		relink (const void* p, size_type n)		{ cmemlink::relink (p, n); m_Data = NULL; }
+    inline void		relink (void* p, size_type n)			{ cmemlink::relink (p, n); m_Data = pointer(p); }
+    inline virtual void	unlink (void)					{ cmemlink::unlink(); m_Data = NULL; }
     inline void		copy (const cmemlink& l);
     inline void		copy (const void* p, size_type n);
     void		copy (iterator offset, const void* p, size_type n);
-    size_type		writable_size (void) const;
-    const memlink&	operator= (const cmemlink& l);
-    const memlink&	operator= (const memlink& l);
+    size_type		writable_size (void) const	{ size_type sz (size()); return (m_Data ? sz : 0); }
+    inline rcself_t	operator= (const cmemlink& l)	{ cmemlink::operator= (l); m_Data = NULL; return (*this); }
+    inline rcself_t	operator= (rcself_t l)		{ cmemlink::operator= (l); m_Data = l.m_Data; return (*this); }
     void		swap (memlink& l);
     inline pointer	data (void)			{ return (m_Data); }
     inline iterator	begin (void)			{ assert ((data() || !cdata()) && "This container has no modifiable data. What you probably want is to first make a writable copy with copy_link."); return (iterator (data())); }
@@ -78,8 +80,8 @@ public:
     inline const_iterator	end (void) const	{ return (cmemlink::end()); }
     inline const_iterator	iat (size_type i) const	{ return (cmemlink::iat (i)); }
     void		fill (iterator start, const void* p, size_type elsize, size_type elCount = 1);
-    void		insert (iterator start, size_type size);
-    void		erase (iterator start, size_type size);
+    inline void		insert (iterator start, size_type size);
+    inline void		erase (iterator start, size_type size);
     void		read (istream& is);
 private:
     pointer		m_Data;	///< Pointer to the begin block (non-const)
@@ -99,17 +101,24 @@ inline void memlink::copy (const void* p, size_type n)
     copy (begin(), p, n);
 }
 
-/// Links to \p l
-inline void memlink::link (memlink& l)
+/// Shifts the data in the linked block from \p start to \p start + \p n.
+/// The contents of the uncovered bytes is undefined.
+inline void memlink::insert (iterator start, size_type n)
 {
-    cmemlink::link (l);
-    m_Data = l.data();
+    assert (data() || !n);
+    assert (cmemlink::begin() || !n);
+    assert (start >= begin() && start + n <= end());
+    rotate (start, end() - n, end());
 }
 
-inline void memlink::relink (void* p, size_type n)
+/// Shifts the data in the linked block from \p start + \p n to \p start.
+/// The contents of the uncovered bytes is undefined.
+inline void memlink::erase (iterator start, size_type n)
 {
-    cmemlink::relink (p, n);
-    m_Data = reinterpret_cast<pointer>(p);
+    assert (data() || !n);
+    assert (cmemlink::begin() || !n);
+    assert (start >= begin() && start + n <= end());
+    rotate (start, start + n, end());
 }
 
 /// Reads object \p l from stream \p is

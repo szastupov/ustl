@@ -125,11 +125,8 @@ typename utf8in_iterator<Iterator,WChar>::difference_type
 utf8in_iterator<Iterator,WChar>::operator- (const utf8in_iterator<Iterator,WChar>& last) const
 {
     difference_type dist = 0;
-    Iterator first;
-    while (first < last) {
-	advance (first, Utf8SequenceBytes (*first));
-	++ dist;
-    }
+    for (Iterator first (last.m_i); first < m_i; ++dist)
+	first = advance (first, Utf8SequenceBytes (*first));
     return (dist);
 }
 

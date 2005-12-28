@@ -148,12 +148,6 @@ void memblock::reserve (size_type newSize, bool bExact)
     m_Capacity = newSize;
 }
 
-/// \warning Do not use or override this! It exists only for implementing #string
-memblock::size_type memblock::minimumFreeCapacity (void) const
-{
-    return (0);
-}
-
 /// Swaps the contents with \p l
 void memblock::swap (memblock& l)
 {
@@ -167,8 +161,8 @@ memblock::iterator memblock::insert (iterator start, size_type n)
     const uoff_t ip = start - begin();
     assert (ip <= size());
     resize (size() + n, false);
-    memlink::insert (begin() + ip, n);
-    return (begin() + ip);
+    memlink::insert (iat(ip), n);
+    return (iat (ip));
 }
 
 /// Shifts the data in the linked block from \p start + \p n to \p start.
@@ -178,7 +172,7 @@ memblock::iterator memblock::erase (iterator start, size_type n)
     assert (ep + n <= size());
     memlink::erase (start, n);
     memlink::resize (size() - n);
-    return (begin() + ep);
+    return (iat (ep));
 }
 
 /// Unlinks object.

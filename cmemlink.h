@@ -52,16 +52,16 @@ public:
     typedef const_iterator	iterator;
     typedef const cmemlink&	rcself_t;
 public:
-			cmemlink (void);
-			cmemlink (const void* p, size_type n);
-			cmemlink (const cmemlink& l);
-    inline virtual     ~cmemlink (void) {}
+    inline		cmemlink (void)				: m_CData (NULL), m_Size (0) { }
+    inline		cmemlink (const void* p, size_type n)	: m_CData (const_pointer(p)), m_Size (n) { assert (p || !n); }
+    inline		cmemlink (const cmemlink& l)		: m_CData (l.m_CData), m_Size (l.m_Size) {}
+    inline virtual     ~cmemlink (void)				{}
     void		link (const void* p, size_type n);
 			OVERLOAD_POINTER_AND_SIZE_T_V2(link, const void*)
     inline void		link (const cmemlink& l)	{ link (l.begin(), l.size()); }
     inline void		link (const void* first, const void* last)	{ link (first, distance (first, last)); }
     inline void		relink (const void* p, size_type n);
-    virtual void	unlink (void);
+    inline virtual void	unlink (void)			{ m_CData = NULL; m_Size = 0; }
     inline rcself_t	operator= (const cmemlink& l)	{ link (l); return (*this); }
     bool		operator== (const cmemlink& l) const;
     void		swap (cmemlink& l);

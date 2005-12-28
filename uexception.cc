@@ -18,23 +18,6 @@ namespace ustl {
 
 //----------------------------------------------------------------------
 
-/// Initializes an empty object
-exception::exception (void) throw()
-: m_Format (xfmt_Exception)
-{
-}
-
-/// Destroys the object
-exception::~exception (void) throw()
-{
-}
-
-/// Returns the name of the exception
-const char* exception::what (void) const throw()
-{
-    return ("Generic exception");
-}
-
 /// \brief Returns a descriptive error message. fmt="%s"
 /// Overloads of this functions must set NULL as the default fmt
 /// argument and handle that case to provide a default format string
@@ -52,7 +35,7 @@ void exception::info (string& msgbuf, const char*) const throw()
 /// Reads the exception from stream \p is.
 void exception::read (istream& is)
 {
-    size_t stmSize;
+    uint32_t stmSize;
     xfmt_t fmt;
     is >> fmt >> stmSize;
     assert (fmt == m_Format && "The saved exception is of a different type.");
@@ -63,13 +46,7 @@ void exception::read (istream& is)
 /// Writes the exception into stream \p os as an IFF chunk.
 void exception::write (ostream& os) const
 {
-    os << m_Format << stream_size();
-}
-
-/// Returns the size of the written exception.
-size_t exception::stream_size (void) const
-{
-    return (stream_size_of (m_Format) + stream_size_of(size_t()));
+    os << m_Format << uint32_t(stream_size());
 }
 
 /// Writes the exception as text into stream \p os.
@@ -84,20 +61,6 @@ void exception::text_write (ostringstream& os) const
 
 //----------------------------------------------------------------------
 
-/// Initializes the empty object.
-bad_cast::bad_cast (void) throw()
-: exception()
-{
-}
-
-/// Returns the name of the exception.
-const char* bad_cast::what (void) const throw()
-{
-    return ("bad cast");
-}
-
-//----------------------------------------------------------------------
-
 /// Initializes the empty object. \p nBytes is the size of the attempted allocation.
 bad_alloc::bad_alloc (size_t nBytes) throw()
 : ustl::exception(),
@@ -106,16 +69,10 @@ bad_alloc::bad_alloc (size_t nBytes) throw()
     set_format (xfmt_BadAlloc);
 }
 
-/// Returns the name of the exception.
-const char* bad_alloc::what (void) const throw()
-{
-    return ("memory allocation failed");
-}
-
-/// Returns a descriptive error message. fmt="Failed to allocate %d bytes"
+/// Returns a descriptive error message. fmt="failed to allocate %d bytes"
 void bad_alloc::info (string& msgbuf, const char* fmt) const throw()
 {
-    if (!fmt) fmt = "Failed to allocate %d bytes";
+    if (!fmt) fmt = "failed to allocate %d bytes";
     try { msgbuf.format (fmt, m_nBytesRequested); } catch (...) {}
 }
 
@@ -166,12 +123,6 @@ const libc_exception& libc_exception::operator= (const libc_exception& v)
     return (*this);
 }
 
-/// Returns the name of the exception.
-const char* libc_exception::what (void) const throw()
-{
-    return ("libc function failed");
-}
-
 /// Returns a descriptive error message. fmt="%s: %m"
 void libc_exception::info (string& msgbuf, const char* fmt) const throw()
 {
@@ -205,20 +156,14 @@ size_t libc_exception::stream_size (void) const
 
 /// Initializes the empty object. \p operation is the function that returned the error code.
 file_exception::file_exception (const char* operation, const char* filename) throw()
-: libc_exception (operation),
-  m_Filename()
+: libc_exception (operation)
 {
+    memset (m_Filename, 0, VectorSize(m_Filename));
     set_format (xfmt_FileException);
     if (filename) {
 	strncpy (m_Filename, filename, VectorSize(m_Filename));
 	m_Filename [VectorSize(m_Filename) - 1] = 0;
     }
-}
-
-/// Returns the name of the libc_exception.
-const char* file_exception::what (void) const throw()
-{
-    return ("file exception");
 }
 
 /// Returns a descriptive error message. fmt="%s %s: %m"
@@ -235,15 +180,14 @@ void file_exception::read (istream& is)
     string filename;
     is >> filename;
     is.align();
-    strncpy (m_Filename, filename.c_str(), VectorSize(m_Filename));
-    m_Filename [VectorSize(m_Filename) - 1] = 0;
+    filename.copyto (filename, VectorSize(m_Filename));
 }
 
 /// Writes the exception into stream \p os.
 void file_exception::write (ostream& os) const
 {
     libc_exception::write (os);
-    os << string(m_Filename);
+    os << string (m_Filename);
     os.align();
 }
 
@@ -251,7 +195,7 @@ void file_exception::write (ostream& os) const
 size_t file_exception::stream_size (void) const
 {
     return (libc_exception::stream_size() +
-	    Align(stream_size_of(string (m_Filename))));
+	    Align (stream_size_of (string (m_Filename))));
 }
 
 //----------------------------------------------------------------------
@@ -265,12 +209,6 @@ stream_bounds_exception::stream_bounds_exception (const char* operation, const c
   m_Remaining (remaining)
 {
     set_format (xfmt_StreamBoundsException);
-}
-
-/// Returns the name of the libc_exception.
-const char* stream_bounds_exception::what (void) const throw()
-{
-    return ("stream bounds exception");
 }
 
 /// Returns a descriptive error message. fmt="%s stream %s: @%u: expected %u, available %u";

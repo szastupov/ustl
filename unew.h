@@ -14,6 +14,12 @@
 #include "uexception.h"
 
 #ifdef WITHOUT_LIBSTDCPP
+
+/// Just like malloc, but throws on failure.
+void* throwing_malloc (size_t n) throw (ustl::bad_alloc);
+/// Just like free, but doesn't crash when given a NULL.
+void free_nullok (void* p) throw();
+
 //
 // These are replaceable signatures:
 //  - normal single new and delete (no arguments, throw @c bad_alloc on error)
@@ -25,10 +31,10 @@
 //  Placement new and delete signatures (take a memory address argument,
 //  does nothing) may not be replaced by a user's program.
 //
-void* operator new (size_t) throw (ustl::bad_alloc);
-void* operator new[] (size_t) throw (ustl::bad_alloc);
-void  operator delete (void*) throw();
-void  operator delete[] (void*) throw();
+inline void* operator new (size_t n) throw (ustl::bad_alloc)	{ return (throwing_malloc (n)); }
+inline void* operator new[] (size_t n) throw (ustl::bad_alloc)	{ return (throwing_malloc (n)); }
+inline void  operator delete (void* p) throw()			{ free_nullok (p); }
+inline void  operator delete[] (void* p) throw()		{ free_nullok (p); }
 
 // Default placement versions of operator new.
 inline void* operator new (size_t, void* p) throw() { return (p); }

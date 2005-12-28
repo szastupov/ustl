@@ -143,7 +143,7 @@ void copy_n_fast (const void* src, size_t nBytes, void* dest)
 #endif // CPU_HAS_MMX
 
 /// The fastest optimized backwards raw memory copy.
-void copy_n_backward_fast (const void* first, const void* last, void* result)
+void copy_backward_fast (const void* first, const void* last, void* result)
 {
     prefetch (first, 0, 0);
     prefetch (result, 1, 0);

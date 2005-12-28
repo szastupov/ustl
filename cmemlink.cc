@@ -15,28 +15,6 @@
 
 namespace ustl {
 
-/// Default constructor initializes to point to NULL,0
-cmemlink::cmemlink (void)
-: m_CData (NULL),
-  m_Size (0)
-{
-}
-
-/// Attaches the object to pointer \p p of size \p n.
-cmemlink::cmemlink (const void* p, size_type n)
-: m_CData (reinterpret_cast<const_pointer>(p)),
-  m_Size (n)
-{
-    assert (p || !n);
-}
-
-/// Copies values from l
-cmemlink::cmemlink (const cmemlink& l)
-: m_CData (l.m_CData),
-  m_Size (l.m_Size)
-{
-}
-
 /// \brief Attaches the object to pointer \p p of size \p n.
 ///
 /// If \p p is NULL and \p n is non-zero, bad_alloc is thrown and current
@@ -48,18 +26,6 @@ void cmemlink::link (const void* p, size_type n)
 	throw bad_alloc (n);
     unlink();
     relink (p, n);
-}
-
-/// \brief Resets all to 0.
-///
-/// \warning Do NOT override this function. It is virtual only for
-/// memlink, memblock, and the streams; there is no way to
-/// "unvirtualize" a function, hence the documentation.
-///
-void cmemlink::unlink (void)
-{
-    m_CData = NULL;
-    m_Size = 0;
 }
 
 /// Writes the object to stream \p os
@@ -98,8 +64,20 @@ void cmemlink::write_file (const char* filename, int mode) const
 /// swaps the contents with \p l
 void cmemlink::swap (cmemlink& l)
 {
+#if CPU_HAS_MMX
+    asm (
+	"movq %0, %%mm0\n\t"
+	"movq %2, %%mm1\n\t"
+	"movq %%mm0, %2\n\t"
+	"movq %%mm1, %0\n\t"
+	: "=m"(m_CData), "=m"(m_Size), "=m"(l.m_CData), "=m"(l.m_Size)
+	: 
+	: "mm0", "mm1", "st", "st(1)");
+    simd::reset_mmx();
+#else
     ::ustl::swap (m_CData, l.m_CData);
     ::ustl::swap (m_Size, l.m_Size);
+#endif
 }
 
 /// Compares to memory block pointed by l. Size is compared first.

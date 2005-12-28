@@ -49,11 +49,13 @@ class ostringstream;
 
 typedef uint32_t	xfmt_t;
 
-static const xfmt_t	xfmt_Exception			= 0;
-static const xfmt_t	xfmt_BadAlloc			= 1;
-static const xfmt_t	xfmt_LibcException		= 12;
-static const xfmt_t	xfmt_FileException		= 13;
-static const xfmt_t	xfmt_StreamBoundsException	= 14;
+enum {
+    xfmt_Exception,
+    xfmt_BadAlloc,
+    xfmt_LibcException		= 12,
+    xfmt_FileException		= 13,
+    xfmt_StreamBoundsException	= 14
+};
 
 /// \class exception uexception.h ustl.h
 /// \ingroup Exceptions
@@ -66,14 +68,14 @@ class exception {
 class exception : public std::exception {
 #endif
 public:
-    			exception (void) throw();
-    virtual	       ~exception (void) throw();
-    virtual const char*	what (void) const throw();
+    inline		exception (void) throw() : m_Format (xfmt_Exception) {}
+    inline virtual     ~exception (void) throw() {}
+    inline virtual const char* what (void) const throw() { return ("error"); }
     virtual void	info (string& msgbuf, const char* fmt = NULL) const throw();
     virtual void	read (istream& is);
     virtual void	write (ostream& os) const;
     void		text_write (ostringstream& os) const;
-    virtual size_t	stream_size (void) const;
+    inline virtual size_t stream_size (void) const { return (sizeof(m_Format) + sizeof(uint32_t)); }
     /// Format of the exception is used to lookup exception::info format string.
     /// Another common use is the instantiation of serialized exceptions, used
     /// by the error handler node chain to troubleshoot specific errors.
@@ -91,9 +93,11 @@ private:
 ///
 class bad_cast : public exception {
 public:
-    explicit		bad_cast (void) throw();
-    virtual const char*	what (void) const throw();
+    inline explicit		bad_cast (void) throw() : exception() {}
+    inline virtual const char*	what (void) const throw() { return ("bad cast"); }
 };
+
+//----------------------------------------------------------------------
 
 /// \class bad_alloc uexception.h ustl.h
 /// \ingroup Exceptions
@@ -107,7 +111,7 @@ class bad_alloc : public std::bad_alloc, public exception {
 #endif
 public:
     explicit		bad_alloc (size_t nBytes = 0) throw();
-    virtual const char*	what (void) const throw();
+    inline virtual const char*	what (void) const throw() { return ("memory allocation failed"); }
     virtual void	info (string& msgbuf, const char* fmt = NULL) const throw();
     virtual void	read (istream& is);
     virtual void	write (ostream& os) const;
@@ -128,7 +132,7 @@ public:
     explicit		libc_exception (const char* operation) throw();
 			libc_exception (const libc_exception& v) throw();
     const libc_exception& operator= (const libc_exception& v);
-    virtual const char*	what (void) const throw();
+    inline virtual const char*	what (void) const throw() { return ("libc function failed"); }
     virtual void	info (string& msgbuf, const char* fmt = NULL) const throw();
     virtual void	read (istream& is);
     virtual void	write (ostream& os) const;
@@ -148,7 +152,7 @@ protected:
 class file_exception : public libc_exception {
 public:
 			file_exception (const char* operation, const char* filename) throw();
-    virtual const char*	what (void) const throw();
+    inline virtual const char* what (void) const throw() { return ("file error"); }
     virtual void	info (string& msgbuf, const char* fmt = NULL) const throw();
     virtual void	read (istream& is);
     virtual void	write (ostream& os) const;
@@ -168,7 +172,7 @@ protected:
 class stream_bounds_exception : public libc_exception {
 public:
 			stream_bounds_exception (const char* operation, const char* type, uoff_t offset, size_t expected, size_t remaining) throw();
-    virtual const char*	what (void) const throw();
+    inline virtual const char*	what (void) const throw() { return ("stream bounds exception"); }
     virtual void	info (string& msgbuf, const char* fmt = NULL) const throw();
     virtual void	read (istream& is);
     virtual void	write (ostream& os) const;
