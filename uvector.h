@@ -127,7 +127,8 @@ void vector<T>::resize (size_type n, bool bExact)
 template <typename T>
 void vector<T>::deallocate (void) throw()
 {
-    destroy (begin(), begin() + capacity());
+    iterator first = iterator(m_Data.data()); // begin() asserts for clinked objects.
+    destroy (first, first + capacity());
     m_Data.deallocate();
 }
 
