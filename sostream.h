@@ -27,19 +27,19 @@ public:
 				ostringstream (void* p, size_t n);
     void			iwrite (uint8_t v);
     void			iwrite (wchar_t v);
-    void			iwrite (int v);
-    void			iwrite (unsigned int v);
-    void			iwrite (long int v);
-    void			iwrite (unsigned long int v);
-    void			iwrite (float v);
-    void			iwrite (double v);
+    inline void			iwrite (int v)			{ iformat (v); }
+    inline void			iwrite (unsigned int v)		{ iformat (v); }
+    inline void			iwrite (long int v)		{ iformat (v); }
+    inline void			iwrite (unsigned long int v)	{ iformat (v); }
+    inline void			iwrite (float v)		{ iformat (v); }
+    inline void			iwrite (double v)		{ iformat (v); }
     void			iwrite (bool v);
-    void			iwrite (const char* s);
-    void			iwrite (const string& v);
-    void			iwrite (fmtflags f);
+    inline void			iwrite (const char* s)		{ write_buffer (s, strlen(s)); }
+    inline void			iwrite (const string& v)	{ write_buffer (v.begin(), v.size()); }
+    inline void			iwrite (fmtflags f);
 #if HAVE_LONG_LONG
-    void			iwrite (long long v);
-    void			iwrite (unsigned long long v);
+    inline void			iwrite (long long v)		{ iformat (v); }
+    inline void			iwrite (unsigned long long v)	{ iformat (v); }
 #endif
     inline size_type		max_size (void) const		{ return (m_Buffer.max_size()); }
     inline void			put (char c)			{ iwrite (c); }
@@ -47,8 +47,8 @@ public:
     int				format (const char* fmt, ...) __attribute__((__format__(__printf__, 2, 3)));
     inline void			set_base (uint16_t b)		{ m_Base = b; }
     inline void			set_width (uint16_t w)		{ m_Width = w; }
-    inline void			set_decimal_separator (char c)	{ m_DecimalSeparator = c; }
-    inline void			set_thousand_separator (char c)	{ m_ThousandSeparator = c; }
+    inline void			set_decimal_separator (char)	{ }
+    inline void			set_thousand_separator (char)	{ }
     inline void			set_precision (uint16_t v)	{ m_Precision = v; }
     void			link (void* p, size_type n);
     inline void			link (memlink& l)		{ link (l.data(), l.writable_size()); }
@@ -67,16 +67,55 @@ private:
     inline char*		encode_dec (char* fmt, uint32_t n) const;
     void			fmtstring (char* fmt, const char* typestr, bool bInteger) const;
     template <typename T>
-    inline void			sprintf_iwrite (T v, const char* typestr);
+    void			iformat (T v);
 private:
     string			m_Buffer;		///< The output buffer.
     uint32_t			m_Flags;		///< See ios_base::fmtflags.
-    uint16_t			m_Base;			///< Numeric base for writing numbers.
-    uint16_t			m_Precision;		///< Number of digits after the decimal separator.
     uint16_t			m_Width;		///< Field width.
-    char			m_DecimalSeparator;	///< Period by default.
-    char			m_ThousandSeparator;	///< Comma by default.
+    uint8_t			m_Base;			///< Numeric base for writing numbers.
+    uint8_t			m_Precision;		///< Number of digits after the decimal separator.
 };
+
+//----------------------------------------------------------------------
+
+template <typename T>
+inline const char* printf_typestring (const T&)	{ return (""); }
+#define PRINTF_TYPESTRING_SPEC(type,str)	\
+template <> inline const char* printf_typestring (const type&)	{ return (str); }
+PRINTF_TYPESTRING_SPEC (int,		"d")
+PRINTF_TYPESTRING_SPEC (unsigned int,	"u")
+PRINTF_TYPESTRING_SPEC (long,		"ld")
+PRINTF_TYPESTRING_SPEC (unsigned long,	"lu")
+PRINTF_TYPESTRING_SPEC (float,		"f")
+PRINTF_TYPESTRING_SPEC (double,		"lf")
+#if HAVE_LONG_LONG
+PRINTF_TYPESTRING_SPEC (long long,	"lld")
+PRINTF_TYPESTRING_SPEC (unsigned long long, "llu")
+#endif
+#undef PRINTF_TYPESTRING_SPEC
+
+template <typename T>
+void ostringstream::iformat (T v)
+{
+    char fmt [16];
+    fmtstring (fmt, printf_typestring(v), numeric_limits<T>::is_integer);
+    format (fmt, v);
+}
+
+/// Sets the flag \p f in the stream.
+inline void ostringstream::iwrite (fmtflags f)
+{
+    switch (f) {
+	case oct:	set_base (8);	break;
+	case dec:	set_base (10);	break;
+	case hex:	set_base (16);	break;
+	case left:	m_Flags |= left; m_Flags &= ~right; break;
+	case right:	m_Flags |= right; m_Flags &= ~left; break;
+	default:	m_Flags |= f;	break;
+    }
+}
+
+//----------------------------------------------------------------------
 
 #define OSTRSTREAM_OPERATOR(RealT, CastT)			\
 inline ostringstream& operator<< (ostringstream& os, RealT v)	\

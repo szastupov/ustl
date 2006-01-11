@@ -19,11 +19,9 @@ ostringstream::ostringstream (void* p, size_t n)
 : ostream (),
   m_Buffer (),
   m_Flags (0),
-  m_Base (10),
-  m_Precision (2),
   m_Width (0),
-  m_DecimalSeparator ('.'),
-  m_ThousandSeparator (',')
+  m_Base (10),
+  m_Precision (2)
 {
     link (p, n);
 }
@@ -33,11 +31,9 @@ ostringstream::ostringstream (const string& v)
 : ostream (),
   m_Buffer (v),
   m_Flags (0),
-  m_Base (10),
-  m_Precision (2),
   m_Width (0),
-  m_DecimalSeparator ('.'),
-  m_ThousandSeparator (',')
+  m_Base (10),
+  m_Precision (2)
 {
     ostream::link (m_Buffer);
 }
@@ -53,7 +49,7 @@ void ostringstream::str (const string& s)
 /// Writes a single character into the stream.
 void ostringstream::iwrite (uint8_t v)
 {
-    if (remaining() >= sizeof(uint8_t) || overflow() >= sizeof(uint8_t))
+    if (remaining() >= 1 || overflow() >= 1)
 	ostream::iwrite (v);
 }
 
@@ -100,32 +96,10 @@ void ostringstream::fmtstring (char* fmt, const char* typestr, bool bInteger) co
     *fmt = 0;
 }
 
-template <typename T>
-inline void ostringstream::sprintf_iwrite (T v, const char* typestr)
-{
-    const size_type c_BufSize = 64, c_FmtStrSize = 16;
-    char fmt [c_FmtStrSize], buffer [c_BufSize];
-    fmtstring (fmt, typestr, numeric_limits<T>::is_integer);
-    size_type i = snprintf (buffer, c_BufSize, fmt, v);
-    i = min (i, c_BufSize - 1);
-    write_buffer (buffer, i);
-}
-
-void ostringstream::iwrite (int v)		{ sprintf_iwrite (v, "d"); }
-void ostringstream::iwrite (unsigned int v)	{ sprintf_iwrite (v, "u"); }
-void ostringstream::iwrite (long v)		{ sprintf_iwrite (v, "ld"); }
-void ostringstream::iwrite (unsigned long v)	{ sprintf_iwrite (v, "lu"); }
-void ostringstream::iwrite (float v)		{ sprintf_iwrite (v, "f"); }
-void ostringstream::iwrite (double v)		{ sprintf_iwrite (v, "lf"); }
-#if HAVE_LONG_LONG
-void ostringstream::iwrite (long long v)	{ sprintf_iwrite (v, "lld"); }
-void ostringstream::iwrite (unsigned long long v) { sprintf_iwrite (v, "llu"); }
-#endif
-
 /// Writes \p v into the stream as utf8
 void ostringstream::iwrite (wchar_t v)
 {
-    char buffer [9];
+    char buffer [8];
     *utf8out(buffer) = v;
     write_buffer (buffer, Utf8Bytes(v));
 }
@@ -133,20 +107,8 @@ void ostringstream::iwrite (wchar_t v)
 /// Writes value \p v into the stream as text.
 void ostringstream::iwrite (bool v)
 {
-    static const char* c_Names[2] = { "false", "true" };
-    write_buffer (c_Names[v], 5 - v);
-}
-
-/// Writes string \p s into the stream.
-void ostringstream::iwrite (const char* s)
-{
-    write_buffer (s, strlen(s));
-}
-
-/// Writes string \p v into the stream.
-void ostringstream::iwrite (const string& v)
-{
-    write_buffer (v.begin(), v.size());
+    static const char tf[2][8] = { "false", "true" };
+    write_buffer (tf[v], 5 - v);
 }
 
 /// Equivalent to a vsprintf on the string.
@@ -173,19 +135,6 @@ int ostringstream::format (const char* fmt, ...)
     const int rv = vformat (fmt, args);
     va_end (args);
     return (rv);
-}
-
-/// Sets the flag \p f in the stream.
-void ostringstream::iwrite (fmtflags f)
-{
-    switch (f) {
-	case oct:	set_base (8);	break;
-	case dec:	set_base (10);	break;
-	case hex:	set_base (16);	break;
-	case left:	m_Flags |= left; m_Flags &= ~right; break;
-	case right:	m_Flags |= right; m_Flags &= ~left; break;
-	default:	m_Flags |= f;	break;
-    }
 }
 
 /// Links to string \p l as resizable.
