@@ -99,34 +99,26 @@ void istringstream::iread (long long& v)	{ read_number (v); }
 
 void istringstream::iread (wchar_t& v)
 {
-    uint8_t c;
-    operator>> (*this, c);
-    size_t cs = Utf8SequenceBytes (c);
-    if (remaining() < cs && underflow(cs) < cs)
-	v = c;
-    else {
+    if ((v = skip_delimiters()) == m_Delimiters[0])
+	return;
+    size_t cs = Utf8SequenceBytes (v) - 1;
+    if (remaining() >= cs || underflow(cs) >= cs) {
 	ungetc();
-	v = *utf8in((istream&) *this);
+	v = *utf8in (ipos());
+	skip (cs + 1);
     }
 }
 
 void istringstream::iread (bool& v)
 {
+    static const char tf[2][8] = { "false", "true" };
     char c = skip_delimiters();
-    v = (c == '1' || c == 't');
-    if (c == 't' && (remaining() || underflow())) {
+    v = (c == 't' || c == '1');
+    if (c != tf[v][0])
+	return;
+    for (const char* tv = tf[v]; c == *tv && (remaining() || underflow()); ++tv)
 	istream::iread (c);
-	if (c == 'r' && remaining() >= 2 * sizeof(char))
-	    skip (2 * sizeof(char));
-	else
-	    ungetc();
-    } else if (c == 'f' && (remaining() || underflow())) {
-	istream::iread (c);
-	if (c == 'a' && remaining() >= 3 * sizeof(char))
-	    skip (3 * sizeof(char));
-	else
-	    ungetc();
-    }
+    ungetc();
 }
 
 void istringstream::iread (string& v)
