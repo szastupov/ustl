@@ -17,18 +17,14 @@ const char ios_base::c_DefaultDelimiters [istringstream::c_MaxDelimiters] = " \t
 /// Default constructor.
 istringstream::istringstream (void)
 : istream (),
-  m_Base (10),
-  m_DecimalSeparator ('.'),
-  m_ThousandSeparator ('\0')
+  m_Base (0)
 {
     set_delimiters (c_DefaultDelimiters);
 }
 
 istringstream::istringstream (const void* p, size_type n)
 : istream (),
-  m_Base (10),
-  m_DecimalSeparator ('.'),
-  m_ThousandSeparator ('\0')
+  m_Base (0)
 {
     link (p, n);
     set_delimiters (c_DefaultDelimiters);
@@ -36,9 +32,7 @@ istringstream::istringstream (const void* p, size_type n)
 
 istringstream::istringstream (const cmemlink& source)
 : istream (),
-  m_Base (10),
-  m_DecimalSeparator ('.'),
-  m_ThousandSeparator ('\0')
+  m_Base (0)
 {
     link (source);
     set_delimiters (c_DefaultDelimiters);
@@ -69,134 +63,38 @@ void istringstream::iread (int8_t& v)
     v = skip_delimiters();
 }
 
-void istringstream::iread (int32_t& v)
-{
-    int32_t base = m_Base;
-    v = 0;
-    char c = skip_delimiters();
-    const uoff_t numStartPos (pos());
-    bool negative = (c == '-');
-    if (negative && (remaining() || underflow()))
-	istream::iread (c);
-    if (c == '0') {
-	base = 8;
-	istream::iread (c);
-	if (c == 'x') {
-	    base = 16;
-	    istream::iread (c);
-	}
-    }
-    while (true) {
-	register long digit;
-	if (c >= '0' && c <= '9')
-	    digit = c - '0';
-	else if (c >= 'a' && c <= 'z' && c < base - 10 + 'a')
-	    digit = c - 'a' + 10;
-	else if (c >= 'A' && c <= 'Z' && c < base - 10 + 'a')
-	    digit = c - 'A' + 10;
-	else if (c == m_ThousandSeparator) {
-	    istream::iread (c);
-	    continue;
-	} else
-	    break;
-	v *= base;
-	v += digit;
-	if (!remaining() && !underflow())
-	    break;
-	istream::iread (c);
-    }
-    if (pos() > numStartPos)
-	ungetc();
-    if (negative)
-	v = -v;
-}
-
-#if HAVE_INT64_T
-void istringstream::iread (int64_t& v)
-{
-    int64_t base = m_Base;
-    v = 0;
-    char c = skip_delimiters();
-    const uoff_t numStartPos (pos());
-    bool negative = (c == '-');
-    if (negative && (remaining() || underflow()))
-	istream::iread (c);
-    if (c == '0') {
-	base = 8;
-	istream::iread (c);
-	if (c == 'x') {
-	    base = 16;
-	    istream::iread (c);
-	}
-    }
-    while (true) {
-	long long digit;
-	if (c >= '0' && c <= '9')
-	    digit = c - '0';
-	else if (c >= 'a' && c <= 'z' && c < base - 10 + 'a')
-	    digit = c - 'a' + 10;
-	else if (c >= 'A' && c <= 'Z' && c < base - 10 + 'a')
-	    digit = c - 'A' + 10;
-	else if (c == m_ThousandSeparator) {
-	    istream::iread (c);
-	    continue;
-	} else
-	    break;
-	v *= base;
-	v += digit;
-	if (!remaining() && !underflow())
-	    break;
-	istream::iread (c);
-    }
-    if (pos() > numStartPos)
-	ungetc();
-    if (negative)
-	v = -v;
-}
+typedef istringstream::iterator issiter_t;
+template <typename T>
+inline T str_to_num (issiter_t i, issiter_t* iend, uint8_t base)
+    { return (strtol (i, const_cast<char**>(iend), base)); }
+template <> inline double str_to_num (issiter_t i, issiter_t* iend, uint8_t)
+    { return (strtod (i, const_cast<char**>(iend))); }
+#ifdef HAVE_LONG_LONG
+template <> inline long long str_to_num (issiter_t i, issiter_t* iend, uint8_t base)
+    { return (strtoll (i, const_cast<char**>(iend), base)); }
 #endif
 
-#if HAVE_LONG_LONG && (!HAVE_INT64_T || SIZE_OF_LONG_LONG > 8)
-void istringstream::iread (long long& v)
+template <typename T>
+inline void istringstream::read_number (T& v)
 {
-    long long base = m_Base;
     v = 0;
-    char c = skip_delimiters();
-    const uoff_t numStartPos (pos());
-    bool negative = (c == '-');
-    if (negative && (remaining() || underflow()))
-	istream::iread (c);
-    if (c == '0') {
-	base = 8;
-	istream::iread (c);
-	if (c == 'x') {
-	    base = 16;
-	    istream::iread (c);
-	}
-    }
-    while (true) {
-	long long digit;
-	if (c >= '0' && c <= '9')
-	    digit = c - '0';
-	else if (c >= 'a' && c <= 'z' && c < base - 10 + 'a')
-	    digit = c - 'a' + 10;
-	else if (c >= 'A' && c <= 'Z' && c < base - 10 + 'a')
-	    digit = c - 'A' + 10;
-	else if (c == m_ThousandSeparator) {
-	    istream::iread (c);
-	    continue;
-	} else
-	    break;
-	v *= base;
-	v += digit;
-	if (!remaining() && !underflow())
-	    break;
-	istream::iread (c);
-    }
-    if (pos() > numStartPos)
-	ungetc();
-    if (negative)
-	v = -v;
+    if (skip_delimiters() == m_Delimiters[0])
+	return;
+    ungetc();
+    iterator ilast;
+    do {
+	v = str_to_num<T> (ipos(), &ilast, m_Base);
+    } while (ilast == end() && underflow());
+    skip (distance (ipos(), ilast));
 }
+
+void istringstream::iread (int32_t& v)		{ read_number (v); }
+void istringstream::iread (double& v)		{ read_number (v); } 
+#if HAVE_INT64_T
+void istringstream::iread (int64_t& v)		{ read_number (v); }
+#endif
+#if HAVE_LONG_LONG && (!HAVE_INT64_T || SIZE_OF_LONG_LONG > 8)
+void istringstream::iread (long long& v)	{ read_number (v); }
 #endif
 
 void istringstream::iread (wchar_t& v)
@@ -210,49 +108,6 @@ void istringstream::iread (wchar_t& v)
 	ungetc();
 	v = *utf8in((istream&) *this);
     }
-}
-
-void istringstream::iread (double& v)
-{
-    register long base = m_Base;
-    v = 0;
-    char c = skip_delimiters();
-    const uoff_t numStartPos (pos());
-    bool negative = (c == '-');
-    bool beforedot = true;
-    double divisor = 1.0;
-    while (true) {
-	register long digit;
-	if (c >= '0' && c <= '9')
-	    digit = c - '0';
-	else if (c >= 'a' && c <= 'z' && c < base - 10 + 'a')
-	    digit = c - 'a' + 10;
-	else if (c >= 'A' && c <= 'Z' && c < base - 10 + 'a')
-	    digit = c - 'A' + 10;
-	else if (c == m_DecimalSeparator) {
-	    beforedot = false;
-	    istream::iread (c);
-	    continue;
-	} else if (c == m_ThousandSeparator) {
-	    istream::iread (c);
-	    continue;
-	} else
-	    break;
-	if (beforedot) {
-	    v *= base;
-	    v += digit;
-	} else {
-	    divisor *= base;
-	    v += digit / divisor;
-	}
-	if (!remaining() && !underflow())
-	    break;
-	istream::iread (c);
-    }
-    if (pos() > numStartPos)
-	ungetc();
-    if (negative)
-	v = -v;
 }
 
 void istringstream::iread (bool& v)
@@ -298,7 +153,7 @@ void istringstream::iread (string& v)
 		case '\'':	c = '\''; break;
 		case '\\':	c = '\\'; break;
 	    };
-	    *(v.end() - 1) = c;
+	    v.end()[-1] = c;
 	} else {
 	    if (c == quoteChar)
 		break;

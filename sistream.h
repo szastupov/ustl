@@ -52,39 +52,26 @@ public:
     inline void			unget (void)	{ ungetc(); }
     void			set_delimiters (const char* delimiters);
     inline void			set_base (short base);
-    inline void			set_decimal_separator (char s);
-    inline void			set_thousand_separator (char s);
+    inline void			set_decimal_separator (char)	{ }
+    inline void			set_thousand_separator (char)	{ }
     void			read (void* buffer, size_type size);
     void			read (memlink& buf);
     inline void			read_strz (string& str);
-    inline void			sync (void)		{ skip (remaining()); }
+    inline void			sync (void)	{ skip (remaining()); }
 protected:
     char			skip_delimiters (void);
 private:
     inline bool			is_delimiter (char c) const;
+    template <typename T> void	read_number (T& v);
 private:
     char			m_Delimiters [c_MaxDelimiters];
-    uint16_t			m_Base;
-    char			m_DecimalSeparator;
-    char			m_ThousandSeparator;
+    uint8_t			m_Base;
 };
 
 /// Sets the numeric base used to read numbers.
 inline void istringstream::set_base (short base)
 {
     m_Base = base;
-}
-
-/// Sets the decimal separator to recognize in numbers. Period by default.
-inline void istringstream::set_decimal_separator (char s)
-{
-    m_DecimalSeparator = s;
-}
-
-/// Sets the thousand separator to recognize in numbers. Comma by default.
-inline void istringstream::set_thousand_separator (char s)
-{
-    m_ThousandSeparator = s;
 }
 
 /// Reads a null-terminated character stream. This is not allowed in this class.
