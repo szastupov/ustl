@@ -73,8 +73,7 @@ public:
     inline const_reference	front (void) const		{ return (at(0)); }
     inline reference		back (void)			{ assert (!empty()); return (end()[-1]); }
     inline const_reference	back (void) const		{ assert (!empty()); return (end()[-1]); }
-    inline void			push_back (void);
-    inline void			push_back (const T& v);
+    inline void			push_back (const T& v = T());
     inline void			pop_back (void)			{ m_Data.memlink::resize (m_Data.size() - sizeof(T)); }
     inline void			clear (void)			{ m_Data.clear(); }
     void			deallocate (void) throw();
@@ -257,18 +256,11 @@ inline typename vector<T>::iterator vector<T>::erase (iterator ep1, iterator ep2
     return (erase (ep1, distance(ep1, ep2)));
 }
 
-/// Inserts a default value at the end of the vector.
-template <typename T>
-inline void vector<T>::push_back (void)
-{
-    resize (size() + 1, false);
-}
-
 /// Inserts value \p v at the end of the vector.
 template <typename T>
 void vector<T>::push_back (const T& v)
 {
-    push_back();
+    resize (size() + 1, false);
     back() = v;
 }
 
