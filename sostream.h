@@ -52,7 +52,7 @@ public:
     inline void			set_precision (uint16_t v)	{ m_Precision = v; }
     void			link (void* p, size_type n);
     inline void			link (memlink& l)		{ link (l.data(), l.writable_size()); }
-    inline const string&	str (void) const		{ return (m_Buffer); }
+    inline const string&	str (void)			{ flush(); return (m_Buffer); }
     void			str (const string& s);
     void			write (const void* buffer, size_type size);
     void			write (const cmemlink& buf);
