@@ -126,8 +126,8 @@ void vector<T>::resize (size_type n, bool bExact)
 template <typename T>
 void vector<T>::deallocate (void) throw()
 {
-    iterator first = iterator(m_Data.data()); // begin() asserts for clinked objects.
-    destroy (first, first + capacity());
+    if (!is_linked())
+	destroy (begin(), begin() + capacity());
     m_Data.deallocate();
 }
 
@@ -175,9 +175,10 @@ vector<T>::vector (const_iterator i1, const_iterator i2)
 
 /// Destructor
 template <typename T>
-vector<T>::~vector (void) throw()
+inline vector<T>::~vector (void) throw()
 {
-    deallocate();
+    if (!numeric_limits<value_type>::is_integral)
+	deallocate();
 }
 
 /// Copies the range [\p i1, \p i2]
