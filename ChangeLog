@@ -38,6 +38,7 @@ Release 0.9
 		memlink-derived objects that are linked to const data;
 		before this change this would have caused a crash, now it
 		might or might not do that, as with regular pointers.
+	* Pulled rotate code into rotate_fast for memory blocks.
 
 2005-11-10 Release 0.8
 	* API CHANGE: changed all string's find members to return offsets

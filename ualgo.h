@@ -203,35 +203,21 @@ inline void reverse (BidirectionalIterator first, BidirectionalIterator last)
 template <typename ForwardIterator>
 ForwardIterator rotate (ForwardIterator first, ForwardIterator middle, ForwardIterator last)
 {
-#ifdef HAVE_ALLOCA_H
-    void *vfirst(first), *vmiddle(middle), *vlast(last);
-    const size_t half1 (distance (vfirst, vmiddle)), half2 (distance (vmiddle, vlast));
-    const size_t hmin (min (half1, half2));
-    if (!hmin)
-	return (first);
-    void* buf = alloca (hmin);
-    if (buf) {
-	if (half2 < half1) {
-	    copy_n_fast (vmiddle, half2, buf);
-	    copy_backward_fast (vfirst, vmiddle, vlast);
-	    copy_n_fast (buf, half2, vfirst);
-	} else {
-	    copy_n_fast (vfirst, half1, buf);
-	    copy_n_fast (vmiddle, half2, vfirst);
-	    copy_n_fast (buf, half1, advance (vfirst, half2));
-	}
-    } else
-#else
     if (first == middle || middle == last)
 	return (first);
-#endif
-    {
-	reverse (first, middle);
-	reverse (middle, last);
-	for (;first != middle && middle != last; ++first)
-	    iterator_swap (first, --last);
-	reverse (first, (first == middle ? last : middle));
-    }
+    reverse (first, middle);
+    reverse (middle, last);
+    for (;first != middle && middle != last; ++first)
+	iterator_swap (first, --last);
+    reverse (first, (first == middle ? last : middle));
+    return (first);
+}
+
+/// Specialization for pointers, which can be treated identically.
+template <typename T>
+inline T* rotate (T* first, T* middle, T* last)
+{
+    rotate_fast (first, middle, last);
     return (first);
 }
 

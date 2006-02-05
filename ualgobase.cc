@@ -12,7 +12,7 @@
 #define NDEBUG
 #endif
 
-#include "ualgobase.h"
+#include "ualgo.h"
 
 namespace ustl {
 
@@ -225,6 +225,41 @@ void fill_n16_fast (uint16_t* dest, size_t count, uint16_t v) { stosv (dest, cou
 void fill_n32_fast (uint32_t* dest, size_t count, uint32_t v) { stosv (dest, count, v); }
 #endif // CPU_HAS_MMX
 
-} // namespace ustl
+/// Exchanges ranges [first, middle) and [middle, last)
+void rotate_fast (void* first, void* middle, void* last)
+{
+#ifdef HAVE_ALLOCA_H
+    const size_t half1 (distance (first, middle)), half2 (distance (middle, last));
+    const size_t hmin (min (half1, half2));
+    if (!hmin)
+	return;
+    void* buf = alloca (hmin);
+    if (buf) {
+	if (half2 < half1) {
+	    copy_n_fast (middle, half2, buf);
+	    copy_backward_fast (first, middle, last);
+	    copy_n_fast (buf, half2, first);
+	} else {
+	    copy_n_fast (first, half1, buf);
+	    copy_n_fast (middle, half2, first);
+	    copy_n_fast (buf, half1, advance (first, half2));
+	}
+    } else
+#else
+    if (first == middle || middle == last)
+	return;
+#endif
+    {
+	char* f = (char*) first;
+	char* m = (char*) middle;
+	char* l = (char*) last;
+	reverse (f, m);
+	reverse (m, l);
+	while (f != m && m != l)
+	    iterator_swap (f++, --l);
+	reverse (f, (f == m ? l : m));
+    }
+}
 
+} // namespace ustl
 

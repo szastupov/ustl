@@ -142,6 +142,7 @@ inline void copy_backward_fast (const void* first, const void* last, void* resul
 extern "C" void fill_n8_fast (uint8_t* dest, size_t count, uint8_t v);
 extern "C" void fill_n16_fast (uint16_t* dest, size_t count, uint16_t v);
 extern "C" void fill_n32_fast (uint32_t* dest, size_t count, uint32_t v);
+extern "C" void rotate_fast (void* first, void* middle, void* last);
 
 //----------------------------------------------------------------------
 // Optimized versions for standard types
