@@ -23,12 +23,21 @@ Release 0.9
 		readsome, putback, unget, tellg, seekg, sync, flush, seekp,
 		tellp, good. The rest will probably not be implemented at
 		all, since they reference streambufs which don't exist in uSTL.
-	* Non-working stubs for fail and operator! in i/ostreams.
-		For now, open always throws a file_exception instead.
 	* Do cout.flush() before read in cin, like std does.
 	* max_size() on linked objects should return size(), because it is.
 	* >=, <=, and compare templates no longer require == (>= is !<)
 	* Micro-optimization pass for size. Saved 24% (32k)!
+	* Removed non-const data pointer from memlink.
+		While enforcing const-correctness is a good thing, the errors
+		this catches are relatively rare and are all programmer errors.
+		So, as much as I cringe to consider the lack of strict
+		compiler checked const-correctness, I must concede that the
+		benefits of having memblocks, strings, and containers be 16
+		bytes in size is a great advantage in both speed and codesize.
+		As a result, one needs to be more mindful to not modify
+		memlink-derived objects that are linked to const data;
+		before this change this would have caused a crash, now it
+		might or might not do that, as with regular pointers.
 
 2005-11-10 Release 0.8
 	* API CHANGE: changed all string's find members to return offsets

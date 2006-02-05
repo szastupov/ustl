@@ -20,12 +20,6 @@ namespace ustl {
 ///
 /// Use this class the way you would a pointer to an allocated unstructured block.
 /// The pointer and block size are available through member functions and cast operator.
-/// The begin in the block may be modified, but the block is static in size.
-/// \warning This class actually contains two pointers: a const pointer and a non-const
-/// pointer. Both are the same when you have linked the object to a modifiable block.
-/// But if you have for some reason linked the object to a const block, the non-const
-/// pointer will be NULL. With proper usage, there should be no problem with this; just
-/// be aware that such a thing may happen.
 ///
 /// Example usage:
 /// \code
@@ -49,57 +43,40 @@ public:
     typedef pointer			iterator;
     typedef const memlink&		rcself_t;
 public:
-    inline		memlink (void)				: cmemlink(), m_Data(NULL) {}
-    inline		memlink (void* p, size_type n)		: cmemlink (p, n), m_Data (pointer(p)) {}
-    inline		memlink (const void* p, size_type n)	: cmemlink (p, n), m_Data (NULL) {}
-    inline		memlink (rcself_t l)			: cmemlink (l), m_Data (l.m_Data) {}
-    inline explicit	memlink (const cmemlink& l)		: cmemlink (l), m_Data (NULL) {}
+    inline		memlink (void)				: cmemlink() {}
+    inline		memlink (void* p, size_type n)		: cmemlink (p, n) {}
+    inline		memlink (const void* p, size_type n)	: cmemlink (p, n) {}
+    inline		memlink (rcself_t l)			: cmemlink (l) {}
+    inline explicit	memlink (const cmemlink& l)		: cmemlink (l) {}
+    inline pointer	data (void)				{ return (const_cast<pointer>(cdata())); }
+    inline iterator	begin (void)				{ return (iterator (data())); }
+    inline iterator	iat (size_type i)			{ assert (i <= size()); return (begin() + i); }
+    inline iterator	end (void)				{ return (iat (size())); }
+    inline const_iterator	begin (void) const		{ return (cmemlink::begin()); }
+    inline const_iterator	end (void) const		{ return (cmemlink::end()); }
+    inline const_iterator	iat (size_type i) const		{ return (cmemlink::iat (i)); }
+    size_type		writable_size (void) const		{ return (size()); }
+    inline rcself_t	operator= (const cmemlink& l)		{ cmemlink::operator= (l); return (*this); }
+    inline rcself_t	operator= (rcself_t l)			{ cmemlink::operator= (l); return (*this); }
     inline void		link (const void* p, size_type n)	{ cmemlink::link (p, n); }
-    inline void		link (void* p, size_type n)		{ cmemlink::link (p, n); m_Data = pointer(p); }
+    inline void		link (void* p, size_type n)		{ cmemlink::link (p, n); }
     inline void		link (const cmemlink& l)		{ cmemlink::link (l); }
-    inline void		link (memlink& l)			{ cmemlink::link (l); m_Data = l.m_Data; }
+    inline void		link (memlink& l)			{ cmemlink::link (l); }
 			OVERLOAD_POINTER_AND_SIZE_T_V2(link, void*)
 			OVERLOAD_POINTER_AND_SIZE_T_V2(link, const void*)
     inline void		link (const void* first, const void* last)	{ link (first, distance (first, last)); }
-    inline void		link (void* first, void* last)			{ link (first, distance (first, last)); }
-    inline void		relink (const void* p, size_type n)		{ cmemlink::relink (p, n); m_Data = NULL; }
-    inline void		relink (void* p, size_type n)			{ cmemlink::relink (p, n); m_Data = pointer(p); }
-    inline virtual void	unlink (void)					{ cmemlink::unlink(); m_Data = NULL; }
-    inline void		copy (const cmemlink& l);
-    inline void		copy (const void* p, size_type n);
+    inline void		link (void* first, void* last)		{ link (first, distance (first, last)); }
+    inline void		relink (const void* p, size_type n)	{ cmemlink::relink (p, n); }
+    inline void		relink (void* p, size_type n)		{ cmemlink::relink (p, n); }
+    inline void		copy (const cmemlink& l)		{ copy (begin(), l.cdata(), l.size()); }
+    inline void		copy (const void* p, size_type n)	{ copy (begin(), p, n); }
     void		copy (iterator offset, const void* p, size_type n);
-    size_type		writable_size (void) const	{ size_type sz (size()); return (m_Data ? sz : 0); }
-    inline rcself_t	operator= (const cmemlink& l)	{ cmemlink::operator= (l); m_Data = NULL; return (*this); }
-    inline rcself_t	operator= (rcself_t l)		{ cmemlink::operator= (l); m_Data = l.m_Data; return (*this); }
-    void		swap (memlink& l);
-    inline pointer	data (void)			{ return (m_Data); }
-    inline iterator	begin (void)			{ assert ((data() || !cdata()) && "This container has no modifiable data. What you probably want is to first make a writable copy with copy_link."); return (iterator (data())); }
-    inline iterator	iat (size_type i)		{ assert (i <= size()); return (begin() + i); }
-    inline iterator	end (void)			{ return (iat (size())); }
-    inline const_iterator	begin (void) const	{ return (cmemlink::begin()); }
-    inline const_iterator	end (void) const	{ return (cmemlink::end()); }
-    inline const_iterator	iat (size_type i) const	{ return (cmemlink::iat (i)); }
+    inline void		swap (memlink& l)			{ cmemlink::swap (l); }
     void		fill (iterator start, const void* p, size_type elsize, size_type elCount = 1);
     inline void		insert (iterator start, size_type size);
     inline void		erase (iterator start, size_type size);
     void		read (istream& is);
-private:
-    pointer		m_Data;	///< Pointer to the begin block (non-const)
 };
-
-/// Copies from \p l.
-inline void memlink::copy (const cmemlink& l)
-{
-    assert ((begin() || !l.size()) && "Can't copy into a constant link.");
-    copy (begin(), l.cdata(), l.size());
-}
-
-/// Copies begin from \p p, \p n to the linked block.
-inline void memlink::copy (const void* p, size_type n)
-{
-    assert ((begin() || !n) && "Can't copy into a constant link.");
-    copy (begin(), p, n);
-}
 
 /// Shifts the data in the linked block from \p start to \p start + \p n.
 /// The contents of the uncovered bytes is undefined.

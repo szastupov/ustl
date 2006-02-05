@@ -70,12 +70,12 @@ void cmemlink::swap (cmemlink& l)
 	"movq %2, %%mm1\n\t"
 	"movq %%mm0, %2\n\t"
 	"movq %%mm1, %0\n\t"
-	: "=m"(m_CData), "=m"(m_Size), "=m"(l.m_CData), "=m"(l.m_Size)
+	: "=m"(m_Data), "=m"(m_Size), "=m"(l.m_Data), "=m"(l.m_Size)
 	: 
 	: "mm0", "mm1", "st", "st(1)");
     simd::reset_mmx();
 #else
-    ::ustl::swap (m_CData, l.m_CData);
+    ::ustl::swap (m_Data, l.m_Data);
     ::ustl::swap (m_Size, l.m_Size);
 #endif
 }
@@ -84,7 +84,7 @@ void cmemlink::swap (cmemlink& l)
 bool cmemlink::operator== (const cmemlink& l) const
 {
     return (l.m_Size == m_Size &&
-	    (l.m_CData == m_CData || 0 == memcmp (l.m_CData, m_CData, m_Size)));
+	    (l.m_Data == m_Data || 0 == memcmp (l.m_Data, m_Data, m_Size)));
 }
 
 } // namespace ustl

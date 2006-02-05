@@ -52,16 +52,16 @@ public:
     typedef const_iterator	iterator;
     typedef const cmemlink&	rcself_t;
 public:
-    inline		cmemlink (void)				: m_CData (NULL), m_Size (0) { }
-    inline		cmemlink (const void* p, size_type n)	: m_CData (const_pointer(p)), m_Size (n) { assert (p || !n); }
-    inline		cmemlink (const cmemlink& l)		: m_CData (l.m_CData), m_Size (l.m_Size) {}
+    inline		cmemlink (void)				: m_Data (NULL), m_Size (0) { }
+    inline		cmemlink (const void* p, size_type n)	: m_Data (const_pointer(p)), m_Size (n) { assert (p || !n); }
+    inline		cmemlink (const cmemlink& l)		: m_Data (l.m_Data), m_Size (l.m_Size) {}
     inline virtual     ~cmemlink (void)				{}
     void		link (const void* p, size_type n);
 			OVERLOAD_POINTER_AND_SIZE_T_V2(link, const void*)
     inline void		link (const cmemlink& l)	{ link (l.begin(), l.size()); }
     inline void		link (const void* first, const void* last)	{ link (first, distance (first, last)); }
     inline void		relink (const void* p, size_type n);
-    inline virtual void	unlink (void)			{ m_CData = NULL; m_Size = 0; }
+    inline virtual void	unlink (void)			{ m_Data = NULL; m_Size = 0; }
     inline rcself_t	operator= (const cmemlink& l)	{ link (l); return (*this); }
     bool		operator== (const cmemlink& l) const;
     void		swap (cmemlink& l);
@@ -69,7 +69,7 @@ public:
     inline size_type	max_size (void) const		{ return (size()); }
     inline size_type	readable_size (void) const	{ return (size()); }
     inline bool		empty (void) const		{ return (!size()); }
-   inline const_pointer	cdata (void) const		{ return (m_CData); }
+   inline const_pointer	cdata (void) const		{ return (m_Data); }
     inline iterator	begin (void) const		{ return (iterator (cdata())); }
     inline iterator	iat (size_type i) const		{ assert (i <= size()); return (begin() + i); }
     inline iterator	end (void) const		{ return (iat (size())); }
@@ -80,14 +80,14 @@ public:
     void		text_write (ostringstream& os) const;
     void		write_file (const char* filename, int mode = 0644) const;
 private:
-    const_pointer	m_CData;	///< Pointer to the data block (const)
+    const_pointer	m_Data;		///< Pointer to the data block (const)
     size_type		m_Size;		///< size of the data block
 };
 
 /// A fast alternative to link which can be used when relinking to the same block (i.e. when it is resized)
 inline void cmemlink::relink (const void* p, size_type n)
 {
-    m_CData = reinterpret_cast<const_pointer>(p);
+    m_Data = reinterpret_cast<const_pointer>(p);
     m_Size = n;
 }
 

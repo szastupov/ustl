@@ -13,13 +13,6 @@
 
 namespace ustl {
 
-/// Exchanges the contents with \p l
-void memlink::swap (memlink& l)
-{
-    cmemlink::swap (l);
-    ::ustl::swap (m_Data, l.m_Data);
-}
-
 /// Reads the object from stream \p s
 void memlink::read (istream& is)
 {
@@ -40,7 +33,7 @@ void memlink::copy (iterator start, const void* p, size_type n)
     assert (data() || !n);
     assert (p || !n);
     assert (start >= begin() && start + n <= end());
-    if (p && n && p != data())
+    if (p)
 	copy_n (const_iterator(p), n, start);
 }
 
