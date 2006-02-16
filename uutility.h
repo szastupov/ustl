@@ -93,7 +93,7 @@ const size_t c_DefaultAlignment = __alignof__(void*);
 
 /// \brief Rounds \p n up to be divisible by \p grain
 template <typename T>
-inline T Align (T n, T grain = c_DefaultAlignment)
+inline T Align (T n, size_t grain = c_DefaultAlignment)
 {
     T a, r = n % grain;
     if (grain == 2) return (n + r);
@@ -304,7 +304,7 @@ inline bool TestAndSet (int* pm)
 	: "2" (oldVal), "a" (0)
 	: "memory");
     return (rv);
-#elif __i386__
+#elif __i386__ || __x86_64__
     int oldVal (1);
     asm volatile ("xchgl %0, %1" : "=r"(oldVal), "=m"(*pm) : "0"(oldVal), "m"(*pm) : "memory");
     return (!oldVal);

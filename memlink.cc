@@ -16,7 +16,7 @@ namespace ustl {
 /// Reads the object from stream \p s
 void memlink::read (istream& is)
 {
-    uint32_t n;
+    written_size_type n;
     is >> n;
     if (is.remaining() < n)
 	throw stream_bounds_exception ("read", "ustl::memlink", is.pos(), n, is.remaining());

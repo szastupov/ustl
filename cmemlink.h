@@ -47,6 +47,7 @@ public:
     typedef value_type		reference;
     typedef value_type		const_reference;
     typedef size_t		size_type;
+    typedef uint32_t		written_size_type;
     typedef ptrdiff_t		difference_type;
     typedef const_pointer	const_iterator;
     typedef const_iterator	iterator;

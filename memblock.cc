@@ -185,7 +185,7 @@ void memblock::unlink (void)
 /// Reads the object from stream \p s
 void memblock::read (istream& is)
 {
-    uint32_t n;
+    written_size_type n;
     is >> n;
     if (is.remaining() < n)
 	throw stream_bounds_exception ("read", "ustl::memblock", is.pos(), n, is.remaining());

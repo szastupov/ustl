@@ -20,7 +20,7 @@ namespace ustl {
 template <typename T> inline void stosv (T*& p, size_t n, T v)
     { while (n--) *p++ = v; }
 
-#if __i386__
+#if defined(__i386__) || defined(__x86_64__)
 
 //----------------------------------------------------------------------
 // Copy functions
@@ -69,26 +69,30 @@ static inline void simd_block_cleanup (void) __attribute__((always_inline));
 
 static inline void simd_block_copy (const void* src, void* dest)
 {
+    const char* csrc ((const char*) src);
+    char* cdest ((char*) dest);
     #if CPU_HAS_SSE
-    asm volatile (
-	"movaps (%%esi), %%xmm0		\n\t"
-	"movaps 16(%%esi), %%xmm1	\n\t"
-	"movntps %%xmm0, (%%edi)	\n\t"
-	"movntps %%xmm1, 16(%%edi)"
-	: : "S"(src), "D"(dest)
-	: "memory", "xmm0", "xmm1");
+    asm (
+	"movaps\t%2, %%xmm0	\n\t"
+	"movaps\t%3, %%xmm1	\n\t"
+	"movntps\t%%xmm0, %0	\n\t"
+	"movntps\t%%xmm1, %1"
+	: "=m"(cdest[0]), "=m"(cdest[16])
+	: "m"(csrc[0]), "m"(csrc[16])
+	: "xmm0", "xmm1");
     #else
-    asm volatile (
-	"movq (%%esi), %%mm0	\n\t"
-	"movq 8(%%esi), %%mm1	\n\t"
-	"movq 16(%%esi), %%mm2	\n\t"
-	"movq 24(%%esi), %%mm3	\n\t"
-	"movq %%mm0, (%%edi)	\n\t"
-	"movq %%mm1, 8(%%edi)	\n\t"
-	"movq %%mm2, 16(%%edi)	\n\t"
-	"movq %%mm3, 24(%%edi)"
-	: : "S"(src), "D"(dest)
-	: "memory", "mm0", "mm1", "mm2", "mm3", "st", "st(1)", "st(2)", "st(3)");
+    asm (
+	"movq	%4, %%mm0	\n\t"
+	"movq	%5, %%mm1	\n\t"
+	"movq	%6, %%mm2	\n\t"
+	"movq	%7, %%mm3	\n\t"
+	"movq	%%mm0, %0	\n\t"
+	"movq	%%mm1, %1	\n\t"
+	"movq	%%mm2, %2	\n\t"
+	"movq	%%mm3, %3"
+	: "=m"(cdest[0]), "=m"(cdest[8]), "=m"(cdest[16]), "=m"(cdest[24])
+	: "m"(csrc[0]), "m"(csrc[8]), "m"(csrc[16]), "m"(csrc[24])
+	: "mm0", "mm1", "mm2", "mm3", "st", "st(1)", "st(2)", "st(3)");
     #endif
 }
 

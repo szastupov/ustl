@@ -207,12 +207,8 @@ template <typename T> inline int32_t sround (T op) { fround<T,int32_t> obj; retu
 // Vector types to cast tuple data to
 //----------------------------------------------------------------------
 
-#if HAVE_VECTOR_EXTENSIONS
-#if __GNUC__ >= 4
+#if HAVE_VECTOR_EXTENSIONS && __GNUC__ >= 4
 #define VECTOR_ATTRIBUTE(mode,vs)	__attribute__((vector_size(vs)))
-#else
-#define VECTOR_ATTRIBUTE(mode,vs)	__attribute__((mode(x)))
-#endif
 #else
 #define VECTOR_ATTRIBUTE(mode,vs)
 #endif

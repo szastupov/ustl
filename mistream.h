@@ -83,7 +83,7 @@ public:
     inline const_iterator ipos (void) const	{ return (begin() + pos()); }
     inline size_type	remaining (void) const	{ return (size() - pos()); }
     inline void		seek (uoff_t newPos);
-    inline void		seek (const_iterator newPos);
+    inline void		iseek (const_iterator newPos);
     inline void		skip (size_type nBytes);
     inline bool		aligned (size_type grain = c_DefaultAlignment) const;
     inline size_type	align_size (size_type grain = c_DefaultAlignment) const;
@@ -181,7 +181,7 @@ inline void istream::seek (uoff_t newPos)
 }
 
 /// Sets the current read position to \p newPos
-inline void istream::seek (const_iterator newPos)
+inline void istream::iseek (const_iterator newPos)
 {
     seek (distance (begin(), newPos));
 }

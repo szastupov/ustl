@@ -12,12 +12,11 @@ using namespace ustl;
 // Copy functions
 //----------------------------------------------------------------------
 
-#if __i386__
+#if __i386__ || __x86_64__
 extern "C" void movsb_copy (const char* src, size_t nBytes, char* dest)
 {
     asm volatile (
-	"cld		\n\t"
-	"rep; movsb"
+	"cld\n\trep\n\tmovsb"
 	: "=&S"(src), "=&D"(dest)
 	: "0"(src), "1"(dest), "c"(nBytes)
 	: "memory");
@@ -26,78 +25,58 @@ extern "C" void movsb_copy (const char* src, size_t nBytes, char* dest)
 extern "C" void movsd_copy (const char* src, size_t nBytes, char* dest)
 {
     asm volatile (
-	"shr $2, %%ecx	\n\t"
-	"cld		\n\t"
-	"rep; movsl"
+	"cld\n\trep\n\tmovsl"
 	: "=&S"(src), "=&D"(dest)
-	: "0"(src), "1"(dest), "c"(nBytes)
+	: "0"(src), "1"(dest), "c"(nBytes / 4)
 	: "memory");
 }
 
 extern "C" void risc_copy (const char* src, size_t nBytes, char* dest)
 {
-    asm volatile (
-	"shr $2, %%ecx		\n\t"
-	"1:			\n\t"
-	"mov (%%esi), %%eax	\n\t"
-	"add $4, %%esi		\n\t"
-	"mov %%eax, (%%edi)	\n\t"
-	"add $4, %%edi		\n\t"
-	"dec %%ecx		\n\t"
-	"jnz 1b"
-	: "=&S"(src), "=&D"(dest)
-	: "0"(src), "1"(dest), "c"(nBytes)
-	: "memory", "eax");
+    unsigned long* ldest ((unsigned long*) dest);
+    const unsigned long* lsrc ((const unsigned long*) src);
+    nBytes /= sizeof(*lsrc);
+    do {
+	*ldest++ = *lsrc++;
+    } while (--nBytes);
 }
 
 extern "C" void unroll_copy (const char* src, size_t nBytes, char* dest)
 {
-    asm volatile (
-	"shr $4, %%ecx		\n\t"
-	"1:			\n\t"
-	"mov (%%esi), %%eax	\n\t"
-	"mov 4(%%esi), %%edx	\n\t"
-	"mov %%eax, (%%edi)	\n\t"
-	"mov %%edx, 4(%%edi)	\n\t"
-	"mov 8(%%esi), %%eax	\n\t"
-	"mov 12(%%esi), %%edx	\n\t"
-	"mov %%eax, 8(%%edi)	\n\t"
-	"mov %%edx, 12(%%edi)	\n\t"
-	"add $16, %%esi		\n\t"
-	"add $16, %%edi		\n\t"
-	"dec %%ecx		\n\t"
-	"jnz 1b"
-	: "=&S"(src), "=&D"(dest)
-	: "0"(src), "1"(dest), "c"(nBytes)
-	: "memory", "eax", "edx");
+    unsigned long* ldest ((unsigned long*) dest);
+    const unsigned long* lsrc ((const unsigned long*) src);
+    nBytes /= 4 * sizeof(unsigned long);
+    do {
+	ldest[0] = lsrc[0];
+	ldest[1] = lsrc[1];
+	ldest[2] = lsrc[2];
+	ldest[3] = lsrc[3];
+	ldest += 4;
+	lsrc += 4;
+    } while (--nBytes);
 }
 
 #if CPU_HAS_MMX
 extern "C" void mmx_copy (const char* src, size_t nBytes, char* dest)
 {
-    asm volatile (
-	"shr $5, %%ecx		\n\t"
-	"1:			\n\t"
-#if CPU_HAS_3DNOW
-	"prefetch 512(%%esi)	\n\t"
-#else
-	"prefetchnta 512(%%esi)	\n\t"
-#endif
-	"movq (%%esi), %%mm0	\n\t"
-	"movq 8(%%esi), %%mm1	\n\t"
-	"movq 16(%%esi), %%mm2	\n\t"
-	"movq 24(%%esi), %%mm3	\n\t"
-	"movq %%mm0, (%%edi)	\n\t"
-	"movq %%mm1, 8(%%edi)	\n\t"
-	"movq %%mm2, 16(%%edi)	\n\t"
-	"movq %%mm3, 24(%%edi)	\n\t"
-	"add $32, %%esi		\n\t"
-	"add $32, %%edi		\n\t"
-	"dec %%ecx		\n\t"
-	"jnz 1b"
-	: "=&S"(src), "=&D"(dest)
-	: "0"(src), "1"(dest), "c"(nBytes)
-	: "memory", "mm0", "mm1", "mm2", "mm3");
+    nBytes /= 32;
+    do {
+	prefetch (src + 512, 0, 0);
+	asm (
+	    "movq	%4, %%mm0	\n\t"
+	    "movq	%5, %%mm1	\n\t"
+	    "movq	%6, %%mm2	\n\t"
+	    "movq	%7, %%mm3	\n\t"
+	    "movq	%%mm0, %0	\n\t"
+	    "movq	%%mm1, %1	\n\t"
+	    "movq	%%mm2, %2	\n\t"
+	    "movq	%%mm3, %3"
+	    : "=m"(dest[0]), "=m"(dest[8]), "=m"(dest[16]), "=m"(dest[24])
+	    : "m"(src[0]), "m"(src[8]), "m"(src[16]), "m"(src[24])
+	    : "mm0", "mm1", "mm2", "mm3", "st", "st(1)", "st(2)", "st(3)");
+	src += 32;
+	dest += 32;
+    } while (--nBytes);
     simd::reset_mmx();
 }
 #endif // CPU_HAS_MMX
@@ -113,13 +92,14 @@ extern "C" void sse_copy (const char* src, size_t nBytes, char* dest)
 	const size_t nMiddleBlocks = nBytes / 32;
 	for (uoff_t i = 0; i < nMiddleBlocks; ++ i) {
 	    prefetch (src + 512, 0, 0);
-	    asm volatile (
-		"movaps (%%esi), %%xmm0		\n\t"
-		"movaps 16(%%esi), %%xmm1	\n\t"
-		"movntps %%xmm0, (%%edi)	\n\t"
-		"movntps %%xmm1, 16(%%edi)"
-		: : "S"(src), "D"(dest)
-		: "memory", "xmm0", "xmm1", "xmm2", "xmm3");
+	    asm (
+		"movaps\t%2, %%xmm0	\n\t"
+		"movaps\t%3, %%xmm1	\n\t"
+		"movntps\t%%xmm0, %0	\n\t"
+		"movntps\t%%xmm1, %1"
+		: "=m"(dest[0]), "=m"(dest[16])
+		: "m"(src[0]), "m"(src[16])
+		: "xmm0", "xmm1");
 	    src += 32;
 	    dest += 32;
 	}
@@ -174,12 +154,11 @@ void TestCopyFunction (const char* name, CopyFunction pfn)
 // Fill functions
 //----------------------------------------------------------------------
 
-#if __i386__
+#if __i386__ || __x86_64__
 extern "C" void stosb_fill (const char* dest, size_t nBytes, char v)
 {
     asm volatile (
-	"cld		\n\t"
-	"rep; stosb	\n\t"
+	"cld\n\trep\n\tstosb\n\t"
 	: "=&D"(dest)
 	: "0"(dest), "a"(v), "c"(nBytes)
 	: "memory");
@@ -187,50 +166,39 @@ extern "C" void stosb_fill (const char* dest, size_t nBytes, char v)
 
 extern "C" void stosd_fill (const char* dest, size_t nBytes, char v)
 {
-    uint32_t lv;
+    unsigned int lv;
     pack_type (v, lv);
     asm volatile (
-	"shr $2, %%ecx		\n\t"
-	"cld			\n\t"
-	"rep; stosl		\n\t"
+	"cld\n\trep\n\tstosl\n\t"
 	: "=&D"(dest)
-	: "0"(dest), "a"(lv), "c"(nBytes)
+	: "0"(dest), "a"(lv), "c"(nBytes / sizeof(lv))
 	: "memory");
 }
 
 extern "C" void risc_fill (const char* dest, size_t nBytes, char v)
 {
-    uint32_t lv;
+    unsigned long lv;
     pack_type (v, lv);
-    asm volatile (
-	"shr $2, %%ecx		\n\t"
-	"1:			\n\t"
-	"mov %%eax, (%%edi)	\n\t"
-	"add $4, %%edi		\n\t"
-	"dec %%ecx		\n\t"
-	"jnz 1b			\n\t"
-	: "=&D"(dest)
-	: "0"(dest), "a"(lv), "c"(nBytes)
-	: "memory");
+    unsigned long* ldest ((unsigned long*) dest);
+    nBytes /= sizeof(lv);
+    do {
+	*ldest++ = lv;
+    } while (--nBytes);
 }
 
 extern "C" void unroll_fill (const char* dest, size_t nBytes, char v)
 {
-    uint32_t lv;
+    unsigned long lv;
     pack_type (v, lv);
-    asm volatile (
-	"shr $4, %%ecx		\n\t"
-	"1:			\n\t"
-	"mov %%eax, (%%edi)	\n\t"
-	"mov %%eax, 4(%%edi)	\n\t"
-	"mov %%eax, 8(%%edi)	\n\t"
-	"mov %%eax, 12(%%edi)	\n\t"
-	"add $16, %%edi		\n\t"
-	"dec %%ecx		\n\t"
-	"jnz 1b			\n\t"
-	: "=&D"(dest)
-	: "0"(dest), "a"(lv), "c"(nBytes)
-	: "memory");
+    unsigned long* ldest ((unsigned long*) dest);
+    nBytes /= 4 * sizeof(lv);
+    do {
+	ldest[0] = lv;
+	ldest[1] = lv;
+	ldest[2] = lv;
+	ldest[3] = lv;
+	ldest += 4;
+    } while (--nBytes);
 }
 
 #if CPU_HAS_MMX
@@ -247,12 +215,11 @@ extern "C" void mmx_fill (const char* dest, size_t nBytes, char v)
     const size_t nBlocks (nBytes / 32);
     for (uoff_t i = 0; i < nBlocks; ++ i) {
 	asm volatile (
-	    "movq %%mm0, (%%edi)	\n\t"
-	    "movq %%mm0, 8(%%edi)	\n\t"
-	    "movq %%mm0, 16(%%edi)	\n\t"
-	    "movq %%mm0, 24(%%edi)"
-	    :: "D"(dest)
-	    : "memory");
+	    "movq %%mm0, %0	\n\t"
+	    "movq %%mm0, %1	\n\t"
+	    "movq %%mm0, %2	\n\t"
+	    "movq %%mm0, %3"
+	    : "=m"(dest[0]), "=m"(dest[8]), "=m"(dest[16]), "=m"(dest[24]));
 	dest += 32;
     }
     simd::reset_mmx();
@@ -289,7 +256,7 @@ int main (void)
     cout << "Testing fill" << endl;
     cout << "---------------------------------------------------------" << endl;
     TestFillFunction ("fill_n\t\t", &fill_n<char*, char>);
-#if __i386__
+#if __i386__ || __x86_64__
 #if CPU_HAS_MMX && HAVE_INT64_T
     TestFillFunction ("mmx_fill\t", &mmx_fill);
 #endif
@@ -303,7 +270,7 @@ int main (void)
     cout << "Testing copy" << endl;
     cout << "---------------------------------------------------------" << endl;
     TestCopyFunction ("copy_n\t\t", &copy_n<const char*, char*>);
-#if __i386__
+#if __i386__ || __x86_64__
 #if CPU_HAS_SSE
     TestCopyFunction ("sse_copy\t", &sse_copy);
 #endif

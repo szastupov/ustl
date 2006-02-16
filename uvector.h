@@ -34,6 +34,7 @@ public:
     typedef pointer			iterator;
     typedef const_pointer		const_iterator;
     typedef memblock::size_type		size_type;
+    typedef memblock::written_size_type	written_size_type;
     typedef memblock::difference_type	difference_type;
     typedef ::ustl::reverse_iterator<iterator>	reverse_iterator;
     typedef ::ustl::reverse_iterator<const_iterator>	const_reverse_iterator;

@@ -130,7 +130,7 @@ extern "C" void copy_n_fast (const void* src, size_t count, void* dest);
 inline void copy_n_fast (const void* src, size_t count, void* dest)
     { memcpy (dest, src, count); }
 #endif
-#if __i386__
+#if __i386__ || __x86_64__
 extern "C" void copy_backward_fast (const void* first, const void* last, void* result);
 #else
 inline void copy_backward_fast (const void* first, const void* last, void* result)

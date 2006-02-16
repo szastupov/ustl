@@ -105,12 +105,13 @@ istream& container_read (istream& is, Container& v)
 {
     typedef typename Container::value_type value_type;
     typedef typename Container::iterator iterator;
-    uint32_t n;
+    typedef typename Container::written_size_type written_size_type;
+    written_size_type n;
     is >> n;
     const size_t expectedSize = n * stream_size_of(value_type());
     if (expectedSize > is.remaining())
 	throw stream_bounds_exception ("read", typeid(v).name(), is.pos(), expectedSize, is.remaining());
-    if (alignof(value_type()) > 4)
+    if (alignof(value_type()) > alignof(n))
 	is >> ios::talign<value_type>();
     v.resize (n);
     nr_container_read (is, v);
@@ -123,8 +124,10 @@ template <typename Container>
 ostream& container_write (ostream& os, const Container& v)
 {
     typedef typename Container::value_type value_type;
-    os << uint32_t (v.size());
-    if (alignof(value_type()) > 4)
+    typedef typename Container::written_size_type written_size_type;
+    const written_size_type sz (v.size());
+    os << sz;
+    if (alignof(value_type()) > alignof(sz))
 	os << ios::talign<value_type>();
     nr_container_write (os, v);
     os.align();
@@ -136,8 +139,10 @@ template <typename Container>
 size_t container_stream_size (const Container& v)
 {
     typedef typename Container::value_type value_type;
-    size_t sizeSize = stream_size_of (uint32_t (v.size()));
-    if (alignof(value_type()) > 4)
+    typedef typename Container::written_size_type written_size_type;
+    const written_size_type sz (v.size());
+    size_t sizeSize = stream_size_of (sz);
+    if (alignof(value_type()) > alignof(sz))
 	sizeSize = Align (sizeSize, alignof(value_type()));
     return (Align (sizeSize + nr_container_stream_size (v)));
 }

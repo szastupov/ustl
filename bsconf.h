@@ -129,7 +129,7 @@ static cpchar_t g_Components [] = {
     "debug",		"#DEBUG\t\t= 1",			"DEBUG\t\t= 1 ",
     "bounds",		"#undef WANT_STREAM_BOUNDS_CHECKING",	"#define WANT_STREAM_BOUNDS_CHECKING 1 ",
     "fastcopy",		"#undef WANT_UNROLLED_COPY",		"#define WANT_UNROLLED_COPY 1 ",
-#if __i386__ && __GNUC__ >= 3
+#if __GNUC__ >= 3 && (__i386__ || __x86_64__)
     "mmx",		"#undef WANT_MMX",			"#define WANT_MMX 1 ",
 #endif
     "libstdc++",	"#define WITHOUT_LIBSTDCPP 1",		"#undef WITHOUT_LIBSTDCPP",

@@ -56,7 +56,7 @@ public:
     inline iterator	end (void)			{ return (memlink::end()); }
     inline const_iterator	end (void) const	{ return (memlink::end()); }
     inline void		seek (uoff_t newPos);
-    inline void		seek (const_iterator newPos);
+    inline void		iseek (const_iterator newPos);
     inline void		skip (size_type nBytes);
     inline uoff_t	pos (void) const	{ return (m_Pos); }
     inline iterator	ipos (void)		{ return (begin() + pos()); }
@@ -153,7 +153,7 @@ inline void ostream::seek (uoff_t newPos)
 }
 
 /// Sets the current write position to \p newPos
-inline void ostream::seek (const_iterator newPos)
+inline void ostream::iseek (const_iterator newPos)
 {
     seek (distance (begin(), const_cast<iterator>(newPos)));
 }

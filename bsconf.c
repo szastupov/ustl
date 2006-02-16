@@ -690,7 +690,7 @@ static void SubstituteCFlags (void)
     #endif
     Substitute ("@INLINE_OPTS@", S(buf));
 
-    #ifdef __i386__
+    #if __i386__
 	Substitute ("-fPIC", "");
     #endif
     buf_free (&buf);
@@ -726,14 +726,14 @@ static void SubstitutePrograms (void)
     buf_free (&match);
 }
 
-#if defined(__GNUC__) && defined(__i386__)
+#if defined(__GNUC__) && (__i386__ || __x86_64)
 static uint cpuid_supported (void)
 {
-    uint forig, fnew;
+    unsigned long forig, fnew;
     /* Pop flags, toggle ID bit, push, pop. cpuid supported if changed. */
-    asm ("pushf\n\tpopl\t%0\n\t"
+    asm ("pushf\n\tpop\t%0\n\t"
 	"mov\t%0, %1\n\txor\t$0x200000, %0\n\t"
-	"pushl\t%0\n\tpopf\n\tpushf\n\tpopl\t%0"
+	"push\t%0\n\tpopf\n\tpushf\n\tpop\t%0"
 	: "=r"(fnew), "=r"(forig));
     return (fnew != forig);
 }

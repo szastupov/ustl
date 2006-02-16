@@ -383,7 +383,7 @@ void string::read (istream& is)
 {
     char szbuf [8];
     is >> szbuf[0];
-    uint32_t szsz (Utf8SequenceBytes (szbuf[0]) - 1), n = 0;
+    size_t szsz (Utf8SequenceBytes (szbuf[0]) - 1), n = 0;
     if (is.remaining() >= szsz) {
 	is.read (szbuf + 1, szsz);
 	n = *utf8in(szbuf);
@@ -400,13 +400,13 @@ void string::read (istream& is)
 /// Writes the object to stream \p os
 void string::write (ostream& os) const
 {
-    const uint32_t sz (size());
+    const written_size_type sz (size());
     assert (sz == size() && "No support for writing strings larger than 4G");
 
     char szbuf [8];
     utf8out_iterator<char*> szout (szbuf);
     *szout = sz;
-    uint32_t szsz = distance (szbuf, szout.base());
+    size_t szsz = distance (szbuf, szout.base());
 
     if (szsz + sz > os.remaining())
 	throw stream_bounds_exception ("write", "ustl::string", os.pos(), szsz + sz, os.remaining());
