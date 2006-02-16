@@ -121,6 +121,9 @@ unconst (const pair<typename Container::const_iterator, typename Container::cons
 
 STD_TEMPLATE_CTR_STREAMABLE (TEMPLATE_TYPE1 (vector,T), TEMPLATE_DECL1 (T))
 
+template <typename T>
+inline size_t alignof (const vector<T>&) { return (alignof (T())); }
+
 //----{ bitset }--------------------------------------------------------
 
 /// Reads bitset \p v from stream \p is.
@@ -157,6 +160,19 @@ STD_TEMPLATE_NR_CTR_STREAMABLE (
     TEMPLATE_TYPE2 (tuple,N,T),
     TEMPLATE_FULL_DECL2 (size_t,N,typename,T)
 )
+
+template <size_t N, typename T>
+struct numeric_limits<tuple<N,T> > {
+    typedef numeric_limits<T> value_limits;
+    static inline tuple<N,T> min (void)	{ tuple<N,T> v; fill (v, value_limits::min()); return (v); }
+    static inline tuple<N,T> max (void)	{ tuple<N,T> v; fill (v, value_limits::max()); return (v); }
+    static const bool is_signed = value_limits::is_signed;
+    static const bool is_integer = value_limits::is_integer;
+    static const bool is_integral = value_limits::is_integral;
+};
+
+template <size_t N, typename T>
+inline size_t alignof (const tuple<N,T>&) { return (alignof (T())); }
 
 template <typename T, typename IntT>
 inline ostringstream& chartype_text_write (ostringstream& os, const T& v)

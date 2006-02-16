@@ -67,21 +67,6 @@ _NUMERIC_LIMITS (unsigned long long,	0,	ULLONG_MAX,	false,	true,	true);
 #define NUMERIC_LIMITS(type, minVal, maxVal, bSigned, bInteger, bIntegral)	\
 namespace ustl { _NUMERIC_LIMITS (type, minVal, maxVal, bSigned, bInteger, bIntegral); }
 
-/// Standard tuple NUMERIC_LIMITS
-#define TUPLE_NUMERIC_LIMITS(type)					\
-namespace ustl {							\
-    template <>								\
-    struct numeric_limits<type> {					\
-	typedef numeric_limits<type::value_type> value_limits;		\
-	static inline type min (void)	{ type v; fill (v, value_limits::min()); return (v); }	\
-	static inline type max (void)	{ type v; fill (v, value_limits::max()); return (v); }	\
-	static const bool is_signed = value_limits::is_signed;		\
-	static const bool is_integer = value_limits::is_integer;	\
-	static const bool is_integral = value_limits::is_integral;	\
-    };									\
-}									\
-ALIGNOF(type, alignof(type::value_type()))
-
 } // namespace ustl
 
 #endif
