@@ -13,6 +13,12 @@
 #include "strmsize.h"
 #include "uspecial.h"
 #include <errno.h>
+#if __GNUC__ >= 3
+    #define HAVE_CXXABI_H 1
+#endif
+#if HAVE_CXXABI_H
+    #include <cxxabi.h>
+#endif
 
 namespace ustl {
 
@@ -214,8 +220,16 @@ stream_bounds_exception::stream_bounds_exception (const char* operation, const c
 /// Returns a descriptive error message. fmt="%s stream %s: @%u: expected %u, available %u";
 void stream_bounds_exception::info (string& msgbuf, const char* fmt) const throw()
 {
-    if (!fmt) fmt = "%s stream %s: @%u: expected %u, available %u";
-    try { msgbuf.format (fmt, m_TypeName, m_Operation, m_Offset, m_Expected, m_Remaining); } catch (...) {}
+#if HAVE_CXXABI_H
+    char typeName [256];
+    size_t sz = VectorSize(typeName);
+    int status;
+    abi::__cxa_demangle (m_TypeName, typeName, &sz, &status);
+#else
+    const char* typeName (m_TypeName);
+#endif
+    if (!fmt) fmt = "%s stream %s: @0x%X: need %u bytes, have %u";
+    try { msgbuf.format (fmt, typeName, m_Operation, m_Offset, m_Expected, m_Remaining); } catch (...) {}
 }
 
 /// Reads the exception from stream \p is.
