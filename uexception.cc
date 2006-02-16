@@ -14,9 +14,6 @@
 #include "uspecial.h"
 #include <errno.h>
 #if __GNUC__ >= 3
-    #define HAVE_CXXABI_H 1
-#endif
-#if HAVE_CXXABI_H
     #include <cxxabi.h>
 #endif
 
@@ -43,7 +40,7 @@ void exception::read (istream& is)
 {
     uint32_t stmSize;
     xfmt_t fmt;
-    is >> fmt >> stmSize;
+    is >> fmt >> stmSize >> m_Backtrace;
     assert (fmt == m_Format && "The saved exception is of a different type.");
     assert (stmSize - exception::stream_size() <= is.remaining() && "The saved exception data is corrupt.");
     m_Format = fmt;
@@ -52,7 +49,7 @@ void exception::read (istream& is)
 /// Writes the exception into stream \p os as an IFF chunk.
 void exception::write (ostream& os) const
 {
-    os << m_Format << uint32_t(stream_size());
+    os << m_Format << uint32_t(stream_size()) << m_Backtrace;
 }
 
 /// Writes the exception as text into stream \p os.
@@ -220,7 +217,7 @@ stream_bounds_exception::stream_bounds_exception (const char* operation, const c
 /// Returns a descriptive error message. fmt="%s stream %s: @%u: expected %u, available %u";
 void stream_bounds_exception::info (string& msgbuf, const char* fmt) const throw()
 {
-#if HAVE_CXXABI_H
+#if __GNUC__ >= 3
     char typeName [256];
     size_t sz = VectorSize(typeName);
     int status;

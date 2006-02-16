@@ -18,6 +18,7 @@
     #include <exception>
     #include <new>
 #endif
+#include "bktrace.h"
 
 #ifdef WITHOUT_LIBSTDCPP	// This code is copied from <exception>
 namespace std {
@@ -43,9 +44,6 @@ bool uncaught_exception() throw();
 namespace ustl {
 
 class string;
-class istream;
-class ostream;
-class ostringstream;
 
 typedef uint32_t	xfmt_t;
 
@@ -68,6 +66,8 @@ class exception {
 class exception : public std::exception {
 #endif
 public:
+    typedef const CBacktrace& rcbktrace_t;
+public:
     inline		exception (void) throw() : m_Format (xfmt_Exception) {}
     inline virtual     ~exception (void) throw() {}
     inline virtual const char* what (void) const throw() { return ("error"); }
@@ -75,14 +75,16 @@ public:
     virtual void	read (istream& is);
     virtual void	write (ostream& os) const;
     void		text_write (ostringstream& os) const;
-    inline virtual size_t stream_size (void) const { return (sizeof(m_Format) + sizeof(uint32_t)); }
+    inline virtual size_t stream_size (void) const { return (sizeof(m_Format) + sizeof(uint32_t) + m_Backtrace.stream_size()); }
     /// Format of the exception is used to lookup exception::info format string.
     /// Another common use is the instantiation of serialized exceptions, used
     /// by the error handler node chain to troubleshoot specific errors.
-    inline xfmt_t	format (void) const { return (m_Format); }
+    inline xfmt_t	format (void) const	{ return (m_Format); }
+    inline rcbktrace_t	backtrace (void) const	{ return (m_Backtrace); }
 protected:
     inline void		set_format (xfmt_t fmt) { m_Format = fmt; }
 private:
+    CBacktrace		m_Backtrace;	///< Backtrace of the throw point.
     xfmt_t		m_Format;	///< Format of the exception's data.
 };
 

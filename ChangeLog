@@ -46,6 +46,8 @@ Release 0.9
 		better to always align to an arbitrary value than to align to
 		a platform-dependent one.
 	* stream_bounds_exception demangles type names.
+	* Added CBacktrace class for printing backtrace information.
+	* exception now creates a backtrace when thrown.
 
 2005-11-10 Release 0.8
 	* API CHANGE: changed all string's find members to return offsets
