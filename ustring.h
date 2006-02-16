@@ -238,9 +238,6 @@ PTR_STRING_CMP (operator>,  (s2 <  s1))
 PTR_STRING_CMP (operator>=, (s2 <= s1))
 #undef PTR_STRING_CMP
 
-// Specialization for stream alignment
-template <> inline size_t alignof (string) { return (alignof (string::value_type())); }
-
 //----------------------------------------------------------------------
 
 template <typename T>
@@ -258,6 +255,9 @@ inline hashvalue_t hash_value (const string::pointer& v)
 //----------------------------------------------------------------------
 
 } // namespace ustl
+
+// Specialization for stream alignment
+ALIGNOF (ustl::string, alignof (string::value_type()))
 
 #endif
 

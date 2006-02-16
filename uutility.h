@@ -106,15 +106,14 @@ inline T Align (T n, size_t grain = c_DefaultAlignment)
 
 /// Returns the recommended alignment for type \p T.
 template <typename T>
-inline size_t alignof (T)
+inline size_t alignof (const T&)
 {
     return (__alignof__(T));
 }
 
-#if SIZE_OF_BOOL != SIZE_OF_CHAR
-// bool is a big type on some machines (like DEC Alpha), so it's written as a byte.
-template <> inline size_t alignof (bool) { return (sizeof(uint8_t)); }
-#endif
+#define ALIGNOF(type,grain)	\
+namespace ustl {		\
+    template <> inline size_t alignof (const type&) { return (grain); } }
 
 /// Offsets an iterator
 template <typename T>
@@ -364,6 +363,11 @@ namespace simd {
     inline void	name (arg1type a1, NOT_SIZE_T_I_OR_L a2)	{ name (a1, size_t(a2)); }
 
 } // namespace ustl
+
+#if SIZE_OF_BOOL != SIZE_OF_CHAR
+// bool is a big type on some machines (like DEC Alpha), so it's written as a byte.
+ALIGNOF(bool, sizeof(uint8_t))
+#endif
 
 #endif
 

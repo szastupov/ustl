@@ -92,13 +92,12 @@ inline void cmemlink::relink (const void* p, size_type n)
     m_Size = n;
 }
 
-// Specialization for stream alignment
-template <> inline size_t alignof (cmemlink) { return (alignof (size_t())); }
-
 /// Use with cmemlink-derived classes to link to a static array
 #define static_link(v)	link (v, VectorSize(v))
 
 } // namespace ustl
+
+ALIGNOF (ustl::cmemlink, alignof (ustl::cmemlink::written_size_type()))
 
 #endif
 
