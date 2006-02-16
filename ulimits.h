@@ -80,7 +80,7 @@ namespace ustl {							\
 	static const bool is_integral = value_limits::is_integral;	\
     };									\
 }									\
-ALIGNOF(type, alignof(type::value_type))
+ALIGNOF(type, alignof(type::value_type()))
 
 } // namespace ustl
 
