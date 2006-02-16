@@ -138,7 +138,7 @@ public:
     virtual void	write (ostream& os) const;
     virtual size_t	stream_size (void) const;
 protected:
-    int			m_Errno;		///< Error code returned by the failed operation.
+    intptr_t		m_Errno;		///< Error code returned by the failed operation.
     const char*		m_Operation;		///< Name of the failed operation.
 };
 

@@ -115,7 +115,7 @@ istream& container_read (istream& is, Container& v)
 	is >> ios::talign<value_type>();
     v.resize (n);
     nr_container_read (is, v);
-    is.align();
+    is >> ios::talign<written_size_type>();
     return (is);
 }
 
@@ -130,7 +130,7 @@ ostream& container_write (ostream& os, const Container& v)
     if (alignof(value_type()) > alignof(sz))
 	os << ios::talign<value_type>();
     nr_container_write (os, v);
-    os.align();
+    os << ios::talign<written_size_type>();
     return (os);
 }
 
@@ -144,7 +144,7 @@ size_t container_stream_size (const Container& v)
     size_t sizeSize = stream_size_of (sz);
     if (alignof(value_type()) > alignof(sz))
 	sizeSize = Align (sizeSize, alignof(value_type()));
-    return (Align (sizeSize + nr_container_stream_size (v)));
+    return (Align (sizeSize + nr_container_stream_size (v), alignof(sz)));
 }
 
 /// \brief Writes element \p v into stream \p os as text.

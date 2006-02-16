@@ -191,7 +191,7 @@ void memblock::read (istream& is)
 	throw stream_bounds_exception ("read", "ustl::memblock", is.pos(), n, is.remaining());
     resize (n);
     is.read (data(), writable_size());
-    is.align();
+    is.align (alignof (n));
 }
 
 /// Reads the entire file \p "filename".

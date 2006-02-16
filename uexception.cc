@@ -185,7 +185,7 @@ void file_exception::read (istream& is)
     libc_exception::read (is);
     string filename;
     is >> filename;
-    is.align();
+    is.align (8);
     filename.copyto (filename, VectorSize(m_Filename));
 }
 
@@ -194,14 +194,14 @@ void file_exception::write (ostream& os) const
 {
     libc_exception::write (os);
     os << string (m_Filename);
-    os.align();
+    os.align (8);
 }
 
 /// Returns the size of the written exception.
 size_t file_exception::stream_size (void) const
 {
     return (libc_exception::stream_size() +
-	    Align (stream_size_of (string (m_Filename))));
+	    Align (stream_size_of (string (m_Filename)), 8));
 }
 
 //----------------------------------------------------------------------

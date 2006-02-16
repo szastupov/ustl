@@ -40,6 +40,11 @@ Release 0.9
 		might or might not do that, as with regular pointers.
 	* Pulled rotate code into rotate_fast for memory blocks.
 	* x86_64 cleanup and improvements, including MMX support.
+	* Align container ends on 4 grain.
+		While this is not very friendly to 64bit architectures, it is
+		the only way to allow writing containers portably. It is
+		better to always align to an arbitrary value than to align to
+		a platform-dependent one.
 	* stream_bounds_exception demangles type names.
 
 2005-11-10 Release 0.8

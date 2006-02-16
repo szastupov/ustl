@@ -24,7 +24,7 @@ void memlink::read (istream& is)
 	throw length_error ("memlink can not increase the size of the linked storage for reading");
     resize (n);
     is.read (data(), n);
-    is.align();
+    is.align (alignof (n));
 }
 
 /// Copies data from \p p, \p n to the linked block starting at \p start.

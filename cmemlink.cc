@@ -35,7 +35,7 @@ void cmemlink::write (ostream& os) const
     assert (sz == size() && "No support for writing memblocks larger than 4G");
     os << sz;
     os.write (cdata(), sz);
-    os.align();
+    os.align (alignof (sz));
 }
 
 /// Writes the object to stream \p os
@@ -48,7 +48,7 @@ void cmemlink::text_write (ostringstream& os) const
 cmemlink::size_type cmemlink::stream_size (void) const
 {
     const written_size_type sz (size());
-    return (Align (stream_size_of (sz) + sz));
+    return (Align (stream_size_of (sz) + sz, alignof(sz)));
 }
 
 /// Writes the data to file \p "filename".
