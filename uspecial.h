@@ -122,7 +122,11 @@ unconst (const pair<typename Container::const_iterator, typename Container::cons
 STD_TEMPLATE_CTR_STREAMABLE (TEMPLATE_TYPE1 (vector,T), TEMPLATE_DECL1 (T))
 
 template <typename T>
-inline size_t alignof (const vector<T>&) { return (alignof (T())); }
+inline size_t alignof (const vector<T>&)
+{
+    typedef typename vector<T>::written_size_type written_size_type;
+    return (alignof (written_size_type()));
+}
 
 //----{ bitset }--------------------------------------------------------
 
