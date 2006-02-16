@@ -20,9 +20,9 @@
 #endif
 
 #if SIZE_OF_LONG == 8
-    #define ADDRESS_FMT	"%16p  "
+    #define ADDRESS_FMT	"%16p  %s\n"
 #else
-    #define ADDRESS_FMT	"%8p  "
+    #define ADDRESS_FMT	"%8p  %s\n"
 #endif
 
 namespace ustl {
@@ -64,24 +64,23 @@ void CBacktrace::GetSymbols (void)
     char nmbuf [256];
     char dmbuf [256];
     for (uoff_t i = 0; i < m_nFrames; ++ i) {
-	// Address first
-	os.format (ADDRESS_FMT, m_Addresses[i]);
-	const char* isym = symbols.get()[i];
-	if (!isym) {
-	    os << endl;
-	    continue;
-	}
-	// Copy out the name; the strings are: "file(function+0x42) [0xAddress]"
-	const char* mnStart = strchr (isym, '(');
-	const char* mnEnd = strchr (isym, '+');
+	// Prepare the demangled name, if possible
 	size_t nmSize = 0;
-	if (mnStart && mnEnd) {
-	    ++ mnStart;
-	    nmSize = min (size_t(distance (mnStart, mnEnd)), VectorSize(nmbuf));
+	const char* isym = symbols.get()[i];
+	if (isym) {
+	    // Copy out the name; the strings are: "file(function+0x42) [0xAddress]"
+	    const char* mnStart = strchr (isym, '(');
+	    if (++mnStart == (const char*)(1))
+		mnStart = isym;
+	    const char* mnEnd = strchr (isym, '+');
+	    const char* isymEnd = isym + strlen (isym);
+	    if (!mnEnd)
+		mnEnd = isymEnd;
+	    nmSize = min (size_t (distance (mnStart, mnEnd)), VectorSize(nmbuf));
 	    memcpy (nmbuf, mnStart, nmSize);
 	}
 	nmbuf[nmSize] = 0;
-	// And the demangled name
+	// Demangle
 	#if __GNUC__ >= 3
 	    int dmFailed = 0;
 	    size_t dmSize = VectorSize (dmbuf);
@@ -89,8 +88,8 @@ void CBacktrace::GetSymbols (void)
 	#else
 	    int dmFailed = -1;
 	#endif
-	os << (dmFailed ? nmbuf : dmbuf);
-	os << endl;
+	// Print the result with the address
+	os.format (ADDRESS_FMT, m_Addresses[i], dmFailed ? nmbuf : dmbuf);
     }
     m_Text = strdup (os.str().c_str());
 }
