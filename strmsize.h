@@ -77,8 +77,8 @@ inline size_t stream_size_of (unsigned long long v)	{ return (sizeof (v));	}
 /// Declares that T contains read, write, and stream_size methods.
 #define STD_STREAMABLE(T)	\
     namespace ustl {		\
-	inline istream& operator>> (istream& is, T& v)		{ v.read (is);  return (is); }	\
-	inline ostream& operator<< (ostream& os, const T& v)	{ v.write (os); return (os); }	\
+	inline istream& operator>> (istream& is, T& v)		{ assert (is.aligned (alignof (v))); v.read (is);  return (is); }	\
+	inline ostream& operator<< (ostream& os, const T& v)	{ assert (os.aligned (alignof (v))); v.write (os); return (os); }	\
 	inline size_t stream_size_of (const T& v)		{ return (v.stream_size()); }	\
     }
 
