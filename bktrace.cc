@@ -110,6 +110,7 @@ void CBacktrace::text_write (ostringstream& os) const
 /// Reads the object from stream \p is.
 void CBacktrace::read (istream& is)
 {
+    assert (is.aligned (alignof (m_Addresses[0])) && "Backtrace object contains pointers and must be void* aligned");
     is.read (m_Addresses, sizeof(m_Addresses));
     is >> m_nFrames;
     size_t tlen = 0;
@@ -123,6 +124,7 @@ void CBacktrace::read (istream& is)
 /// Writes the object to stream \p os.
 void CBacktrace::write (ostream& os) const
 {
+    assert (os.aligned (alignof (m_Addresses[0])) && "Backtrace object contains pointers and must be void* aligned");
     os.write (m_Addresses, sizeof(m_Addresses));
     os << m_nFrames;
     size_t tlen = 0;
