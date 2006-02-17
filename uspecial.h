@@ -239,6 +239,10 @@ inline hashvalue_t hash_value (const string::const_pointer& v)
 } // namespace ustl
 
 // This is here because there really is no other place to put it.
+#if SIZE_OF_BOOL != SIZE_OF_CHAR
+// bool is a big type on some machines (like DEC Alpha), so it's written as a byte.
+ALIGNOF(bool, sizeof(uint8_t))
+#endif
 STD_STREAMABLE(cmemlink)
 STD_STREAMABLE(istream)
 STD_STREAMABLE(ostream)

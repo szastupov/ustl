@@ -97,7 +97,5 @@ inline void cmemlink::relink (const void* p, size_type n)
 
 } // namespace ustl
 
-ALIGNOF (ustl::cmemlink, alignof (ustl::cmemlink::written_size_type()))
-
 #endif
 
