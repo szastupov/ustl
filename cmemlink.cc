@@ -64,7 +64,7 @@ void cmemlink::write_file (const char* filename, int mode) const
 /// swaps the contents with \p l
 void cmemlink::swap (cmemlink& l)
 {
-#if CPU_HAS_MMX
+#if CPU_HAS_MMX && SIZE_OF_POINTER == 4
     asm (
 	"movq %0, %%mm0\n\t"
 	"movq %2, %%mm1\n\t"
@@ -74,6 +74,15 @@ void cmemlink::swap (cmemlink& l)
 	: 
 	: "mm0", "mm1", "st", "st(1)");
     simd::reset_mmx();
+#elif CPU_HAS_SSE && SIZE_OF_POINTER == 8
+    asm (
+	"movups %0, %%xmm0\n\t"
+	"movups %2, %%xmm1\n\t"
+	"movups %%xmm0, %2\n\t"
+	"movups %%xmm1, %0\n\t"
+	: "=m"(m_Data), "=m"(m_Size), "=m"(l.m_Data), "=m"(l.m_Size)
+	: 
+	: "xmm0", "xmm1");
 #else
     ::ustl::swap (m_Data, l.m_Data);
     ::ustl::swap (m_Size, l.m_Size);
