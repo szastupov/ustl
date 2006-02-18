@@ -56,6 +56,9 @@ _NUMERIC_LIMITS (char,		SCHAR_MIN,	SCHAR_MAX,	true,	true,	true);
 _NUMERIC_LIMITS (int,		INT_MIN,	INT_MAX,	true,	true,	true);
 _NUMERIC_LIMITS (short,		SHRT_MIN,	SHRT_MAX,	true,	true,	true);
 _NUMERIC_LIMITS (long,		LONG_MIN,	LONG_MAX,	true,	true,	true);
+#if HAVE_THREE_CHAR_TYPES
+_NUMERIC_LIMITS (signed char,	SCHAR_MIN,	SCHAR_MAX,	true,	true,	true);
+#endif
 _NUMERIC_LIMITS (unsigned char,	0,		UCHAR_MAX,	false,	true,	true);
 _NUMERIC_LIMITS (unsigned int,	0,		UINT_MAX,	false,	true,	true);
 _NUMERIC_LIMITS (unsigned short,0,		USHRT_MAX,	false,	true,	true);
