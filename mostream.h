@@ -214,21 +214,6 @@ inline void ostream::iwrite (const T& v)
     skip (sizeof(T));
 }
 
-/// Writes type T into the stream by calling its write method.
-template <typename T>
-inline void StdObjectWrite (ostream& os, const T& v)
-{
-    #ifndef NDEBUG
-	assert (os.aligned (alignof (v)));
-	const uoff_t vStart (os.pos());
-    #endif
-    v.write (os);
-    #ifndef NDEBUG
-	if (os.pos() - vStart != v.stream_size())
-	    throw stream_bounds_exception ("ustl::StdObjectWrite", typeid(v).name(), vStart, os.pos() - vStart, v.stream_size());
-    #endif
-}
-
 #define OSTREAM_OPERATOR(type)	\
 inline ostream&	operator<< (ostream& os, type v)	{ os.iwrite(v); return (os); }
 

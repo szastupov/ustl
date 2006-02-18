@@ -74,11 +74,23 @@ inline size_t stream_size_of (unsigned long long v)	{ return (sizeof (v));	}
 	inline size_t stream_size_of (T& v)			{ return (sizeof(v)); }		\
     }
 
+#ifdef NDEBUG
+    #define STD_STREAMABLE_SZCHK_BEGIN
+    #define STD_STREAMABLE_SZCHK_END
+#else
+    #define STD_STREAMABLE_SZCHK_BEGIN		\
+	assert (os.aligned (alignof (v)));	\
+	const uoff_t vStart (os.pos())
+    #define STD_STREAMABLE_SZCHK_END		\
+	if (os.pos() - vStart != v.stream_size()) \
+	    throw stream_bounds_exception ("write", typeid(v).name(), vStart, os.pos() - vStart, v.stream_size())
+#endif
+
 /// Declares that T contains read, write, and stream_size methods.
 #define STD_STREAMABLE(T)	\
     namespace ustl {		\
 	inline istream& operator>> (istream& is, T& v)		{ assert (is.aligned (alignof (v))); v.read (is);  return (is); }	\
-	inline ostream& operator<< (ostream& os, const T& v)	{ StdObjectWrite (os, v); return (os); }	\
+	inline ostream& operator<< (ostream& os, const T& v)	{ STD_STREAMABLE_SZCHK_BEGIN; v.write (os); STD_STREAMABLE_SZCHK_END; return (os); }	\
 	inline size_t stream_size_of (const T& v)		{ return (v.stream_size()); }	\
     }
 
