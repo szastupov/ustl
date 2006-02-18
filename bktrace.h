@@ -41,9 +41,10 @@ public:
 private:
     void		GetSymbols (void);
 private:
-    void*		m_Addresses [64];
-    char*		m_Text;
-    size_t		m_nFrames;
+    void*		m_Addresses [64];	///< Addresses of each function on the stack.
+    char*		m_Symbols;		///< Symbols corresponding to each address.
+    uint32_t		m_nFrames;		///< Number of addresses in m_Addresses.
+    uint32_t		m_SymbolsSize;		///< Size of m_Symbols.
 };
 
 } // namespace ustl

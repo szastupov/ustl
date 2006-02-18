@@ -19,18 +19,13 @@
     #include <cxxabi.h>
 #endif
 
-#if SIZE_OF_LONG == 8
-    #define ADDRESS_FMT	"%16p  %s\n"
-#else
-    #define ADDRESS_FMT	"%8p  %s\n"
-#endif
-
 namespace ustl {
 
 /// Default constructor. The backtrace is obtained here.
 CBacktrace::CBacktrace (void)
-: m_Text (NULL),
-  m_nFrames (0)
+: m_Symbols (NULL),
+  m_nFrames (0),
+  m_SymbolsSize (0)
 {
     try {
 	m_nFrames = backtrace (m_Addresses, VectorSize(m_Addresses));
@@ -40,8 +35,9 @@ CBacktrace::CBacktrace (void)
 
 /// Copy constructor.
 CBacktrace::CBacktrace (const CBacktrace& v)
-: m_Text (NULL),
-  m_nFrames (0)
+: m_Symbols (NULL),
+  m_nFrames (0),
+  m_SymbolsSize (0)
 {
     operator= (v);
 }
@@ -50,7 +46,9 @@ CBacktrace::CBacktrace (const CBacktrace& v)
 const CBacktrace& CBacktrace::operator= (const CBacktrace& v)
 {
     memcpy (m_Addresses, v.m_Addresses, sizeof(m_Addresses));
-    m_Text = strdup (v.m_Text);
+    m_Symbols = strdup (v.m_Symbols);
+    m_nFrames = v.m_nFrames;
+    m_SymbolsSize = v.m_SymbolsSize;
     return (*this);
 }
 
@@ -89,61 +87,66 @@ void CBacktrace::GetSymbols (void)
 	    int dmFailed = -1;
 	#endif
 	// Print the result with the address
-	os.format (ADDRESS_FMT, m_Addresses[i], dmFailed ? nmbuf : dmbuf);
+	os.format ("%s\n", dmFailed ? nmbuf : dmbuf);
     }
-    m_Text = strdup (os.str().c_str());
+    m_Symbols = strdup (os.str().c_str());
+    m_SymbolsSize = os.str().size();
 }
 
 /// Default destructor.
 CBacktrace::~CBacktrace (void)
 {
-    free_nullok (m_Text);
+    free_nullok (m_Symbols);
 }
+
+#if SIZE_OF_LONG == 8
+    #define ADDRESS_FMT	"%16p  "
+#else
+    #define ADDRESS_FMT	"%8p  "
+#endif
 
 /// Prints the backtrace to \p os.
 void CBacktrace::text_write (ostringstream& os) const
 {
-    if (m_Text)
-	os << m_Text;
+    const char *ss = m_Symbols, *se;
+    for (uoff_t i = 0; i < m_nFrames; ++ i) {
+	os.format (ADDRESS_FMT, m_Addresses[i]);
+	se = strchr (ss, '\n') + 1;
+	os.write (ss, distance (ss, se));
+	ss = se;
+    }
 }
 
 /// Reads the object from stream \p is.
 void CBacktrace::read (istream& is)
 {
     assert (is.aligned (alignof (m_Addresses[0])) && "Backtrace object contains pointers and must be void* aligned");
-    is.read (m_Addresses, sizeof(m_Addresses));
-    is >> m_nFrames;
-    size_t tlen = 0;
-    is >> tlen;
-    free_nullok (m_Text);
-    m_Text = (char*) malloc (tlen + 1);
-    is.read (m_Text, tlen);
-    m_Text[tlen] = 0;
+    is >> m_nFrames >> m_SymbolsSize;
+    free_nullok (m_Symbols);
+    m_Symbols = (char*) malloc (m_SymbolsSize + 1);
+    is.read (m_Symbols, m_SymbolsSize);
+    m_Symbols [m_SymbolsSize] = 0;
+    is.align();
+    is.read (m_Addresses, m_nFrames * sizeof(void*));
 }
 
 /// Writes the object to stream \p os.
 void CBacktrace::write (ostream& os) const
 {
     assert (os.aligned (alignof (m_Addresses[0])) && "Backtrace object contains pointers and must be void* aligned");
-    os.write (m_Addresses, sizeof(m_Addresses));
-    os << m_nFrames;
-    size_t tlen = 0;
-    if (m_Text) {
-	tlen = strlen (m_Text);
-	os << tlen;
-	os.write (m_Text, tlen);
-    } else
-	os << tlen;
+    os << m_nFrames << m_SymbolsSize;
+    os.write (m_Symbols, m_SymbolsSize);
     os.align();
+    os.write (m_Addresses, m_nFrames * sizeof(void*));
 }
 
 /// Returns the size of the written object.
 size_t CBacktrace::stream_size (void) const
 {
-    return (Align (sizeof(m_Addresses) +
-		   stream_size_of (m_nFrames) +
-		   stream_size_of (size_t()) +
-		   m_Text ? strlen (m_Text) : 0));
+    return (Align (stream_size_of (m_nFrames) +
+		   stream_size_of (m_SymbolsSize) +
+		   m_nFrames * sizeof(void*) +
+		   m_SymbolsSize));
 }
 
 } // namespace ustl
