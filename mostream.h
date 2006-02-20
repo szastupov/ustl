@@ -145,7 +145,8 @@ inline utf8ostream_iterator utf8out (ostream& os)
 inline void ostream::seek (uoff_t newPos)
 {
 #ifdef WANT_STREAM_BOUNDS_CHECKING
-    verify_remaining ("seekp", "", newPos - pos());
+    if (newPos > size())
+	throw stream_bounds_exception ("seekp", "byte", pos(), newPos - pos(), size());
 #else
     assert (newPos <= size());
 #endif

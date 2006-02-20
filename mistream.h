@@ -174,7 +174,7 @@ inline void istream::seek (uoff_t newPos)
 {
 #ifdef WANT_STREAM_BOUNDS_CHECKING
     if (newPos > size())
-	throw stream_bounds_exception ("seekg", "", pos(), newPos - pos(), size());
+	throw stream_bounds_exception ("seekg", "byte", pos(), newPos - pos(), size());
 #else
     assert (newPos <= size());
 #endif
