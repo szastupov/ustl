@@ -158,7 +158,9 @@ void ostream::verify_remaining (const char* op, const char* type, size_t n) cons
 /// Aligns the write pointer on \p grain. The skipped bytes are zeroed.
 void ostream::align (size_type grain)
 {
-    const size_t nb = Align (pos(), grain) - pos();
+    const size_t r = pos() % grain;
+    size_t nb = grain - r;
+    if (!r) nb = 0;
 #ifdef WANT_STREAM_BOUNDS_CHECKING
     verify_remaining ("align", "padding", nb);
 #else
