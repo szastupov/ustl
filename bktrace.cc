@@ -52,45 +52,54 @@ const CBacktrace& CBacktrace::operator= (const CBacktrace& v)
     return (*this);
 }
 
+/// Converts a string returned by backtrace_symbols into readable form.
+static size_t ExtractAbiName (const char* isym, char* nmbuf)
+{
+    // Prepare the demangled name, if possible
+    size_t nmSize = 0;
+    if (isym) {
+	// Copy out the name; the strings are: "file(function+0x42) [0xAddress]"
+	const char* mnStart = strchr (isym, '(');
+	if (++mnStart == (const char*)(1))
+	    mnStart = isym;
+	const char* mnEnd = strchr (isym, '+');
+	const char* isymEnd = isym + strlen (isym);
+	if (!mnEnd)
+	    mnEnd = isymEnd;
+	nmSize = min (size_t (distance (mnStart, mnEnd)), 256U);
+	memcpy (nmbuf, mnStart, nmSize);
+    }
+    nmbuf[nmSize] = 0;
+    // Demangle
+    char dmbuf [256];
+    #if __GNUC__ >= 3
+	int dmFailed = 0;
+	size_t dmSize = VectorSize (dmbuf);
+	abi::__cxa_demangle (nmbuf, dmbuf, &dmSize, &dmFailed);
+	if (!dmFailed)
+	    memcpy (nmbuf, dmbuf, (nmSize = strlen(dmbuf)));
+    #endif
+    return (nmSize);
+}
+
 /// Tries to get symbol information for the addresses.
 void CBacktrace::GetSymbols (void)
 {
     auto_ptr<char*> symbols (backtrace_symbols (m_Addresses, m_nFrames));
     if (!symbols.get())
 	return;
-    ostringstream os;
     char nmbuf [256];
-    char dmbuf [256];
-    for (uoff_t i = 0; i < m_nFrames; ++ i) {
-	// Prepare the demangled name, if possible
-	size_t nmSize = 0;
-	const char* isym = symbols.get()[i];
-	if (isym) {
-	    // Copy out the name; the strings are: "file(function+0x42) [0xAddress]"
-	    const char* mnStart = strchr (isym, '(');
-	    if (++mnStart == (const char*)(1))
-		mnStart = isym;
-	    const char* mnEnd = strchr (isym, '+');
-	    const char* isymEnd = isym + strlen (isym);
-	    if (!mnEnd)
-		mnEnd = isymEnd;
-	    nmSize = min (size_t (distance (mnStart, mnEnd)), VectorSize(nmbuf));
-	    memcpy (nmbuf, mnStart, nmSize);
-	}
-	nmbuf[nmSize] = 0;
-	// Demangle
-	#if __GNUC__ >= 3
-	    int dmFailed = 0;
-	    size_t dmSize = VectorSize (dmbuf);
-	    abi::__cxa_demangle (nmbuf, dmbuf, &dmSize, &dmFailed);
-	#else
-	    int dmFailed = -1;
-	#endif
-	// Print the result with the address
-	os.format ("%s\n", dmFailed ? nmbuf : dmbuf);
+    size_t symSize = 1;
+    for (uoff_t i = 0; i < m_nFrames; ++ i)
+	symSize += ExtractAbiName (symbols.get()[i], nmbuf) + 1;
+    if (!(m_Symbols = (char*) calloc (symSize, 1)))
+	return;
+    for (uoff_t i = 0; m_SymbolsSize < symSize - 1; ++ i) {
+	size_t sz = ExtractAbiName (symbols.get()[i], nmbuf);
+	memcpy (m_Symbols + m_SymbolsSize, nmbuf, sz);
+	m_SymbolsSize += sz + 1;
+	m_Symbols [m_SymbolsSize - 1] = '\n';
     }
-    m_Symbols = strdup (os.str().c_str());
-    m_SymbolsSize = os.str().size();
 }
 
 /// Default destructor.
