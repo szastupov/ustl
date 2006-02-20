@@ -177,8 +177,7 @@ ostringstream::size_type ostringstream::overflow (size_type n)
 	ostream::link (m_Buffer);
 	seek (oldPos);
     }
-    if (n > remaining())
-	throw stream_bounds_exception ("write", "text", pos(), n, remaining());
+    verify_remaining ("write", "text", n);
     return (remaining());
 }
 

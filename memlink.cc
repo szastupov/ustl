@@ -18,8 +18,7 @@ void memlink::read (istream& is)
 {
     written_size_type n;
     is >> n;
-    if (is.remaining() < n)
-	throw stream_bounds_exception ("read", "ustl::memlink", is.pos(), n, is.remaining());
+    is.verify_remaining ("read", "ustl::memlink", n);
     if (n > size())
 	throw length_error ("memlink can not increase the size of the linked storage for reading");
     resize (n);

@@ -187,8 +187,7 @@ void memblock::read (istream& is)
 {
     written_size_type n;
     is >> n;
-    if (is.remaining() < n)
-	throw stream_bounds_exception ("read", "ustl::memblock", is.pos(), n, is.remaining());
+    is.verify_remaining ("read", "ustl::memblock", n);
     resize (n);
     is.read (data(), writable_size());
     is.align (alignof (n));

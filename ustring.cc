@@ -384,17 +384,12 @@ void string::read (istream& is)
     char szbuf [8];
     is >> szbuf[0];
     size_t szsz (Utf8SequenceBytes (szbuf[0]) - 1), n = 0;
-    if (is.remaining() >= szsz) {
-	is.read (szbuf + 1, szsz);
-	n = *utf8in(szbuf);
-	if (is.remaining() >= n) {
-	    resize (n);
-	    is.read (data(), size());
-	} else goto underflow;
-    } else {
-	underflow:
-	throw stream_bounds_exception ("read", "ustl::string", is.pos(), szsz + n, is.remaining());
-    }
+    is.verify_remaining ("read", "ustl::string", szsz);
+    is.read (szbuf + 1, szsz);
+    n = *utf8in(szbuf);
+    is.verify_remaining ("read", "ustl::string", n);
+    resize (n);
+    is.read (data(), size());
 }
 
 /// Writes the object to stream \p os
@@ -408,8 +403,7 @@ void string::write (ostream& os) const
     *szout = sz;
     size_t szsz = distance (szbuf, szout.base());
 
-    if (szsz + sz > os.remaining())
-	throw stream_bounds_exception ("write", "ustl::string", os.pos(), szsz + sz, os.remaining());
+    os.verify_remaining ("write", "ustl::string", szsz + sz);
     os.write (szbuf, szsz);
     os.write (cdata(), sz);
 }

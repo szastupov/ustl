@@ -86,6 +86,7 @@ public:
     inline void		iseek (const_iterator newPos);
     inline void		skip (size_type nBytes);
     inline bool		aligned (size_type grain = c_DefaultAlignment) const;
+    void		verify_remaining (const char* op, const char* type, size_t n) const;
     inline size_type	align_size (size_type grain = c_DefaultAlignment) const;
     inline void		align (size_type grain = c_DefaultAlignment);
     void		swap (istream& is);
@@ -173,7 +174,7 @@ inline void istream::seek (uoff_t newPos)
 {
 #ifdef WANT_STREAM_BOUNDS_CHECKING
     if (newPos > size())
-	throw stream_bounds_exception ("seek", "", pos(), newPos - pos(), size());
+	throw stream_bounds_exception ("seekg", "", pos(), newPos - pos(), size());
 #else
     assert (newPos <= size());
 #endif
@@ -227,13 +228,12 @@ inline void istream::iread (T& v)
 {
     assert (aligned (alignof (T())));
 #ifdef WANT_STREAM_BOUNDS_CHECKING
-    if (remaining() < sizeof(T))
-	throw stream_bounds_exception ("read", typeid(v).name(), pos(), sizeof(T), remaining());
+    verify_remaining ("read", typeid(v).name(), sizeof(T));
 #else
     assert (remaining() >= sizeof(T));
 #endif
     v = *reinterpret_cast<const T*>(ipos());
-    skip (sizeof(T));
+    m_Pos += sizeof(T);
 }
 
 #define ISTREAM_OPERATOR(type)	\

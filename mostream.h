@@ -63,6 +63,7 @@ public:
     inline const_iterator ipos (void) const	{ return (begin() + pos()); }
     inline size_type	remaining (void) const;
     inline bool		aligned (size_type grain = c_DefaultAlignment) const;
+    void		verify_remaining (const char* op, const char* type, size_t n) const;
     inline size_type	align_size (size_type grain = c_DefaultAlignment) const;
     void		align (size_type grain = c_DefaultAlignment);
     void		write (const void* buffer, size_type size);
@@ -144,8 +145,7 @@ inline utf8ostream_iterator utf8out (ostream& os)
 inline void ostream::seek (uoff_t newPos)
 {
 #ifdef WANT_STREAM_BOUNDS_CHECKING
-    if (newPos > size())
-	throw stream_bounds_exception ("seek", "", pos(), newPos - pos(), size());
+    verify_remaining ("seekp", "", newPos - pos());
 #else
     assert (newPos <= size());
 #endif
@@ -205,13 +205,12 @@ inline void ostream::iwrite (const T& v)
 {
     assert (aligned (alignof (v)));
 #ifdef WANT_STREAM_BOUNDS_CHECKING
-    if (remaining() < sizeof(T))
-	throw stream_bounds_exception ("write", typeid(v).name(), pos(), sizeof(T), remaining());
+    verify_remaining ("write", typeid(v).name(), sizeof(T));
 #else
     assert (remaining() >= sizeof(T));
 #endif
     *reinterpret_cast<T*>(ipos()) = v;
-    skip (sizeof(T));
+    m_Pos += sizeof(T);
 }
 
 #define OSTREAM_OPERATOR(type)	\

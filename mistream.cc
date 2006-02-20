@@ -55,17 +55,23 @@ void istream::swap (istream& is)
     ::ustl::swap (m_Pos, is.m_Pos);
 }
 
+/// Checks that \p n bytes are available in the stream, or else throws.
+void istream::verify_remaining (const char* op, const char* type, size_t n) const
+{
+    if (remaining() < n)
+	throw stream_bounds_exception (op, type, pos(), n, remaining());
+}
+
 /// Reads \p n bytes into \p buffer.
 void istream::read (void* buffer, size_type n)
 {
 #ifdef WANT_STREAM_BOUNDS_CHECKING
-    if (remaining() < n)
-	throw stream_bounds_exception ("read", "binary data", pos(), n, remaining());
+    verify_remaining ("read", "binary data", n);
 #else
     assert (remaining() >= n && "Reading past end of buffer. Make sure you are reading the right format.");
 #endif
     copy_n (ipos(), n, reinterpret_cast<value_type*>(buffer));
-    skip (n);
+    m_Pos += n;
 }
 
 /// Reads a null-terminated string into \p str.
@@ -77,7 +83,7 @@ void istream::read_strz (string& str)
     const size_type strl = distance (ipos(), zp);
     str.resize (strl);
     copy (ipos(), zp, str.begin());
-    skip (strl + 1);
+    m_Pos += strl + 1;
 }
 
 /// Reads at most \p n bytes into \p s.
@@ -142,31 +148,36 @@ void ostream::unlink (void)
     m_Pos = 0;
 }
 
+/// Checks that \p n bytes are available in the stream, or else throws.
+void ostream::verify_remaining (const char* op, const char* type, size_t n) const
+{
+    if (remaining() < n)
+	throw stream_bounds_exception (op, type, pos(), n, remaining());
+}
+
 /// Aligns the write pointer on \p grain. The skipped bytes are zeroed.
 void ostream::align (size_type grain)
 {
     const size_t nb = Align (pos(), grain) - pos();
 #ifdef WANT_STREAM_BOUNDS_CHECKING
-    if (remaining() < nb)
-	throw stream_bounds_exception ("align", "padding", pos(), nb, remaining());
+    verify_remaining ("align", "padding", nb);
 #else
     assert (remaining() >= nb && "Buffer overrun. Check your stream size calculations.");
 #endif
-    fill_n (ipos(), nb, 0);
-    skip (nb);
+    fill_n (ipos(), nb, '\x0');
+    m_Pos += nb;
 }
 
 /// Writes \p n bytes from \p buffer.
 void ostream::write (const void* buffer, size_type n)
 {
 #ifdef WANT_STREAM_BOUNDS_CHECKING
-    if (remaining() < n)
-	throw stream_bounds_exception ("write", "binary data", pos(), n, remaining());
+    verify_remaining ("write", "binary data", n);
 #else
     assert (remaining() >= n && "Buffer overrun. Check your stream size calculations.");
 #endif
     copy_n (const_iterator(buffer), n, ipos());
-    skip (n);
+    m_Pos += n;
 }
 
 /// Writes \p str as a null-terminated string.

@@ -158,7 +158,7 @@ void istringstream::read (void* buffer, size_type sz)
 {
     if (remaining() < sz && underflow(sz) < sz)
 #ifdef WANT_STREAM_BOUNDS_CHECKING
-	throw stream_bounds_exception ("read", "", pos(), sz - pos(), remaining());
+	verify_remaining ("read", "", sz);
 #else
 	assert (remaining() >= size());
 #endif
@@ -169,7 +169,7 @@ void istringstream::read (memlink& buf)
 {
     if (remaining() < buf.size() && underflow(buf.size()) < buf.size())
 #ifdef WANT_STREAM_BOUNDS_CHECKING
-	throw stream_bounds_exception ("read", "", pos(), buf.size() - pos(), remaining());
+	verify_remaining ("read", "", buf.size());
 #else
 	assert (remaining() >= buf.size());
 #endif
