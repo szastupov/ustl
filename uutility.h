@@ -28,8 +28,10 @@ namespace ustl {
     #define VectorSize(v)	(sizeof(v) / ustl::size_of_elements(1, v))
 #endif
 
+/// Expands into a ptr,size expression for the given static vector; useful as link arguments.
+#define VectorBlock(v)	(v)+0, VectorSize(v)	// +0 makes it work under gcc 2.95
 /// Expands into a begin,end expression for the given static vector; useful for algorithm arguments.
-#define VectorRange(v)	(v)+0, (v)+VectorSize(v)	// +0 makes it work under gcc 2.95
+#define VectorRange(v)	VectorBlock(v)+(v)
 
 /// Returns the number of bits in the given type
 #define BitsInType(t)	(sizeof(t) * CHAR_BIT)

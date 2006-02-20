@@ -93,7 +93,7 @@ inline void cmemlink::relink (const void* p, size_type n)
 }
 
 /// Use with cmemlink-derived classes to link to a static array
-#define static_link(v)	link (v, VectorSize(v))
+#define static_link(v)	link (VectorBlock(v))
 
 } // namespace ustl
 
