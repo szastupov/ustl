@@ -5,6 +5,7 @@
 //
 
 #include "stdtest.h"
+#include <unistd.h>
 
 void TestStreams (void)
 {
@@ -101,15 +102,16 @@ void TestStreams (void)
     cout.format ("double:  %.16f\n", d);
     cout.format ("short:   0x%04X\n", static_cast<int>(si));
     cout.format ("u_short: 0x%04X\n", static_cast<int>(usi));
-    cout << endl;
 
-    cout << "Binary dump:" << endl;
-    foreach (memblock::const_iterator, pc, b) {
-	if (pc > b.begin() && !(distance(b.begin(), pc) % 8))
-	    cout << endl;
-	cout.format ("%02X ", uint8_t(*pc));
+    if (isatty (STDIN_FILENO)) {
+	cout << "\nBinary dump:\n";
+	foreach (memblock::const_iterator, pc, b) {
+	    if (pc > b.begin() && !(distance(b.begin(), pc) % 8))
+		cout << endl;
+	    cout.format ("%02X ", uint8_t(*pc));
+	}
+	cout << endl;
     }
-    cout << endl;
 }
 
 StdBvtMain (TestStreams)
