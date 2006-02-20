@@ -186,6 +186,8 @@ protected:
     size_t		m_Remaining;
 };
 
+const char* demangle_type_name (char* buf, size_t bufSize, size_t* pdmSize = NULL);
+
 } // namespace ustl
 
 #endif

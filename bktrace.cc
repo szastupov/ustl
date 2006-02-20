@@ -28,7 +28,7 @@ CBacktrace::CBacktrace (void)
   m_SymbolsSize (0)
 {
     try {
-	m_nFrames = backtrace (m_Addresses, VectorSize(m_Addresses));
+	m_nFrames = backtrace (VectorBlock (m_Addresses));
 	GetSymbols();
     } catch (...) {}
 }
@@ -71,14 +71,7 @@ static size_t ExtractAbiName (const char* isym, char* nmbuf)
     }
     nmbuf[nmSize] = 0;
     // Demangle
-    char dmbuf [256];
-    #if __GNUC__ >= 3
-	int dmFailed = 0;
-	size_t dmSize = VectorSize (dmbuf);
-	abi::__cxa_demangle (nmbuf, dmbuf, &dmSize, &dmFailed);
-	if (!dmFailed)
-	    memcpy (nmbuf, dmbuf, (nmSize = strlen(dmbuf)));
-    #endif
+    demangle_type_name (nmbuf, 256U, &nmSize);
     return (nmSize);
 }
 

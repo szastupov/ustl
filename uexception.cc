@@ -203,6 +203,32 @@ size_t file_exception::stream_size (void) const
 
 //----------------------------------------------------------------------
 
+/// \brief Uses C++ ABI call, if available to demangle the contents of \p buf.
+///
+/// The result is written to \p buf, with the maximum size of \p bufSize, and
+/// is zero-terminated. The return value is \p buf.
+///
+const char* demangle_type_name (char* buf, size_t bufSize, size_t* pdmSize)
+{
+    size_t bl = strlen (buf);
+#if __GNUC__ >= 3
+    char dmname [256];
+    size_t sz = VectorSize(dmname);
+    int bFailed;
+    abi::__cxa_demangle (buf, dmname, &sz, &bFailed);
+    if (!bFailed) {
+	bl = min (strlen (dmname), bufSize - 1);
+	memcpy (buf, dmname, bl);
+	buf[bl] = 0;
+    }
+#endif
+    if (pdmSize)
+	*pdmSize = bl;
+    return (buf);
+}
+
+//----------------------------------------------------------------------
+
 /// Initializes the empty object. \p operation is the function that returned the error code.
 stream_bounds_exception::stream_bounds_exception (const char* operation, const char* type, uoff_t offset, size_t expected, size_t remaining) throw()
 : libc_exception (operation),
@@ -217,16 +243,11 @@ stream_bounds_exception::stream_bounds_exception (const char* operation, const c
 /// Returns a descriptive error message. fmt="%s stream %s: @%u: expected %u, available %u";
 void stream_bounds_exception::info (string& msgbuf, const char* fmt) const throw()
 {
-#if __GNUC__ >= 3
     char typeName [256];
-    size_t sz = VectorSize(typeName);
-    int status;
-    abi::__cxa_demangle (m_TypeName, typeName, &sz, &status);
-#else
-    const char* typeName (m_TypeName);
-#endif
+    strncpy (typeName, m_TypeName, VectorSize(typeName));
+    typeName[VectorSize(typeName)-1] = 0;
     if (!fmt) fmt = "%s stream %s: @0x%X: need %u bytes, have %u";
-    try { msgbuf.format (fmt, typeName, m_Operation, m_Offset, m_Expected, m_Remaining); } catch (...) {}
+    try { msgbuf.format (fmt, demangle_type_name (VectorBlock(typeName)), m_Operation, m_Offset, m_Expected, m_Remaining); } catch (...) {}
 }
 
 /// Reads the exception from stream \p is.
