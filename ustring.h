@@ -121,7 +121,9 @@ public:
     inline bool			operator== (const string& s) const	{ return (memblock::operator== (s)); }
     bool			operator== (const_pointer s) const;
     inline bool			operator== (const_reference c) const	{ return (size() == 1 && c == at(0)); }
+    inline bool			operator!= (const string& s) const	{ return (!operator== (s)); }
     inline bool			operator!= (const_pointer s) const	{ return (!operator== (s)); }
+    inline bool			operator!= (const_reference c) const	{ return (!operator== (c)); }
     inline bool			operator< (const string& s) const	{ return (0 > compare (s)); }
     inline bool			operator< (const_pointer s) const	{ return (0 > compare (s)); }
     inline bool			operator< (const_reference c) const	{ return (0 > compare (begin(), end(), &c, &c + 1)); }
