@@ -19,7 +19,7 @@ namespace ustl {
 /// The most efficient way to use this implementation is to fill the queue
 /// and the completely empty it before filling again.
 ///
-template <class Sequence>
+template <typename Sequence>
 class queue {
 public:
     typedef typename Sequence::value_type	value_type;
@@ -29,86 +29,28 @@ public:
     typedef typename Sequence::const_reference	const_reference;
     typedef typename Sequence::pointer		pointer;
 public:
-    inline			queue (void);
-    explicit inline		queue (const Sequence& s);
-    inline bool			empty (void) const;
-    inline size_type		size (void) const;
-    inline reference		front (void);
-    inline const_reference	front (void) const;
-    inline reference		back (void);
-    inline const_reference	back (void) const;
+    inline			queue (void)			: m_Storage (), m_Front (0) { }
+    explicit inline		queue (const Sequence& s)	: m_Storage (s), m_Front (0) { }
+    inline size_type		size (void) const		{ return (m_Storage.size() - m_Front); }
+    inline bool			empty (void) const		{ return (!size()); }
+    inline reference		front (void)			{ return (m_Storage [m_Front]); }
+    inline const_reference	front (void) const		{ return (m_Storage [m_Front]); }
+    inline reference		back (void)			{ return (m_Storage.back()); }
+    inline const_reference	back (void) const		{ return (m_Storage.back()); }
     inline void			push (const value_type& v);
     inline void			pop (void);
-    inline bool			operator== (const queue& s);
-    inline bool			operator< (const queue& s);
+    inline bool			operator== (const queue& s)	{ return (m_Storage == s.m_Storage && m_Front == s.m_Front); }
+    inline bool			operator< (const queue& s)	{ return (size() < s.size()); }
 private:
-    Sequence			m_Storage;
-    size_type			m_Front;
+    Sequence			m_Storage;	///< Where the data actually is.
+    size_type			m_Front;	///< Index of the element returned by next pop.
 };
-
-/// Default constructor.
-template <class Sequence>
-inline queue<Sequence>::queue (void)
-: m_Storage (),
-  m_Front (0)
-{
-}
-
-/// Copies contents of \p s.
-template <class Sequence>
-inline queue<Sequence>::queue (const Sequence& s)
-: m_Storage (s),
-  m_Front (0)
-{
-}
-
-/// Returns the number of elements.
-template <class Sequence>
-inline typename queue<Sequence>::size_type queue<Sequence>::size (void) const
-{
-    return (m_Storage.size() - m_Front);
-}
-
-/// Returns true if empty.
-template <class Sequence>
-inline bool queue<Sequence>::empty (void) const
-{
-    return (size() == 0);
-}
-
-/// Returns the front element.
-template <class Sequence>
-inline typename queue<Sequence>::reference queue<Sequence>::front (void)
-{
-    return (m_Storage [m_Front]);
-}
-
-/// Returns the front element.
-template <class Sequence>
-inline typename queue<Sequence>::const_reference queue<Sequence>::front (void) const
-{
-    return (m_Storage [m_Front]);
-}
-
-/// Returns the back element.
-template <class Sequence>
-inline typename queue<Sequence>::reference queue<Sequence>::back (void)
-{
-    return (m_Storage.back());
-}
-
-/// Returns the back element.
-template <class Sequence>
-inline typename queue<Sequence>::const_reference queue<Sequence>::back (void) const
-{
-    return (m_Storage.back());
-}
 
 /// Pushes \p v on the queue.
 template <class Sequence>
 inline void queue<Sequence>::push (const value_type& v)
 {
-    if (m_Front && m_Storage.size() == m_Storage.capacity()) {
+    if (m_Front) {
 	m_Storage.erase (m_Storage.begin(), m_Front);
 	m_Front = 0;
     }
@@ -121,20 +63,6 @@ inline void queue<Sequence>::pop (void)
 {
     if (++m_Front >= m_Storage.size())
 	m_Storage.resize (m_Front = 0);
-}
-
-/// Compares to \p s.
-template <class Sequence>
-inline bool queue<Sequence>::operator== (const queue& s)
-{
-    return (m_Storage == s.m_Storage && m_Front == s.m_Front);
-}
-
-/// Compares to \p s.
-template <class Sequence>
-inline bool queue<Sequence>::operator< (const queue& s)
-{
-    return (size() < s.size());
 }
 
 } // namespace ustl
