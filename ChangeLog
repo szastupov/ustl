@@ -48,6 +48,7 @@ Release 0.9
 	* stream_bounds_exception demangles type names.
 	* Added CBacktrace class for printing backtrace information.
 	* exception now creates a backtrace when thrown.
+	* set,map,multiset,multimap now instantiate less crud.
 
 2005-11-10 Release 0.8
 	* API CHANGE: changed all string's find members to return offsets

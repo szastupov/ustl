@@ -23,80 +23,45 @@ namespace ustl {
 template <typename T>
 class multiset : public vector<T> {
 public:
-    typedef typename vector<T>::value_type	value_type;
-    typedef typename vector<T>::size_type	size_type;
-    typedef typename vector<T>::pointer		pointer;
-    typedef typename vector<T>::const_pointer	const_pointer;
-    typedef typename vector<T>::reference	reference;
-    typedef typename vector<T>::const_reference	const_reference;
-    typedef typename vector<T>::const_iterator	const_iterator;
-    typedef typename vector<T>::iterator	iterator;
-    typedef typename vector<T>::reverse_iterator	reverse_iterator;
-    typedef typename vector<T>::const_reverse_iterator	const_reverse_iterator;
+    typedef const multiset<T>&				rcself_t;
+    typedef vector<T>					base_class;
+    typedef typename base_class::value_type		value_type;
+    typedef typename base_class::size_type		size_type;
+    typedef typename base_class::pointer		pointer;
+    typedef typename base_class::const_pointer		const_pointer;
+    typedef typename base_class::reference		reference;
+    typedef typename base_class::const_reference	const_reference;
+    typedef typename base_class::const_iterator		const_iterator;
+    typedef typename base_class::iterator		iterator;
+    typedef typename base_class::reverse_iterator	reverse_iterator;
+    typedef typename base_class::const_reverse_iterator	const_reverse_iterator;
 public:
-    inline			multiset (void);
-    explicit inline		multiset (size_type n);
-    inline			multiset (const multiset<T>& v);
-    inline			multiset (const_iterator i1, const_iterator i2);
-    inline const multiset<T>&	operator= (const multiset<T>& v);
+    inline			multiset (void)		: vector<T> () {}
+    explicit inline		multiset (size_type n)	: vector<T> (n) {}
+    inline			multiset (rcself_t v)	: vector<T> (v) {} 
+    inline			multiset (const_iterator i1, const_iterator i2) : vector<T> () { insert (i1, i2); }
+    inline rcself_t		operator= (rcself_t v)	{ base_class::operator= (v); return (*this); }
+    inline size_type		size (void) const	{ return (base_class::size()); }
+    inline iterator		begin (void)		{ return (base_class::begin()); }
+    inline const_iterator	begin (void) const	{ return (base_class::begin()); }
+    inline iterator		end (void)		{ return (base_class::end()); }
+    inline const_iterator	end (void) const	{ return (base_class::end()); }
     inline void			assign (const_iterator i1, const_iterator i2);
     size_type			count (const_reference v) const;
-    inline void			push_back (const_reference v);
-    iterator			insert (const_reference v);
-    inline void			insert (const_iterator i1, const_iterator i2);
+    inline void			push_back (const_reference v)	{ insert (v); }
+    inline iterator		insert (const_reference v);
+    void			insert (const_iterator i1, const_iterator i2);
     void			erase (const_reference v);
-    inline iterator		erase (iterator ep);
-    inline iterator		erase (iterator ep1, iterator ep2);
-    inline void			clear (void)		{ vector<T>::clear(); }
-    inline size_type		size (void) const	{ return (vector<T>::size()); }
-    inline iterator		begin (void)		{ return (vector<T>::begin()); }
-    inline const_iterator	begin (void) const	{ return (vector<T>::begin()); }
-    inline iterator		end (void)		{ return (vector<T>::end()); }
-    inline const_iterator	end (void) const	{ return (vector<T>::end()); }
+    inline iterator		erase (iterator ep)	{ return (base_class::erase (ep)); }
+    inline iterator		erase (iterator ep1, iterator ep2) { return (base_class::erase (ep1, ep2)); }
+    inline void			clear (void)		{ base_class::clear(); }
 };
-
-/// Default constructor.
-template <typename T>
-inline multiset<T>::multiset (void)
-: vector<T> ()
-{
-}
-
-/// Creates the container with space enough to hold \p n elements.
-template <typename T>
-inline multiset<T>::multiset (size_type n)
-: vector<T> (n)
-{
-}
-
-/// Creates a copy of \p v.
-template <typename T>
-inline multiset<T>::multiset (const multiset<T>& v)
-: vector<T> (v)
-{
-}
-
-/// Copies range [i1,i2)
-template <typename T>
-inline multiset<T>::multiset (const_iterator i1, const_iterator i2)
-: vector<T> ()
-{
-    insert (i1, i2);
-}
-
-/// Copies contents of \p v.
-template <typename T>
-inline const multiset<T>& multiset<T>::operator= (const multiset<T>& v)
-{
-    vector<T>::operator= (v);
-    return (*this);
-}
 
 /// Copies contents of range [i1,i2)
 template <typename T>
 inline void multiset<T>::assign (const_iterator i1, const_iterator i2)
 {
-    multiset<T>::clear();
+    base_class::clear();
     insert (i1, i2);
 }
 
@@ -110,27 +75,20 @@ typename multiset<T>::size_type multiset<T>::count (const_reference v) const
 
 /// Inserts \p v.
 template <typename T>
-inline void multiset<T>::push_back (const_reference v)
-{
-    insert (v);
-}
-
-/// Inserts \p v.
-template <typename T>
-typename multiset<T>::iterator multiset<T>::insert (const_reference v)
+inline typename multiset<T>::iterator multiset<T>::insert (const_reference v)
 {
     iterator ip = upper_bound (begin(), end(), v);
-    return (vector<T>::insert (ip, v));
+    return (base_class::insert (ip, v));
 }
 
 /// Inserts all elements from range [i1,i2).
 template <typename T>
-inline void multiset<T>::insert (const_iterator i1, const_iterator i2)
+void multiset<T>::insert (const_iterator i1, const_iterator i2)
 {
     assert (i1 <= i2);
     reserve (size() + distance (i1, i2));
-    while (i1 < i2)
-	push_back (*i1++);
+    for (; i1 < i2; ++i1)
+	push_back (*i1);
 }
 
 /// Erases all elements with value \p v.
@@ -139,20 +97,6 @@ void multiset<T>::erase (const_reference v)
 {
     pair<iterator,iterator> epr = equal_range (begin(), end(), v);
     erase (epr.first, epr.second);
-}
-
-/// Erases the element at \p ep.
-template <typename T>
-inline typename multiset<T>::iterator multiset<T>::erase (iterator ep)
-{
-    return (vector<T>::erase (ep));
-}
-
-/// Erases range [ep1,ep2).
-template <typename T>
-inline typename multiset<T>::iterator multiset<T>::erase (iterator ep1, iterator ep2)
-{
-    return (vector<T>::erase (ep1, ep2));
 }
 
 } // namespace ustl

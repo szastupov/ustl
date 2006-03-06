@@ -21,106 +21,42 @@ namespace ustl {
 template <typename T>
 class set : public vector<T> {
 public:
-    typedef typename vector<T>::value_type	key_type;
-    typedef typename vector<T>::value_type	data_type;
-    typedef typename vector<T>::value_type	value_type;
-    typedef typename vector<T>::size_type	size_type;
-    typedef typename vector<T>::pointer		pointer;
-    typedef typename vector<T>::const_pointer	const_pointer;
-    typedef typename vector<T>::reference	reference;
-    typedef typename vector<T>::const_reference	const_reference;
-    typedef typename vector<T>::const_iterator	const_iterator;
-    typedef typename vector<T>::iterator	iterator;
-    typedef typename vector<T>::reverse_iterator	reverse_iterator;
-    typedef typename vector<T>::const_reverse_iterator	const_reverse_iterator;
+    typedef const set<T>&			rcself_t;
+    typedef vector<T>				base_class;
+    typedef typename base_class::value_type		key_type;
+    typedef typename base_class::value_type		data_type;
+    typedef typename base_class::value_type		value_type;
+    typedef typename base_class::size_type		size_type;
+    typedef typename base_class::pointer			pointer;
+    typedef typename base_class::const_pointer		const_pointer;
+    typedef typename base_class::reference		reference;
+    typedef typename base_class::const_reference		const_reference;
+    typedef typename base_class::const_iterator		const_iterator;
+    typedef typename base_class::iterator		iterator;
+    typedef typename base_class::reverse_iterator	reverse_iterator;
+    typedef typename base_class::const_reverse_iterator	const_reverse_iterator;
 public:
-    inline			set (void);
-    explicit inline		set (size_type n);
-    inline			set (const set<T>& v);
-    inline			set (const_iterator i1, const_iterator i2);
-    inline const set<T>&	operator= (const set<T>& v);
-    inline void			assign (const_iterator i1, const_iterator i2);
-    inline void			push_back (const_reference v);
-    inline const_iterator	find (const_reference v) const;
-    inline iterator		find (const_reference v);
+    inline			set (void)		: vector<T> () { }
+    explicit inline		set (size_type n)	: vector<T> (n) { }
+    inline			set (rcself_t v)	: vector<T> (v) { } 
+    inline			set (const_iterator i1, const_iterator i2) : vector<T> () { insert (i1, i2); }
+    inline rcself_t		operator= (rcself_t v)	{ base_class::operator= (v); return (*this); }
+    inline size_type		size (void) const	{ return (base_class::size()); }
+    inline iterator		begin (void)		{ return (base_class::begin()); }
+    inline const_iterator	begin (void) const	{ return (base_class::begin()); }
+    inline iterator		end (void)		{ return (base_class::end()); }
+    inline const_iterator	end (void) const	{ return (base_class::end()); }
+    inline void			assign (const_iterator i1, const_iterator i2)	{ clear(); insert (i1, i2); }
+    inline void			push_back (const_reference v)	{ insert (v); }
+    inline const_iterator	find (const_reference v) const	{ return (binary_search (begin(), end(), v)); }
+    inline iterator		find (const_reference v)	{ return (const_cast<iterator>(const_cast<rcself_t>(*this).find (v))); }
     iterator			insert (const_reference v);
     inline void			insert (const_iterator i1, const_iterator i2);
     inline void			erase (const_reference v);
-    inline iterator		erase (iterator ep);
-    inline iterator		erase (iterator ep1, iterator ep2);
-    inline void			clear (void)		{ vector<T>::clear(); }
-    inline size_type		size (void) const	{ return (vector<T>::size()); }
-    inline iterator		begin (void)		{ return (vector<T>::begin()); }
-    inline const_iterator	begin (void) const	{ return (vector<T>::begin()); }
-    inline iterator		end (void)		{ return (vector<T>::end()); }
-    inline const_iterator	end (void) const	{ return (vector<T>::end()); }
+    inline iterator		erase (iterator ep)	{ return (base_class::erase (ep)); }
+    inline iterator		erase (iterator ep1, iterator ep2) { return (base_class::erase (ep1, ep2)); }
+    inline void			clear (void)		{ base_class::clear(); }
 };
-
-/// Default constructor.
-template <typename T>
-inline set<T>::set (void)
-: vector<T> ()
-{
-}
-
-/// Creates a container able to hold at least \p n elements.
-template <typename T>
-inline set<T>::set (size_type n)
-: vector<T> (n)
-{
-}
-
-/// Creates a copy of \p v.
-template <typename T>
-inline set<T>::set (const set<T>& v)
-: vector<T> (v)
-{
-}
-
-/// Inserts elements from range [i1,i2), which does not have to be sorted.
-template <typename T>
-inline set<T>::set (const_iterator i1, const_iterator i2)
-: vector<T> ()
-{
-    insert (i1, i2);
-}
-
-/// Copies the contents of \p v.
-template <typename T>
-inline const set<T>& set<T>::operator= (const set<T>& v)
-{
-    vector<T>::operator= (v);
-    return (*this);
-}
-
-/// Copies the contents of range [i1,i2).
-template <typename T>
-inline void set<T>::assign (const_iterator i1, const_iterator i2)
-{
-    clear();
-    insert (i1, i2);
-}
-
-/// Returns the iterator to an element with value of \p v.
-template <typename T>
-inline typename set<T>::const_iterator set<T>::find (const_reference v) const
-{
-    return (binary_search (begin(), end(), v));
-}
-
-/// Returns the iterator to an element with value of \p v.
-template <typename T>
-inline typename set<T>::iterator set<T>::find (const_reference v)
-{
-    return (binary_search (begin(), end(), v));
-}
-
-/// Inserts \p v into the container, maintaining the sort order.
-template <typename T>
-inline void set<T>::push_back (const_reference v)
-{
-    insert (v);
-}
 
 /// Inserts \p v into the container, maintaining the sort order.
 template <typename T>
@@ -128,7 +64,7 @@ typename set<T>::iterator set<T>::insert (const_reference v)
 {
     iterator ip = lower_bound (begin(), end(), v);
     if (ip == end() || v < *ip)
-	ip = vector<T>::insert (ip, v);
+	ip = base_class::insert (ip, v);
     else
 	*ip = v;
     return (ip);
@@ -136,36 +72,23 @@ typename set<T>::iterator set<T>::insert (const_reference v)
 
 /// Inserts the contents of range [i1,i2)
 template <typename T>
-inline void set<T>::insert (const_iterator i1, const_iterator i2)
+void set<T>::insert (const_iterator i1, const_iterator i2)
 {
     assert (i1 <= i2);
     reserve (size() + distance (i1, i2));
-    while (i1 < i2)
-	push_back (*i1++);
+    for (; i1 < i2; ++i1)
+	push_back (*i1);
 }
 
 /// Erases the element with value \p v.
 template <typename T>
 inline void set<T>::erase (const_reference v)
 {
-    iterator ip = binary_search (begin(), end(), v);
+    iterator ip = find (v);
     if (ip != end())
 	erase (ip);
 }
 
-/// Erases the element at \p ep.
-template <typename T>
-inline typename set<T>::iterator set<T>::erase (iterator ep)
-{
-    return (vector<T>::erase (ep));
-}
-
-/// Erases the range [ep1,ep2).
-template <typename T>
-inline typename set<T>::iterator set<T>::erase (iterator ep1, iterator ep2)
-{
-    return (vector<T>::erase (ep1, ep2));
-}
 
 } // namespace ustl
 
