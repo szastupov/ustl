@@ -16,7 +16,7 @@ namespace ustl {
 ///
 /// \brief Stack adapter to uSTL containers.
 ///
-template <class Sequence>
+template <typename Sequence>
 class stack {
 public:
     typedef typename Sequence::value_type	value_type;
@@ -26,91 +26,21 @@ public:
     typedef typename Sequence::const_reference	const_reference;
     typedef typename Sequence::pointer		pointer;
 public:
-    inline			stack (void);
-    explicit inline		stack (const Sequence& s);
-    inline bool			empty (void) const;
-    inline size_type		size (void) const;
-    inline reference		top (void);
-    inline const_reference	top (void) const;
-    inline void			push (const value_type& v);
-    inline void			pop (void);
-    inline bool			operator== (const stack& s);
-    inline bool			operator< (const stack& s);
+    inline			stack (void)			: m_Storage () { }
+    explicit inline		stack (const Sequence& s)	: m_Storage (s) { }
+    inline bool			empty (void) const		{ return (m_Storage.empty()); }
+    inline size_type		size (void) const		{ return (m_Storage.size()); }
+    inline reference		top (void)			{ return (m_Storage.back()); }
+    inline const_reference	top (void) const		{ return (m_Storage.back()); }
+    inline void			push (const value_type& v)	{ m_Storage.push_back (v); }
+    inline void			pop (void)			{ m_Storage.pop_back(); }
+    inline bool			operator== (const stack& s)	{ return (m_Storage == s.m_Storage); }
+    inline bool			operator< (const stack& s)	{ return (m_Storage.size() < s.m_Storage.size()); }
 private:
-    Sequence			m_Storage;
+    Sequence			m_Storage;	///< Where the data actually is.
 };
 
-/// Default constructor.
-template <class Sequence>
-inline stack<Sequence>::stack (void)
-: m_Storage ()
-{
-}
-
-/// Copies contents of \p s.
-template <class Sequence>
-inline stack<Sequence>::stack (const Sequence& s)
-: m_Storage (s)
-{
-}
-
-/// Returns true if empty.
-template <class Sequence>
-inline bool stack<Sequence>::empty (void) const
-{
-    return (m_Storage.empty());
-}
-
-/// Returns the number of elements.
-template <class Sequence>
-inline typename stack<Sequence>::size_type stack<Sequence>::size (void) const
-{
-    return (m_Storage.size());
-}
-
-/// Returns the topmost element.
-template <class Sequence>
-inline typename stack<Sequence>::reference stack<Sequence>::top (void)
-{
-    return (m_Storage.back());
-}
-
-/// Returns the topmost element.
-template <class Sequence>
-inline typename stack<Sequence>::const_reference stack<Sequence>::top (void) const
-{
-    return (m_Storage.back());
-}
-
-/// Pushes \p v on the stack.
-template <class Sequence>
-inline void stack<Sequence>::push (const value_type& v)
-{
-    m_Storage.push_back (v);
-}
-
-/// Pops the topmost element from the stack.
-template <class Sequence>
-inline void stack<Sequence>::pop (void)
-{
-    m_Storage.pop_back();
-}
-
-/// Compares to \p s.
-template <class Sequence>
-inline bool stack<Sequence>::operator== (const stack& s)
-{
-    return (m_Storage == s.m_Storage);
-}
-
-/// Compares to \p s.
-template <class Sequence>
-inline bool stack<Sequence>::operator< (const stack& s)
-{
-    return (m_Storage.size() < s.m_Storage.size());
-}
-
-} // namespace ustl)
+} // namespace ustl
 
 #endif
 
