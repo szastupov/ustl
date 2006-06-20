@@ -83,10 +83,10 @@ inline void load_identity (matrix<4,4,float>& m)
 inline void _sse_load_matrix (const float* m)
 {
     asm (
-	"movups %0, %%xmm4		\n\t" // xmm4 = m[1 2 3 4]
-	"movups %1, %%xmm5		\n\t" // xmm5 = m[1 2 3 4]
-	"movups %2, %%xmm6		\n\t" // xmm6 = m[1 2 3 4]
-	"movups %3, %%xmm7		\n\t" // xmm7 = m[1 2 3 4]
+	"movups %0, %%xmm4	\n\t"	// xmm4 = m[1 2 3 4]
+	"movups %1, %%xmm5	\n\t"	// xmm5 = m[1 2 3 4]
+	"movups %2, %%xmm6	\n\t"	// xmm6 = m[1 2 3 4]
+	"movups %3, %%xmm7"		// xmm7 = m[1 2 3 4]
 	: : "m"(m[0]), "m"(m[4]), "m"(m[8]), "m"(m[12])
 	: "xmm4", "xmm5", "xmm6", "xmm7"
     );
@@ -120,7 +120,7 @@ static tuple<4,float> operator* (const tuple<4,float>& t, const matrix<4,4,float
 {
     tuple<4,float> result;
     _sse_load_matrix (m.begin());
-    asm ("movups %0, %%xmm0\n\t" : : "m"(t[0]) : "xmm0");
+    asm ("movups %0, %%xmm0" : : "m"(t[0]) : "xmm0");
     _sse_transform_to_vector (result.begin());
     return (result);
 }
@@ -130,14 +130,10 @@ static matrix<4,4,float> operator* (const matrix<4,4,float>& m1, const matrix<4,
 {
     matrix<4,4,float> result;
     _sse_load_matrix (m2.begin());
-    asm ("movups %0, %%xmm0\n\t" : : "m"(m1[0][0]) : "xmm0");
-    _sse_transform_to_vector (result[0]);
-    asm ("movups %0, %%xmm0\n\t" : : "m"(m1[1][0]) : "xmm0");
-    _sse_transform_to_vector (result[1]);
-    asm ("movups %0, %%xmm0\n\t" : : "m"(m1[2][0]) : "xmm0");
-    _sse_transform_to_vector (result[2]);
-    asm ("movups %0, %%xmm0\n\t" : : "m"(m1[3][0]) : "xmm0");
-    _sse_transform_to_vector (result[3]);
+    for (uoff_t r = 0; r < 4; ++ r) { 
+	asm ("movups %0, %%xmm0" : : "m"(m1[r][0]) : "xmm0");
+	_sse_transform_to_vector (result[r]);
+    }
     return (result);
 }
 
