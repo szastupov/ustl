@@ -69,7 +69,7 @@ void cmemlink::swap (cmemlink& l)
 	"movq %0, %%mm0\n\t"
 	"movq %2, %%mm1\n\t"
 	"movq %%mm0, %2\n\t"
-	"movq %%mm1, %0\n\t"
+	"movq %%mm1, %0"
 	: "=m"(m_Data), "=m"(m_Size), "=m"(l.m_Data), "=m"(l.m_Size)
 	: 
 	: "mm0", "mm1", "st", "st(1)");
@@ -79,7 +79,7 @@ void cmemlink::swap (cmemlink& l)
 	"movups %0, %%xmm0\n\t"
 	"movups %2, %%xmm1\n\t"
 	"movups %%xmm0, %2\n\t"
-	"movups %%xmm1, %0\n\t"
+	"movups %%xmm1, %0"
 	: "=m"(m_Data), "=m"(m_Size), "=m"(l.m_Data), "=m"(l.m_Size)
 	: 
 	: "xmm0", "xmm1");
