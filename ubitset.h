@@ -71,10 +71,10 @@ public:
 			/// Sets or clears bit \p n.
     inline void		set (uoff_t n, bool val = true)
 			{
-			    if (val)
-				BitRef(n) |= Mask(n);
-			    else
-				BitRef(n) &= ~Mask(n);
+			    value_type& br (BitRef (n));
+			    const value_type mask (Mask (n));
+			    const value_type bOn (br | mask), bOff (br & ~mask);
+			    br = val ? bOn : bOff;
 			}
 			// Sets the value of the bitrange \p first through \p last to the equivalent number of bits from \p v.
     inline void		set (uoff_t first, uoff_t DebugArg(last), value_type v)
