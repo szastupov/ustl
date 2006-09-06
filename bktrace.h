@@ -9,7 +9,7 @@
 #ifndef BKTRACE_H_63ABB1E4388CEDD975DBE58B57DE474F
 #define BKTRACE_H_63ABB1E4388CEDD975DBE58B57DE474F
 
-#include "utypes.h"
+#include "ulimits.h"
 
 namespace ustl {
 
@@ -48,6 +48,8 @@ private:
 };
 
 } // namespace ustl
+
+ALIGNOF(ustl::CBacktrace, sizeof(void*))
 
 #endif
 
