@@ -28,7 +28,7 @@ CBacktrace::CBacktrace (void)
   m_SymbolsSize (0)
 {
     try {
-	m_nFrames = backtrace (VectorBlock (m_Addresses));
+	m_nFrames = backtrace (m_Addresses, VectorSize (m_Addresses));
 	GetSymbols();
     } catch (...) {}
 }
