@@ -12,8 +12,8 @@
 #if linux && __GNUC__
     #include <execinfo.h>
 #else
-    #define backtrace(a,n)		0
-    #define backtrace_symbols(a,n)	NULL
+    static inline int backtrace (void**, int)			{ return (0); }
+    static inline char** backtrace_symbols (void* const*, int)	{ return (NULL); }
 #endif
 #if __GNUC__ >= 3
     #include <cxxabi.h>
@@ -28,7 +28,7 @@ CBacktrace::CBacktrace (void)
   m_SymbolsSize (0)
 {
     try {
-	m_nFrames = backtrace (m_Addresses, VectorSize (m_Addresses));
+	m_nFrames = backtrace (VectorBlock (m_Addresses));
 	GetSymbols();
     } catch (...) {}
 }
