@@ -103,6 +103,7 @@ void TestString (void)
     cout << "8 found at " << s1.find ('8') << endl;
     cout << "9 found at " << s1.find ("9") << endl;
     cout << "7 rfound at " << s1.rfind ('7') << endl;
+    cout << "7 rfound again at " << s1.rfind ('7', s1.rfind ('7')) << endl;
     cout << "67 rfound at " << s1.rfind ("67") << endl;
     if (s1.rfind("X") == string::npos)
 	cout << "X was not rfound" << endl;

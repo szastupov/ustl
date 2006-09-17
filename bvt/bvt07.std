@@ -21,6 +21,7 @@ replace(0,5,@)		@45678#901234567890
 8 found at 7
 9 found at 8
 7 rfound at 26
+7 rfound again at 16
 67 rfound at 25
 X was not rfound
 [456] found at 3
