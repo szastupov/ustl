@@ -286,7 +286,7 @@ uoff_t string::find (const string& s, uoff_t pos) const
 /// Returns the offset of the last occurence of character \p c before \p pos.
 uoff_t string::rfind (const_reference c, uoff_t pos) const
 {
-    for (int i = min(pos,size()); --i >= 0;)
+    for (int i = min(pos,size()-1); i >= 0; --i)
 	if (at(i) == c)
 	    return (i);
     return (npos);
