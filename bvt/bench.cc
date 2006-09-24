@@ -154,8 +154,13 @@ void TestCopyFunction (const char* name, CopyFunction pfn)
 // Fill functions
 //----------------------------------------------------------------------
 
+extern "C" void memset_fill (char* dest, size_t nBytes, char v)
+{
+    memset (dest, v, nBytes);
+}
+
 #if __i386__ || __x86_64__
-extern "C" void stosb_fill (const char* dest, size_t nBytes, char v)
+extern "C" void stosb_fill (char* dest, size_t nBytes, char v)
 {
     asm volatile (
 	"cld\n\trep\n\tstosb\n\t"
@@ -164,7 +169,7 @@ extern "C" void stosb_fill (const char* dest, size_t nBytes, char v)
 	: "memory");
 }
 
-extern "C" void stosd_fill (const char* dest, size_t nBytes, char v)
+extern "C" void stosd_fill (char* dest, size_t nBytes, char v)
 {
     unsigned int lv;
     pack_type (v, lv);
@@ -175,7 +180,7 @@ extern "C" void stosd_fill (const char* dest, size_t nBytes, char v)
 	: "memory");
 }
 
-extern "C" void risc_fill (const char* dest, size_t nBytes, char v)
+extern "C" void risc_fill (char* dest, size_t nBytes, char v)
 {
     unsigned long lv;
     pack_type (v, lv);
@@ -186,7 +191,7 @@ extern "C" void risc_fill (const char* dest, size_t nBytes, char v)
     } while (--nBytes);
 }
 
-extern "C" void unroll_fill (const char* dest, size_t nBytes, char v)
+extern "C" void unroll_fill (char* dest, size_t nBytes, char v)
 {
     unsigned long lv;
     pack_type (v, lv);
@@ -202,7 +207,7 @@ extern "C" void unroll_fill (const char* dest, size_t nBytes, char v)
 }
 
 #if CPU_HAS_MMX
-extern "C" void mmx_fill (const char* dest, size_t nBytes, char v)
+extern "C" void mmx_fill (char* dest, size_t nBytes, char v)
 {
     prefetch (dest + 512, 1, 0);
     asm volatile (
@@ -265,6 +270,7 @@ int main (void)
     TestFillFunction ("unroll_fill\t", &unroll_fill);
     TestFillFunction ("risc_fill\t", &risc_fill);
 #endif
+    TestFillFunction ("memset_fill\t", &memset_fill);
 
     cout << endl;
     cout << "Testing copy" << endl;
