@@ -82,7 +82,7 @@ inline void istringstream::read_strz (string&)
 
 /// Reads one type as another.
 template <typename RealT, typename CastT>
-void _cast_read (istringstream& is, RealT& v)
+inline void _cast_read (istringstream& is, RealT& v)
 {
     CastT cv;
     is.iread (cv);
