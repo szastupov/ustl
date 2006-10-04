@@ -453,13 +453,9 @@ inline void sort (RandomAccessIterator first, RandomAccessIterator last)
 template <typename RandomAccessIterator, typename Compare>
 void stable_sort (RandomAccessIterator first, RandomAccessIterator last, Compare comp)
 {
-    for (RandomAccessIterator ip (first); ip != last; ++ ip) {
-	RandomAccessIterator minEl (ip), curEl (ip);
-	while (++curEl != last)
-	    if (comp(*curEl, *minEl))
-		minEl = curEl;
-	if (ip != minEl)
-	    iterator_swap (ip, minEl);
+    for (RandomAccessIterator j, i = first; ++i < last;) { // Insertion sort
+	for (j = i; j-- > first && !comp(*j, *i););
+	rotate (++j, i, i + 1);
     }
 }
 

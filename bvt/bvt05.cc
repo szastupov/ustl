@@ -270,6 +270,14 @@ void TestAlgorithms (void)
     sort (v);
     PrintVector (v);
     v.assign (first, last);
+
+    cout << "stable_sort" << endl;
+    reverse (v);
+    PrintVector (v);
+    random_shuffle (v);
+    stable_sort (v);
+    PrintVector (v);
+    v.assign (first, last);
 }
 
 StdBvtMain (TestAlgorithms)
