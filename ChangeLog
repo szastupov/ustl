@@ -170,6 +170,9 @@ Release 0.9
 		want to change your code, file a bug report and I'll change
 		it back. I just don't think anyone is using this type of
 		construction.
+	* Finished heap algorithms.
+	* Added priority_queue.
+	* Added deque as a define to list.
 
 2005-01-17 Release 0.6
 	* The library is relicensed under the MIT License (was LGPL)

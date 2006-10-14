@@ -58,11 +58,47 @@ void TestHeapOperations (void)
     for (uoff_t i = 0; i < VectorSize(c_Values); ++ i) {
 	v.push_back (c_Values[i]);
 	push_heap (v.begin(), v.end());
-	cout << "------------------------------------------------" << endl;
+	cout << "------------------------------------------------\n";
 	if (!is_heap (v.begin(), v.end()))
-	    cout << "Is NOT a heap" << endl;
+	    cout << "Is NOT a heap\n";
 	PrintHeap (v);
     }
+    cout << "------------------------------------------------\n";
+    cout << "make_heap on the full range:\n";
+    v.resize (VectorSize (c_Values));
+    copy (VectorRange(c_Values), v.begin());
+    make_heap (v.begin(), v.end());
+    PrintHeap (v);
+    if (!is_heap (v.begin(), v.end()))
+	cout << "Is NOT a heap\n";
+    cout << "------------------------------------------------\n";
+    cout << "pop_heap:\n";
+    pop_heap (v.begin(), v.end());
+    v.pop_back();
+    PrintHeap (v);
+    if (!is_heap (v.begin(), v.end()))
+	cout << "Is NOT a heap\n";
+
+    cout << "------------------------------------------------\n";
+    cout << "sort_heap:\n";
+    v.resize (VectorSize (c_Values));
+    copy (VectorRange(c_Values), v.begin());
+    make_heap (v.begin(), v.end());
+    sort_heap (v.begin(), v.end());
+    foreach (vector<int>::const_iterator, i, v)
+	cout << *i;
+    cout << endl;
+
+    cout << "------------------------------------------------\n";
+    cout << "priority_queue push and pop:\n";
+    priority_queue<int> q;
+    for (uoff_t i = 0; i < VectorSize(c_Values); ++ i)
+	q.push (c_Values[i]);
+    while (!q.empty()) {
+	cout << q.top();
+	q.pop();
+    }
+    cout << endl;
 }
 
 StdBvtMain (TestHeapOperations)

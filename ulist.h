@@ -77,6 +77,8 @@ void list<T>::splice (iterator ip, list<T>& l, iterator first, iterator last)
     l.erase (first, last);
 }
 
+#define deque list ///< list has all the functionality provided by deque
+
 } // namespace ustl
 
 #endif
