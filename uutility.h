@@ -309,6 +309,27 @@ inline bool TestAndSet (int* pm)
 #endif
 }
 
+/// \brief This template is to be used for dereferencing a type-punned pointer without a warning.
+///
+/// When casting a local variable to an unrelated type through a pointer (for
+/// example, casting a float to a uint32_t without conversion), the resulting
+/// memory location can be accessed through either pointer, which violates the
+/// strict aliasing rule. While -fno-strict-aliasing option can be given to
+/// the compiler, eliminating this warning, inefficient code may result in
+/// some instances, because aliasing inhibits some optimizations. By using
+/// this template, and by ensuring the memory is accessed in one way only,
+/// efficient code can be produced without the warning. For gcc 4.1.0+.
+///
+template <typename DEST, typename SRC>
+DEST noalias (DEST, SRC* s)
+{
+    union UPun {
+	SRC	s;
+	DEST	d;
+    };
+    return (((UPun*)(s))->d);
+}
+
 namespace simd {
     /// Call after you are done using SIMD algorithms for 64 bit tuples.
 #if CPU_HAS_MMX

@@ -173,6 +173,8 @@ Release 0.9
 	* Finished heap algorithms.
 	* Added priority_queue.
 	* Added deque as a define to list.
+	* Added noalias template to circumvent the type-punned pointer
+		dereference warning given by gcc 4.1.0+
 
 2005-01-17 Release 0.6
 	* The library is relicensed under the MIT License (was LGPL)
