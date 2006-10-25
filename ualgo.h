@@ -31,7 +31,7 @@ template <typename ForwardIterator1, typename ForwardIterator2>
 inline ForwardIterator2 swap_ranges (ForwardIterator1 first, ForwardIterator2 last, ForwardIterator2 result)
 {
     for (; first != last; ++first, ++result)
-	iterator_swap (first, result);
+	iter_swap (first, result);
     return (result);
 }
 
@@ -185,7 +185,7 @@ inline OutputIterator generate_n (OutputIterator first, size_t n, Generator gen)
     return (first);
 }
 
-/// Reverse reverses a range.
+/// \brief Reverse reverses a range.
 /// That is: for every i such that 0 <= i <= (last - first) / 2),
 /// it exchanges *(first + i) and *(last - (i + 1)).
 /// \ingroup MutatingAlgorithms
@@ -193,11 +193,22 @@ inline OutputIterator generate_n (OutputIterator first, size_t n, Generator gen)
 template <typename BidirectionalIterator>
 inline void reverse (BidirectionalIterator first, BidirectionalIterator last)
 {
-    for (; first != last && first != --last; ++first)
-	iterator_swap (first, last);
+    for (; distance (first, --last) > 0; ++first)
+	iter_swap (first, last);
 }
 
-/// Exchanges ranges [first, middle) and [middle, last)
+/// \brief Reverses [first,last) and writes it to \p output.
+/// \ingroup MutatingAlgorithms
+///
+template <typename BidirectionalIterator, typename OutputIterator>
+inline OutputIterator reverse_copy (BidirectionalIterator first, BidirectionalIterator last, OutputIterator result)
+{
+    for (; first != last; ++result)
+	*result = *--last;
+    return (result);
+}
+
+/// \brief Exchanges ranges [first, middle) and [middle, last)
 /// \ingroup MutatingAlgorithms
 ///
 template <typename ForwardIterator>
@@ -208,7 +219,7 @@ ForwardIterator rotate (ForwardIterator first, ForwardIterator middle, ForwardIt
     reverse (first, middle);
     reverse (middle, last);
     for (;first != middle && middle != last; ++first)
-	iterator_swap (first, --last);
+	iter_swap (first, --last);
     reverse (first, (first == middle ? last : middle));
     return (first);
 }
@@ -219,6 +230,16 @@ inline T* rotate (T* first, T* middle, T* last)
 {
     rotate_fast (first, middle, last);
     return (first);
+}
+ 
+
+/// \brief Exchanges ranges [first, middle) and [middle, last) into \p result.
+/// \ingroup MutatingAlgorithms
+///
+template <typename ForwardIterator, typename OutputIterator>
+inline OutputIterator rotate_copy (ForwardIterator first, ForwardIterator middle, ForwardIterator last, OutputIterator result)
+{
+    return (copy (first, middle, copy (middle, last, result)));
 }
 
 /// \brief Combines two sorted ranges.
@@ -413,7 +434,7 @@ template <typename RandomAccessIterator>
 void random_shuffle (RandomAccessIterator first, RandomAccessIterator last)
 {
     for (; first != last; ++ first)
-	iterator_swap (first, first + (rand() % distance (first, last)));
+	iter_swap (first, first + (rand() % distance (first, last)));
 }
 
 template <typename ConstPointer, typename Compare>
@@ -469,17 +490,156 @@ inline void stable_sort (RandomAccessIterator first, RandomAccessIterator last)
     stable_sort (first, last, less<value_type>());
 }
 
-/// \brief Partially sort the range.
-/// Postcondition is that \p middle has the nth element and [first, middle)
-/// has elements smaller than those in (middle, last).
-/// In this implementation, the entire array is sorted. I can't think of any
-/// use for it where the time gained would be useful.
-/// \ingroup SortingAlgorithms
-///
-template <typename RandomAccessIterator>
-inline void partial_sort (RandomAccessIterator first, RandomAccessIterator, RandomAccessIterator last)
+/// \brief Searches for the first subsequence [first2,last2) in [first1,last1)
+/// \ingroup SearchingAlgorithms
+template <typename ForwardIterator1, typename ForwardIterator2>
+inline ForwardIterator1 search (ForwardIterator1 first1, ForwardIterator1 last1, ForwardIterator2 first2, ForwardIterator2 last2)
 {
-    sort (first, last);
+    typedef typename iterator_traits<ForwardIterator1>::value_type value_type;
+    return (search (first1, last1, first2, last2, equal_to<value_type>()));
+}
+
+/// \brief Searches for the last subsequence [first2,last2) in [first1,last1)
+/// \ingroup SearchingAlgorithms
+template <typename ForwardIterator1, typename ForwardIterator2>
+inline ForwardIterator1 find_end (ForwardIterator1 first1, ForwardIterator1 last1, ForwardIterator2 first2, ForwardIterator2 last2)
+{
+    typedef typename iterator_traits<ForwardIterator1>::value_type value_type;
+    return (find_end (first1, last1, first2, last2, equal_to<value_type>()));
+}
+
+/// \brief Searches for the first occurence of \p count \p values in [first, last)
+/// \ingroup SearchingAlgorithms
+template <typename Iterator, typename T>
+inline Iterator search_n (Iterator first, Iterator last, size_t count, const T& value)
+{
+    typedef typename iterator_traits<Iterator>::value_type value_type;
+    return (search_n (first, last, count, value, equal_to<value_type>()));
+}
+
+/// \brief Searches [first1,last1) for the first occurrence of an element from [first2,last2)
+/// \ingroup SearchingAlgorithms
+template <typename InputIterator, typename ForwardIterator>
+inline InputIterator find_first_of (InputIterator first1, InputIterator last1, ForwardIterator first2, ForwardIterator last2)
+{
+    typedef typename iterator_traits<InputIterator>::value_type value_type;
+    return (find_first_of (first1, last1, first2, last2, equal_to<value_type>()));
+}
+
+/// \brief Returns true if [first2,last2) is a subset of [first1,last1)
+/// \ingroup ConditionAlgorithms
+/// \ingroup SetAlgorithms
+template <typename InputIterator1, typename InputIterator2>
+inline bool includes (InputIterator1 first1, InputIterator1 last1, InputIterator2 first2, InputIterator2 last2)
+{
+    typedef typename iterator_traits<InputIterator1>::value_type value_type;
+    return (includes (first1, last1, first2, last2, less<value_type>()));
+}
+
+/// \brief Merges [first1,last1) with [first2,last2)
+///
+/// Result will contain every element that is in either set. If duplicate
+/// elements are present, max(n,m) is placed in the result.
+///
+/// \ingroup SetAlgorithms
+template <typename InputIterator1, typename InputIterator2, typename OutputIterator>
+inline OutputIterator set_union (InputIterator1 first1, InputIterator1 last1, InputIterator2 first2, InputIterator2 last2, OutputIterator result)
+{
+    typedef typename iterator_traits<InputIterator1>::value_type value_type;
+    return (set_union (first1, last1, first2, last2, result, less<value_type>()));
+}
+
+/// \brief Creates a set containing elements shared by the given ranges.
+/// \ingroup SetAlgorithms
+template <typename InputIterator1, typename InputIterator2, typename OutputIterator>
+inline OutputIterator set_intersection (InputIterator1 first1, InputIterator1 last1, InputIterator2 first2, InputIterator2 last2, OutputIterator result)
+{
+    typedef typename iterator_traits<InputIterator1>::value_type value_type;
+    return (set_intersection (first1, last1, first2, last2, result, less<value_type>()));
+}
+
+/// \brief Removes from [first1,last1) elements present in [first2,last2)
+/// \ingroup SetAlgorithms
+template <typename InputIterator1, typename InputIterator2, typename OutputIterator>
+inline OutputIterator set_difference (InputIterator1 first1, InputIterator1 last1, InputIterator2 first2, InputIterator2 last2, OutputIterator result)
+{
+    typedef typename iterator_traits<InputIterator1>::value_type value_type;
+    return (set_difference (first1, last1, first2, last2, result, less<value_type>()));
+}
+
+/// \brief Performs union of sets A-B and B-A.
+/// \ingroup SetAlgorithms
+template <typename InputIterator1, typename InputIterator2, typename OutputIterator>
+inline OutputIterator set_symmetric_difference (InputIterator1 first1, InputIterator1 last1, InputIterator2 first2, InputIterator2 last2, OutputIterator result)
+{
+    typedef typename iterator_traits<InputIterator1>::value_type value_type;
+    return (set_symmetric_difference (first1, last1, first2, last2, result, less<value_type>()));
+}
+
+/// \brief Returns true if the given range is sorted.
+/// \ingroup ConditionAlgorithms
+template <typename ForwardIterator>
+inline bool is_sorted (ForwardIterator first, ForwardIterator last)
+{
+    typedef typename iterator_traits<ForwardIterator>::value_type value_type;
+    return (is_sorted (first, last, less<value_type>()));
+}
+
+/// \brief Compares two given containers like strcmp compares strings.
+/// \ingroup ConditionAlgorithms
+template <typename InputIterator1, typename InputIterator2>
+inline bool lexicographical_compare (InputIterator1 first1, InputIterator1 last1, InputIterator2 first2, InputIterator2 last2)
+{
+    typedef typename iterator_traits<InputIterator1>::value_type value_type;
+    return (lexicographical_compare (first1, last1, first2, last2, less<value_type>()));
+}
+
+/// \brief Creates the next lexicographical permutation of [first,last).
+/// Returns false if no further permutations can be created.
+/// \ingroup MutatingAlgorithms.
+template <typename BidirectionalIterator>
+inline bool next_permutation (BidirectionalIterator first, BidirectionalIterator last)
+{
+    typedef typename iterator_traits<BidirectionalIterator>::value_type value_type;
+    return (next_permutation (first, last, less<value_type>()));
+}
+
+/// \brief Creates the previous lexicographical permutation of [first,last).
+/// Returns false if no further permutations can be created.
+/// \ingroup MutatingAlgorithms.
+template <typename BidirectionalIterator>
+inline bool prev_permutation (BidirectionalIterator first, BidirectionalIterator last)
+{
+    typedef typename iterator_traits<BidirectionalIterator>::value_type value_type;
+    return (prev_permutation (first, last, less<value_type>()));
+}
+
+/// \brief Returns iterator to the max element in [first,last)
+/// \ingroup SearchingAlgorithms
+template <typename ForwardIterator>
+inline ForwardIterator max_element (ForwardIterator first, ForwardIterator last)
+{
+    typedef typename iterator_traits<ForwardIterator>::value_type value_type;
+    return (max_element (first, last, less<value_type>()));
+}
+
+/// \brief Returns iterator to the min element in [first,last)
+/// \ingroup SearchingAlgorithms
+template <typename ForwardIterator>
+inline ForwardIterator min_element (ForwardIterator first, ForwardIterator last)
+{
+    typedef typename iterator_traits<ForwardIterator>::value_type value_type;
+    return (min_element (first, last, less<value_type>()));
+}
+
+/// \brief Makes [first,middle) a part of the sorted array.
+/// Contents of [middle,last) is undefined. This implementation just calls stable_sort.
+/// \ingroup SortingAlgorithms
+template <typename RandomAccessIterator>
+inline void partial_sort (RandomAccessIterator first, RandomAccessIterator middle, RandomAccessIterator last)
+{
+    typedef typename iterator_traits<RandomAccessIterator>::value_type value_type;
+    partial_sort (first, middle, last, less<value_type>());
 }
 
 /// \brief Puts \p nth element into its sorted position.
@@ -491,6 +651,15 @@ template <typename RandomAccessIterator>
 inline void nth_element (RandomAccessIterator first, RandomAccessIterator nth, RandomAccessIterator last)
 {
     partial_sort (first, nth, last);
+}
+
+/// \brief Like partial_sort, but outputs to [result_first,result_last)
+/// \ingroup SortingAlgorithms
+template <typename InputIterator, typename RandomAccessIterator>
+inline RandomAccessIterator partial_sort_copy (InputIterator first, InputIterator last, RandomAccessIterator result_first, RandomAccessIterator result_last)
+{
+    typedef typename iterator_traits<InputIterator>::value_type value_type;
+    return (partial_sort_copy (first, last, result_first, result_last, less<value_type>()));
 }
 
 } // namespace ustl

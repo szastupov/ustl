@@ -49,6 +49,14 @@ Release 0.9
 	* Added CBacktrace class for printing backtrace information.
 	* exception now creates a backtrace when thrown.
 	* set,map,multiset,multimap now instantiate less crud.
+	* Added remaining algorithms: find_end, find_first_of, includes,
+		is_sorted, lexicographical_compare, max_element, min_element,
+		partial_sort, partial_sort_copy, partition, next_permutation,
+		prev_permutation, reverse_copy, rotate_copy, search, search_n,
+		set_difference, set_intersection, set_symmetric_difference,
+		set_union, and stable_partition. All the algorithms defined by
+		the C++ standard are now implemented.
+	* Renamed iterator_swap to iter_swap, as in the standard.
 
 2005-11-10 Release 0.8
 	* API CHANGE: changed all string's find members to return offsets

@@ -84,10 +84,10 @@ void TestBigCopy (const size_t size, const T magic)
 
 static void TestAlgorithms (void)
 {
-    const int c_TestNumbers[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 11, 12, 13, 13, 14, 15, 16, 17, 18 };
+    static const int c_TestNumbers[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 11, 12, 13, 13, 14, 15, 16, 17, 18 };
     const int* first = c_TestNumbers;
     const int* last = first + VectorSize(c_TestNumbers);
-    intvec_t v;
+    intvec_t v, buf;
     v.assign (first, last);
     PrintVector (v);
 
@@ -267,6 +267,129 @@ static void TestAlgorithms (void)
     random_shuffle (v);
     stable_sort (v);
     PrintVector (v);
+    v.assign (first, last);
+
+    cout << "is_sorted\n";
+    random_shuffle (v);
+    const bool bNotSorted = is_sorted (v.begin(), v.end());
+    sort (v);
+    const bool bSorted = is_sorted (v.begin(), v.end());
+    cout << "unsorted=" << bNotSorted << ", sorted=" << bSorted << endl;
+    v.assign (first, last);
+
+    cout << "find_first_of\n";
+    static const int c_FFO[] = { 10000, -34, 14, 27 };
+    cout.format ("found 14 at position %zu\n", find_first_of (v.begin(), v.end(), VectorRange(c_FFO)) - v.begin());
+    v.assign (first, last);
+
+    static const int LC1[] = { 3, 1, 4, 1, 5, 9, 3 };
+    static const int LC2[] = { 3, 1, 4, 2, 8, 5, 7 };
+    static const int LC3[] = { 1, 2, 3, 4 };
+    static const int LC4[] = { 1, 2, 3, 4, 5 };
+    cout << "lexicographical_compare";
+    cout << "\nLC1 < LC2 == " << lexicographical_compare (VectorRange(LC1), VectorRange(LC2));
+    cout << "\nLC2 < LC2 == " << lexicographical_compare (VectorRange(LC2), VectorRange(LC2));
+    cout << "\nLC3 < LC4 == " << lexicographical_compare (VectorRange(LC3), VectorRange(LC4));
+    cout << "\nLC4 < LC1 == " << lexicographical_compare (VectorRange(LC4), VectorRange(LC1));
+    cout << "\nLC1 < LC4 == " << lexicographical_compare (VectorRange(LC1), VectorRange(LC4));
+
+    cout << "\nmax_element\n";
+    cout.format ("max element is %d\n", *max_element (v.begin(), v.end()));
+    v.assign (first, last);
+
+    cout << "min_element\n";
+    cout.format ("min element is %d\n", *min_element (v.begin(), v.end()));
+    v.assign (first, last);
+
+    cout << "partial_sort\n";
+    reverse (v);
+    partial_sort (v.begin(), v.iat(v.size() / 2), v.end());
+    PrintVector (v);
+    v.assign (first, last);
+
+    cout << "partial_sort_copy\n";
+    reverse (v);
+    buf.resize (v.size());
+    partial_sort_copy (v.begin(), v.end(), buf.begin(), buf.end());
+    PrintVector (buf);
+    v.assign (first, last);
+
+    cout << "partition\n";
+    partition (v.begin(), v.end(), &is_even);
+    PrintVector (v);
+    v.assign (first, last);
+
+    cout << "stable_partition\n";
+    stable_partition (v.begin(), v.end(), &is_even);
+    PrintVector (v);
+    v.assign (first, last);
+
+    cout << "next_permutation\n";
+    buf.resize (3);
+    iota (buf.begin(), buf.end(), 1);
+    PrintVector (buf);
+    while (next_permutation (buf.begin(), buf.end()))
+	PrintVector (buf);
+    cout << "prev_permutation\n";
+    reverse (buf);
+    PrintVector (buf);
+    while (prev_permutation (buf.begin(), buf.end()))
+	PrintVector (buf);
+    v.assign (first, last);
+
+    cout << "reverse_copy\n";
+    buf.resize (v.size());
+    reverse_copy (v.begin(), v.end(), buf.begin());
+    PrintVector (buf);
+    v.assign (first, last);
+
+    cout << "rotate_copy\n";
+    buf.resize (v.size());
+    rotate_copy (v.begin(), v.iat (v.size() / 3), v.end(), buf.begin());
+    PrintVector (buf);
+    v.assign (first, last);
+
+    static const int c_Search1[] = { 5, 6, 7, 8, 9 }, c_Search2[] = { 10, 10, 11, 14 };
+    cout << "search\n";
+    cout.format ("{5,6,7,8,9} at %zu\n", search (v.begin(), v.end(), VectorRange(c_Search1)) - v.begin());
+    cout.format ("{10,10,11,14} at %zu\n", search (v.begin(), v.end(), VectorRange(c_Search2)) - v.begin());
+    cout << "find_end\n";
+    cout.format ("{5,6,7,8,9} at %zu\n", find_end (v.begin(), v.end(), VectorRange(c_Search1)) - v.begin());
+    cout.format ("{10,10,11,14} at %zu\n", find_end (v.begin(), v.end(), VectorRange(c_Search2)) - v.begin());
+    cout << "search_n\n";
+    cout.format ("{14} at %zu\n", search_n (v.begin(), v.end(), 1, 14) - v.begin());
+    cout.format ("{13,13} at %zu\n", search_n (v.begin(), v.end(), 2, 13) - v.begin());
+    cout.format ("{10,10,10} at %zu\n", search_n (v.begin(), v.end(), 3, 10) - v.begin());
+    v.assign (first, last);
+
+    cout << "includes\n";
+    static const int c_Includes[] = { 5, 14, 15, 18, 20 };
+    cout << "includes=" << includes (v.begin(), v.end(), VectorRange(c_Includes)-1);
+    cout << ", not includes=" << includes (v.begin(), v.end(), VectorRange(c_Includes));
+    cout << endl;
+
+    static const int c_Set1[] = { 1, 2, 3, 4, 5, 6 }, c_Set2[] = { 4, 4, 6, 7, 8 };
+    intvec_t::iterator setEnd;
+    cout << "set_difference\n";
+    v.resize (4);
+    setEnd = set_difference (VectorRange(c_Set1), VectorRange(c_Set2), v.begin());
+    PrintVector (v);
+    assert (setEnd == v.end());
+    cout << "set_symmetric_difference\n";
+    v.resize (7);
+    setEnd = set_symmetric_difference (VectorRange(c_Set1), VectorRange(c_Set2), v.begin());
+    PrintVector (v);
+    assert (setEnd == v.end());
+    cout << "set_intersection\n";
+    v.resize (2);
+    setEnd = set_intersection (VectorRange(c_Set1), VectorRange(c_Set2), v.begin());
+    PrintVector (v);
+    assert (setEnd == v.end());
+    cout << "set_union\n";
+    v.resize (9);
+    setEnd = set_union (VectorRange(c_Set1), VectorRange(c_Set2), v.begin());
+    PrintVector (v);
+    assert (setEnd == v.end());
     v.assign (first, last);
 }
 

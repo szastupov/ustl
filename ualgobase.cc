@@ -260,7 +260,7 @@ void rotate_fast (void* first, void* middle, void* last)
 	reverse (f, m);
 	reverse (m, l);
 	while (f != m && m != l)
-	    iterator_swap (f++, --l);
+	    iter_swap (f++, --l);
 	reverse (f, (f == m ? l : m));
     }
 }

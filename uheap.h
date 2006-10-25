@@ -80,7 +80,7 @@ void pop_heap (RandomAccessIterator first, RandomAccessIterator last, Compare co
 {
     if (--last <= first)
 	return;
-    iterator_swap (first, last);
+    iter_swap (first, last);
     make_heap (first, last, comp);
 }
 

@@ -68,3 +68,63 @@ sort
 stable_sort
 { 18 17 16 15 14 13 13 12 11 10 10 9 8 7 6 5 4 3 2 1 }
 { 1 2 3 4 5 6 7 8 9 10 10 11 12 13 13 14 15 16 17 18 }
+is_sorted
+unsorted=false, sorted=true
+find_first_of
+found 14 at position 15
+lexicographical_compare
+LC1 < LC2 == true
+LC2 < LC2 == false
+LC3 < LC4 == true
+LC4 < LC1 == true
+LC1 < LC4 == false
+max_element
+max element is 18
+min_element
+min element is 1
+partial_sort
+{ 1 2 3 4 5 6 7 8 9 10 10 11 12 13 13 14 15 16 17 18 }
+partial_sort_copy
+{ 1 2 3 4 5 6 7 8 9 10 10 11 12 13 13 14 15 16 17 18 }
+partition
+{ 2 4 6 8 10 10 12 14 16 18 1 3 5 7 9 11 13 13 15 17 }
+stable_partition
+{ 2 4 6 8 10 10 12 14 16 18 1 3 5 7 9 11 13 13 15 17 }
+next_permutation
+{ 1 2 3 }
+{ 1 3 2 }
+{ 2 1 3 }
+{ 2 3 1 }
+{ 3 1 2 }
+{ 3 2 1 }
+prev_permutation
+{ 3 2 1 }
+{ 3 1 2 }
+{ 2 3 1 }
+{ 2 1 3 }
+{ 1 3 2 }
+{ 1 2 3 }
+reverse_copy
+{ 18 17 16 15 14 13 13 12 11 10 10 9 8 7 6 5 4 3 2 1 }
+rotate_copy
+{ 7 8 9 10 10 11 12 13 13 14 15 16 17 18 1 2 3 4 5 6 }
+search
+{5,6,7,8,9} at 4
+{10,10,11,14} at 20
+find_end
+{5,6,7,8,9} at 4
+{10,10,11,14} at 20
+search_n
+{14} at 15
+{13,13} at 13
+{10,10,10} at 20
+includes
+includes=true, not includes=false
+set_difference
+{ 1 2 3 5 }
+set_symmetric_difference
+{ 1 2 3 4 5 7 8 }
+set_intersection
+{ 4 6 }
+set_union
+{ 1 2 3 4 4 5 6 7 8 }
