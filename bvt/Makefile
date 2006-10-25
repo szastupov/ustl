@@ -13,7 +13,7 @@ TOCLEAN	+= ${BVTS} bench
 all:	stdtest.o ${BVTS} bench
 
 run:	${BVTS}
-	@for i in ${BVTS}; do echo "Running $$i"; ./$$i < $$i.cc | diff $$i.std -; done
+	@for i in ${BVTS}; do echo "Running $$i"; ./$$i < $$i.cc | diff -T $$i.std -; done
 
 bvt%:	bvt%.o stdtest.o
 	@echo "Linking $@ ..."

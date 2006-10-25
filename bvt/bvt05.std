@@ -30,10 +30,12 @@ fill_n(5, 13)
 fill 64083 uint8_t(0x41) works
 fill 64083 uint16_t(0x4142) works
 fill 64083 uint32_t(0x41424344) works
+fill 64083 float(0.4242) works
 fill 64083 uint64_t(0x4142434445464748) works
 copy 64083 uint8_t(0x41) works
 copy 64083 uint16_t(0x4142) works
 copy 64083 uint32_t(0x41424344) works
+copy 64083 float(0.4242) works
 copy 64083 uint64_t(0x4142434445464748) works
 generate(genint)
 { 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 }

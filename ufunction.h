@@ -210,6 +210,64 @@ bind2nd (BinaryFunction pfn, typename BinaryFunction::second_argument_type v)
 }
 
 //----------------------------------------------------------------------
+// Composition adapters
+//----------------------------------------------------------------------
+
+/// \brief Chains two unary functions together.
+///
+/// When f(x) and g(x) are composed, the result is function c(x)=f(g(x)).
+/// This template is an extension, implemented by SGI STL and uSTL.
+///
+template <typename Operation1, typename Operation2>
+class unary_compose : public unary_function<typename Operation2::argument_type,
+					    typename Operation1::result_type> {
+public:
+    typedef typename Operation2::argument_type	arg_t;
+    typedef const arg_t&			rcarg_t;
+    typedef typename Operation1::result_type	result_t;
+public:
+    inline unary_compose (const Operation1& f, const Operation2& g) : m_f(f), m_g(g) {}
+    inline result_t operator() (rcarg_t x) const { return m_f(m_g(x)); }
+protected:
+    Operation1	m_f;	///< f(x), if c(x) = f(g(x))
+    Operation2	m_g;	///< g(x), if c(x) = f(g(x))
+};
+
+/// Creates a \ref unary_compose object whose function c(x)=f(g(x))
+template <typename Operation1, typename Operation2>
+inline unary_compose<Operation1, Operation2>
+compose1 (const Operation1& f, const Operation2& g)
+{ return unary_compose<Operation1,Operation2>(f, g); }
+
+/// \brief Chains two unary functions through a binary function.
+///
+/// When f(x,y), g(x), and h(x) are composed, the result is function
+/// c(x)=f(g(x),h(x)). This template is an extension, implemented by
+/// SGI STL and uSTL.
+///
+template <typename Operation1, typename Operation2, typename Operation3>
+class binary_compose : public unary_function<typename Operation2::argument_type,
+					    typename Operation1::result_type> {
+public:
+    typedef typename Operation2::argument_type	arg_t;
+    typedef const arg_t&			rcarg_t;
+    typedef typename Operation1::result_type	result_t;
+public:
+    inline binary_compose (const Operation1& f, const Operation2& g, const Operation3& h) : m_f(f), m_g(g), m_h(h) {}
+    inline result_t operator() (rcarg_t x) const { return m_f(m_g(x), m_h(x)); }
+protected:
+    Operation1	m_f;	///< f(x,y), if c(x) = f(g(x),h(x))
+    Operation2	m_g;	///< g(x), if c(x) = f(g(x))
+    Operation3	m_h;	///< h(x), if c(x) = f(g(x))
+};
+
+/// Creates a \ref binary_compose object whose function c(x)=f(g(x),h(x))
+template <typename Operation1, typename Operation2, typename Operation3>
+inline binary_compose<Operation1, Operation2, Operation3>
+compose2 (const Operation1& f, const Operation2& g, const Operation3& h)
+{ return binary_compose<Operation1, Operation2, Operation3> (f, g, h); }
+
+//----------------------------------------------------------------------
 // Member function adaptors
 //----------------------------------------------------------------------
 

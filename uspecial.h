@@ -20,6 +20,7 @@
 #include "uctralgo.h"
 #include "ufunction.h"
 #include "uctrstrm.h"
+#include "sistream.h"
 #if !defined(WITHOUT_LIBSTDCPP) && defined(__GNUC__) && (__GNUC__ >= 3)
     #include <locale>
 #else
@@ -149,6 +150,16 @@ template <size_t Size>
 inline ostringstream& operator<< (ostringstream& os, const bitset<Size>& v)
 {
     return (os << v.to_string());
+}
+
+/// Writes bitset \p v into stream \p os.
+template <size_t Size>
+istringstream& operator>> (istringstream& is, bitset<Size>& v)
+{
+    char c;
+    for (int i = Size; --i >= 0 && (is >> c).good();)
+	v.set (i, c == '1');
+    return (is);
 }
 
 /// Returns the number of bytes necessary to write this object to a stream

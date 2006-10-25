@@ -265,5 +265,25 @@ void rotate_fast (void* first, void* middle, void* last)
     }
 }
 
+#if !__GNUC__
+size_t popcount (uint32_t v)
+{
+    const uint32_t w = v - ((v >> 1) & 0x55555555); // Algorithm from AMD optimization guide
+    const uint32_t x = (w & 0x33333333) + ((w >> 2) & 0x33333333);
+    return (((x + (x >> 4) & 0x0F0F0F0F) * 0x01010101) >> 24);
+}
+
+#if HAVE_INT64_T
+/// \brief Returns the number of 1s in \p v in binary.
+size_t popcount (uint64_t v)
+{
+    v -= (v >> 1) & UINT64_C(0x5555555555555555);		// Algorithm from Wikipedia
+    v = (v & UINT64_C(0x3333333333333333)) + ((v >> 2) & UINT64_C(0x3333333333333333));
+    v = (v + (v >> 4)) & UINT64_C(0x0F0F0F0F0F0F0F0F);
+    return ((v * UINT64_C(0x0101010101010101)) >> 56);
+}
+#endif	// HAVE_INT64_T
+#endif	// !__GNUC__
+
 } // namespace ustl
 

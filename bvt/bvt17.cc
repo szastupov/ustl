@@ -1,3 +1,4 @@
+// 011010011001011001011000100100
 // This file is part of the ustl library, an STL implementation.
 //
 // Copyright (C) 2005 by Mike Sharov <msharov@users.sourceforge.net>
@@ -18,8 +19,20 @@ void TestBitset (void)
     cout << bs1 << endl;
     bs1.flip();
     cout << bs1 << endl;
+
+    bs1.reset();
+    string comment;	// See line 0 in this file
+    cin >> comment >> bs1;
+    cout << bs1 << endl;
+    cout << "count = " << bs1.count() << endl;
+
     bs1.reset();
     cout << bs1 << endl;
+    cout << "any = " << bs1.any() << ", none = " << bs1.none() << ", count = " << bs1.count() << endl;
+    bs1.flip();
+    cout << bs1 << endl;
+    cout << "any = " << bs1.any() << ", none = " << bs1.none() << ", count = " << bs1.count() << endl;
+    bs1.reset();
     bs1.set (4);
     bs1.set (7);
     bs1.set (8);
@@ -27,6 +40,7 @@ void TestBitset (void)
     cout << "test(7) == " << bs1.test(7);
     cout << ", [9] = " << bs1[9];
     cout << ", [8] = " << bs1[8] << endl;
+    cout << "any = " << bs1.any() << ", none = " << bs1.none() << ", count = " << bs1.count() << endl;
     cout << "~bs1 == " << ~bs1 << endl;
     cout << "to_value == 0x" << ios::hex << bs1.to_value() << ios::dec << endl;
 

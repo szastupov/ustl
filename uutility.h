@@ -321,12 +321,9 @@ inline bool TestAndSet (int* pm)
 /// efficient code can be produced without the warning. For gcc 4.1.0+.
 ///
 template <typename DEST, typename SRC>
-DEST noalias (DEST, SRC* s)
+inline DEST noalias (DEST, SRC* s)
 {
-    union UPun {
-	SRC	s;
-	DEST	d;
-    };
+    union UPun { SRC s; DEST d; };
     return (((UPun*)(s))->d);
 }
 

@@ -57,6 +57,9 @@ Release 0.9
 		set_union, and stable_partition. All the algorithms defined by
 		the C++ standard are now implemented.
 	* Renamed iterator_swap to iter_swap, as in the standard.
+	* Implemented bitset any, none, and count.
+	* New popcount algorithms.
+	* Implemented compose1 and compose2 extensions.
 
 2005-11-10 Release 0.8
 	* API CHANGE: changed all string's find members to return offsets

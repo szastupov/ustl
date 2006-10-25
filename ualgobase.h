@@ -144,6 +144,18 @@ extern "C" void fill_n16_fast (uint16_t* dest, size_t count, uint16_t v);
 extern "C" void fill_n32_fast (uint32_t* dest, size_t count, uint32_t v);
 extern "C" void rotate_fast (void* first, void* middle, void* last);
 
+#if __GNUC__
+inline size_t popcount (uint32_t v)	{ return (__builtin_popcount (v)); }
+#if HAVE_INT64_T
+inline size_t popcount (uint64_t v)	{ return (__builtin_popcountll (v)); }
+#endif
+#else
+size_t popcount (uint32_t v);
+#if HAVE_INT64_T
+size_t popcount (uint64_t v);
+#endif	// HAVE_INT64_T
+#endif	// __GNUC__
+
 //----------------------------------------------------------------------
 // Optimized versions for standard types
 //----------------------------------------------------------------------
