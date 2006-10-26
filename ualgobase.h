@@ -145,6 +145,8 @@ extern "C" void fill_n32_fast (uint32_t* dest, size_t count, uint32_t v);
 extern "C" void rotate_fast (void* first, void* middle, void* last);
 
 #if __GNUC__
+/// \brief Computes the number of 1 bits in a number.
+/// \ingroup ConditionAlgorithms
 inline size_t popcount (uint32_t v)	{ return (__builtin_popcount (v)); }
 #if HAVE_INT64_T
 inline size_t popcount (uint64_t v)	{ return (__builtin_popcountll (v)); }

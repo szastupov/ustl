@@ -23,6 +23,7 @@ namespace ustl {
 /// for every integer n from 0 to last - first, copy performs the assignment
 /// *(result + n) = *(first + n). Assignments are performed in forward order,
 /// i.e. in order of increasing n. 
+/// \ingroup MutatingAlgorithms
 ///
 template <typename Container, typename OutputIterator>
 inline OutputIterator copy (const Container& ctr, OutputIterator result)
@@ -32,6 +33,7 @@ inline OutputIterator copy (const Container& ctr, OutputIterator result)
 
 /// Copy_if copies elements from the range [first, last) to the range
 /// [result, result + (last - first)) if pred(*i) returns true.
+/// \ingroup MutatingAlgorithms
 ///
 template <typename Container, typename OutputIterator, typename Predicate>
 inline OutputIterator copy_if (Container& ctr, OutputIterator result, Predicate pred)
@@ -43,6 +45,7 @@ inline OutputIterator copy_if (Container& ctr, OutputIterator result, Predicate 
 /// [first, last); f's return value, if any, is ignored. Applications are
 /// performed in forward order, i.e. from first to last. For_each returns
 /// the function object after it has been applied to each element.
+/// \ingroup MutatingAlgorithms
 ///
 template <typename Container, typename UnaryFunction>
 inline UnaryFunction for_each (Container& ctr, UnaryFunction f)
@@ -54,6 +57,7 @@ inline UnaryFunction for_each (Container& ctr, UnaryFunction f)
 /// [first, last); f's return value, if any, is ignored. Applications are
 /// performed in forward order, i.e. from first to last. For_each returns
 /// the function object after it has been applied to each element.
+/// \ingroup MutatingAlgorithms
 ///
 template <typename Container, typename UnaryFunction>
 inline UnaryFunction for_each (const Container& ctr, UnaryFunction f)
@@ -63,6 +67,7 @@ inline UnaryFunction for_each (const Container& ctr, UnaryFunction f)
 
 /// Returns the first iterator i in the range [first, last) such that
 /// *i == value. Returns last if no such iterator exists. 
+/// \ingroup SearchingAlgorithms
 ///
 template <typename Container, typename EqualityComparable>
 inline typename Container::const_iterator find (const Container& ctr, const EqualityComparable& value)
@@ -77,6 +82,7 @@ inline typename Container::iterator find (Container& ctr, const EqualityComparab
 
 /// Returns the first iterator i in the range [first, last) such that
 /// pred(*i) is true. Returns last if no such iterator exists.
+/// \ingroup SearchingAlgorithms
 ///
 template <typename Container, typename Predicate>
 inline typename Container::const_iterator find_if (const Container& ctr, Predicate pred)
@@ -92,6 +98,7 @@ inline typename Container::iterator find_if (Container& ctr, Predicate pred)
 /// Count finds the number of elements in [first, last) that are equal
 /// to value. More precisely, the first version of count returns the
 /// number of iterators i in [first, last) such that *i == value.
+/// \ingroup ConditionAlgorithms
 ///
 template <typename Container, typename EqualityComparable>
 inline size_t count (const Container& ctr, const EqualityComparable& value)
@@ -102,6 +109,7 @@ inline size_t count (const Container& ctr, const EqualityComparable& value)
 /// Count_if finds the number of elements in [first, last) that satisfy the
 /// predicate pred. More precisely, the first version of count_if returns the
 /// number of iterators i in [first, last) such that pred(*i) is true.
+/// \ingroup ConditionAlgorithms
 ///
 template <typename Container, typename Predicate>
 inline size_t count_if (const Container& ctr, Predicate pred)
@@ -115,6 +123,7 @@ inline size_t count_if (const Container& ctr, Predicate pred)
 /// for each n such that 0 <= n < last - first, it performs the assignment
 /// *(result + n) = op(*(first + n)).
 /// The return value is result + (last - first).
+/// \ingroup MutatingAlgorithms
 ///
 template <typename Container, typename UnaryFunction>
 inline void transform (Container& ctr, UnaryFunction op)
@@ -128,6 +137,7 @@ inline void transform (Container& ctr, UnaryFunction op)
 /// for each n such that 0 <= n < last - first, it performs the assignment
 /// *(result + n) = op(*(first + n)).
 /// The return value is result + (last - first).
+/// \ingroup MutatingAlgorithms
 ///
 template <typename Container, typename OutputIterator, typename UnaryFunction>
 inline OutputIterator transform (Container& ctr, OutputIterator result, UnaryFunction op)
@@ -143,6 +153,7 @@ inline OutputIterator transform (Container& ctr, OutputIterator result, UnaryFun
 /// for each n such that 0 <= n < last1 - first1, it performs the assignment
 /// *(result + n) = op(*(first1 + n), *(first2 + n).
 /// The return value is result + (last1 - first1).
+/// \ingroup MutatingAlgorithms
 ///
 template <typename Container, typename InputIterator, typename OutputIterator, typename BinaryFunction>
 inline OutputIterator transform (Container& ctr, InputIterator first, OutputIterator result, BinaryFunction op)
@@ -153,6 +164,7 @@ inline OutputIterator transform (Container& ctr, InputIterator first, OutputIter
 /// Replace replaces every element in the range [first, last) equal to
 /// old_value with new_value. That is: for every iterator i,
 /// if *i == old_value then it performs the assignment *i = new_value.
+/// \ingroup MutatingAlgorithms
 ///
 template <typename Container, typename T>
 inline void replace (Container& ctr, const T& old_value, const T& new_value)
@@ -163,6 +175,7 @@ inline void replace (Container& ctr, const T& old_value, const T& new_value)
 /// Replace_if replaces every element in the range [first, last) for which
 /// pred returns true with new_value. That is: for every iterator i, if
 /// pred(*i) is true then it performs the assignment *i = new_value.
+/// \ingroup MutatingAlgorithms
 ///
 template <typename Container, typename Predicate, typename T>
 inline void replace_if (Container& ctr, Predicate pred, const T& new_value)
@@ -176,6 +189,7 @@ inline void replace_if (Container& ctr, Predicate pred, const T& new_value)
 /// integer n such that 0 <= n < last-first, replace_copy performs the
 /// assignment *(result+n) = new_value if *(first+n) == old_value, and
 /// *(result+n) = *(first+n) otherwise.
+/// \ingroup MutatingAlgorithms
 ///
 template <typename Container, typename OutputIterator, typename T>
 inline OutputIterator replace_copy (const Container& ctr, OutputIterator result, const T& old_value, const T& new_value)
@@ -189,6 +203,7 @@ inline OutputIterator replace_copy (const Container& ctr, OutputIterator result,
 /// integer n such that 0 <= n < last-first, replace_copy_if performs the
 /// assignment *(result+n) = new_value if pred(*(first+n)),
 /// and *(result+n) = *(first+n) otherwise.
+/// \ingroup MutatingAlgorithms
 ///
 template <typename Container, typename OutputIterator, typename Predicate, typename T>
 inline OutputIterator replace_copy_if (const Container& ctr, OutputIterator result, Predicate pred, const T& new_value) 
@@ -199,6 +214,7 @@ inline OutputIterator replace_copy_if (const Container& ctr, OutputIterator resu
 /// Fill assigns the value value to every element in the range [first, last).
 /// That is, for every iterator i in [first, last),
 /// it performs the assignment *i = value.
+/// \ingroup GeneratorAlgorithms
 ///
 template <typename Container, typename T>
 inline void fill (Container& ctr, const T& value)
@@ -208,6 +224,7 @@ inline void fill (Container& ctr, const T& value)
 
 /// Generate assigns the result of invoking gen, a function object that
 /// takes no arguments, to each element in the range [first, last).
+/// \ingroup GeneratorAlgorithms
 ///
 template <typename Container, typename Generator>
 inline void generate (Container& ctr, Generator gen)
@@ -216,7 +233,7 @@ inline void generate (Container& ctr, Generator gen)
 }
 
 /// Randomly permute the elements of the container.
-/// \ingroup MutatingAlgorithms
+/// \ingroup GeneratorAlgorithms
 ///
 template <typename Container>
 inline void random_shuffle (Container& ctr)
@@ -229,6 +246,7 @@ inline void random_shuffle (Container& ctr)
 /// end of the resulting range. This operation is stable, meaning that the
 /// relative order of the elements that are copied is the same as in the
 /// range [first, last).
+/// \ingroup MutatingAlgorithms
 ///
 template <typename Container, typename OutputIterator, typename T>
 inline OutputIterator remove_copy (const Container& ctr, OutputIterator result, const T& value)
@@ -241,6 +259,7 @@ inline OutputIterator remove_copy (const Container& ctr, OutputIterator result, 
 /// copied. The return value is the end of the resulting range. This operation
 /// is stable, meaning that the relative order of the elements that are copied
 /// is the same as in the range [first, last).
+/// \ingroup MutatingAlgorithms
 ///
 template <typename Container, typename OutputIterator, typename Predicate>
 inline OutputIterator remove_copy_if (const Container& ctr, OutputIterator result, Predicate pred)
@@ -253,6 +272,7 @@ inline OutputIterator remove_copy_if (const Container& ctr, OutputIterator resul
 /// [first, new_last) contains no elements equal to value. Remove is stable,
 /// meaning that the relative order of elements that are not equal to value is
 /// unchanged.
+/// \ingroup MutatingAlgorithms
 ///
 template <typename Container, typename T>
 inline void remove (Container& ctr, const T& value)
@@ -266,6 +286,7 @@ inline void remove (Container& ctr, const T& value)
 /// no elements whose iterators are in [rfirst, rlast). Remove is stable,
 /// meaning that the relative order of elements that are not equal to value is
 /// unchanged. This version of the algorithm is a uSTL extension.
+/// \ingroup MutatingAlgorithms
 ///
 template <typename Container, typename ForwardIterator>
 inline void remove (Container& ctr, ForwardIterator rfirst, ForwardIterator rlast)
@@ -280,6 +301,7 @@ inline void remove (Container& ctr, ForwardIterator rfirst, ForwardIterator rlas
 /// but the elements that they point to are unspecified. Remove_if is stable,
 /// meaning that the relative order of elements that are not removed is
 /// unchanged.
+/// \ingroup MutatingAlgorithms
 ///
 template <typename Container, typename Predicate>
 inline void remove_if (Container& ctr, Predicate pred)
@@ -292,6 +314,7 @@ inline void remove_if (Container& ctr, Predicate pred)
 /// elements only the first one is copied. The return value is the end of
 /// the range to which the elements are copied. This behavior is similar
 /// to the Unix filter uniq.
+/// \ingroup MutatingAlgorithms
 ///
 template <typename Container, typename OutputIterator>
 inline OutputIterator unique_copy (const Container& ctr, OutputIterator result)
@@ -307,6 +330,7 @@ inline OutputIterator unique_copy (const Container& ctr, OutputIterator result)
 /// but the elements that they point to are unspecified. Unique is stable,
 /// meaning that the relative order of elements that are not removed is
 /// unchanged.
+/// \ingroup MutatingAlgorithms
 ///
 template <typename Container>
 inline void unique (Container& ctr)
@@ -322,6 +346,7 @@ inline void unique (Container& ctr)
 /// but the elements that they point to are unspecified. Unique is stable,
 /// meaning that the relative order of elements that are not removed is
 /// unchanged.
+/// \ingroup MutatingAlgorithms
 ///
 template <typename Container, typename BinaryPredicate>
 inline void unique (Container& ctr, BinaryPredicate binary_pred)
@@ -332,6 +357,7 @@ inline void unique (Container& ctr, BinaryPredicate binary_pred)
 /// Reverse reverses a range.
 /// That is: for every i such that 0 <= i <= (last - first) / 2),
 /// it exchanges *(first + i) and *(last - (i + 1)).
+/// \ingroup MutatingAlgorithms
 ///
 template <typename Container>
 inline void reverse (Container& ctr)
@@ -340,6 +366,7 @@ inline void reverse (Container& ctr)
 }
 
 /// Exchanges ranges [first, middle) and [middle, last)
+/// \ingroup MutatingAlgorithms
 ///
 template <typename Container>
 inline void rotate (Container& ctr, off_t offset)
@@ -354,6 +381,7 @@ inline void rotate (Container& ctr, off_t offset)
 /// Returns the furthermost iterator i in [first, last) such that,
 /// for every iterator j in [first, i), *j < value
 /// Assumes the range is sorted.
+/// \ingroup SearchingAlgorithms
 ///
 template <typename Container, typename LessThanComparable>
 inline typename Container::const_iterator lower_bound (const Container& ctr, const LessThanComparable& value)
@@ -368,6 +396,7 @@ inline typename Container::iterator lower_bound (Container& ctr, const LessThanC
 
 /// Returns the furthermost iterator i in [first,last) such that for
 /// every iterator j in [first,i), value < *j is false.
+/// \ingroup SearchingAlgorithms
 ///
 template <typename Container, typename LessThanComparable>
 inline typename Container::const_iterator upper_bound (const Container& ctr, const LessThanComparable& value)
@@ -382,6 +411,7 @@ inline typename Container::iterator upper_bound (Container& ctr, const LessThanC
 
 /// Performs a binary search for \p value.
 /// Assumes the range is sorted.
+/// \ingroup SearchingAlgorithms
 ///
 template <typename Container>
 inline typename Container::const_iterator binary_search (const Container& ctr, const typename Container::value_type& value)
@@ -395,6 +425,7 @@ inline typename Container::iterator binary_search (Container& ctr, const typenam
 }
 
 /// Returns pair<lower_bound,upper_bound>
+/// \ingroup SearchingAlgorithms
 ///
 template <typename Container, typename LessThanComparable>
 inline pair<typename Container::const_iterator,typename Container::const_iterator> equal_range (const Container& ctr, const LessThanComparable& value)
@@ -408,6 +439,7 @@ inline pair<typename Container::iterator,typename Container::iterator> equal_ran
 }
 
 /// Sorts the container
+/// \ingroup SortingAlgorithms
 ///
 template <typename Container>
 inline void sort (Container& ctr)
@@ -416,6 +448,7 @@ inline void sort (Container& ctr)
 }
 
 /// Sorts the container
+/// \ingroup SortingAlgorithms
 ///
 template <typename Container, typename Compare>
 inline void sort (Container& ctr, Compare comp)
@@ -424,6 +457,7 @@ inline void sort (Container& ctr, Compare comp)
 }
 
 /// Sorts the container
+/// \ingroup SortingAlgorithms
 ///
 template <typename Container>
 inline void stable_sort (Container& ctr)
@@ -432,6 +466,7 @@ inline void stable_sort (Container& ctr)
 }
 
 /// Sorts the container
+/// \ingroup SortingAlgorithms
 ///
 template <typename Container, typename Compare>
 inline void stable_sort (Container& ctr, Compare comp)

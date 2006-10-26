@@ -17,14 +17,7 @@ namespace ustl {
 /// \class list ulist.h ustl.h
 /// \ingroup Sequences
 ///
-/// \brief Linked list emulator.
-///
-/// The alias is provided for compatibility with the C++ standard and
-/// is mostly inline. I never use linked lists, and see no reason to
-/// add more bloat to the library. If you wish to contribute one, I'll
-/// accept implementations that are somehow based on vector (like to
-/// allocate pointer carriers, for instance). That's because uSTL has
-/// no allocators and that's the only way to implement a memory pool.
+/// \brief Linked list, defined as an alias to \ref vector.
 ///
 template <typename T>
 class list : public vector<T> {

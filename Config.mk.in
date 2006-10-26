@@ -69,4 +69,10 @@ ifdef BUILD_SHARED
     CXXFLAGS	+= -fPIC
 endif
 SHBLDFL		= @SHBLDFL@
+LIBA		= lib${LIBNAME}.a
+LIBSO		= lib${LIBNAME}.so
+ifdef MAJOR
+    LIBSOLNK	= ${LIBSO}.${MAJOR}.${MINOR}
+    LIBSOBLD	= ${LIBSO}.${MAJOR}.${MINOR}.${BUILD}
+endif
 

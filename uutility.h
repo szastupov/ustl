@@ -194,6 +194,7 @@ inline uint32_t bswap_32 (uint32_t v)	{ return (v << 24 | (v & 0xFF00) << 8 | (v
 inline uint64_t bswap_64 (uint64_t v)	{ return ((uint64_t(bswap_32(v)) << 32) | bswap_32(v >> 32)); }
 #endif
 
+/// \brief Swaps the byteorder of \p v.
 template <typename T>
 inline T bswap (const T& v)
 {
@@ -219,7 +220,7 @@ template <typename T> inline T native_to_le (const T& v) { return (v); }
 template <typename T> inline T native_to_be (const T& v) { return (bswap (v)); }
 #endif // BYTE_ORDER
 
-/// Template for for_each to call delete
+/// Deletes \p p and sets it to NULL
 template <typename T>
 inline void Delete (T*& p)
 {
@@ -227,7 +228,7 @@ inline void Delete (T*& p)
     p = NULL;
 }
 
-/// Template for for_each to call delete
+/// Deletes \p p as an array and sets it to NULL
 template <typename T>
 inline void DeleteVector (T*& p)
 {

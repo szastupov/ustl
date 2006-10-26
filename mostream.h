@@ -27,10 +27,11 @@ class string;
 /// This class contains a set of functions to write integral types into an
 /// unstructured memory block. Packing binary file data can be done this
 /// way, for instance. aligning the data is your responsibility, and can
-/// be accomplished by proper ordering of writes and by calling the align()
-/// function. Unaligned access is usually slower by orders of magnitude and,
+/// be accomplished by proper ordering of writes and by calling \ref ostream::align.
+/// Unaligned access is usually slower by orders of magnitude and,
 /// on some architectures, such as PowerPC, can cause your program to crash.
 /// Therefore, all write functions have asserts to check alignment.
+/// See \ref istream documentation for rules on designing your data format.
 /// Overwriting the end of the stream will also cause a crash (an assert in
 /// debug builds). Oh, and don't be intimidated by the size of the inlines
 /// here. In the assembly code the compiler will usually chop everything down
@@ -40,12 +41,12 @@ class string;
 /// \code
 ///     memblock b;
 ///     ostream os (b);
-///     os << boolVar << talign<int>();
+///     os << boolVar << ios::talign<int>();
 ///     os << intVar << floatVar;
 ///     os.write (binaryData, binaryDataSize);
 ///     os.align();
 ///     b.resize (os.pos());
-///     write (fd, b, b.size());
+///	b.write_file ("test.file");
 /// \endcode
 ///
 class ostream : public memlink, public ios_base {

@@ -25,19 +25,19 @@ class ios_base {
 public:
     /// Used to set parameters for stringstreams
     enum fmtflags {
-	boolalpha	= (1 << 0),
-	dec		= (1 << 1),
-	fixed		= (1 << 2),
-	hex		= (1 << 3),
+	boolalpha	= (1 << 0),	///< Boolean values printed as text.
+	dec		= (1 << 1),	///< Decimal number output.
+	fixed		= (1 << 2),	///< Fixed-point float output.
+	hex		= (1 << 3),	///< Hexadecimal number output.
 	internal	= (1 << 4),
-	left		= (1 << 5),
-	oct		= (1 << 6),
-	right		= (1 << 7),
-	scientific	= (1 << 8),
-	showbase	= (1 << 9),
-	showpoint	= (1 << 10),
+	left		= (1 << 5),	///< Left alignment.
+	oct		= (1 << 6),	///< Octal number output.
+	right		= (1 << 7),	///< Right alignment.
+	scientific	= (1 << 8),	///< Scientific float format.
+	showbase	= (1 << 9),	///< Add 0x or 0 prefixes on hex and octal numbers.
+	showpoint	= (1 << 10),	///< Print decimal point.
 	showpos		= (1 << 11),
-	skipws		= (1 << 12),
+	skipws		= (1 << 12),	///< Skip whitespace when reading.
 	unitbuf		= (1 << 13),
 	uppercase	= (1 << 14),
 	adjustfield	= (1 << 15),

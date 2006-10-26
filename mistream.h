@@ -41,27 +41,27 @@ class string;
 /// to five instructions each.
 /// 
 /// Alignment rules for your objects:
-///	\li Assume your writes start off aligned.
-///	\li After completion, align the stream.
-///	\li Non-default alignment is allowed if you plan to frequently write this
+///	- Assume your writes start off 4-byte aligned.
+///	- After completion, \ref istream::align the stream to at least 4.
+///	- If data portability between 32bit and 64bit platforms is important
+///	(it often is not, in config files and the like), ensure you are always
+///	using fixed-size types and are aligning to a fixed grain. Avoid writing
+///	8-byte types, and if you do, manually align before doing so.
+///	- Non-default alignment is allowed if you plan to frequently write this
 ///	object in array form and alignment would be costly. For example, an
 ///	array of uint16_t-sized objects may leave the stream uint16_t aligned
 ///	as long as you know about it and will default-align the stream after
-///	writing the array (note: vector<T> will already do this for you)
+///	writing the array (note: \ref vector will already do this for you)
 /// 
 /// Example code:
 /// \code
 ///	memblock b;
-///	int br = read (fd, b, b.size());
-///	b.resize (br);
+///	b.read_file ("test.file");
 ///	ostream is (b);
-///	is >> boolVar;
-///	is.align (sizeof(int));
+///	is >> boolVar >> ios::talign<int>();
 ///	is >> intVar >> floatVar;
 ///	is.read (binaryData, binaryDataSize);
-///	is.align ();
-///	// Assuming the input is written by code in mostream.h
-///	assert (is.pos() == b.size()); 
+///	is.align();
 /// \endcode
 ///
 class istream : public cmemlink, public ios_base {

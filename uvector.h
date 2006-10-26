@@ -19,9 +19,10 @@ namespace ustl {
 ///
 /// \brief STL vector equivalent.
 ///
-/// In this design elements frequently undergo BITWISE MOVE!
-/// Don't put it in here if it doesn't support it. This mostly means
-/// having no pointers into itself.
+/// Provides a typed array-like interface to a managed memory block, including
+/// element access, iteration, modification, resizing, and serialization. In
+/// this design elements frequently undergo bitwise move, so don't put it in
+/// here if it doesn't support it. This mostly means having no self-pointers.
 ///
 template <typename T>
 class vector {
@@ -101,7 +102,7 @@ public:
 private:
     inline iterator		insert_space (iterator ip, size_type n);
 private:
-    memblock			m_Data;
+    memblock			m_Data;	///< Raw element data, consecutively stored.
 };
 
 /// Allocates space for at least \p n elements.

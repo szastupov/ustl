@@ -9,12 +9,6 @@ DOCT	= ustldoc.in
 
 ################ Library link names ####################################
 
-LIBA	= lib${LIBNAME}.a
-LIBSO	= lib${LIBNAME}.so
-ifdef MAJOR
-LIBSOLNK= ${LIBSO}.${MAJOR}.${MINOR}
-LIBSOBLD= ${LIBSO}.${MAJOR}.${MINOR}.${BUILD}
-endif
 TOCLEAN	+= ${LIBSO} ${LIBA} ${LIBSOBLD}
 
 ALLINST	= install-incs
@@ -120,9 +114,9 @@ DDOCTAR	= ${LIBNAME}-docs-${MAJOR}.${MINOR}-${BUILD}.tar.bz2
 dist:
 	mkdir ${TMPDIR}/${DISTNAM}
 	cp -r . ${TMPDIR}/${DISTNAM}
-	+${MAKE} -C ${TMPDIR}/${DISTNAM} dox dist-clean
+	+${MAKE} -C ${TMPDIR}/${DISTNAM} dox distclean
 	(cd ${TMPDIR}; tar jcf ${DISTDIR}/${DDOCTAR} ${DISTNAM}/docs/html)
-	(cd ${TMPDIR}/${DISTNAM}; rm -rf CVS; cd bvt; rm -rf CVS; cd ../docs; rm -rf CVS html)
+	(cd ${TMPDIR}/${DISTNAM}; rm -rf .svn bvt/.svn docs/.svn docs/style/.svn docs/html)
 	(cd ${TMPDIR}; tar jcf ${DISTDIR}/${DISTTAR} ${DISTNAM}; rm -rf ${DISTNAM})
 
 distclean:	clean

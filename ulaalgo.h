@@ -14,6 +14,8 @@
 
 namespace ustl {
 
+/// \brief Creates an identity matrix in \p m
+/// \ingroup NumericAlgorithms
 template <size_t NX, size_t NY, typename T>
 void load_identity (matrix<NX,NY,T>& m)
 {
@@ -22,6 +24,8 @@ void load_identity (matrix<NX,NY,T>& m)
 	*i = 1;
 }
 
+/// \brief Multiplies two matrices
+/// \ingroup NumericAlgorithms
 template <size_t NX, size_t NY, typename T>
 matrix<NY,NY,T> operator* (const matrix<NX,NY,T>& m1, const matrix<NY,NX,T>& m2)
 {
@@ -37,6 +41,8 @@ matrix<NY,NY,T> operator* (const matrix<NX,NY,T>& m1, const matrix<NY,NX,T>& m2)
     return (mr);
 }
 
+/// \brief Transforms vector \p t with matrix \p m
+/// \ingroup NumericAlgorithms
 template <size_t NX, size_t NY, typename T>
 tuple<NX,T> operator* (const tuple<NY,T>& t, const matrix<NX,NY,T>& m)
 {
@@ -50,6 +56,8 @@ tuple<NX,T> operator* (const tuple<NY,T>& t, const matrix<NX,NY,T>& m)
     return (tr);
 }
 
+/// \brief Transposes (exchanges rows and columns) matrix \p m.
+/// \ingroup NumericAlgorithms
 template <size_t N, typename T>
 void transpose (matrix<N,N,T>& m)
 {

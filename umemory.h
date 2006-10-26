@@ -126,6 +126,7 @@ template <typename T> inline T* cast_to_type (void* p, const T*) { return ((T*) 
 /// \brief Creates a temporary buffer pair from \p p and \p n
 /// This is intended to be used with alloca to create temporary buffers.
 /// The size in the returned pair is set to 0 if the allocation is unsuccessful.
+/// \ingroup RawStorageAlgorithms
 ///
 template <typename T>
 inline pair<T*, ptrdiff_t> make_temporary_buffer (void* p, size_t n, const T* ptype)

@@ -16,7 +16,7 @@
 
 <h2><a name="Introduction">Introduction</a></h2>
 <p>
-So what's this STL thing? Simply put, it is a collection of common
+What is STL? Simply put, it is a collection of common
 containers and algorithms in template form. It is the Holy Pill after
 which you never have to worry about memory management again. It is
 all-powerful and all-purpose, it can save the world and make the fishes
@@ -31,7 +31,7 @@ assembly programmers like myself, who fret endlessly when the size of
 the executable crosses the magic 64k boundary, forgetting that nobody
 cares about memory anymore.
 </p><p>
-Of course, these days everyone has gigabytes of RAM (I have 3G myself) and
+Of course, these days everyone has gigabytes of RAM (I have 4G myself) and
 has no compunction about loading up OpenOffice, whose source tree is over
 a gigabyte in size. Why then bother with saving a kilobyte of code here
 and there? I can't really say. Maybe it's that warm fuzzy knowledge that
@@ -46,13 +46,14 @@ this library.
 <h2>Contents</h2>
 <ul>
     <li><a href="#Installation">Installation</a></li>
-    <li><a href="#Savings">Save! Save! Save!</a></li>
     <li><a href="#Containers">Containers and Iterators</a></li>
     <li><a href="#Strings">Strings</a></li>
     <li><a href="#Algorithms">Algorithms</a></li>
     <li><a href="#Memblocks">Memblock and Memlink</a></li>
     <li><a href="#Streams">Streams</a></li>
     <li><a href="#Tuples">Tuples</a></li>
+    <li><a href="#Exceptions">Exceptions</a></li>
+    <li><a href="#Savings">Save! Save! Save!</a></li>
     <li><a href="#Contact">Bug reporting</a></li>
     <li><a href="html/index.html">Doxygen reference</a></li>
 </ul>
@@ -60,9 +61,9 @@ this library.
 <p>
 To start with you'll need a decent compiler. Although uSTL will compile
 under gcc 2.95, some features require at least gcc 3.4 and are simply
-turned off with an older version. C++ is vastly improved in the recent
-compiler versions, and I strongly recommend gcc 4.0.0 or later for
-best possible code.
+turned off with an older version. C++ support is vastly improved in the
+recent compiler versions, and I strongly recommend gcc 4.0.0 or later
+for best possible code.
 </p><pre>
 ./configure
 make install
@@ -74,7 +75,7 @@ You might want to specify a different installation prefix with
 Developers will want to build with <kbd>--with-debug</kbd> to get a lot
 of assert error checking, which I highly recommend. If you are the type
 to edit configuration manually, it's in Config.mk and config.h. When
-it's built, you can run the included tests with <kbd>cd bvt; make run</kbd>
+it's built, you can run the included tests with <kbd>cd bvt; make run</kbd>.
 Finally, here's a simple hello world application:
 </p><pre>
 #include &lt;ustl.h&gt;	// Yes, just one header file. The better to precompile it.
@@ -89,152 +90,24 @@ int main (void)
 If you have at least gcc 3.4, uSTL is built as a standalone library, without
 linking to libstdc++. Because g++ links to it by default, you'll need to link
 with <kbd>-nodefaultlibs -lc</kbd> if you want to use uSTL to completely
-replace libstdc++. This is where the actual space savings happen.
-</p>
-<h2><a name="Savings">Save! Save! Save!</a></h2>
-<p>
-So how much space are you going to save and where? Allow me to demonstrate with
-the following small program. I'm basically creating a vector and exercise the
-most common operations. Those are resize, push_back, insert, and erase, which
-you use pretty much every time you have a vector.
-</p><pre>
-#if USING_USTL
-    #include &lt;ustl.h&gt;
-    using namespace ustl;
-#else
-    #include &lt;vector&gt;
-    using namespace std;
-#endif
-
-int main (void)
-{
-    vector&lt;int&gt; v;
-    v.resize (30);
-    for (size_t i = 0; i &lt; v.size(); ++ i)
-	v[i] = i;
-    v.push_back (57);
-    v.insert (v.begin() + 20, 555);
-    v.erase (v.begin() + 3);
-    return (EXIT_SUCCESS);
-}
-</pre><p>
-Feel free to compile it and see for yourself. I'm compiling with gcc 4.0.1
-and <kbd>-O3 -march=athlon-mp -DNDEBUG=1</kbd>. The libstdc++ version is
-linked implicitly with it, and uSTL version is linked with
-<kbd>-nodefaultlibs -lustl -lc</kbd>. Both executables are stripped.
-The libstdc++ version looks like this:
-</p><pre>
-% ls -l std/tes
-5316 tes*
-% size std/tes
-text    data     bss     dec     hex filename
-3204     304       4    3512     db8 tes
-% size -A std/tes.o
-tes.o:
-section                                                                                           size   addr
-.text                                                                                              307      0
-.data                                                                                                0      0
-.bss                                                                                                 0      0
-.gnu.linkonce.t._ZNSt6vectorIiSaIiEE5eraseEN9__gnu_cxx17__normal_iteratorIPiS1_EE                   78      0
-.rodata.str1.1                                                                                      45      0
-.gnu.linkonce.t._ZNSt6vectorIiSaIiEE13_M_insert_auxEN9__gnu_cxx17__normal_iteratorIPiS1_EERKi      303      0
-.gnu.linkonce.t._ZNSt6vectorIiSaIiEE6insertEN9__gnu_cxx17__normal_iteratorIPiS1_EERKi              123      0
-.gnu.linkonce.t._ZNSt6vectorIiSaIiEE14_M_fill_insertEN9__gnu_cxx17__normal_iteratorIPiS1_EEjRKi    541      0
-.gnu.linkonce.t._ZNSt6vectorIiSaIiEE5eraseEN9__gnu_cxx17__normal_iteratorIPiS1_EES5_               118      0
-.gcc_except_table                                                                                   15      0
-.eh_frame                                                                                          180      0
-.comment                                                                                            18      0
-.note.GNU-stack                                                                                      0      0
-_ZNSt6vectorIiSaIiEE5eraseEN9__gnu_cxx17__normal_iteratorIPiS1_EE                                    8      0
-_ZNSt6vectorIiSaIiEE13_M_insert_auxEN9__gnu_cxx17__normal_iteratorIPiS1_EERKi                        8      0
-_ZNSt6vectorIiSaIiEE6insertEN9__gnu_cxx17__normal_iteratorIPiS1_EERKi                                8      0
-_ZNSt6vectorIiSaIiEE14_M_fill_insertEN9__gnu_cxx17__normal_iteratorIPiS1_EEjRKi                      8      0
-_ZNSt6vectorIiSaIiEE5eraseEN9__gnu_cxx17__normal_iteratorIPiS1_EES5_                                 8      0
-Total                                                                                             1768
-</pre><p>
-The uSTL version looks like this:
-</p><pre>
-% ls -l ustl/tes
-4380 tes*
-% size ustl/tes
-text    data     bss     dec     hex filename
-2281     304       4    2589     a1d tes
-% size -A ustl/tes.o
-tes.o:
-section                                            size   addr
-.text                                               308      0
-.data                                                 0      0
-.bss                                                  0      0
-.gnu.linkonce.t._ZN4ustl6vectorIiE10deallocateEv      9      0
-.gcc_except_table                                    49      0
-.eh_frame                                            64      0
-.comment                                             18      0
-.note.GNU-stack                                       0      0
-_ZN4ustl6vectorIiE10deallocateEv                      8      0
-Total                                               456
-</pre><p>
-Let's see what's going on here. The .text size is the same, but look at the
-other things instantiated: libstdc++ instantiates all those vector functions.
-Two versions of erase are 78 and 118 bytes, insert_aux (used by insert and
-push_back) is 303 bytes, insert is 123 bytes, and _fill_insert is 541 bytes.
-That's 1163 bytes total for just one vector type. These functions will become
-larger for containers with objects, but about 1k in savings is a good measure.
-The uSTL version only instantiates a 9 byte deallocate function, which calls
-the nonexistent destructors of the int vector (it isn't marked inline because
-when there are destructors, it can get larger). The rest is basically inlined
-casts and calls to memblock functions.
-</p><p>
-1k doesn't seem like much, but consider that you get it for <em>every type
-of container you instantiate</em>! An int vector here, a float vector
-here, a bunch of object containers there, and before you know it you
-are using half your executable just for container overhead.
-</p><p>
-But wait, there is more! Let's look at the total memory footprint:
-</p><pre>
-% ldd std/tes
-linux-gate.so.1 =&gt;  (0xffffe000)
-libstdc++.so.6 =&gt; /usr/lib/libstdc++.so.6 (0xb7e7f000)
-libm.so.6 =&gt; /lib/libm.so.6 (0xb7e5b000)
-libgcc_s.so.1 =&gt; /usr/lib/libgcc_s.so.1 (0xb7e50000)
-libc.so.6 =&gt; /lib/libc.so.6 (0xb7d33000)
-/lib/ld-linux.so.2 (0xb7f36000)
-
-% ldd ustl/tes
-linux-gate.so.1 =&gt;  (0xffffe000)
-libc.so.6 =&gt; /lib/libc.so.6 (0xb7e23000)
-libustl.so.0.8 =&gt; /home/msharov/lib/libustl.so.0.8 (0xb7df3000)
-libgcc_s.so.1 =&gt; /usr/lib/libgcc_s.so.1 (0xb7de8000)
-/lib/ld-linux.so.2 (0xb7f40000)
-
-% size of each lib
-   text    data     bss     dec     hex filename
-1136553   11344   10932 1158829  11aead /lib/libc-2.3.4.so
- 131871     376      64  132311   204d7 /lib/libm-2.3.4.so
-  38910     412     296   39618    9ac2 /usr/lib/libgcc_s.so.1
- 703989   18816   23768  746573   b644d /usr/lib/libstdc++.so.6.0.5
- 136826    3680   16660  157166   265ee libustl.so.0.8.0
-</pre><p>
-After adding up the numbers (from the dec column) std/tes loads
-2077331 bytes of shared libraries and ustl/tes loads 1355613 bytes,
-saving 721718 bytes or 35%. If you don't count libc, measuring only
-the C++-specific overhead, libstdc++ loads 918502 while libustl only
-196784, <em>five times less</em>! But enough about space; let's talk
-about the library itself.
+replace libstdc++. This is where the actual space savings happen. (If you want
+to see just how much you can save, skip to the <a href="#Savings">Save! Save! Save!</a>
+section)
 </p>
 <h2><a name="Containers">Containers and Iterators</a></h2>
 <p>
 Are you still programming with malloc'ed arrays and iterating with
-pointers?  You poor shmuck! The pains you must be going through
-every time you need some memory... You must dread the very thought
-of variable-sized arrays and live in constant fear of memory leaks
-and dangling pointers. You wake up in cold sweat every night wondering
-whether you freed that pointer you allocated and keep wondering why in the
-world you're still using C++ instead of some comfy language with garbage
-collection, like Java or Python. In STL, you will find your salvation and
-rebirth! Free those mallocs and discover containers! STL containers are,
-um... well, they are basically, uh... malloc'ed blocks of memory. And
-iterators are, um... basically pointers into those blocks. But don't
-run away yet! It's all different, I promise. Honest!
+pointers? Such pains you must be going through every time you need
+some memory. You must dread the very thought of variable-sized arrays
+and live in constant fear of memory leaks and dangling pointers. You
+wake up in cold sweat every night wondering whether you freed that
+pointer you allocated and keep wondering why in the world you're still
+using C++ instead of some comfy language with garbage collection, like
+Java or Python. In STL, you will find your salvation and rebirth! Free
+those mallocs and discover containers! STL containers are, um... well,
+they are basically, uh... malloc'ed blocks of memory. And iterators are,
+um... basically pointers into those blocks. But don't run away yet! It's
+all different, I promise. Honest!
 </p><p>
 The first rule you should learn before switching to STL is: "never use
 new".  That's right. Just forget about ever manually allocating memory
@@ -243,7 +116,11 @@ I'll mention it later. From now on you should be thinking in resizable
 memory blocks instead.  These blocks know how take care of themselves,
 allocating memory when it is needed and freeing it when it is now. They
 do all the hard work so you don't have to. The first one you should know
-about is the vector object.
+about is the vector object. (Additional information on all the classes
+is available in the header files and in the
+<a href="html/index.html">Doxygen reference</a> available on this website
+and which could be built from source by executing <kbd>make dox</kbd> if
+you have <a href="http://www.doxygen.org/index.html">doxygen</a> installed)
 </p><pre>
 vector&lt;int&gt; v;
 v.push_back (1);
@@ -302,20 +179,24 @@ want to binary_search a large collection. There's <tt>map</tt> which
 is an associative container where you can look up entries by key. Its
 utility goes down drastically when you have complex objects that need to
 be searched with more than one parameter, in which cast you are better
-off with vector and foreach. The rest I have never needed, which explains
-their perfunctory (though functional) implementations.
+off with vector and foreach. I have never needed the others, and do
+not recommend their use. Their implementations are fully functional,
+but do not conform to STL complexity guarantees and are implemented as
+aliases to vector, which naturally changes their performance parameters.
 </p>
 <h2><a name="Strings">Strings</a></h2>
 <p>
-Every program uses strings, and STL was kind enough to provide
-a specification.  Unfortunately, uSTL deviates a bit and does not
-implement it fully. There is only one <tt>string</tt> class, and the
-wide-character version is not supported.  Instead the string class
-assumes all your strings will be UTF8-encoded, and provides some
-additional functionality to make working with those easier. I did that
-for the same reason I dropped the locale classes; bloat. It is simply
-too expensive to implement the standard locale classes. If you need them,
-you can still include them from libstdc++.
+Every program uses strings, and STL was kind enough to provide a
+specification. uSTL deviates a bit from the standard by not implementing
+wchar strings. There is only one <tt>string</tt> class, which assumes
+all your strings will be UTF8-encoded, and provides some additional
+functionality to make working with those easier. I did that for the same
+reason I dropped the locale classes; bloat. It is simply too expensive to
+implement the standard locale classes, as the enormous size of libstdc++
+illustrates. If you need them, you can still include them from libstdc++,
+but it may be just as simple to use the locale support provided by libc
+through printf, which may be called through <tt>format</tt> functions
+in string and ostringstream.
 </p><p>
 Anyway, back to strings. You can think of the string object as a
 char vector with some additional operations built-in, like searching,
@@ -327,6 +208,7 @@ s += "world?";
 s.replace (s.find ('?'), 1, "!");
 s[3] = s[s.find_first_of("lxy")];
 s[s.rfind('w')] = 'W';
+s.format ("A long %zd number of 0x%08lX\n", 345u, 0x12345);
 cout &lt;&lt; s &lt;&lt; endl;
 </pre><p>
 A nonstandard behaviour you may encounter is from linked strings created
@@ -386,14 +268,13 @@ lower_bound (v, 13);		// Returns the iterator to where you want to insert 13.
 iota (v.begin(), v.end(), 0);	// Puts 0,1,2,3,4,... into v.
 reverse (v);			// Reverses all the elements in v.
 </pre><p>
-The rest are rarely of any use. There are obscure mathematical operations,
-like inner_product, various set operations that almost never happen
-in real code, and lots and lots of predicate algorithms. The latter
-are algorithms that take a functor (an object that can be called
-like a function) and were supposed to help promote code reuse by
-encapsulating common operations.  For example, STL expects you to use
-the <tt>for_each</tt> algorithm and write a little functor for all your
-iterative tasks:
+The rest you can discover for yourself. There are obscure mathematical
+operations, like inner_product, set operations, heap operations, and
+lots and lots of predicate algorithms. The latter are algorithms that
+take a functor (an object that can be called like a function) and were
+supposed to help promote code reuse by encapsulating common operations.
+For example, STL expects you to use the <tt>for_each</tt> algorithm and
+write a little functor for all your iterative tasks:
 </p><pre>
 class CCompareAndReplace {
 public:
@@ -411,19 +292,19 @@ private:
 
 for_each (v.begin(), v.end(), CCompareAndReplace (5, 10, 99));
 </pre><p>
-And yes, it really does work. Doesn't generate any bloat either, since the
-compiler can see right through all this trickery and expand the for_each
-into a loop without actually creating the functor object. However,
-the compiler has a much harder time when you start using containers
-of complex objects and operating on their member variables and member
-functions.  Since that is what you will most likely have in any real
-code outside the academic world, the utility of predicate algorithms is
-highly questionable.  Their readability is even more so, considering
-that the above fifteen line example can be written as a three line
-iterative foreach loop. Finally, there is the problem of where to put the
-functor. It just doesn't seem to "belong" anywhere in the object-oriented
-world. Sorry, Stepanov, I just don't see how these things can be anything
-but an ugly, bloated hindrance.
+And yes, it really does work. Doesn't always generate much bloat either,
+since the compiler can often see right through all this trickery and
+expand the for_each into a loop without actually creating the functor
+object. However, the compiler has a much harder time when you start
+using containers of complex objects or operating on member variables
+and member functions.  Since that is what you will most likely have
+in any real code outside the academic world, the utility of predicate
+algorithms is highly questionable.  Their readability is even more so,
+considering that the above fifteen line example can be written as a
+three line iterative foreach loop. Finally, there is the problem of
+where to put the functor. It just doesn't seem to "belong" anywhere in
+the object-oriented world. Sorry, Stepanov, I just don't see how these
+things can be anything but an ugly, bloated hindrance.
 </p>
 <h2><a name="Memblocks">Memblocks and Memlinks</a></h2>
 <p>
@@ -517,7 +398,6 @@ cout, and cerr to replace printf and friends for accessing stdin, stdout,
 and stderr, respectively. uSTL versions work mostly the same as the
 standard ones (yes, the <tt>format</tt> call is a uSTL extension). Most
 calls use snprintf for output and thus use whatever locale libc uses.
-Fancy operations like stream tying will probably not be supported.
 </p><pre>
 cout &lt;&lt; "Hello world!" &lt;&lt; endl;
 cout &lt;&lt; 456 &lt;&lt; ios::hex &lt;&lt; 0x1234 &lt;&lt; endl;
@@ -529,15 +409,22 @@ ostringstream os;
 os &lt;&lt; "Writing " &lt;&lt; n &lt;&lt; " objects somewhere" &lt;&lt; endl;
 cout &lt;&lt; os.str() &lt;&lt; endl;
 </pre><p>
-And that's pretty much it for the standard streams. File streams are not
-implemented yet.  If you need to read a file now, create a string buffer,
-read_file, and then attach a stream to it. This way is far friendlier
-to merging with asynchronous event-driven frameworks (i.e. pretty much
-any X-based UI system) where you're not allowed to sit around waiting for
-file input. It also allows abstraction of all file operations in the same
-manner as uSTL abstracts memory management from containers, and supporting
-cool stuff like data filter chaining, network transparency, etc.
-</p><p>
+fstream is a file access interface with exception handling for errors:
+</p><pre>
+fstream f;
+// C++ standard says that fstream does not throw by default,
+f.exceptions (fstream::allbadbits);	// so this enables throwing.
+f.open ("file.dat", ios::in | ios::out); // throws file_exception
+f.read (buf, bufSize);			// let's read something
+f.seek (334455);			// go somewhere
+f.write (buf2, buf2Size);		// and write something
+f.fnctl (FCNTLID(F_SETFL), O_NONBLOCK); // yup, ALL file operations
+memlink l = f.mmap (bufSize, offset);	// even mmap
+fill (l, 0);
+f.msync (l);
+f.munmap (l);
+f.close();	// also throws file_exception (with filename!)
+</pre><p>
 istream and ostream, which are not really usable by themselves in the
 standard implementation, are hijacked by uSTL to implement binary data
 input and output:
@@ -632,6 +519,176 @@ Point2d pt (1, 2);
 pt += r[0];
 pt *= 2;
 </pre>
+<h2><a name="Exceptions">Exceptions</a></h2>
+<p>
+uSTL implements all the standard exception classes defined by the
+C++ standard. The exception tree is standalone, but is derived
+from std::exception when compiling with libstdc++ for ease of
+catching everything. uSTL exceptions implement some additional useful
+features. First, they are completely serializable. You can write them
+as a binary blob into a file, send them over a network, and handle them
+somewhere else. Each exception will print an informative error message
+directly to a text stream, reducing your try/catch block to:
+</p><pre>
+try {
+    DoSomething();
+} catch (exception&amp; e) {
+    cerr &lt;&lt; "Error: " &lt;&lt; e &lt;&lt; endl;
+    #ifndef NDEBUG
+	cerr &lt;&lt; e.backtrace();
+    #endif
+} catch (...) {
+    cerr &lt;&lt; "Unexpected fatal error has occured." &lt;&lt; endl;
+}
+</pre><p>
+Second, each exception stores a backtrace (callstack) at the time
+of throwing and can print that backtrace as easily as the above
+example illustrates. While it is indeed a good practice to design
+your exceptions so that you should not care where it was thrown from,
+situations occasionally arise while debugging where knowing the thrower
+is useful to fix the bug a little faster than otherwise.
+</p><p>
+Finally, there are additional exception classes for dealing with libc
+function errors, file errors, and stream classes. libc_exception can
+be thrown whenever a libc function fails, immediately telling you
+what the function call was and the errno description of the failure.
+file_exception, thrown by fstream operations, also contains the file name,
+which can be pretty darn useful. stream_bounds_exception is extremely
+useful in debugging corrupted data, as it tells you exactly where the
+corruption starts and what you were trying to read there.
+</p>
+<h2><a name="Savings">Save! Save! Save!</a></h2>
+<p>
+So how much space are you going to save and where? Allow me to demonstrate with
+the following small program. I'm basically creating a vector and exercise the
+most common operations. Those are resize, push_back, insert, and erase, which
+you use pretty much every time you have a vector.
+</p><pre>
+#if USING_USTL
+    #include &lt;ustl.h&gt;
+    using namespace ustl;
+#else
+    #include &lt;vector&gt;
+    using namespace std;
+#endif
+
+int main (void)
+{
+    vector&lt;int&gt; v;
+    v.resize (30);
+    for (size_t i = 0; i &lt; v.size(); ++ i)
+	v[i] = i;
+    v.push_back (57);
+    v.insert (v.begin() + 20, 555);
+    v.erase (v.begin() + 3);
+    return (EXIT_SUCCESS);
+}
+</pre><p>
+Feel free to compile it and see for yourself. I'm compiling on an Athlon
+64 with gcc 4.0.2 and <kbd>-O3 -march=athlon64 -DNDEBUG=1</kbd>. The
+libstdc++ version is linked implicitly with it, and uSTL version is linked
+with <kbd>-nodefaultlibs -lustl -lc</kbd>. Both executables are stripped.
+The libstdc++ version looks like this:
+</p><pre>
+% ls -l std/tes
+7168 tes*
+% size std/tes
+text    data     bss     dec     hex filename
+3868     608       8    4484    1184 tes
+% size -A std/tes.o
+tes.o:
+section                                                                                           size   addr
+_ZNSt6vectorIiSaIiEE5eraseEN9__gnu_cxx17__normal_iteratorIPiS1_EE                                    8      0
+_ZNSt6vectorIiSaIiEE13_M_insert_auxEN9__gnu_cxx17__normal_iteratorIPiS1_EERKi                        8      0
+_ZNSt6vectorIiSaIiEE6insertEN9__gnu_cxx17__normal_iteratorIPiS1_EERKi                                8      0
+_ZNSt6vectorIiSaIiEE14_M_fill_insertEN9__gnu_cxx17__normal_iteratorIPiS1_EEmRKi                      8      0
+_ZNSt6vectorIiSaIiEE5eraseEN9__gnu_cxx17__normal_iteratorIPiS1_EES5_                                 8      0
+.text                                                                                              235      0
+.data                                                                                                0      0
+.bss                                                                                                 0      0
+.gnu.linkonce.t._ZNSt6vectorIiSaIiEE5eraseEN9__gnu_cxx17__normal_iteratorIPiS1_EE                   74      0
+.rodata.str1.1                                                                                      45      0
+.gnu.linkonce.t._ZNSt6vectorIiSaIiEE13_M_insert_auxEN9__gnu_cxx17__normal_iteratorIPiS1_EERKi      339      0
+.gnu.linkonce.t._ZNSt6vectorIiSaIiEE6insertEN9__gnu_cxx17__normal_iteratorIPiS1_EERKi              116      0
+.gnu.linkonce.t._ZNSt6vectorIiSaIiEE14_M_fill_insertEN9__gnu_cxx17__normal_iteratorIPiS1_EEmRKi    560      0
+.gnu.linkonce.t._ZNSt6vectorIiSaIiEE5eraseEN9__gnu_cxx17__normal_iteratorIPiS1_EES5_                80      0
+.gcc_except_table                                                                                   15      0
+.eh_frame                                                                                          376      0
+.comment                                                                                            18      0
+.note.GNU-stack                                                                                      0      0
+Total                                                                                             1898
+</pre><p>
+The uSTL version looks like this:
+</p><pre>
+% ls -l ustl/tes
+5960 tes*
+% size ustl/tes
+text    data     bss     dec     hex filename
+2671     608       8    3287     cd7 tes
+% size -A ustl/tes.o
+tes.o  :
+section                                            size   addr
+_ZN4ustl6vectorIiE10deallocateEv                      8      0
+.text                                               269      0
+.data                                                 0      0
+.bss                                                  0      0
+.gnu.linkonce.t._ZN4ustl6vectorIiE10deallocateEv      5      0
+.gcc_except_table                                    49      0
+.eh_frame                                           136      0
+.comment                                             18      0
+.note.GNU-stack                                       0      0
+Total                                               485
+</pre><p>
+Let's see what's going on here. The .text size is about the same, but look at the
+other things instantiated: libstdc++ instantiates all those vector functions.
+Two versions of erase are 74 and 80 bytes, insert_aux (used by insert and
+push_back) is 339 bytes, insert is 116 bytes, and _fill_insert is 560 bytes.
+That's 1169 bytes total for just one vector type. These functions will become
+larger for containers with objects, but about 1k in savings is a good measure.
+The uSTL version only instantiates a 5 byte deallocate function, which calls
+the nonexistent destructors of the int vector (it isn't marked inline because
+when there are destructors, it can get larger). The rest is basically inlined
+casts and calls to memblock functions.
+</p><p>
+1k doesn't seem like much, but consider that you get it for <em>every type
+of container you instantiate</em>! An int vector here, a float vector
+here, a bunch of object containers there, and before you know it you
+are using half your executable just for container overhead.
+</p><p>
+But wait, there is more! Let's look at the total memory footprint:
+</p><pre>
+% ldd std/tes
+libstdc++.so.6 =&gt; /usr/lib64/libstdc++.so.6 (0x00002b0914d86000)
+libm.so.6 =&gt; /lib64/tls/libm.so.6 (0x00002b0914f86000)
+libgcc_s.so.1 =&gt; /usr/lib64/libgcc_s.so.1 (0x00002b091510e000)
+libc.so.6 =&gt; /lib64/tls/libc.so.6 (0x00002b091521b000)
+/lib64/ld-linux-x86-64.so.2 (0x00002b0914c6e000)
+
+% ldd ustl/tes
+libustl.so.1 =&gt; /usr/local/lib/libustl.so.1 (0x00002ae4edd99000)
+libc.so.6 =&gt; /lib64/tls/libc.so.6 (0x00002ae4edeea000)
+libgcc_s.so.1 =&gt; /usr/lib64/libgcc_s.so.1 (0x00002ae4ee122000)
+/lib64/ld-linux-x86-64.so.2 (0x00002ae4edc81000)
+
+% size of each lib
+   text    data     bss     dec     hex filename
+1122960   11312   10900 1145172  117954 /lib/libc-2.3.5.so
+ 131871     376      64  132311   204d7 /lib/libm-2.3.5.so
+  38110     412     296   38818    97a2 /usr/lib/libgcc_s.so.1
+ 827715   19916   23800  871431   d4c07 /usr/lib/libstdc++.so.6.0.6
+ 145064   10152   66088  221304   36078 libustl.so.1.0.0
+</pre><p>
+After adding up the numbers (from the dec column) std/tes loads 2187732
+bytes of shared libraries and ustl/tes loads 1405294 bytes, saving 782438
+bytes or 35%. If you don't count libc, measuring only the C++-specific
+overhead, libstdc++ loads 1042560 while libustl only 260122, <em>four
+times less</em>! Finally, much of uSTL's size comes from gcc's support
+libraries; if you compile uSTL without the <tt>STANDALONE</tt> option in
+Config.mk, you'll see that it only takes up 89207 bytes then (of which
+only 29016 are used by .text), meaning that only 34% of the library size
+is my fault. gcc developers will have to reduce the size of libsupc++
+and libgcc_eh before any further size reduction would be practical.
+</p>
 <h2><a name="Contact">Bug reporting</a></h2>
 <p>
 Report bugs through the SourceForge.net

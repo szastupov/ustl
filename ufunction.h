@@ -26,25 +26,31 @@ namespace ustl {
 // Standard functors
 //----------------------------------------------------------------------
 
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
-
+/// \brief void-returning function abstract interface.
+/// \ingroup FunctorObjects
 template <typename Result>
 struct void_function {
     typedef Result	result_type;
 };
 
+/// \brief \p Result f (\p Arg) function abstract interface.
+/// \ingroup FunctorObjects
 template <typename Arg, typename Result>
 struct unary_function {
     typedef Arg		argument_type;
     typedef Result	result_type;
 };
 
+/// \brief \p Result f (\p Arg1, \p Arg2) function abstract interface.
+/// \ingroup FunctorObjects
 template <typename Arg1, typename Arg2, typename Result>
 struct binary_function {
     typedef Arg1	first_argument_type;
     typedef Arg2	second_argument_type;
     typedef Result	result_type;
 };
+
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 
 #define STD_BINARY_FUNCTOR(name, rv, func)	\
 template <class T> struct name : public binary_function<T,T,rv> \
@@ -78,13 +84,22 @@ STD_BINARY_FUNCTOR (less_equal,		bool,	(!(b < a)))
 STD_BINARY_FUNCTOR (compare,		int,	(a < b ? -1 : (b < a)))
 STD_UNARY_FUNCTOR  (identity,		T,	(a))
 
+#endif // DOXYGEN_SHOULD_SKIP_THIS
+
+/// \brief Selects and returns the first argument.
+/// \ingroup FunctorObjects
 template <class T1, class T2> struct project1st	: public binary_function<T1,T2,T1>    { inline const T1& operator()(const T1& a, const T2&) const { return (a); } };
+/// \brief Selects and returns the second argument.
+/// \ingroup FunctorObjects
 template <class T1, class T2> struct project2nd	: public binary_function<T1,T2,T2>    { inline const T2& operator()(const T1&, const T2& a) const { return (a); } };
 
 //----------------------------------------------------------------------
 // Generic function to functor converters.
 //----------------------------------------------------------------------
 
+/// \brief Wrapper object for unary function pointers.
+/// Use the \ref ptr_fun accessor to create this object.
+/// \ingroup FunctorObjects
 template <typename Arg, typename Result>
 class pointer_to_unary_function : public unary_function<Arg,Result> {
 public:
@@ -95,9 +110,12 @@ public:
     explicit inline	pointer_to_unary_function (pfunc_t pfn) : m_pfn (pfn) {}
     inline result_type	operator() (argument_type v) const { return (m_pfn(v)); }
 private:
-    pfunc_t		m_pfn;
+    pfunc_t		m_pfn;	///< Pointer to the wrapped function.
 };
 
+/// \brief Wrapper object for binary function pointers.
+/// Use the \ref ptr_fun accessor to create this object.
+/// \ingroup FunctorObjects
 template <typename Arg1, typename Arg2, typename Result>
 class pointer_to_binary_function : public binary_function<Arg1,Arg2,Result> {
 public:
@@ -109,20 +127,19 @@ public:
     explicit inline	pointer_to_binary_function (pfunc_t pfn) : m_pfn (pfn) {}
     inline result_type	operator() (first_argument_type v1, second_argument_type v2) const { return (m_pfn(v1, v2)); }
 private:
-    pfunc_t		m_pfn;
+    pfunc_t		m_pfn;	///< Pointer to the wrapped function.
 };
 
-#endif // DOXYGEN_SHOULD_SKIP_THIS
-
 /// ptr_fun(pfn) wraps function pointer pfn into a functor class that calls it.
+/// \ingroup FunctorAccessors
 template <typename Arg, typename Result>
 inline pointer_to_unary_function<Arg,Result> ptr_fun (Result (*pfn)(Arg))
 {
     return (pointer_to_unary_function<Arg,Result> (pfn));
 }
 
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
-
+/// ptr_fun(pfn) wraps function pointer pfn into a functor class that calls it.
+/// \ingroup FunctorAccessors
 template <typename Arg1, typename Arg2, typename Result>
 inline pointer_to_binary_function<Arg1,Arg2,Result> ptr_fun (Result (*pfn)(Arg1,Arg2))
 {
@@ -133,6 +150,9 @@ inline pointer_to_binary_function<Arg1,Arg2,Result> ptr_fun (Result (*pfn)(Arg1,
 // Negators.
 //----------------------------------------------------------------------
 
+/// \brief Wraps a unary function to return its logical negative.
+/// Use the \ref unary_negator accessor to create this object.
+/// \ingroup FunctorObjects
 template <class UnaryFunction>
 class unary_negate : public unary_function<typename UnaryFunction::argument_type,
 					   typename UnaryFunction::result_type> {
@@ -146,9 +166,8 @@ private:
     UnaryFunction	m_pfn;
 };
 
-#endif // DOXYGEN_SHOULD_SKIP_THIS
-
 /// Returns the functor that negates the result of *pfn().
+/// \ingroup FunctorAccessors
 template <class UnaryFunction>
 inline unary_negate<UnaryFunction> unary_negator (UnaryFunction pfn)
 {
@@ -159,8 +178,10 @@ inline unary_negate<UnaryFunction> unary_negator (UnaryFunction pfn)
 // Argument binders
 //----------------------------------------------------------------------
 
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
-
+/// \brief Converts a binary function to a unary function
+/// by binding a constant value to the first argument.
+/// Use the \ref bind1st accessor to create this object.
+/// \ingroup FunctorObjects
 template <class BinaryFunction> 
 class binder1st : public unary_function<typename BinaryFunction::second_argument_type,
 					typename BinaryFunction::result_type> {
@@ -176,6 +197,10 @@ protected:
     arg1_t		m_Value;
 };
 
+/// \brief Converts a binary function to a unary function
+/// by binding a constant value to the second argument.
+/// Use the \ref bind2nd accessor to create this object.
+/// \ingroup FunctorObjects
 template <class BinaryFunction> 
 class binder2nd : public unary_function<typename BinaryFunction::first_argument_type,
 					typename BinaryFunction::result_type> {
@@ -191,9 +216,8 @@ protected:
     arg2_t		m_Value;
 };
 
-#endif // DOXYGEN_SHOULD_SKIP_THIS
-
 /// Converts \p pfn into a unary function by binding the first argument to \p v.
+/// \ingroup FunctorAccessors
 template <typename BinaryFunction>
 inline binder1st<BinaryFunction>
 bind1st (BinaryFunction pfn, typename BinaryFunction::first_argument_type v) 
@@ -202,6 +226,7 @@ bind1st (BinaryFunction pfn, typename BinaryFunction::first_argument_type v)
 }
 
 /// Converts \p pfn into a unary function by binding the second argument to \p v.
+/// \ingroup FunctorAccessors
 template <typename BinaryFunction>
 inline binder2nd<BinaryFunction>
 bind2nd (BinaryFunction pfn, typename BinaryFunction::second_argument_type v) 
@@ -216,7 +241,9 @@ bind2nd (BinaryFunction pfn, typename BinaryFunction::second_argument_type v)
 /// \brief Chains two unary functions together.
 ///
 /// When f(x) and g(x) are composed, the result is function c(x)=f(g(x)).
+/// Use the \ref compose1 accessor to create this object.
 /// This template is an extension, implemented by SGI STL and uSTL.
+/// \ingroup FunctorObjects
 ///
 template <typename Operation1, typename Operation2>
 class unary_compose : public unary_function<typename Operation2::argument_type,
@@ -234,6 +261,7 @@ protected:
 };
 
 /// Creates a \ref unary_compose object whose function c(x)=f(g(x))
+/// \ingroup FunctorAccessors
 template <typename Operation1, typename Operation2>
 inline unary_compose<Operation1, Operation2>
 compose1 (const Operation1& f, const Operation2& g)
@@ -242,8 +270,9 @@ compose1 (const Operation1& f, const Operation2& g)
 /// \brief Chains two unary functions through a binary function.
 ///
 /// When f(x,y), g(x), and h(x) are composed, the result is function
-/// c(x)=f(g(x),h(x)). This template is an extension, implemented by
-/// SGI STL and uSTL.
+/// c(x)=f(g(x),h(x)). Use the \ref compose2 accessor to create this
+/// object. This template is an extension, implemented by SGI STL and uSTL.
+/// \ingroup FunctorObjects
 ///
 template <typename Operation1, typename Operation2, typename Operation3>
 class binary_compose : public unary_function<typename Operation2::argument_type,
@@ -257,11 +286,12 @@ public:
     inline result_t operator() (rcarg_t x) const { return m_f(m_g(x), m_h(x)); }
 protected:
     Operation1	m_f;	///< f(x,y), if c(x) = f(g(x),h(x))
-    Operation2	m_g;	///< g(x), if c(x) = f(g(x))
-    Operation3	m_h;	///< h(x), if c(x) = f(g(x))
+    Operation2	m_g;	///< g(x), if c(x) = f(g(x),h(x))
+    Operation3	m_h;	///< h(x), if c(x) = f(g(x),h(x))
 };
 
 /// Creates a \ref binary_compose object whose function c(x)=f(g(x),h(x))
+/// \ingroup FunctorAccessors
 template <typename Operation1, typename Operation2, typename Operation3>
 inline binary_compose<Operation1, Operation2, Operation3>
 compose2 (const Operation1& f, const Operation2& g, const Operation3& h)
@@ -367,6 +397,7 @@ MEM_VAR_T(const_mem_var2, const T&, const VT T::*,	FUNCTOR_BINARY_BASE(T&), MEM_
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 
 /// Returned functor passes member variable \p mvp reference of given object to equal\<VT\>.
+/// \ingroup FunctorAccessors
 template <class T, typename VT>
 inline const_mem_var1_t<binder2nd<equal_to<VT> >, T, VT>
 mem_var_equal_to (const VT T::*mvp, const VT& v)
@@ -375,6 +406,7 @@ mem_var_equal_to (const VT T::*mvp, const VT& v)
 }
 
 /// Returned functor passes member variable \p mvp reference of given object to less\<VT\>.
+/// \ingroup FunctorAccessors
 template <class T, typename VT>
 inline const_mem_var1_t<binder2nd<less<VT> >, T, VT>
 mem_var_less (const VT T::*mvp, const VT& v)
@@ -383,6 +415,7 @@ mem_var_less (const VT T::*mvp, const VT& v)
 }
 
 /// Returned functor passes member variable \p mvp reference of given object to equal\<VT\>.
+/// \ingroup FunctorAccessors
 template <class T, typename VT>
 inline const_mem_var2_t<equal_to<VT>, T, VT>
 mem_var_equal_to (const VT T::*mvp)
@@ -391,6 +424,7 @@ mem_var_equal_to (const VT T::*mvp)
 }
 
 /// Returned functor passes member variable \p mvp reference of given object to less\<VT\>.
+/// \ingroup FunctorAccessors
 template <class T, typename VT>
 inline const_mem_var2_t<less<VT>, T, VT>
 mem_var_less (const VT T::*mvp)

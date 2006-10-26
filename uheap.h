@@ -22,6 +22,8 @@ namespace ustl {
 /// \brief Returns true if the given range is a heap under \p comp.
 /// A heap is a sequentially encoded binary tree where for every node
 /// comp(node,child1) is false and comp(node,child2) is false.
+/// \ingroup HeapAlgorithms
+/// \ingroup ConditionAlgorithms
 ///
 template <typename RandomAccessIterator, typename Compare>
 bool is_heap (RandomAccessIterator first, RandomAccessIterator last, Compare comp)
@@ -36,6 +38,8 @@ bool is_heap (RandomAccessIterator first, RandomAccessIterator last, Compare com
 /// \brief make_heap turns the range [first, last) into a heap
 /// At completion, is_heap (first, last, comp) is true.
 /// The algorithm is adapted from "Classic Data Structures in C++" by Timothy Budd.
+/// \ingroup HeapAlgorithms
+/// \ingroup SortingAlgorithms
 ///
 template <typename RandomAccessIterator, typename Compare>
 void make_heap (RandomAccessIterator first, RandomAccessIterator last, Compare comp)
@@ -56,6 +60,8 @@ void make_heap (RandomAccessIterator first, RandomAccessIterator last, Compare c
 }
 
 /// \brief Inserts the *--last into the preceeding range assumed to be a heap.
+/// \ingroup HeapAlgorithms
+/// \ingroup MutatingAlgorithms
 template <typename RandomAccessIterator, typename Compare>
 void push_heap (RandomAccessIterator first, RandomAccessIterator last, Compare comp)
 {
@@ -75,6 +81,8 @@ void push_heap (RandomAccessIterator first, RandomAccessIterator last, Compare c
 
 /// Removes the largest element from the heap (*first) and places it at *(last-1)
 /// [first, last-1) is a heap after this operation.
+/// \ingroup HeapAlgorithms
+/// \ingroup MutatingAlgorithms
 template <typename RandomAccessIterator, typename Compare>
 void pop_heap (RandomAccessIterator first, RandomAccessIterator last, Compare comp)
 {
@@ -85,6 +93,8 @@ void pop_heap (RandomAccessIterator first, RandomAccessIterator last, Compare co
 }
 
 /// Sorts heap [first, last) in descending order according to comp.
+/// \ingroup HeapAlgorithms
+/// \ingroup SortingAlgorithms
 template <typename RandomAccessIterator, typename Compare>
 void sort_heap (RandomAccessIterator first, RandomAccessIterator last, Compare comp)
 {

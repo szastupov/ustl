@@ -6,8 +6,8 @@
 // ustring.h
 //
 
-#ifndef USTRING_H
-#define USTRING_H
+#ifndef USTRING_H_1249CB7A098A9010763AAC6D37B133CF
+#define USTRING_H_1249CB7A098A9010763AAC6D37B133CF
 
 #include "memblock.h"
 #include "utf8.h"
@@ -18,23 +18,21 @@ namespace ustl {
 /// \class string ustring.h ustl.h
 /// \ingroup Sequences
 ///
-/// \brief STL basic_string equivalent.
+/// \brief STL basic_string&lt;char&gt; equivalent.
 ///
-/// An STL container for string manipulation.
+/// An STL container for text string manipulation.
 /// Differences from C++ standard:
-///	string is a class, not a template. Wide characters are assumed to be
-///		encoded with utf8 at all times except when rendering or editing.
-/// 	format member function - strstreams on the string are possible, but
-/// 		are in many cases inconvenient because they hardcode not only
-/// 		the locations of substitutions, but also the constant text in
-/// 		between. Such behaviour makes string localization all but
-/// 		impossible. 
-/// 	const char* cast operator. It is much clearer to use this than having
-/// 		to type .c_str() every time. A side effect of this is that
-/// 		const operator[] is no longer needed (gcc will warn about an
-/// 		ambiguous overload)
-/// 	length() returns the number of _characters_, not bytes. This function
-///		is O(N), since the character count is not stored, so use wisely.
+///	- string is a class, not a template. Wide characters are assumed to be
+///		encoded with utf8 at all times except when rendering or editing,
+///		where you would use a utf8 iterator.
+/// 	- format member function - you can, of course use an \ref ostringstream,
+///		which also have format functions, but most of the time this way
+///		is more convenient. Because uSTL does not implement locales,
+///		format is the only way to create localized strings.
+/// 	- const char* cast operator. It is much clearer to use this than having
+/// 		to type .c_str() every time.
+/// 	- length returns the number of _characters_, not bytes.
+///		This function is O(N), so use wisely.
 ///
 class string : public memblock {
 public:

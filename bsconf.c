@@ -798,8 +798,17 @@ static void SubstituteHostOptions (void)
 
     if (g_SysType == sys_Linux)
 	Substitute ("@SHBLDFL@", "-shared -Wl,-soname=${LIBSOLNK}");
+    else if (g_SysType == sys_Mac)
+	Substitute ("@SHBLDFL@", "-Wl,-single_module,-compatibility_version,1,-current_version,1,-install_name,${LIBSOLNK},-Wl,-Y,1455 -dynamiclib -mmacosx-version-min=10.4");
     else
 	Substitute ("@SHBLDFL@", "-G");
+
+    if (g_SysType == sys_Mac) {
+	Substitute ("lib${LIBNAME}.so", "lib${LIBNAME}.dylib");
+	Substitute ("${LIBSO}.${MAJOR}", "lib${LIBNAME}.${MAJOR}.dylib");
+	Substitute ("${LIBSO}.${MAJOR}.${MINOR}", "lib${LIBNAME}.${MAJOR}.${MINOR}.dylib");
+	Substitute ("${LIBSO}.${MAJOR}.${MINOR}.${BUILD}", "lib${LIBNAME}.${MAJOR}.${MINOR}.${BUILD}.dylib");
+    }
 
     if (g_SysType != sys_Sun)
 	Substitute ("#undef HAVE_THREE_CHAR_TYPES", "#define HAVE_THREE_CHAR_TYPES 1");
@@ -888,7 +897,7 @@ static void SubstituteHeaders (void)
 
 static void SubstituteLibs (void)
 {
-    static const cpchar_t g_LibSuffixes[] = { ".a", ".so", ".la" };
+    static const cpchar_t g_LibSuffixes[] = { ".a", ".so", ".la", ".dylib" };
     uint i, k, ok;
     cpchar_t pi;
     SBuf defaultPath = NULL_BUF, match = NULL_BUF;

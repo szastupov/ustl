@@ -20,10 +20,9 @@ Requires:	glibc >= 2.0.6
 Requires:	libstdc++
 
 %description
-uSTL library reimplements the STL specification with the goal of
-reducing code duplication that STL templates normally produce. uSTL
-attempts to do this by factoring out memory-management code into a
-non-template base class.
+uSTL library implements the STL specification with the goal of reducing
+code duplication that STL templates normally produce. uSTL does this by
+factoring out memory-management code into a non-template base class.
 
 %prep
 %setup -q

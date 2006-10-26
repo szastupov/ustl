@@ -12,8 +12,8 @@
 // their use. The code is NOT the same, though the functionality usually is.
 //
 
-#ifndef UALGO_H
-#define UALGO_H
+#ifndef UALGO_H_711AB4214D417A51166694D47A662D6E
+#define UALGO_H_711AB4214D417A51166694D47A662D6E
 
 #include "upair.h"
 #include "ualgobase.h"
@@ -105,6 +105,7 @@ inline size_t count (InputIterator first, InputIterator last, const EqualityComp
 /// *(result + n) = op(*(first + n)).
 /// The return value is result + (last - first).
 /// \ingroup MutatingAlgorithms
+/// \ingroup PredicateAlgorithms
 ///
 template <typename InputIterator, typename OutputIterator, typename UnaryFunction>
 inline OutputIterator transform (InputIterator first, InputIterator last, OutputIterator result, UnaryFunction op)
@@ -124,6 +125,7 @@ inline OutputIterator transform (InputIterator first, InputIterator last, Output
 /// *(result + n) = op(*(first1 + n), *(first2 + n).
 /// The return value is result + (last1 - first1).
 /// \ingroup MutatingAlgorithms
+/// \ingroup PredicateAlgorithms
 ///
 template <typename InputIterator1, typename InputIterator2, typename OutputIterator, typename BinaryFunction>
 inline OutputIterator transform (InputIterator1 first1, InputIterator1 last1, InputIterator2 first2, OutputIterator result, BinaryFunction op)
@@ -163,7 +165,8 @@ inline OutputIterator replace_copy (InputIterator first, InputIterator last, Out
 
 /// Generate assigns the result of invoking gen, a function object that
 /// takes no arguments, to each element in the range [first, last).
-/// \ingroup MutatingAlgorithms
+/// \ingroup GeneratorAlgorithms
+/// \ingroup PredicateAlgorithms
 ///
 template <typename ForwardIterator, typename Generator>
 inline void generate (ForwardIterator first, ForwardIterator last, Generator gen)
@@ -175,7 +178,8 @@ inline void generate (ForwardIterator first, ForwardIterator last, Generator gen
 /// Generate_n assigns the result of invoking gen, a function object that
 /// takes no arguments, to each element in the range [first, first+n).
 /// The return value is first + n.
-/// \ingroup MutatingAlgorithms
+/// \ingroup GeneratorAlgorithms
+/// \ingroup PredicateAlgorithms
 ///
 template <typename OutputIterator, typename Generator>
 inline OutputIterator generate_n (OutputIterator first, size_t n, Generator gen)
@@ -428,7 +432,7 @@ inline pair<ForwardIterator,ForwardIterator> equal_range (ForwardIterator first,
 }
 
 /// Randomly permute the elements of the container.
-/// \ingroup MutatingAlgorithms
+/// \ingroup GeneratorAlgorithms
 ///
 template <typename RandomAccessIterator>
 void random_shuffle (RandomAccessIterator first, RandomAccessIterator last)
@@ -437,6 +441,8 @@ void random_shuffle (RandomAccessIterator first, RandomAccessIterator last)
 	iter_swap (first, first + (rand() % distance (first, last)));
 }
 
+/// \brief Generic compare function adaptor to pass to qsort
+/// \ingroup FunctorObjects
 template <typename ConstPointer, typename Compare>
 int qsort_adapter (const void* p1, const void* p2)
 {
@@ -448,6 +454,7 @@ int qsort_adapter (const void* p1, const void* p2)
 
 /// Sorts the container
 /// \ingroup SortingAlgorithms
+/// \ingroup PredicateAlgorithms
 ///
 template <typename RandomAccessIterator, typename Compare>
 void sort (RandomAccessIterator first, RandomAccessIterator last, Compare)
@@ -470,6 +477,7 @@ inline void sort (RandomAccessIterator first, RandomAccessIterator last)
 
 /// Sorts the container preserving order of equal elements.
 /// \ingroup SortingAlgorithms
+/// \ingroup PredicateAlgorithms
 ///
 template <typename RandomAccessIterator, typename Compare>
 void stable_sort (RandomAccessIterator first, RandomAccessIterator last, Compare comp)
@@ -596,7 +604,7 @@ inline bool lexicographical_compare (InputIterator1 first1, InputIterator1 last1
 
 /// \brief Creates the next lexicographical permutation of [first,last).
 /// Returns false if no further permutations can be created.
-/// \ingroup MutatingAlgorithms.
+/// \ingroup GeneratorAlgorithms
 template <typename BidirectionalIterator>
 inline bool next_permutation (BidirectionalIterator first, BidirectionalIterator last)
 {
@@ -606,7 +614,7 @@ inline bool next_permutation (BidirectionalIterator first, BidirectionalIterator
 
 /// \brief Creates the previous lexicographical permutation of [first,last).
 /// Returns false if no further permutations can be created.
-/// \ingroup MutatingAlgorithms.
+/// \ingroup GeneratorAlgorithms
 template <typename BidirectionalIterator>
 inline bool prev_permutation (BidirectionalIterator first, BidirectionalIterator last)
 {
@@ -646,6 +654,7 @@ inline void partial_sort (RandomAccessIterator first, RandomAccessIterator middl
 /// In this implementation, the entire array is sorted. I can't think of any
 /// use for it where the time gained would be useful.
 /// \ingroup SortingAlgorithms
+/// \ingroup SearchingAlgorithms
 ///
 template <typename RandomAccessIterator>
 inline void nth_element (RandomAccessIterator first, RandomAccessIterator nth, RandomAccessIterator last)
