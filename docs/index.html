@@ -676,16 +676,16 @@ libgcc_s.so.1 =&gt; /usr/lib64/libgcc_s.so.1 (0x00002ae4ee122000)
  131871     376      64  132311   204d7 /lib/libm-2.3.5.so
   38110     412     296   38818    97a2 /usr/lib/libgcc_s.so.1
  827715   19916   23800  871431   d4c07 /usr/lib/libstdc++.so.6.0.6
- 145064   10152   66088  221304   36078 libustl.so.1.0.0
+ 144672	  10152	  66088	 220912	  35ef0	libustl.so.1.0.0
 </pre><p>
 After adding up the numbers (from the dec column) std/tes loads 2187732
-bytes of shared libraries and ustl/tes loads 1405294 bytes, saving 782438
+bytes of shared libraries and ustl/tes loads 1404902 bytes, saving 782438
 bytes or 35%. If you don't count libc, measuring only the C++-specific
-overhead, libstdc++ loads 1042560 while libustl only 260122, <em>four
+overhead, libstdc++ loads 1042560 while libustl only 259730, <em>four
 times less</em>! Finally, much of uSTL's size comes from gcc's support
-libraries; if you compile uSTL without the <tt>STANDALONE</tt> option in
-Config.mk, you'll see that it only takes up 89207 bytes then (of which
-only 29016 are used by .text), meaning that only 34% of the library size
+libraries; if you compile uSTL without the <tt>NOLIBSTDCPP</tt> option in
+Config.mk, you'll see that it only takes up 88815 bytes then (of which
+only 28696 are used by .text), meaning that only 40% of the library size
 is my fault. gcc developers will have to reduce the size of libsupc++
 and libgcc_eh before any further size reduction would be practical.
 </p>

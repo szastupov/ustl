@@ -773,42 +773,40 @@ static void SubstituteHostOptions (void)
     static const short int boCheck = 0x0001;
     static const char boNames[2][16] = { "BIG_ENDIAN", "LITTLE_ENDIAN" };
     char buf [128];
-    if (g_SysType == sys_Mac)
-	Substitute ("@SYSWARNS@", "-Wno-long-double");
-    else
-	Substitute ("@SYSWARNS@", "");
     #if __GNUC__ >= 3
-    if (g_SysType == sys_Mac) {
-	Substitute ("@libgcc@", "@libsupc++@ @libgcc@");
-	Substitute (" @libgcc_eh@", "");
-    }
     if (g_SysType == sys_Sun)
     #endif
 	Substitute ("-Wredundant-decls", "-Wno-redundant-decls");
 
     if (g_SysType == sys_Bsd) {
+	Substitute (" @libgcc_eh@", "");
+	Substitute ("#define WITHOUT_LIBSTDCPP 1", "#undef WITHOUT_LIBSTDCPP");
+	Substitute ("NOLIBSTDCPP\t= -nodefaultlibs ", "#NOLIBSTDCPP\t= -nodefaultlibs");
 	Substitute ("-Wredundant-decls", "-Wno-redundant-decls");
 	Substitute ("-Winline", "-Wno-inline");
     }
 
-    if (g_SysType != sys_Linux && g_SysType != sys_Sun) {
+    if ((g_SysType == sys_Linux) | (g_SysType == sys_Bsd))
+	Substitute ("@SHBLDFL@", "-shared -Wl,-soname=${LIBSOLNK}");
+    else if (g_SysType == sys_Mac)
+	Substitute ("@SHBLDFL@", "-Wl,-single_module -compatibility_version 1 -current_version 1 -install_name ${LIBSOLNK} -Wl,-Y,1455 -dynamiclib -mmacosx-version-min=10.4");
+    else if (g_SysType == sys_Sun)
+	Substitute ("@SHBLDFL@", "-G");
+    else {
 	Substitute ("BUILD_SHARED\t= 1 ", "#BUILD_SHARED\t= 1");
 	Substitute ("#BUILD_STATIC\t= 1", "BUILD_STATIC\t= 1 ");
     }
 
-    if (g_SysType == sys_Linux)
-	Substitute ("@SHBLDFL@", "-shared -Wl,-soname=${LIBSOLNK}");
-    else if (g_SysType == sys_Mac)
-	Substitute ("@SHBLDFL@", "-Wl,-single_module,-compatibility_version,1,-current_version,1,-install_name,${LIBSOLNK},-Wl,-Y,1455 -dynamiclib -mmacosx-version-min=10.4");
-    else
-	Substitute ("@SHBLDFL@", "-G");
-
     if (g_SysType == sys_Mac) {
+	Substitute (" @libgcc_eh@", "");
+	Substitute ("@libgcc@", "@libsupc++@ @libgcc@");
+	Substitute ("@SYSWARNS@", "-Wno-long-double");
 	Substitute ("lib${LIBNAME}.so", "lib${LIBNAME}.dylib");
-	Substitute ("${LIBSO}.${MAJOR}", "lib${LIBNAME}.${MAJOR}.dylib");
-	Substitute ("${LIBSO}.${MAJOR}.${MINOR}", "lib${LIBNAME}.${MAJOR}.${MINOR}.dylib");
 	Substitute ("${LIBSO}.${MAJOR}.${MINOR}.${BUILD}", "lib${LIBNAME}.${MAJOR}.${MINOR}.${BUILD}.dylib");
-    }
+	Substitute ("${LIBSO}.${MAJOR}.${MINOR}", "lib${LIBNAME}.${MAJOR}.${MINOR}.dylib");
+	Substitute ("${LIBSO}.${MAJOR}", "lib${LIBNAME}.${MAJOR}.dylib");
+    } else
+	Substitute ("@SYSWARNS@", "");
 
     if (g_SysType != sys_Sun)
 	Substitute ("#undef HAVE_THREE_CHAR_TYPES", "#define HAVE_THREE_CHAR_TYPES 1");
@@ -819,17 +817,17 @@ static void SubstituteHostOptions (void)
     Substitute ("#undef off_t", "/* typedef long off_t; */");
     Substitute ("#undef size_t", "/* typedef long size_t; */");
 
-    sprintf (buf, "#define SIZE_OF_CHAR %d", sizeof(char));
+    snprintf (buf, VectorSize(buf), "#define SIZE_OF_CHAR %d", sizeof(char));
     Substitute ("#undef SIZE_OF_CHAR", buf);
-    sprintf (buf, "#define SIZE_OF_SHORT %d", sizeof(short));
+    snprintf (buf, VectorSize(buf), "#define SIZE_OF_SHORT %d", sizeof(short));
     Substitute ("#undef SIZE_OF_SHORT", buf);
-    sprintf (buf, "#define SIZE_OF_INT %d", sizeof(int));
+    snprintf (buf, VectorSize(buf), "#define SIZE_OF_INT %d", sizeof(int));
     Substitute ("#undef SIZE_OF_INT", buf);
-    sprintf (buf, "#define SIZE_OF_LONG %d", sizeof(long));
+    snprintf (buf, VectorSize(buf), "#define SIZE_OF_LONG %d", sizeof(long));
     Substitute ("#undef SIZE_OF_LONG ", buf);
-    sprintf (buf, "#define SIZE_OF_POINTER %d", sizeof(void*));
+    snprintf (buf, VectorSize(buf), "#define SIZE_OF_POINTER %d", sizeof(void*));
     Substitute ("#undef SIZE_OF_POINTER ", buf);
-    sprintf (buf, "#define SIZE_OF_SIZE_T %d", sizeof(size_t));
+    snprintf (buf, VectorSize(buf), "#define SIZE_OF_SIZE_T %d", sizeof(size_t));
     Substitute ("#undef SIZE_OF_SIZE_T ", buf);
     if (g_SysType == sys_Alpha || g_SysType == sys_Mac)
 	Substitute ("#undef SIZE_OF_BOOL ", "#define SIZE_OF_BOOL SIZE_OF_LONG");
@@ -844,7 +842,7 @@ static void SubstituteHostOptions (void)
 #endif
 #if defined(__GNUC__) || defined(__GLIBC_HAVE_LONG_LONG)
     Substitute ("#undef HAVE_LONG_LONG", "#define HAVE_LONG_LONG 1");
-    sprintf (buf, "#define SIZE_OF_LONG_LONG %d", sizeof(long long));
+    snprintf (buf, VectorSize(buf), "#define SIZE_OF_LONG_LONG %d", sizeof(long long));
     Substitute ("#undef SIZE_OF_LONG_LONG", buf);
 #endif
 #if __GNUC__ > 3 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 4)
@@ -935,7 +933,7 @@ static void SubstituteFunctions (void)
     uint i;
     foreachN (i, g_Functions, 3)
 	Substitute (g_Functions [i * 3 + 1], g_Functions [i * 3 + 2]);
-    if (g_SysType == sys_Mac)
+    if ((g_SysType == sys_Mac) | (g_SysType == sys_Bsd))
 	Substitute ("#define HAVE_STRSIGNAL 1", "#undef HAVE_STRSIGNAL");
     if (g_SysType == sys_Bsd)
 	Substitute ("#define HAVE_VA_COPY 1", "#undef HAVE_VA_COPY");

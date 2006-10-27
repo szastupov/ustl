@@ -346,19 +346,19 @@ int string::vformat (const char* fmt, va_list args)
 {
 #if HAVE_VA_COPY
     va_list args2;
-    __va_copy (args2, args);    // Because vsnprintf will iterate over args, changing them.
 #else
     #define args2 args
+    #undef __va_copy
+    #define __va_copy(x,y)
 #endif
-    reserve (size());		// To instantiate the buffer, if linked.
-    int rv = vsnprintf (data(), memblock::capacity(), fmt, args);
-    if (rv >= 0) {
-	if (size_t(rv) > capacity()) {
-	    reserve (rv);
-	    rv = vsnprintf (data(), memblock::capacity(), fmt, args2);
-	}
-	resize (rv);
-    }
+    size_t rv = size();
+    do {
+	reserve (rv);
+	__va_copy (args2, args);
+	rv = vsnprintf (data(), memblock::capacity(), fmt, args2);
+	rv = min (rv, memblock::capacity());
+    } while (rv > capacity());
+    resize (min (rv, capacity()));
     return (rv);
 }
 

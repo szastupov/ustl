@@ -70,6 +70,7 @@ void transpose (matrix<N,N,T>& m)
 
 #if CPU_HAS_SSE
 
+#if linux // Non-linux gcc versions (BSD, Solaris) can't handle "x" constraint and provide no alternative.
 template <>
 inline void load_identity (matrix<4,4,float>& m)
 {
@@ -87,6 +88,7 @@ inline void load_identity (matrix<4,4,float>& m)
 	: "xmm1"
     );
 }
+#endif
 
 inline void _sse_load_matrix (const float* m)
 {

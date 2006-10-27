@@ -30,8 +30,8 @@ LIBDIR		= @libdir@
 
 ################ Compiler options ####################################
 
-CWARNOPTS	= -Werror -Wall -W -Wpointer-arith -Wno-cast-align \
-		-Wcast-qual -Wwrite-strings -Wshadow -Wredundant-decls @SYSWARNS@
+CWARNOPTS	= -Wall -W -Wpointer-arith -Wno-cast-align -Wcast-qual \
+		-Wwrite-strings -Wshadow -Wredundant-decls @SYSWARNS@
 CXXWARNOPTS	= ${CWARNOPTS} -Wconversion -Wsign-promo -Wsynth -Woverloaded-virtual
 PROCESSOR_OPTS	=@PROCESSOR_OPTS@
 INLINE_OPTS	=@INLINE_OPTS@
@@ -41,14 +41,14 @@ CUSTOMLIBDIR	=@CUSTOMLIBDIR@
 #BUILD_SHARED	= 1
 #BUILD_STATIC	= 1
 #DEBUG		= 1
-#STANDALONE	= -nodefaultlibs
+#NOLIBSTDCPP	= -nodefaultlibs
 
 CFLAGS		= @CFLAGS@ \
-		${CUSTOMINCDIR} ${PROCESSOR_OPTS} ${CWARNOPTS} ${STANDALONE}
+		${CUSTOMINCDIR} ${PROCESSOR_OPTS} ${CWARNOPTS} ${NOLIBSTDCPP}
 CXXFLAGS	= @CXXFLAGS@ \
 		${CUSTOMINCDIR} ${PROCESSOR_OPTS} ${INLINE_OPTS} \
-		${CXXWARNOPTS} ${STANDALONE}
-LDFLAGS		= @LDFLAGS@ ${CUSTOMLIBDIR} ${STANDALONE}
+		${CXXWARNOPTS} ${NOLIBSTDCPP}
+LDFLAGS		= @LDFLAGS@ ${CUSTOMLIBDIR} ${NOLIBSTDCPP}
 ifdef DEBUG
     CFLAGS	+= -O0 -g
     CXXFLAGS	+= -O0 -g
@@ -60,9 +60,10 @@ endif
 
 ################ Linker options ######################################
 
-ifdef STANDALONE
-    LANG_LIBS	= @libgcc@ @libc@
-    LIBS	+= @libsupc++@ @libgcc_eh@ ${LANG_LIBS}
+ifdef NOLIBSTDCPP
+    STAL_LIBS	= @libsupc++@ @libSystemStubs@
+    LANG_LIBS	= @libgcc_eh@ @libgcc@ @libc@
+    LIBS	= ${STAL_LIBS} ${LANG_LIBS}
 endif
 ifdef BUILD_SHARED
     CFLAGS	+= -fPIC
@@ -72,7 +73,7 @@ SHBLDFL		= @SHBLDFL@
 LIBA		= lib${LIBNAME}.a
 LIBSO		= lib${LIBNAME}.so
 ifdef MAJOR
-    LIBSOLNK	= ${LIBSO}.${MAJOR}.${MINOR}
+    LIBSOLNK	= ${LIBSO}.${MAJOR}
     LIBSOBLD	= ${LIBSO}.${MAJOR}.${MINOR}.${BUILD}
 endif
 

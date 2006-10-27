@@ -46,11 +46,11 @@ static void TestEqualRange (rcintvec_t v)
 {
     pair<intiter_t,intiter_t> rv;
     rv = equal_range (v, 10);
-    cout.format ("Range of  10 is { %2zd, %2zd }\n", rv.first - v.begin(), rv.second - v.begin());
+    cout.format ("Range of  10 is { %2zd, %2zd }\n", abs_distance (v.begin(), rv.first), abs_distance (v.begin(), rv.second));
     rv = equal_range (v, 0);
-    cout.format ("Range of   0 is { %2zd, %2zd }\n", rv.first - v.begin(), rv.second - v.begin());
+    cout.format ("Range of   0 is { %2zd, %2zd }\n", abs_distance (v.begin(), rv.first), abs_distance (v.begin(), rv.second));
     rv = equal_range (v, 100);
-    cout.format ("Range of 100 is { %2zd, %2zd }\n", rv.first - v.begin(), rv.second - v.begin());
+    cout.format ("Range of 100 is { %2zd, %2zd }\n", abs_distance (v.begin(), rv.first), abs_distance (v.begin(), rv.second));
 }
 
 template <typename T>
@@ -63,7 +63,7 @@ void TestBigFill (const size_t size, const T magic)
     if (iMismatch == vbig.end())
 	cout << "works\n";
     else
-	cout.format ("does not work: mismatch at %zu, =0x%lX\n", distance(vbig.begin(), iMismatch), (unsigned long)(*iMismatch));
+	cout.format ("does not work: mismatch at %zd, =0x%lX\n", abs_distance (vbig.begin(), iMismatch), (unsigned long)(*iMismatch));
 }
 
 template <typename T>
@@ -79,7 +79,7 @@ void TestBigCopy (const size_t size, const T magic)
     if (iMismatch.first == vbig1.end())
 	cout << "works\n";
     else
-	cout.format ("does not work: mismatch at %zu, 0x%lX != 0x%lX\n", distance(vbig1.begin(), iMismatch.first), (unsigned long)(*iMismatch.first), (unsigned long)(*iMismatch.second));
+	cout.format ("does not work: mismatch at %zd, 0x%lX != 0x%lX\n", abs_distance(vbig1.begin(), iMismatch.first), (unsigned long)(*iMismatch.first), (unsigned long)(*iMismatch.second));
 }
 
 static void TestAlgorithms (void)
@@ -134,7 +134,7 @@ static void TestAlgorithms (void)
     cout << "}\n";
 
     cout << "find(10)\n";
-    cout.format ("10 found at offset %zu\n", find (v, 10) - v.begin());
+    cout.format ("10 found at offset %zd\n", abs_distance (v.begin(), find (v, 10)));
 
     cout << "count(13)\n";
     cout.format ("%zu values of 13, %zu values of 18\n", count(v,13), count(v,18));
@@ -244,12 +244,12 @@ static void TestAlgorithms (void)
 
     cout << "lower_bound(10)\n";
     PrintVector (v);
-    cout.format ("10 begins at position %zu\n", lower_bound (v, 10) - v.begin());
+    cout.format ("10 begins at position %zd\n", abs_distance (v.begin(), lower_bound (v, 10)));
     v.assign (first, last);
 
     cout << "upper_bound(10)\n";
     PrintVector (v);
-    cout.format ("10 ends at position %zu\n", upper_bound (v, 10) - v.begin());
+    cout.format ("10 ends at position %zd\n", abs_distance (v.begin(), upper_bound (v, 10)));
     v.assign (first, last);
 
     cout << "equal_range(10)\n";
@@ -283,7 +283,7 @@ static void TestAlgorithms (void)
 
     cout << "find_first_of\n";
     static const int c_FFO[] = { 10000, -34, 14, 27 };
-    cout.format ("found 14 at position %zu\n", find_first_of (v.begin(), v.end(), VectorRange(c_FFO)) - v.begin());
+    cout.format ("found 14 at position %zd\n", abs_distance (v.begin(), find_first_of (v.begin(), v.end(), VectorRange(c_FFO))));
     v.assign (first, last);
 
     static const int LC1[] = { 3, 1, 4, 1, 5, 9, 3 };
@@ -355,15 +355,15 @@ static void TestAlgorithms (void)
 
     static const int c_Search1[] = { 5, 6, 7, 8, 9 }, c_Search2[] = { 10, 10, 11, 14 };
     cout << "search\n";
-    cout.format ("{5,6,7,8,9} at %zu\n", search (v.begin(), v.end(), VectorRange(c_Search1)) - v.begin());
-    cout.format ("{10,10,11,14} at %zu\n", search (v.begin(), v.end(), VectorRange(c_Search2)) - v.begin());
+    cout.format ("{5,6,7,8,9} at %zd\n", abs_distance (v.begin(), search (v.begin(), v.end(), VectorRange(c_Search1))));
+    cout.format ("{10,10,11,14} at %zd\n", abs_distance (v.begin(), search (v.begin(), v.end(), VectorRange(c_Search2))));
     cout << "find_end\n";
-    cout.format ("{5,6,7,8,9} at %zu\n", find_end (v.begin(), v.end(), VectorRange(c_Search1)) - v.begin());
-    cout.format ("{10,10,11,14} at %zu\n", find_end (v.begin(), v.end(), VectorRange(c_Search2)) - v.begin());
+    cout.format ("{5,6,7,8,9} at %zd\n", abs_distance (v.begin(), find_end (v.begin(), v.end(), VectorRange(c_Search1))));
+    cout.format ("{10,10,11,14} at %zd\n", abs_distance (v.begin(), find_end (v.begin(), v.end(), VectorRange(c_Search2))));
     cout << "search_n\n";
-    cout.format ("{14} at %zu\n", search_n (v.begin(), v.end(), 1, 14) - v.begin());
-    cout.format ("{13,13} at %zu\n", search_n (v.begin(), v.end(), 2, 13) - v.begin());
-    cout.format ("{10,10,10} at %zu\n", search_n (v.begin(), v.end(), 3, 10) - v.begin());
+    cout.format ("{14} at %zd\n", abs_distance (v.begin(), search_n (v.begin(), v.end(), 1, 14)));
+    cout.format ("{13,13} at %zd\n", abs_distance (v.begin(), search_n (v.begin(), v.end(), 2, 13)));
+    cout.format ("{10,10,10} at %zd\n", abs_distance (v.begin(), search_n (v.begin(), v.end(), 3, 10)));
     v.assign (first, last);
 
     cout << "includes\n";

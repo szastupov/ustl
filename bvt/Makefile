@@ -5,7 +5,13 @@ SRCS	= ${BVTCCS} bench.cc stdtest.cc
 
 BVTS	= $(BVTCCS:.cc=)
 OBJS	= $(SRCS:.cc=.o)
-LIBS	= ${LANG_LIBS} -l${LIBNAME} -lm
+LIBS	= -l${LIBNAME}
+ifdef NOLIBSTDCPP
+ifndef BUILD_SHARED
+LIBS	+= ${STAL_LIBS}
+endif
+LIBS	+= ${LANG_LIBS} -lm
+endif
 TOCLEAN	+= ${BVTS} bench
 
 .PHONY:	all run clean depend
@@ -13,7 +19,7 @@ TOCLEAN	+= ${BVTS} bench
 all:	stdtest.o ${BVTS} bench
 
 run:	${BVTS}
-	@for i in ${BVTS}; do echo "Running $$i"; ./$$i < $$i.cc | diff -T $$i.std -; done
+	@for i in ${BVTS}; do echo "Running $$i"; ./$$i < $$i.cc | diff $$i.std -; done
 
 bvt%:	bvt%.o stdtest.o
 	@echo "Linking $@ ..."

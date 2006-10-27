@@ -89,6 +89,8 @@ public:
     inline void		relink (memlink& l)		{ relink (l.data(), l.writable_size()); }
     inline void		seekp (off_t p, seekdir d = beg);
     inline off_t	tellp (void) const		{ return (pos()); }
+protected:
+    inline void		SetPos (uoff_t newPos)		{ m_Pos = newPos; }
 private:
     uoff_t		m_Pos;	///< Current write position.
 };
@@ -151,7 +153,7 @@ inline void ostream::seek (uoff_t newPos)
 #else
     assert (newPos <= size());
 #endif
-    m_Pos = newPos;
+    SetPos (newPos);
 }
 
 /// Sets the current write position to \p newPos
@@ -212,7 +214,7 @@ inline void ostream::iwrite (const T& v)
     assert (remaining() >= sizeof(T));
 #endif
     *reinterpret_cast<T*>(ipos()) = v;
-    m_Pos += sizeof(T);
+    SetPos (pos() + sizeof(T));
 }
 
 #define OSTREAM_OPERATOR(type)	\

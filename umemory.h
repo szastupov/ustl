@@ -9,11 +9,7 @@
 #ifndef UMEMORY_H_4AB5B0DB5BF09140541409CC47BCD17A
 #define UMEMORY_H_4AB5B0DB5BF09140541409CC47BCD17A
 
-#ifdef WITHOUT_LIBSTDCPP
-    #include "unew.h"
-#else
-    #include <new>
-#endif
+#include "unew.h"
 #ifdef HAVE_ALLOCA_H
     #include <alloca.h>
 #else

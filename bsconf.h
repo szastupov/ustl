@@ -101,6 +101,7 @@ static cpchar_t g_Libs [] = {
     "gcc",		"",				"-lgcc",
     "gcc_eh",		"",				"",
 #endif
+    "SystemStubs",	"",				"-lSystemStubs", /* For MacOS 10.4+ */
     "c",		"",				"-lc"
 };
 
@@ -129,13 +130,11 @@ static cpchar_t g_Components [] = {
     "debug",		"#DEBUG\t\t= 1",			"DEBUG\t\t= 1 ",
     "bounds",		"#undef WANT_STREAM_BOUNDS_CHECKING",	"#define WANT_STREAM_BOUNDS_CHECKING 1 ",
     "fastcopy",		"#undef WANT_UNROLLED_COPY",		"#define WANT_UNROLLED_COPY 1 ",
-#if __GNUC__ >= 3 && (__i386__ || __x86_64__)
+#if __GNUC__ >= 3 && (__i386__ || __x86_64__) && !sun
     "mmx",		"#undef WANT_MMX",			"#define WANT_MMX 1 ",
 #endif
     "libstdc++",	"#define WITHOUT_LIBSTDCPP 1",		"#undef WITHOUT_LIBSTDCPP",
-    "libstdc++",	"STANDALONE\t= -nodefaultlibs ",	"#STANDALONE\t= -nodefaultlibs",
-    "diet",		"@CC@ ",				"diet @CC@",
-    "diet",		"@CXX@ ",				"diet @CXX@"
+    "libstdc++",	"NOLIBSTDCPP\t= -nodefaultlibs ",	"#NOLIBSTDCPP\t= -nodefaultlibs"
 };
 
 /* Parallel to g_Components */
@@ -145,18 +144,16 @@ static SComponentInfo g_ComponentInfos [VectorSize(g_Components) / 3] = {
     { 0, "Compiles the library with debugging information" },
     { 1, "Disable runtime bounds checking on stream reads/writes" },
     { 1, "Disable specializations for copy/fill" },
-#if __i386__ && __GNUC__ >= 3
+#if __GNUC__ >= 3 && (__i386__ || __x86_64__) && !sun
     { 1, "Disable use of MMX/SSE/3dNow! instructions" },
 #endif
-#if (__GNUC__ >= 3)
+#if __GNUC__ >= 3
     { 0, "Link with libstdc++" },
-    { 0, "" },
+    { 0, "" }
 #else
     { 1, "" },
-    { 1, "" },
+    { 1, "" }
 #endif
-    { 0, "" },	/* Can't compile with dietlibc for now; broken includes and gcc libs would need recompiling */
-    { 0, "" },
 };
 
 /* Substitutes names like @PACKAGE_NAME@ with the second field */

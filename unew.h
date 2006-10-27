@@ -13,12 +13,12 @@
 
 #include "uexception.h"
 
-#ifdef WITHOUT_LIBSTDCPP
-
 /// Just like malloc, but throws on failure.
 void* throwing_malloc (size_t n) throw (ustl::bad_alloc);
 /// Just like free, but doesn't crash when given a NULL.
 void free_nullok (void* p) throw();
+
+#ifdef WITHOUT_LIBSTDCPP
 
 //
 // These are replaceable signatures:
@@ -44,6 +44,8 @@ inline void* operator new[] (size_t, void* p) throw() { return (p); }
 inline void  operator delete  (void*, void*) throw() { }
 inline void  operator delete[](void*, void*) throw() { }
 
+#else
+#include <new>
 #endif	// WITHOUT_LIBSTDCPP
 
 #endif

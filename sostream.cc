@@ -43,7 +43,7 @@ void ostringstream::str (const string& s)
 {
     m_Buffer = s;
     ostream::link (m_Buffer);
-    seek (m_Buffer.size());
+    SetPos (m_Buffer.size());
 }
 
 /// Writes a single character into the stream.
@@ -116,14 +116,20 @@ int ostringstream::vformat (const char* fmt, va_list args)
 {
 #if HAVE_VA_COPY
     va_list args2;
-    __va_copy (args2, args);    // Some vsnprintf implementations change args.
 #else
     #define args2 args
+    #undef __va_copy
+    #define __va_copy(x,y)
 #endif
-    size_t rv = vsnprintf (ipos(), remaining(), fmt, args);
-    if (rv >= remaining() && rv < overflow(rv + 1))
-	rv = vsnprintf (ipos(), remaining(), fmt, args2);
-    skip (min (rv, remaining()));
+    size_t rv, space;
+    do {
+	space = remaining();
+	__va_copy (args2, args);
+	rv = vsnprintf (ipos(), space, fmt, args2);
+	if (ssize_t(rv) < 0)
+	    rv = space;
+    } while (rv >= space && rv < overflow(rv + 1));
+    SetPos (pos() + min (rv, space));
     return (rv);
 }
 
@@ -175,7 +181,7 @@ ostringstream::size_type ostringstream::overflow (size_type n)
 	m_Buffer.reserve (oldPos + n, false);
 	m_Buffer.resize (oldPos + n);
 	ostream::link (m_Buffer);
-	seek (oldPos);
+	SetPos (oldPos);
     }
     verify_remaining ("write", "text", n);
     return (remaining());

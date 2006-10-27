@@ -144,7 +144,7 @@ extern "C" void fill_n16_fast (uint16_t* dest, size_t count, uint16_t v);
 extern "C" void fill_n32_fast (uint32_t* dest, size_t count, uint32_t v);
 extern "C" void rotate_fast (void* first, void* middle, void* last);
 
-#if __GNUC__
+#if __GNUC__ >= 4
 /// \brief Computes the number of 1 bits in a number.
 /// \ingroup ConditionAlgorithms
 inline size_t popcount (uint32_t v)	{ return (__builtin_popcount (v)); }

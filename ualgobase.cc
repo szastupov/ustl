@@ -265,7 +265,7 @@ void rotate_fast (void* first, void* middle, void* last)
     }
 }
 
-#if !__GNUC__
+#if __GNUC__ < 4
 size_t popcount (uint32_t v)
 {
     const uint32_t w = v - ((v >> 1) & 0x55555555); // Algorithm from AMD optimization guide

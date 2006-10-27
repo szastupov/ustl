@@ -221,6 +221,8 @@ const char* demangle_type_name (char* buf, size_t bufSize, size_t* pdmSize)
 	memcpy (buf, dmname, bl);
 	buf[bl] = 0;
     }
+#else
+    bl = min (bl, bufSize);
 #endif
     if (pdmSize)
 	*pdmSize = bl;

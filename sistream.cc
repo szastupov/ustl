@@ -65,13 +65,13 @@ void istringstream::iread (int8_t& v)
 
 typedef istringstream::iterator issiter_t;
 template <typename T>
-inline T str_to_num (issiter_t i, issiter_t* iend, uint8_t base)
-    { return (strtol (i, const_cast<char**>(iend), base)); }
-template <> inline double str_to_num (issiter_t i, issiter_t* iend, uint8_t)
-    { return (strtod (i, const_cast<char**>(iend))); }
+inline void str_to_num (issiter_t i, issiter_t* iend, uint8_t base, T& v)
+    { v = strtol (i, const_cast<char**>(iend), base); }
+template <> inline void str_to_num (issiter_t i, issiter_t* iend, uint8_t, double& v)
+    { v = strtod (i, const_cast<char**>(iend)); }
 #ifdef HAVE_LONG_LONG
-template <> inline long long str_to_num (issiter_t i, issiter_t* iend, uint8_t base)
-    { return (strtoll (i, const_cast<char**>(iend), base)); }
+template <> inline void str_to_num (issiter_t i, issiter_t* iend, uint8_t base, long long& v)
+    { v = strtoll (i, const_cast<char**>(iend), base); }
 #endif
 
 template <typename T>
@@ -83,7 +83,7 @@ inline void istringstream::read_number (T& v)
     ungetc();
     iterator ilast;
     do {
-	v = str_to_num<T> (ipos(), &ilast, m_Base);
+	str_to_num<T> (ipos(), &ilast, m_Base, v);
     } while (ilast == end() && underflow());
     skip (distance (ipos(), ilast));
 }
@@ -99,7 +99,7 @@ void istringstream::iread (long long& v)	{ read_number (v); }
 
 void istringstream::iread (wchar_t& v)
 {
-    if ((v = skip_delimiters()) == m_Delimiters[0])
+    if ((v = skip_delimiters()) == wchar_t(m_Delimiters[0]))
 	return;
     size_t cs = Utf8SequenceBytes (v) - 1;
     if (remaining() >= cs || underflow(cs) >= cs) {
@@ -200,7 +200,7 @@ void istringstream::get (char* p, size_type n, char delim)
     string s;
     get (s, delim);
     const size_t ntc (min (n - 1, s.size()));
-    memcpy (p, s, ntc);
+    memcpy (p, s.data(), ntc);
     p[ntc] = 0;
 }
 
@@ -222,7 +222,7 @@ void istringstream::getline (char* p, size_type n, char delim)
     string s;
     getline (s, delim);
     const size_t ntc (min (n - 1, s.size()));
-    memcpy (p, s, ntc);
+    memcpy (p, s.data(), ntc);
     p[ntc] = 0;
 }
 

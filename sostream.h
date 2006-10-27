@@ -42,7 +42,7 @@ public:
     inline void			iwrite (unsigned long long v)	{ iformat (v); }
 #endif
     inline size_type		max_size (void) const		{ return (m_Buffer.max_size()); }
-    inline void			put (char c)			{ iwrite (c); }
+    inline void			put (char c)			{ iwrite (uint8_t(c)); }
     int				vformat (const char* fmt, va_list args);
     int				format (const char* fmt, ...) __attribute__((__format__(__printf__, 2, 3)));
     inline void			set_base (uint16_t b)		{ m_Base = b; }

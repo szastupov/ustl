@@ -256,13 +256,13 @@ SIMD_PASSIGN_SPEC(n,type)		\
 { asm ("movq %1, %%mm0\n\tmovq %%mm0, %0" : STD_MMX_ARGS); reset_mmx(); }
 #define MMX_DBL_PASSIGN_SPEC(n,type)	\
 SIMD_PASSIGN_SPEC(n,type)		\
-{ asm ("movq %0, %%mm0\n\tmovq %1, %%mm1\n\tmovq %%mm0, %0\n\tmovq %%mm1, %1" : DBL_MMX_ARGS); reset_mmx(); }
+{ asm ("movq %2, %%mm0\n\tmovq %3, %%mm1\n\tmovq %%mm0, %0\n\tmovq %%mm1, %1" : DBL_MMX_ARGS); reset_mmx(); }
 #define MMX_IPASSIGN_SPEC(n,type)	\
 SIMD_IPASSIGN_SPEC(n,type)		\
 { asm ("movq %1, %%mm0\n\tmovq %%mm0, %0" : STD_MMX_ARGS); reset_mmx(); }
 #define MMX_DBL_IPASSIGN_SPEC(n,type)	\
 SIMD_IPASSIGN_SPEC(n,type)		\
-{ asm ("movq %0, %%mm0\n\tmovq %1, %%mm1\n\tmovq %%mm0, %0\n\tmovq %%mm1, %1" : DBL_MMX_ARGS); reset_mmx(); }
+{ asm ("movq %2, %%mm0\n\tmovq %3, %%mm1\n\tmovq %%mm0, %0\n\tmovq %%mm1, %1" : DBL_MMX_ARGS); reset_mmx(); }
 
 MMX_PASSIGN_SPEC(8,uint8_t)
 MMX_PKOP2_SPEC(8,uint8_t,plus,paddb)

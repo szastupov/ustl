@@ -9,8 +9,6 @@
 #include "unew.h"
 #include <stdlib.h>
 
-#ifdef WITHOUT_LIBSTDCPP
-
 void* throwing_malloc (size_t n) throw (ustl::bad_alloc)
 {
     void* p = malloc (n);
@@ -24,6 +22,4 @@ void free_nullok (void* p) throw()
     if (p)
 	free (p);
 }
-
-#endif
 

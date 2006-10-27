@@ -36,6 +36,10 @@
 #ifndef SIZE_MAX
     #define SIZE_MAX		UINT_MAX
 #endif
+#if sun || __sun		// Solaris defines UINTPTR_MAX as empty.
+    #undef UINTPTR_MAX
+    #define UINTPTR_MAX		ULONG_MAX
+#endif
 #ifndef WCHAR_MAX
     #ifdef __WCHAR_MAX__
 	#define WCHAR_MAX	__WCHAR_MAX__

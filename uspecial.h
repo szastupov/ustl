@@ -21,11 +21,7 @@
 #include "ufunction.h"
 #include "uctrstrm.h"
 #include "sistream.h"
-#if !defined(WITHOUT_LIBSTDCPP) && defined(__GNUC__) && (__GNUC__ >= 3)
-    #include <locale>
-#else
-    #include <ctype.h>
-#endif
+#include <ctype.h>
 
 namespace ustl {
 
