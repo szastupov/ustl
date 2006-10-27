@@ -16,14 +16,14 @@
 
 <h2><a name="Introduction">Introduction</a></h2>
 <p>
-What is STL? Simply put, it is a collection of common
+The C++ standard template library (STL) is a collection of common
 containers and algorithms in template form. It is the Holy Pill after
 which you never have to worry about memory management again. It is
 all-powerful and all-purpose, it can save the world and make the fishes
-breed. It is the best thing since C++ and if you are not using it,
-you're not really using C++. Unfortunately, it can be large and bloating,
-as its standard incarnation shipped with gcc demonstrates. Not only is
-the library itself rather large, with the current version approaching a
+breed. It is the best thing since C++ and if you are not using it, you're
+not really using C++. Unfortunately, it can be large and bloat-filled,
+as its standard incarnation shipped with gcc demonstrates. Not only
+is the library itself large, with the current version approaching a
 megabyte in size, but with all the code you instantiate by using a vector
 for each of your containers, it is easy to become fearful and opt for
 using static arrays instead. This is especially painful to former DOS
@@ -63,7 +63,10 @@ To start with you'll need a decent compiler. Although uSTL will compile
 under gcc 2.95, some features require at least gcc 3.4 and are simply
 turned off with an older version. C++ support is vastly improved in the
 recent compiler versions, and I strongly recommend gcc 4.0.0 or later
-for best possible code.
+for best possible code. The latest version of uSTL can always be downloaded
+from its SourceForge
+<a href="https://sourceforge.net/project/showfiles.php?group_id=76798">project files page</a>.
+After unpacking:
 </p><pre>
 ./configure
 make install
@@ -87,12 +90,13 @@ int main (void)
     return (EXIT_SUCCESS);
 }
 </pre><p>
-If you have at least gcc 3.4, uSTL is built as a standalone library, without
-linking to libstdc++. Because g++ links to it by default, you'll need to link
-with <kbd>-nodefaultlibs -lc</kbd> if you want to use uSTL to completely
-replace libstdc++. This is where the actual space savings happen. (If you want
-to see just how much you can save, skip to the <a href="#Savings">Save! Save! Save!</a>
-section)
+If you have at least gcc 3.4, uSTL is built as a standalone library,
+without linking to libstdc++ (except on BSD platforms where gcc does
+not support it) Because g++ links to it by default, you'll need to
+link with <kbd>-nodefaultlibs -lc</kbd> if you want to use uSTL to
+completely replace libstdc++. This is where the actual space savings
+happen. (If you want to see just how much you can save, skip to the <a
+href="#Savings">Save! Save! Save!</a> section)
 </p>
 <h2><a name="Containers">Containers and Iterators</a></h2>
 <p>

@@ -1,4 +1,4 @@
-2006-10-27 Release 1.0 SVN 427
+2006-10-27 Release 1.0 SVN 428
 	* API CHANGE: ostringstream now works like std::ostringstream, with
 		an internal buffer instead of writing to an external one
 		through a link. Instead of passing the buffer to the ctor,
