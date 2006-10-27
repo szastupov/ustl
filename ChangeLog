@@ -1,4 +1,4 @@
-Release 1.0
+2006-10-27 Release 1.0 SVN 427
 	* API CHANGE: ostringstream now works like std::ostringstream, with
 		an internal buffer instead of writing to an external one
 		through a link. Instead of passing the buffer to the ctor,
@@ -9,24 +9,31 @@ Release 1.0
 		architectures. On 32 bit machines this makes no difference.
 	* Renamed fdostringstream to ofstream.
 	* Renamed fdistringstream to ifstream.
-	* Removed --without-cout configure option.
-	* Made ios_base and ios classes instead of namespaces and derived
-		all stream objects from ios_base. Pulled up state and all
-		related functions into it. The only problem with this is that
-		end() conflicts with seekdir end, so you'll need to use
-		ios scope when you want the latter.
-	* Implemented fstream and used it in ifstream/ofstream.
+	* Renamed iterator_swap to iter_swap, as in the standard.
 	* file.h/cc was removed; fstream replaces its functionality.
-	* Abandoned any attempt to use the goddamned byteswap.h.
 	* Added most remaining i/ostringstream functions that make sense in
 		this implementation: str, put, get, getline, ignore, peek,
 		readsome, putback, unget, tellg, seekg, sync, flush, seekp,
 		tellp, good. The rest will probably not be implemented at
 		all, since they reference streambufs which don't exist in uSTL.
-	* Do cout.flush() before read in cin, like std does.
-	* max_size() on linked objects should return size(), because it is.
-	* >=, <=, and compare templates no longer require == (>= is !<)
-	* Micro-optimization pass for size. Saved 24% (32k)!
+	* Implemented fstream and used it in ifstream/ofstream.
+	* Added remaining algorithms: find_end, find_first_of, includes,
+		is_sorted, lexicographical_compare, max_element, min_element,
+		partial_sort, partial_sort_copy, partition, next_permutation,
+		prev_permutation, reverse_copy, rotate_copy, search, search_n,
+		set_difference, set_intersection, set_symmetric_difference,
+		set_union, and stable_partition. All the algorithms defined by
+		the C++ standard are now implemented.
+	* Made ios_base and ios classes instead of namespaces and derived
+		all stream objects from ios_base. Pulled up state and all
+		related functions into it. The only problem with this is that
+		end() conflicts with seekdir end, so you'll need to use
+		ios scope when you want the latter.
+	* Align container ends on 4 grain.
+		While this is not very friendly to 64bit architectures, it is
+		the only way to allow writing containers portably. It is
+		better to always align to an arbitrary value than to align to
+		a platform-dependent one.
 	* Removed non-const data pointer from memlink.
 		While enforcing const-correctness is a good thing, the errors
 		this catches are relatively rare and are all programmer errors.
@@ -36,29 +43,22 @@ Release 1.0
 		to not modify memlink-derived objects that are linked to const
 		data; before this change it would have caused a crash, now it
 		might or might not do that, as with regular pointers.
-	* Pulled rotate code into rotate_fast for memory blocks.
-	* x86_64 cleanup and improvements, including MMX support.
-	* Align container ends on 4 grain.
-		While this is not very friendly to 64bit architectures, it is
-		the only way to allow writing containers portably. It is
-		better to always align to an arbitrary value than to align to
-		a platform-dependent one.
-	* stream_bounds_exception demangles type names.
 	* Added CBacktrace class for printing backtrace information.
+	* x86_64 cleanup and improvements, including MMX support.
+	* Micro-optimization pass for size. Saved 24% (32k)!
 	* exception now creates a backtrace when thrown.
+	* Do cout.flush() before read in cin, like std does.
+	* max_size() on linked objects should return size(), because it is.
+	* >=, <=, and compare templates no longer require == (>= is !<)
+	* Pulled rotate code into rotate_fast for memory blocks.
+	* stream_bounds_exception demangles type names.
 	* set,map,multiset,multimap now instantiate less crud.
-	* Added remaining algorithms: find_end, find_first_of, includes,
-		is_sorted, lexicographical_compare, max_element, min_element,
-		partial_sort, partial_sort_copy, partition, next_permutation,
-		prev_permutation, reverse_copy, rotate_copy, search, search_n,
-		set_difference, set_intersection, set_symmetric_difference,
-		set_union, and stable_partition. All the algorithms defined by
-		the C++ standard are now implemented.
-	* Renamed iterator_swap to iter_swap, as in the standard.
+	* Abandoned any attempt to use the goddamned byteswap.h.
 	* Implemented bitset any, none, and count.
 	* New popcount algorithms.
 	* Implemented compose1 and compose2 extensions.
 	* Support building as a .dylib on MacOS.
+	* Removed --without-cout configure option.
 
 2005-11-10 Release 0.8
 	* API CHANGE: changed all string's find members to return offsets
