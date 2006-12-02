@@ -740,7 +740,7 @@ static uint cpuid_supported (void)
 
 static uint cpuid (void)
 {
-    #define i_cpuid(a,r,c,d)	asm("cpuid":"=a"(r),"=c"(c),"=d"(d):"0"(a):"%ebx")
+    #define i_cpuid(a,r,c,d)	asm("cpuid":"=a"(r),"=c"(c),"=d"(d):"0"(a):"ebx")
     const uint amdBits = 0xC9480000, extFeatures = 0x80000000, amdExtensions = 0x80000001;
     uint r, c, d, caps;
     if (!cpuid_supported()) return (0);
@@ -817,17 +817,17 @@ static void SubstituteHostOptions (void)
     Substitute ("#undef off_t", "/* typedef long off_t; */");
     Substitute ("#undef size_t", "/* typedef long size_t; */");
 
-    snprintf (buf, VectorSize(buf), "#define SIZE_OF_CHAR %d", sizeof(char));
+    snprintf (buf, VectorSize(buf), "#define SIZE_OF_CHAR %zd", sizeof(char));
     Substitute ("#undef SIZE_OF_CHAR", buf);
-    snprintf (buf, VectorSize(buf), "#define SIZE_OF_SHORT %d", sizeof(short));
+    snprintf (buf, VectorSize(buf), "#define SIZE_OF_SHORT %zd", sizeof(short));
     Substitute ("#undef SIZE_OF_SHORT", buf);
-    snprintf (buf, VectorSize(buf), "#define SIZE_OF_INT %d", sizeof(int));
+    snprintf (buf, VectorSize(buf), "#define SIZE_OF_INT %zd", sizeof(int));
     Substitute ("#undef SIZE_OF_INT", buf);
-    snprintf (buf, VectorSize(buf), "#define SIZE_OF_LONG %d", sizeof(long));
+    snprintf (buf, VectorSize(buf), "#define SIZE_OF_LONG %zd", sizeof(long));
     Substitute ("#undef SIZE_OF_LONG ", buf);
-    snprintf (buf, VectorSize(buf), "#define SIZE_OF_POINTER %d", sizeof(void*));
+    snprintf (buf, VectorSize(buf), "#define SIZE_OF_POINTER %zd", sizeof(void*));
     Substitute ("#undef SIZE_OF_POINTER ", buf);
-    snprintf (buf, VectorSize(buf), "#define SIZE_OF_SIZE_T %d", sizeof(size_t));
+    snprintf (buf, VectorSize(buf), "#define SIZE_OF_SIZE_T %zd", sizeof(size_t));
     Substitute ("#undef SIZE_OF_SIZE_T ", buf);
     if (g_SysType == sys_Alpha || g_SysType == sys_Mac)
 	Substitute ("#undef SIZE_OF_BOOL ", "#define SIZE_OF_BOOL SIZE_OF_LONG");
@@ -842,7 +842,7 @@ static void SubstituteHostOptions (void)
 #endif
 #if defined(__GNUC__) || defined(__GLIBC_HAVE_LONG_LONG)
     Substitute ("#undef HAVE_LONG_LONG", "#define HAVE_LONG_LONG 1");
-    snprintf (buf, VectorSize(buf), "#define SIZE_OF_LONG_LONG %d", sizeof(long long));
+    snprintf (buf, VectorSize(buf), "#define SIZE_OF_LONG_LONG %zd", sizeof(long long));
     Substitute ("#undef SIZE_OF_LONG_LONG", buf);
 #endif
 #if __GNUC__ > 3 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 4)

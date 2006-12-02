@@ -1,3 +1,6 @@
+Release 1.2
+	* Fixed some bsconf warnings.
+
 2006-10-27 Release 1.0 SVN 428
 	* API CHANGE: ostringstream now works like std::ostringstream, with
 		an internal buffer instead of writing to an external one
