@@ -21,6 +21,9 @@ div.motto {
     font-size: 2mm;
     margin-top: -5mm;
 }
+div.sffooter {
+    text-align: right;
+}
 a:link { color: #238; }
 a:visited { color: #632; }
 hr.banner { display: none; }

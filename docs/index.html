@@ -5,6 +5,9 @@
     <title>uSTL - the small STL library</title>
     <link rel="stylesheet" type="text/css" href="style/default.css" />
     <meta http-equiv="Content-Type" content="text/xhtml+xml; charset=ISO-8859-1" />
+    <meta name="verify-v1" content="EEGh2qVCVexiTEfFrDpo5le9s8mktGRXmjz63MtKufc=" />
+    <meta name="Description" content="API and usage description for uSTL, a size-optimized STL implementation" />
+    <meta name="Keywords" content="C++, STL, template, bloat, optimization" />
 </head>
 <body>
 
@@ -53,7 +56,7 @@ this library.
     <li><a href="#Streams">Streams</a></li>
     <li><a href="#Tuples">Tuples</a></li>
     <li><a href="#Exceptions">Exceptions</a></li>
-    <li><a href="#Savings">Save! Save! Save!</a></li>
+    <li><a href="#Savings">Template Bloat Be Gone</a></li>
     <li><a href="#Contact">Bug reporting</a></li>
     <li><a href="html/index.html">Doxygen reference</a></li>
 </ul>
@@ -96,7 +99,7 @@ not support it) Because g++ links to it by default, you'll need to
 link with <kbd>-nodefaultlibs -lc</kbd> if you want to use uSTL to
 completely replace libstdc++. This is where the actual space savings
 happen. (If you want to see just how much you can save, skip to the <a
-href="#Savings">Save! Save! Save!</a> section)
+href="#Savings">Template Bloat Be Gone</a> section)
 </p>
 <h2><a name="Containers">Containers and Iterators</a></h2>
 <p>
@@ -561,7 +564,7 @@ which can be pretty darn useful. stream_bounds_exception is extremely
 useful in debugging corrupted data, as it tells you exactly where the
 corruption starts and what you were trying to read there.
 </p>
-<h2><a name="Savings">Save! Save! Save!</a></h2>
+<h2><a name="Savings">Template Bloat Be Gone</a></h2>
 <p>
 So how much space are you going to save and where? Allow me to demonstrate with
 the following small program. I'm basically creating a vector and exercise the
@@ -616,8 +619,7 @@ _ZNSt6vectorIiSaIiEE5eraseEN9__gnu_cxx17__normal_iteratorIPiS1_EES5_            
 .gnu.linkonce.t._ZNSt6vectorIiSaIiEE6insertEN9__gnu_cxx17__normal_iteratorIPiS1_EERKi              116      0
 .gnu.linkonce.t._ZNSt6vectorIiSaIiEE14_M_fill_insertEN9__gnu_cxx17__normal_iteratorIPiS1_EEmRKi    560      0
 .gnu.linkonce.t._ZNSt6vectorIiSaIiEE5eraseEN9__gnu_cxx17__normal_iteratorIPiS1_EES5_                80      0
-.gcc_except_table                                                                                   15      0
-.eh_frame                                                                                          376      0
+.gcc_except_table                                                                                   15      0 .eh_frame                                                                                          376      0
 .comment                                                                                            18      0
 .note.GNU-stack                                                                                      0      0
 Total                                                                                             1898
@@ -700,15 +702,15 @@ Report bugs through the SourceForge.net
 standard bugtracker.
 </p>
 <hr />
-<div style="align: right;">
-    <a href="http://sourceforge.net">
-	<img src="http://sourceforge.net/sflogo.php?group_id=76798&amp;type=4"
-	    width="127" height="37" alt="Hosted on SourceForge.net" />
-    </a> 
+<div class="sffooter">
     <a href="http://validator.w3.org/check?uri=referer">
 	<img src="style/valid-xhtml10.png"
 	    height="31" width="88" alt="Valid XHTML 1.0!" />
     </a>
+    <a href="http://sourceforge.net">
+	<img src="http://sourceforge.net/sflogo.php?group_id=76798&amp;type=4"
+	    width="127" height="37" alt="Hosted on SourceForge.net" />
+    </a> 
 </div>
 </body>
 </html>
