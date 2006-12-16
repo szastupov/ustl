@@ -27,8 +27,7 @@
 
 static cpchar_t g_Files [] = {
     "Config.mk",
-    "config.h",
-    "ustl.spec"
+    "config.h"
 };
 
 /* Values substitute @VARNAME@ */
