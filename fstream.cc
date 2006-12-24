@@ -95,8 +95,7 @@ void fstream::detach (void)
     };
     int flags = (m - 1) & O_ACCMODE;	// in and out
     for (uoff_t i = 0; i < VectorSize(s_OMFlags); ++ i)
-	if (m & (1 << i))
-	    flags |= s_OMFlags[i];
+	flags |= s_OMFlags[i] & (!(m & (1 << i)) - 1);
     if (m & nocreate)
 	flags &= ~O_CREAT;
     return (flags);
@@ -137,7 +136,7 @@ off_t fstream::pos (void) const
 off_t fstream::read (void* p, off_t n)
 {
     off_t br (0);
-    while (br < n && good())
+    while ((br < n) & good())
 	br += readsome (advance (p, br), n - br);
     return (br);
 }
@@ -146,12 +145,12 @@ off_t fstream::read (void* p, off_t n)
 off_t fstream::readsome (void* p, off_t n)
 {
     ssize_t brn;
-    do { brn = ::read (m_fd, p, n); } while (brn < 0 && errno == EINTR);
+    do { brn = ::read (m_fd, p, n); } while ((brn < 0) & (errno == EINTR));
     if (brn > 0)
 	return (brn);
-    if (brn < 0 && errno != EAGAIN)
+    else if ((brn < 0) & (errno != EAGAIN))
 	set_and_throw (failbit, "read");
-    if (!brn && ios_base::set_and_throw (eofbit | failbit))
+    else if (!brn && ios_base::set_and_throw (eofbit | failbit))
 	throw stream_bounds_exception ("read", name(), pos(), n, 0);
     return (0);
 }
@@ -245,8 +244,7 @@ void fstream::msync (memlink& l)
 
 void fstream::set_nonblock (bool v)
 {
-    int curf = fcntl (FCNTLID (F_GETFL));
-    if (curf < 0) return;
+    int curf = max (0, fcntl (FCNTLID (F_GETFL)));
     if (v) curf |=  O_NONBLOCK;
     else   curf &= ~O_NONBLOCK;
     fcntl (FCNTLID (F_SETFL), curf);

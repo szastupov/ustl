@@ -46,9 +46,9 @@ public:
     iterator			insert (iterator start, size_type size);
     iterator			erase (iterator start, size_type size);
     inline void			clear (void)			{ resize (0); }
-    inline bool			is_linked (void) const		{ return (!m_Capacity && cdata()); }
-    inline size_type		max_size (void) const		{ return (is_linked() ? memlink::max_size() : SIZE_MAX); }
     inline size_type		capacity (void) const		{ return (m_Capacity); }
+    inline bool			is_linked (void) const		{ return (!capacity()); }
+    inline size_type		max_size (void) const		{ return (is_linked() ? memlink::max_size() : SIZE_MAX); }
     inline void			manage (memlink& l)		{ manage (l.begin(), l.size()); }
     void			deallocate (void) throw();
     void			manage (void* p, size_type n);

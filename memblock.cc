@@ -72,8 +72,7 @@ memblock::memblock (const memblock& b)
 ///
 memblock::~memblock (void)
 {
-    if (!is_linked())
-	deallocate();
+    deallocate();
 }
 
 /// resizes the block to \p newSize bytes, reallocating if necessary.
@@ -136,13 +135,14 @@ void memblock::reserve (size_type newSize, bool bExact)
 {
     if ((newSize += minimumFreeCapacity()) <= m_Capacity)
 	return;
-    void* oldBlock (is_linked() ? NULL : data());
+    pointer oldBlock (is_linked() ? NULL : data());
+    const size_t alignedSize (Align (newSize, c_PageSize));
     if (!bExact)
-	newSize = Align (newSize, c_PageSize);
+	newSize = alignedSize;
     pointer newBlock = (pointer) realloc (oldBlock, newSize);
     if (!newBlock)
 	throw bad_alloc (newSize);
-    if (!oldBlock && cdata())
+    if (!oldBlock & (cdata() != NULL))
 	copy_n (cdata(), min (size() + 1, newSize), newBlock);
     link (newBlock, size());
     m_Capacity = newSize;

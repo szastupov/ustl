@@ -45,7 +45,7 @@ public:
 				vector (size_type n, const T& v);
 				vector (const vector<T>& v);
 				vector (const_iterator i1, const_iterator i2);
-			       ~vector (void) throw();
+    inline		       ~vector (void) throw();
     inline const vector<T>&	operator= (const vector<T>& v);
     inline bool			operator== (const vector<T>& v)	{ return (m_Data == v.m_Data); }
     inline			operator cmemlink (void) const	{ return (cmemlink (m_Data)); }
