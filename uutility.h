@@ -97,12 +97,8 @@ const size_t c_DefaultAlignment = __alignof__(void*);
 template <typename T>
 inline T Align (T n, size_t grain = c_DefaultAlignment)
 {
-    T a, r = n % grain;
-    if (grain == 2) return (n + r);
-    switch (grain) {
-	case 4: case 8: case 16: a = (n & ~(grain - 1)) + grain; break;
-	default:		 a = n + (grain - r);
-    };
+    T r = n % grain;
+    T a = n + (grain - r);
     return (r ? a : n);
 }
 
