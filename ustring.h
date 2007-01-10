@@ -83,6 +83,8 @@ public:
     inline reference		at (uoff_t pos)		{ assert (pos <= size() && begin()); return (begin()[pos]); }
     inline const_iterator	iat (uoff_t pos) const	{ return (begin() + min (pos, size())); }
     inline iterator		iat (uoff_t pos)	{ return (begin() + min (pos, size())); }
+    inline const_reference	back (void) const	{ return (at(size()-1)); }
+    inline reference		back (void)		{ return (at(size()-1)); }
     inline size_type		length (void) const	{ return (distance (utf8_begin(), utf8_end())); }
     inline void			append (const_iterator i1, const_iterator i2)	{ append (i1, distance (i1, i2)); }
     void	   		append (const_pointer s, size_type len);
