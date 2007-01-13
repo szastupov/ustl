@@ -27,10 +27,8 @@ CBacktrace::CBacktrace (void)
   m_nFrames (0),
   m_SymbolsSize (0)
 {
-    try {
-	m_nFrames = backtrace (VectorBlock (m_Addresses));
-	GetSymbols();
-    } catch (...) {}
+    m_nFrames = backtrace (VectorBlock (m_Addresses));
+    GetSymbols();
 }
 
 /// Copy constructor.
@@ -78,21 +76,22 @@ static size_t ExtractAbiName (const char* isym, char* nmbuf)
 /// Tries to get symbol information for the addresses.
 void CBacktrace::GetSymbols (void)
 {
-    auto_ptr<char*> symbols (backtrace_symbols (m_Addresses, m_nFrames));
-    if (!symbols.get())
+    char** symbols = backtrace_symbols (m_Addresses, m_nFrames);
+    if (!symbols)
 	return;
     char nmbuf [256];
     size_t symSize = 1;
     for (uoff_t i = 0; i < m_nFrames; ++ i)
-	symSize += ExtractAbiName (symbols.get()[i], nmbuf) + 1;
-    if (!(m_Symbols = (char*) calloc (symSize, 1)))
-	return;
-    for (uoff_t i = 0; m_SymbolsSize < symSize - 1; ++ i) {
-	size_t sz = ExtractAbiName (symbols.get()[i], nmbuf);
-	memcpy (m_Symbols + m_SymbolsSize, nmbuf, sz);
-	m_SymbolsSize += sz + 1;
-	m_Symbols [m_SymbolsSize - 1] = '\n';
+	symSize += ExtractAbiName (symbols[i], nmbuf) + 1;
+    if ((m_Symbols = (char*) calloc (symSize, 1))) {
+	for (uoff_t i = 0; m_SymbolsSize < symSize - 1; ++ i) {
+	    size_t sz = ExtractAbiName (symbols[i], nmbuf);
+	    memcpy (m_Symbols + m_SymbolsSize, nmbuf, sz);
+	    m_SymbolsSize += sz + 1;
+	    m_Symbols [m_SymbolsSize - 1] = '\n';
+	}
     }
+    free (symbols);
 }
 
 /// Default destructor.
