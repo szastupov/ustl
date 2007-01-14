@@ -42,14 +42,14 @@ void exception::read (istream& is)
     xfmt_t fmt;
     is >> fmt >> stmSize >> m_Backtrace;
     assert (fmt == m_Format && "The saved exception is of a different type.");
-    assert (stmSize - exception::stream_size() <= is.remaining() && "The saved exception data is corrupt.");
+    assert ((stmSize + 8) - exception::stream_size() <= is.remaining() && "The saved exception data is corrupt.");
     m_Format = fmt;
 }
 
 /// Writes the exception into stream \p os as an IFF chunk.
 void exception::write (ostream& os) const
 {
-    os << m_Format << uint32_t(stream_size()) << m_Backtrace;
+    os << m_Format << uint32_t(stream_size() - 8) << m_Backtrace;
 }
 
 /// Writes the exception as text into stream \p os.
