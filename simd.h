@@ -225,6 +225,18 @@ typedef float v4sf_t VECTOR_ATTRIBUTE (V4SF,16);
 typedef double v2df_t VECTOR_ATTRIBUTE (V2DF,16);
 #undef VECTOR_ATTRIBUTE
 
+// These macros make long arglists easier to write.
+#define SIMD_PASTE(a,b)		a##b
+#define SIMD_REPEAT_2(f)	f(0), f(1)
+#define SIMD_REPEAT_4(f)	SIMD_REPEAT_2(f), f(2), f(3)
+#define SIMD_REPEAT_8(f)	SIMD_REPEAT_4(f), f(4), f(5), f(6), f(7)
+#define SIMD_REPEAT(n,f)	SIMD_PASTE(SIMD_REPEAT_,n)(f)
+
+#define SIMDA_RI(n)		"m"(oin[n])
+#define SIMDA_RO(n)		"m"(oout[n])
+#define SIMDA_WI(n)		"=m"(oin[n])
+#define SIMDA_WO(n)		"=m"(oout[n])
+
 //----------------------------------------------------------------------
 // Hardware accelerated specializations
 //----------------------------------------------------------------------
@@ -450,6 +462,10 @@ SSE_IPASSIGN_SPEC(4,uint32_t)
 #undef STD_SSE_ARGS
 #endif // CPU_HAS_SSE
 
+#undef SIMDA_RI
+#undef SIMDA_RO
+#undef SIMDA_WI
+#undef SIMDA_WO
 #undef SIMD_PACKEDOP_SPEC
 
 } // namespace simd

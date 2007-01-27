@@ -180,23 +180,61 @@ inline const tuple<N,T1> operator/ (const tuple<N,T1>& t1, const tuple<N,T2>& t2
     return (result);
 }
 
+//----------------------------------------------------------------------
+// Define SIMD specializations for member functions.
+
+// All the REPEAT mess is to tell the compiler that each element is indeed referenced.
+#define TUPLEV_R1(n)		"m"(m_v[n])
+#define TUPLEV_R2(n)		"m"(v.m_v[n])
+#define TUPLEV_W1(n)		"=m"(m_v[n])
+#define TUPLEV_W2(n)		"=m"(v.m_v[n])
+
 #if CPU_HAS_SSE
-#define SSE_TUPLE_SPECS(n,type)		\
-template <> inline tuple<n,type>::tuple (void)	\
-{ asm ("xorps %%xmm0, %%xmm0\n\tmovups %%xmm0, %0"::"m"(m_v[0]):"xmm0","memory"); }	\
-template<> inline void tuple<n,type>::swap (tuple<n,type>& v)	\
-{ asm ("movups %0,%%xmm0\n\tmovups %1,%%xmm1\n\tmovups %%xmm0,%1\n\tmovups %%xmm1,%0"::"m"(m_v[0]),"m"(v.m_v[0]):"xmm0","xmm1","memory"); }
+#define SSE_TUPLE_SPECS(n,type)							\
+template <> inline tuple<n,type>::tuple (void)					\
+{  asm ("xorps %%xmm0, %%xmm0\n\tmovups %%xmm0, %0"				\
+	: SIMD_REPEAT_4(TUPLEV_W1) : :"xmm0"); }				\
+template<> inline void tuple<n,type>::swap (tuple<n,type>& v)			\
+{  asm ("movups %8,%%xmm0\n\tmovups %12,%%xmm1\n\t"				\
+	"movups %%xmm0,%4\n\tmovups %%xmm1,%0"					\
+	: SIMD_REPEAT_4(TUPLEV_W1), SIMD_REPEAT_4(TUPLEV_W2)			\
+	: SIMD_REPEAT_4(TUPLEV_R1), SIMD_REPEAT_4(TUPLEV_R2)			\
+	: "xmm0","xmm1"); }
 SSE_TUPLE_SPECS(4,float)
 SSE_TUPLE_SPECS(4,int32_t)
 SSE_TUPLE_SPECS(4,uint32_t)
 #undef SSE_TUPLE_SPECS
 #endif
-#if CPU_HAS_MMX
+#if SIZE_OF_LONG == 8 && __GNUC__
+#define LONG_TUPLE_SPECS(n,type)		\
+template <> inline tuple<n,type>::tuple (void)	\
+{ *(long*)(m_v) = 0; asm("":SIMD_REPEAT(n,TUPLEV_W1)); }	\
+template<> inline void tuple<n,type>::swap (tuple<n,type>& v)	\
+{ asm(""::SIMD_REPEAT(n,TUPLEV_R1),SIMD_REPEAT(n,TUPLEV_R2));	\
+  iter_swap ((long*)m_v, (long*)v.m_v);				\
+  asm("":SIMD_REPEAT(n,TUPLEV_W1),SIMD_REPEAT(n,TUPLEV_W2));	\
+}
+LONG_TUPLE_SPECS(2,float)
+LONG_TUPLE_SPECS(4,int16_t)
+LONG_TUPLE_SPECS(4,uint16_t)
+LONG_TUPLE_SPECS(2,int32_t)
+LONG_TUPLE_SPECS(2,uint32_t)
+LONG_TUPLE_SPECS(8,int8_t)
+LONG_TUPLE_SPECS(8,uint8_t)
+#undef LONG_TUPLE_SPECS
+#elif CPU_HAS_MMX
 #define MMX_TUPLE_SPECS(n,type)		\
 template <> inline tuple<n,type>::tuple (void)	\
-{ asm ("pxor %%mm0, %%mm0\n\tmovq %%mm0, %0"::"m"(m_v[0]):"mm0","memory"); simd::reset_mmx(); }	\
-template<> inline void tuple<n,type>::swap (tuple<n,type>& v)	\
-{ asm ("movq %0,%%mm0\n\tmovq %1,%%mm1\n\tmovq %%mm0,%1\n\tmovq %%mm1,%0"::"m"(m_v[0]),"m"(v.m_v[0]):"mm0","mm1","memory"); simd::reset_mmx(); }
+{  asm ("pxor %%mm0, %%mm0\n\tmovq %%mm0, %0"	\
+	: SIMD_REPEAT(n,TUPLEV_W1) ::"mm0", "st"); simd::reset_mmx(); }	\
+template<> inline void tuple<n,type>::swap (tuple<n,type>& v)		\
+{  asm (""::SIMD_REPEAT(n,TUPLEV_R1),SIMD_REPEAT(n,TUPLEV_R2));		\
+   asm ("movq %0,%%mm0\n\tmovq %1,%%mm1\n\t"				\
+	"movq %%mm0,%1\n\tmovq %%mm1,%0"				\
+	::"m"(m_v[0]),"m"(v.m_v[0]):"mm0","mm1","st","st(1)");		\
+   asm ("":SIMD_REPEAT(n,TUPLEV_W1),SIMD_REPEAT(n,TUPLEV_W2));		\
+   simd::reset_mmx();							\
+}
 MMX_TUPLE_SPECS(2,float)
 MMX_TUPLE_SPECS(4,int16_t)
 MMX_TUPLE_SPECS(4,uint16_t)
@@ -206,6 +244,11 @@ MMX_TUPLE_SPECS(8,int8_t)
 MMX_TUPLE_SPECS(8,uint8_t)
 #undef MMX_TUPLE_SPECS
 #endif
+
+#undef TUPLEV_R1
+#undef TUPLEV_R2
+#undef TUPLEV_W1
+#undef TUPLEV_W2
 
 #define SIMD_TUPLE_PACKOP(N,T)	\
 template <> inline const tuple<N,T>& operator+= (tuple<N,T>& t1, const tuple<N,T>& t2)	\

@@ -4,6 +4,7 @@ Release 1.1
 	* Added back() to string.
 	* Fixed a memory leak in CBacktrace GetSymbols.
 	* Changed written exception data to look like an IFF chunk.
+	* Removed "memory" from some simd spec clobber lists.
 
 2006-10-27 Release 1.0 SVN 428
 	* API CHANGE: ostringstream now works like std::ostringstream, with

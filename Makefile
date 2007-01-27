@@ -108,7 +108,7 @@ check:	install
 TMPDIR	= /tmp
 DISTDIR	= ${HOME}/stored
 DISTNAM	= ${LIBNAME}-${MAJOR}.${MINOR}
-DISTTAR	= ${DISTNAM}-${BUILD}.tar.bz2
+DISTTAR	= ${DISTNAM}.${BUILD}.tar.bz2
 DDOCTAR	= ${LIBNAME}-docs-${MAJOR}.${MINOR}-${BUILD}.tar.bz2
 
 dist:
@@ -116,7 +116,7 @@ dist:
 	cp -r . ${TMPDIR}/${DISTNAM}
 	+${MAKE} -C ${TMPDIR}/${DISTNAM} dox distclean
 	(cd ${TMPDIR}; tar jcf ${DISTDIR}/${DDOCTAR} ${DISTNAM}/docs/html)
-	(cd ${TMPDIR}/${DISTNAM}; rm -rf .svn bvt/.svn docs/.svn docs/style/.svn docs/html)
+	(cd ${TMPDIR}/${DISTNAM}; rm -rf `find . -name .svn` docs/html)
 	(cd ${TMPDIR}; tar jcf ${DISTDIR}/${DISTTAR} ${DISTNAM}; rm -rf ${DISTNAM})
 
 distclean:	clean

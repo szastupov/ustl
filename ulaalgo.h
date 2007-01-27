@@ -85,7 +85,7 @@ inline void load_identity (matrix<4,4,float>& m)
 	"movups %4, %3"				// 0 0 0 1
 	: "=m"(m[0][0]), "=m"(m[1][0]), "=m"(m[2][0]), "=m"(m[3][0])
 	: "x"(1.0f)
-	: "xmm1"
+	: "xmm1", "memory"
     );
 }
 #endif
@@ -98,7 +98,7 @@ inline void _sse_load_matrix (const float* m)
 	"movups %2, %%xmm6	\n\t"	// xmm6 = m[1 2 3 4]
 	"movups %3, %%xmm7"		// xmm7 = m[1 2 3 4]
 	: : "m"(m[0]), "m"(m[4]), "m"(m[8]), "m"(m[12])
-	: "xmm4", "xmm5", "xmm6", "xmm7"
+	: "xmm4", "xmm5", "xmm6", "xmm7", "memory"
     );
 }
 
@@ -120,7 +120,7 @@ inline void _sse_transform_to_vector (float* result)
 	"addps  %%xmm3, %%xmm2		\n\t" // xmm2 = xmm2 + xmm3
 	"addps  %%xmm2, %%xmm0		\n\t" // xmm0 = result
 	"movups %%xmm0, %0"
-	: "=m"(result[0]) :
+	: "=m"(result[0]), "=m"(result[1]), "=m"(result[2]), "=m"(result[3]) :
 	: "xmm0", "xmm1", "xmm2", "xmm3", "xmm4", "xmm5", "xmm6", "xmm7"
     );
 }
@@ -130,7 +130,7 @@ static tuple<4,float> operator* (const tuple<4,float>& t, const matrix<4,4,float
 {
     tuple<4,float> result;
     _sse_load_matrix (m.begin());
-    asm ("movups %0, %%xmm0" : : "m"(t[0]) : "xmm0");
+    asm ("movups %0, %%xmm0" : : "m"(t[0]), "m"(t[1]), "m"(t[2]), "m"(t[3]) : "xmm0");
     _sse_transform_to_vector (result.begin());
     return (result);
 }
@@ -141,7 +141,7 @@ static matrix<4,4,float> operator* (const matrix<4,4,float>& m1, const matrix<4,
     matrix<4,4,float> result;
     _sse_load_matrix (m2.begin());
     for (uoff_t r = 0; r < 4; ++ r) { 
-	asm ("movups %0, %%xmm0" : : "m"(m1[r][0]) : "xmm0");
+	asm ("movups %0, %%xmm0" : : "m"(m1[r][0]), "m"(m1[r][1]), "m"(m1[r][2]), "m"(m1[r][3]) : "xmm0");
 	_sse_transform_to_vector (result[r]);
     }
     return (result);
@@ -196,7 +196,7 @@ static tuple<4,float> operator* (const tuple<4,float>& t, const matrix<4,4,float
 	  "m"(m[1][0]), "m"(m[1][2]),
 	  "m"(m[2][0]), "m"(m[2][2]),
 	  "m"(m[3][0]), "m"(m[3][2])
-	: "mm0","mm1","mm2","mm3","mm4","mm5","mm6","mm7"
+	: ALL_MMX_REGS_CHANGELIST, "memory"
     );
     simd::reset_mmx();
     return (result);
