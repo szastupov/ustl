@@ -62,13 +62,19 @@ this library.
 </ul>
 <h2><a name="Installation">Installation</a></h2>
 <p>
-To start with you'll need a decent compiler. Although uSTL will compile
-under gcc 2.95, some features require at least gcc 3.4 and are simply
-turned off with an older version. C++ support is vastly improved in the
-recent compiler versions, and I strongly recommend gcc 4.0.0 or later
-for best possible code. The latest version of uSTL can always be downloaded
-from its SourceForge
-<a href="https://sourceforge.net/project/showfiles.php?group_id=76798">project files page</a>.
+To start with you'll need a decent compiler. Although uSTL will
+compile under gcc 2.95, some features require at least gcc 3.4
+and are simply turned off with an older version. C++ support is
+vastly improved in the recent compiler versions, and I strongly
+recommend gcc 4.0.0 or later for best possible code. The latest
+version of uSTL can always be downloaded from its SourceForge <a
+href="https://sourceforge.net/project/showfiles.php?group_id=76798">project
+files page</a>. The mainline source should build on any
+unix-based system, including Linux, BSD, MacOS, SunOS,
+and Solaris. A separate port for Symbian OS is maintained by <a
+href="http://www.penrillian.com/index.php?option=com_content&task=view&id=66&Itemid=64">Penrillian</a>.
+Windows-based systems are not, and will not be supported by the
+mainline. However, if you make a port, I'll be happy to mention it here.
 After unpacking:
 </p><pre>
 ./configure
@@ -94,12 +100,12 @@ int main (void)
 }
 </pre><p>
 If you have at least gcc 3.4, uSTL is built as a standalone library,
-without linking to libstdc++ (except on BSD platforms where gcc does
-not support it) Because g++ links to it by default, you'll need to
-link with <kbd>-nodefaultlibs -lc</kbd> if you want to use uSTL to
-completely replace libstdc++. This is where the actual space savings
-happen. (If you want to see just how much you can save, skip to the <a
-href="#Savings">Template Bloat Be Gone</a> section)
+without linking to libstdc++ (except on BSD platforms where gcc does not
+support it) Because g++ links to it by default, you'll need to link your
+applications with gcc, or to pass <kbd>-nodefaultlibs -lc</kbd> to g++
+if you want to use uSTL to completely replace libstdc++.  This is where
+the actual space savings happen. (If you want to see just how much you can
+save, skip to the <a href="#Savings">Template Bloat Be Gone</a> section)
 </p>
 <h2><a name="Containers">Containers and Iterators</a></h2>
 <p>
