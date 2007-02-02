@@ -79,7 +79,8 @@ _NUMERIC_LIMITS (unsigned long long,	0,	ULLONG_MAX,	false,	true,	true);
 #define NUMERIC_LIMITS(type, minVal, maxVal, bSigned, bInteger, bIntegral)	\
 namespace ustl { _NUMERIC_LIMITS (type, minVal, maxVal, bSigned, bInteger, bIntegral); }
 
-/// Returns the recommended stream alignment for type \p T. Override with ALIGNOF.
+/// \brief Returns the recommended stream alignment for type \p T. Override with ALIGNOF.
+/// Because this is occasionally called with a null value, do not access the argument!
 template <typename T>
 inline size_t alignof (const T&)
 {

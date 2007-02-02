@@ -37,7 +37,7 @@ public:
     template <typename T>
     class talign : public align {
     public:
-	inline explicit		talign (void) : align (alignof (T())) {}
+	inline explicit		talign (void) : align (alignof (NullValue<T>())) {}
     };
 
     /// \class skip uiosfunc.h ustl.h

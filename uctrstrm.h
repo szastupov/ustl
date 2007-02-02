@@ -82,16 +82,20 @@ inline ostream& nr_container_write (ostream& os, const Container& v)
 
 /// Computes the stream size of a fixed size standard container.
 template <typename Container>
-size_t nr_container_stream_size (const Container& v)
+inline size_t nr_container_stream_size (const Container& v)
 {
     typedef typename Container::const_iterator vciter_t;
     typedef typename iterator_traits<vciter_t>::value_type value_type;
-    size_t s = 0;
-    if (numeric_limits<value_type>::is_integral)
-	s += v.size() * stream_size_of(value_type());
-    else
-	foreach (vciter_t, i, v)
-	    s += stream_size_of(*i);
+    if (!v.size())
+	return (0);
+    size_t s = 0, dvs;
+    vciter_t i = v.begin();
+    do {
+	dvs = stream_size_of(*i);
+	s += dvs;
+    } while (++i != v.end() && !__builtin_constant_p(dvs));
+    if (__builtin_constant_p(dvs))
+	s *= v.size();
     return (s);
 }
 
@@ -110,7 +114,7 @@ istream& container_read (istream& is, Container& v)
     is >> n;
     const size_t expectedSize = n * stream_size_of(value_type());
     is.verify_remaining ("read", typeid(v).name(), expectedSize);
-    if (alignof(value_type()) > alignof(n))
+    if (alignof(NullValue<value_type>()) > alignof(n))
 	is >> ios::talign<value_type>();
     v.resize (n);
     nr_container_read (is, v);
@@ -126,7 +130,7 @@ ostream& container_write (ostream& os, const Container& v)
     typedef typename Container::written_size_type written_size_type;
     const written_size_type sz (v.size());
     os << sz;
-    if (alignof(value_type()) > alignof(sz))
+    if (alignof(NullValue<value_type>()) > alignof(sz))
 	os << ios::talign<value_type>();
     nr_container_write (os, v);
     os << ios::talign<written_size_type>();
@@ -141,8 +145,8 @@ size_t container_stream_size (const Container& v)
     typedef typename Container::written_size_type written_size_type;
     const written_size_type sz (v.size());
     size_t sizeSize = stream_size_of (sz);
-    if (alignof(value_type()) > alignof(sz))
-	sizeSize = Align (sizeSize, alignof(value_type()));
+    if (alignof(NullValue<value_type>()) > alignof(sz))
+	sizeSize = Align (sizeSize, alignof(NullValue<value_type>()));
     return (Align (sizeSize + nr_container_stream_size (v), alignof(sz)));
 }
 

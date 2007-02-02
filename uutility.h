@@ -102,6 +102,18 @@ inline T Align (T n, size_t grain = c_DefaultAlignment)
     return (r ? a : n);
 }
 
+/// Returns a NULL pointer cast to T.
+template <typename T>
+inline T* NullPointer (void)
+    { return ((T*) NULL); }
+
+/// \brief Returns a non-dereferentiable value reference.
+/// This is useful for passing to alignof or the like which need a value but
+/// don't need to actually use it.
+template <typename T>
+inline T& NullValue (void)
+    { return (*NullPointer<T>()); }
+
 /// Offsets an iterator
 template <typename T>
 inline T advance (T i, ssize_t offset)

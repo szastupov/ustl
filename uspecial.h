@@ -51,9 +51,9 @@ template <typename T1, typename T2>
 istream& operator>> (istream& is, pair<T1,T2>& p)
 {
     is >> p.first;
-    is.align (alignof(T2()));
+    is.align (alignof(p.second));
     is >> p.second;
-    is.align (alignof(T1()));
+    is.align (alignof(p.first));
     return (is);
 }
 
@@ -62,9 +62,9 @@ template <typename T1, typename T2>
 ostream& operator<< (ostream& os, const pair<T1,T2>& p)
 {
     os << p.first;
-    os.align (alignof(T2()));
+    os.align (alignof(p.second));
     os << p.second;
-    os.align (alignof(T1()));
+    os.align (alignof(p.first));
     return (os);
 }
 
@@ -80,8 +80,8 @@ ostringstream& operator<< (ostringstream& os, const pair<T1,T2>& p)
 template <typename T1, typename T2>
 inline size_t stream_size_of (const pair<T1,T2>& v)
 {
-    return (Align (stream_size_of(v.first), alignof(T2())) +
-	    Align (stream_size_of(v.second), alignof(T1())));
+    return (Align (stream_size_of(v.first), alignof(v.second)) +
+	    Align (stream_size_of(v.second), alignof(v.first)));
 }
 
 /// \brief Takes a pair and returns pair.first
@@ -183,7 +183,7 @@ struct numeric_limits<tuple<N,T> > {
 };
 
 template <size_t N, typename T>
-inline size_t alignof (const tuple<N,T>&) { return (alignof (T())); }
+inline size_t alignof (const tuple<N,T>&) { return (alignof (NullValue<T>())); }
 
 template <typename T, typename IntT>
 inline ostringstream& chartype_text_write (ostringstream& os, const T& v)

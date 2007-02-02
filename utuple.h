@@ -38,7 +38,7 @@ public:
     inline			tuple (const tuple<N,T2>& t);
     inline			tuple (const tuple<N,T>& t);
     inline			tuple (const_pointer v);
-    inline			tuple (void)			{ for (uoff_t i = 0; i < N; ++ i) m_v[i] = T(); }
+    inline			tuple (void);
     explicit inline		tuple (const_reference v0, const_reference v1 = T(), const_reference v2 = T(), const_reference v3 = T());
     inline iterator		begin (void)			{ return (m_v); }
     inline const_iterator	begin (void) const		{ return (m_v); }
@@ -94,6 +94,20 @@ inline tuple<N,T>::tuple (const tuple<N,T>& t)
 template <size_t N, typename T>
 inline tuple<N,T>::tuple (const_pointer v)
 { simd::ipassign (v, *this); }
+
+template <size_t N, typename T>
+inline tuple<N,T>::tuple (void)
+{
+    const T v = T();
+    if (N > 4 || !numeric_limits<T>::is_integral)
+	fill_n (m_v, N, v);
+    else {
+	m_v[0] = v;
+	if (N > 1) m_v[1] = v;
+	if (N > 2) m_v[2] = v;
+	if (N > 3) m_v[3] = v;
+    }
+}
 
 template <size_t N, typename T>
 inline tuple<N,T>::tuple (const_reference v0, const_reference v1, const_reference v2, const_reference v3)
