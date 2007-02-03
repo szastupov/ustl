@@ -188,10 +188,7 @@ inline size_t alignof (const tuple<N,T>&) { return (alignof (NullValue<T>())); }
 template <typename T, typename IntT>
 inline ostringstream& chartype_text_write (ostringstream& os, const T& v)
 {
-    if (isprint(v))
-	os << '\'' << v << '\'';
-    else
-	os << (IntT)(v);
+    os.format (_FmtPrtChr[!isprint(v)], v);
     return (os);
 }
 
@@ -211,12 +208,8 @@ ostringstream& operator<< (ostringstream& os, const matrix<NX,NY,T>& v)
     os << '(';
     for (uoff_t row = 0; row < NY; ++ row) {
 	os << '(';
-        for (uoff_t column = 0; column < NX; ++ column) {
-	    os << v[row][column];
-	    if (column < NX - 1)
-		os << ',';
-	}
-	os << ')';
+        for (uoff_t column = 0; column < NX; ++column)
+	    os << v[row][column] << ",)"[column == NX-1];
     }
     os << ')';
     return (os);

@@ -164,10 +164,8 @@ ostringstream& container_text_write (ostringstream& os, const Container& v)
     os << '(';
     while (i < v.end()) {
 	container_element_text_write (os, *i);
-	if (++i >= v.end()) break;
-	os << ',';
+	os << ",)"[++i == v.end()];
     }
-    os << ')';
     return (os);
 }
 

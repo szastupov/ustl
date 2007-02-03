@@ -206,14 +206,18 @@ inline const tuple<N,T1> operator/ (const tuple<N,T1>& t1, const tuple<N,T2>& t2
 #if CPU_HAS_SSE
 #define SSE_TUPLE_SPECS(n,type)							\
 template <> inline tuple<n,type>::tuple (void)					\
-{  asm ("xorps %%xmm0, %%xmm0\n\tmovups %%xmm0, %0"				\
+{   asm("xorps %%xmm0, %%xmm0\n\tmovups %%xmm0, %0"				\
 	: SIMD_REPEAT_4(TUPLEV_W1) : :"xmm0"); }				\
 template<> inline void tuple<n,type>::swap (tuple<n,type>& v)			\
-{  asm ("movups %8,%%xmm0\n\tmovups %12,%%xmm1\n\t"				\
-	"movups %%xmm0,%4\n\tmovups %%xmm1,%0"					\
-	: SIMD_REPEAT_4(TUPLEV_W1), SIMD_REPEAT_4(TUPLEV_W2)			\
-	: SIMD_REPEAT_4(TUPLEV_R1), SIMD_REPEAT_4(TUPLEV_R2)			\
-	: "xmm0","xmm1"); }
+{										\
+    asm(""::SIMD_REPEAT_4(TUPLEV_R1), SIMD_REPEAT_4(TUPLEV_R2));		\
+    asm("movups %2,%%xmm0\n\tmovups %3,%%xmm1\n\t"				\
+	"movups %%xmm0,%1\n\tmovups %%xmm1,%0"					\
+	: "=m"(m_v[0]), "=m"(v.m_v[0])						\
+	: "m"(m_v[0]), "m"(v.m_v[0])						\
+	: "xmm0","xmm1");							\
+    asm("":SIMD_REPEAT_4(TUPLEV_W1), SIMD_REPEAT_4(TUPLEV_W2));			\
+}
 SSE_TUPLE_SPECS(4,float)
 SSE_TUPLE_SPECS(4,int32_t)
 SSE_TUPLE_SPECS(4,uint32_t)
@@ -224,9 +228,11 @@ SSE_TUPLE_SPECS(4,uint32_t)
 template <> inline tuple<n,type>::tuple (void)	\
 { *(long*)(m_v) = 0; asm("":SIMD_REPEAT(n,TUPLEV_W1)); }	\
 template<> inline void tuple<n,type>::swap (tuple<n,type>& v)	\
-{ asm(""::SIMD_REPEAT(n,TUPLEV_R1),SIMD_REPEAT(n,TUPLEV_R2));	\
+{ asm(""::SIMD_REPEAT(n,TUPLEV_R1));				\
+  asm(""::SIMD_REPEAT(n,TUPLEV_R2));				\
   iter_swap ((long*)m_v, (long*)v.m_v);				\
-  asm("":SIMD_REPEAT(n,TUPLEV_W1),SIMD_REPEAT(n,TUPLEV_W2));	\
+  asm("":SIMD_REPEAT(n,TUPLEV_W1));				\
+  asm("":SIMD_REPEAT(n,TUPLEV_W2));				\
 }
 LONG_TUPLE_SPECS(2,float)
 LONG_TUPLE_SPECS(4,int16_t)
@@ -242,11 +248,13 @@ template <> inline tuple<n,type>::tuple (void)	\
 {  asm ("pxor %%mm0, %%mm0\n\tmovq %%mm0, %0"	\
 	: SIMD_REPEAT(n,TUPLEV_W1) ::"mm0", "st"); simd::reset_mmx(); }	\
 template<> inline void tuple<n,type>::swap (tuple<n,type>& v)		\
-{  asm (""::SIMD_REPEAT(n,TUPLEV_R1),SIMD_REPEAT(n,TUPLEV_R2));		\
+{  asm (""::SIMD_REPEAT(n,TUPLEV_R1));					\
+   asm (""::SIMD_REPEAT(n,TUPLEV_R2));					\
    asm ("movq %0,%%mm0\n\tmovq %1,%%mm1\n\t"				\
 	"movq %%mm0,%1\n\tmovq %%mm1,%0"				\
 	::"m"(m_v[0]),"m"(v.m_v[0]):"mm0","mm1","st","st(1)");		\
-   asm ("":SIMD_REPEAT(n,TUPLEV_W1),SIMD_REPEAT(n,TUPLEV_W2));		\
+   asm ("":SIMD_REPEAT(n,TUPLEV_W1));					\
+   asm ("":SIMD_REPEAT(n,TUPLEV_W2));					\
    simd::reset_mmx();							\
 }
 MMX_TUPLE_SPECS(2,float)

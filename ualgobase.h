@@ -323,6 +323,8 @@ FILL_N_ALIAS_FUNC(int32_t, uint32_t, int32_t)
 #endif
 #undef FILL_N_ALIAS_FUNC
 
+extern const char _FmtPrtChr[2][8];
+
 } // namespace ustl
 
 #endif

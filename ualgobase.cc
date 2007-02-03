@@ -285,5 +285,8 @@ size_t popcount (uint64_t v)
 #endif	// HAVE_INT64_T
 #endif	// !__GNUC__
 
+// Used in uspecial to print printable characters
+const char _FmtPrtChr[2][8]={"'%c'","%d"};
+
 } // namespace ustl
 
