@@ -79,7 +79,7 @@ static inline void simd_block_copy (const void* src, void* dest)
 	"movntps\t%%xmm1, %1"
 	: "=m"(cdest[0]), "=m"(cdest[16])
 	: "m"(csrc[0]), "m"(csrc[16])
-	: "xmm0", "xmm1");
+	: "xmm0", "xmm1", "memory");
     #else
     asm (
 	"movq	%4, %%mm0	\n\t"
@@ -92,7 +92,7 @@ static inline void simd_block_copy (const void* src, void* dest)
 	"movq	%%mm3, %3"
 	: "=m"(cdest[0]), "=m"(cdest[8]), "=m"(cdest[16]), "=m"(cdest[24])
 	: "m"(csrc[0]), "m"(csrc[8]), "m"(csrc[16]), "m"(csrc[24])
-	: "mm0", "mm1", "mm2", "mm3", "st", "st(1)", "st(2)", "st(3)");
+	: "mm0", "mm1", "mm2", "mm3", "st", "st(1)", "st(2)", "st(3)", "memory");
     #endif
 }
 
@@ -104,14 +104,16 @@ static inline void simd_block_store (uint8_t* dest)
 	"movntq %%mm0, %1\n\t"
 	"movntq %%mm0, %2\n\t"
 	"movntq %%mm0, %3"
-	: "=m"(dest[0]), "=m"(dest[8]), "=m"(dest[16]), "=m"(dest[24]));
+	: "=m"(dest[0]), "=m"(dest[8]), "=m"(dest[16]), "=m"(dest[24])
+	:: "memory");
     #else
     asm volatile (
 	"movq %%mm0, %0	\n\t"
 	"movq %%mm0, %1	\n\t"
 	"movq %%mm0, %2	\n\t"
 	"movq %%mm0, %3"
-	: "=m"(dest[0]), "=m"(dest[8]), "=m"(dest[16]), "=m"(dest[24]));
+	: "=m"(dest[0]), "=m"(dest[8]), "=m"(dest[16]), "=m"(dest[24])
+	:: "memory");
     #endif
 }
 
@@ -212,8 +214,10 @@ inline void fill_n_fast (T* dest, size_t count, T v)
     stosv (dest, nHead, v);
     count -= nHead;
     build_block (v);
-    simd_block_fill_loop ((uint8_t*&) dest, count * sizeof(T) / MMX_BS);
+    uint8_t* bdest = (uint8_t*) dest;
+    simd_block_fill_loop (bdest, count * sizeof(T) / MMX_BS);
     count %= MMX_BS;
+    dest = (T*) bdest;
     stosv (dest, count, v);
 }
 
@@ -284,6 +288,11 @@ size_t popcount (uint64_t v)
 }
 #endif	// HAVE_INT64_T
 #endif	// !__GNUC__
+
+//----------------------------------------------------------------------
+// Miscellaneous instantiated stuff from headers which don't have enough
+// to warrant creation of a separate file.cc
+//----------------------------------------------------------------------
 
 // Used in uspecial to print printable characters
 const char _FmtPrtChr[2][8]={"'%c'","%d"};

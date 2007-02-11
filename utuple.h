@@ -206,12 +206,13 @@ inline const tuple<N,T1> operator/ (const tuple<N,T1>& t1, const tuple<N,T2>& t2
 #if CPU_HAS_SSE
 #define SSE_TUPLE_SPECS(n,type)							\
 template <> inline tuple<n,type>::tuple (void)					\
-{   asm("xorps %%xmm0, %%xmm0\n\tmovups %%xmm0, %0"				\
+{   asm(""::SIMD_REPEAT_4(TUPLEV_R1));						\
+    asm("xorps %%xmm0, %%xmm0\n\tmovups %%xmm0, %0"				\
 	: SIMD_REPEAT_4(TUPLEV_W1) : :"xmm0"); }				\
 template<> inline void tuple<n,type>::swap (tuple<n,type>& v)			\
 {										\
     asm(""::SIMD_REPEAT_4(TUPLEV_R1), SIMD_REPEAT_4(TUPLEV_R2));		\
-    asm("movups %2,%%xmm0\n\tmovups %3,%%xmm1\n\t"				\
+    asm volatile ("movups %2,%%xmm0\n\tmovups %3,%%xmm1\n\t"			\
 	"movups %%xmm0,%1\n\tmovups %%xmm1,%0"					\
 	: "=m"(m_v[0]), "=m"(v.m_v[0])						\
 	: "m"(m_v[0]), "m"(v.m_v[0])						\
@@ -226,11 +227,13 @@ SSE_TUPLE_SPECS(4,uint32_t)
 #if SIZE_OF_LONG == 8 && __GNUC__
 #define LONG_TUPLE_SPECS(n,type)		\
 template <> inline tuple<n,type>::tuple (void)	\
-{ *(long*)(m_v) = 0; asm("":SIMD_REPEAT(n,TUPLEV_W1)); }	\
+{ asm(""::SIMD_REPEAT(n,TUPLEV_R1));		\
+  *noalias_cast<long*>(m_v) = 0;		\
+  asm("":SIMD_REPEAT(n,TUPLEV_W1)); }		\
 template<> inline void tuple<n,type>::swap (tuple<n,type>& v)	\
 { asm(""::SIMD_REPEAT(n,TUPLEV_R1));				\
   asm(""::SIMD_REPEAT(n,TUPLEV_R2));				\
-  iter_swap ((long*)m_v, (long*)v.m_v);				\
+  iter_swap (noalias_cast<long*>(m_v), noalias_cast<long*>(v.m_v));	\
   asm("":SIMD_REPEAT(n,TUPLEV_W1));				\
   asm("":SIMD_REPEAT(n,TUPLEV_W2));				\
 }
@@ -250,7 +253,7 @@ template <> inline tuple<n,type>::tuple (void)	\
 template<> inline void tuple<n,type>::swap (tuple<n,type>& v)		\
 {  asm (""::SIMD_REPEAT(n,TUPLEV_R1));					\
    asm (""::SIMD_REPEAT(n,TUPLEV_R2));					\
-   asm ("movq %0,%%mm0\n\tmovq %1,%%mm1\n\t"				\
+   asm volatile ("movq %0,%%mm0\n\tmovq %1,%%mm1\n\t"			\
 	"movq %%mm0,%1\n\tmovq %%mm1,%0"				\
 	::"m"(m_v[0]),"m"(v.m_v[0]):"mm0","mm1","st","st(1)");		\
    asm ("":SIMD_REPEAT(n,TUPLEV_W1));					\

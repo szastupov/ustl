@@ -87,6 +87,7 @@ inline void load_identity (matrix<4,4,float>& m)
 	: "x"(1.0f)
 	: "xmm1", "memory"
     );
+    asm ("":::"memory");
 }
 #endif
 
@@ -121,27 +122,27 @@ inline void _sse_transform_to_vector (float* result)
 	"addps  %%xmm2, %%xmm0		\n\t" // xmm0 = result
 	"movups %%xmm0, %0"
 	: "=m"(result[0]), "=m"(result[1]), "=m"(result[2]), "=m"(result[3]) :
-	: "xmm0", "xmm1", "xmm2", "xmm3", "xmm4", "xmm5", "xmm6", "xmm7"
+	: "xmm0", "xmm1", "xmm2", "xmm3", "xmm4", "xmm5", "xmm6", "xmm7", "memory"
     );
 }
 
 template <>
-static tuple<4,float> operator* (const tuple<4,float>& t, const matrix<4,4,float>& m)
+inline tuple<4,float> operator* (const tuple<4,float>& t, const matrix<4,4,float>& m)
 {
     tuple<4,float> result;
     _sse_load_matrix (m.begin());
-    asm ("movups %0, %%xmm0" : : "m"(t[0]), "m"(t[1]), "m"(t[2]), "m"(t[3]) : "xmm0");
+    asm ("movups %0, %%xmm0" : : "m"(t[0]), "m"(t[1]), "m"(t[2]), "m"(t[3]) : "xmm0", "memory");
     _sse_transform_to_vector (result.begin());
     return (result);
 }
 
 template <>
-static matrix<4,4,float> operator* (const matrix<4,4,float>& m1, const matrix<4,4,float>& m2)
+inline matrix<4,4,float> operator* (const matrix<4,4,float>& m1, const matrix<4,4,float>& m2)
 {
     matrix<4,4,float> result;
     _sse_load_matrix (m2.begin());
     for (uoff_t r = 0; r < 4; ++ r) { 
-	asm ("movups %0, %%xmm0" : : "m"(m1[r][0]), "m"(m1[r][1]), "m"(m1[r][2]), "m"(m1[r][3]) : "xmm0");
+	asm ("movups %0, %%xmm0" : : "m"(m1[r][0]), "m"(m1[r][1]), "m"(m1[r][2]), "m"(m1[r][3]) : "xmm0", "memory");
 	_sse_transform_to_vector (result[r]);
     }
     return (result);
@@ -198,6 +199,7 @@ static tuple<4,float> operator* (const tuple<4,float>& t, const matrix<4,4,float
 	  "m"(m[3][0]), "m"(m[3][2])
 	: ALL_MMX_REGS_CHANGELIST, "memory"
     );
+    asm ("":::"memory");
     simd::reset_mmx();
     return (result);
 }

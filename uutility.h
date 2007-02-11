@@ -336,6 +336,12 @@ inline DEST noalias (DEST, SRC* s)
     return (((UPun*)(s))->d);
 }
 
+template <typename DEST, typename SRC>
+inline DEST noalias_cast (SRC s)
+{
+    return (noalias (NullValue<DEST>(), &s));
+}
+
 namespace simd {
     /// Call after you are done using SIMD algorithms for 64 bit tuples.
 #if CPU_HAS_MMX
