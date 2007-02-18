@@ -40,8 +40,10 @@ namespace ustl {
     inline ostringstream& operator<< (ostringstream& os, const type& v)	\
     { return (container_text_write (os, v)); }			\
     template_decl						\
-    inline size_t stream_size_of (const type& v)		\
-    { return (container_stream_size (v)); }
+    struct object_stream_size<type > {				\
+	inline size_t operator()(const type& v)	const		\
+	    { return (container_stream_size (v)); }		\
+    };
 
 /// \brief Declares non-resizable container template \p type streamable.
 #define STD_TEMPLATE_NR_CTR_STREAMABLE(type, template_decl)	\
@@ -55,8 +57,10 @@ namespace ustl {
     inline ostringstream& operator<< (ostringstream& os, const type& v)	\
     { return (container_text_write (os, v)); }			\
     template_decl						\
-    inline size_t stream_size_of (const type& v)		\
-    { return (nr_container_stream_size (v)); }
+    struct object_stream_size<type > {				\
+	inline size_t operator()(const type& v)	const		\
+	    { return (nr_container_stream_size (v)); }		\
+    };
 
 //----------------------------------------------------------------------
 // Fixed size container serialization.

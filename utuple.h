@@ -72,6 +72,10 @@ public:
 				    { tuple result; for (uoff_t i = 0; i < N; ++ i) result[i] = m_v[i] / v; return (result); }
     inline void			swap (tuple<N,T>& v)
 				    { for (uoff_t i = 0; i < N; ++ i) ::ustl::swap (m_v[i], v.m_v[i]); }
+    inline void			read (istream& is)			{ nr_container_read (is, *this); }
+    inline void			write (ostream& os) const		{ nr_container_write (os, *this); }
+    inline void			text_write (ostringstream& os) const	{ container_text_write (os, *this); }
+    inline size_t		stream_size (void) const		{ return (nr_container_stream_size (*this)); }
 private:
     T				m_v [N];
 };

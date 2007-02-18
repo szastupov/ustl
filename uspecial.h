@@ -78,11 +78,13 @@ ostringstream& operator<< (ostringstream& os, const pair<T1,T2>& p)
 
 /// Returns the written size of the object.
 template <typename T1, typename T2>
-inline size_t stream_size_of (const pair<T1,T2>& v)
-{
-    return (Align (stream_size_of(v.first), alignof(v.second)) +
-	    Align (stream_size_of(v.second), alignof(v.first)));
-}
+struct object_stream_size<pair<T1,T2> > {
+    inline size_t operator()(const pair<T1,T2>& v) const
+    {
+	return (Align (stream_size_of(v.first), alignof(v.second)) +
+		Align (stream_size_of(v.second), alignof(v.first)));
+    }
+};
 
 /// \brief Takes a pair and returns pair.first
 /// This is an extension, available in uSTL and the SGI STL.
@@ -116,7 +118,15 @@ unconst (const pair<typename Container::const_iterator, typename Container::cons
 
 //----{ vector }--------------------------------------------------------
 
-STD_TEMPLATE_CTR_STREAMABLE (TEMPLATE_TYPE1 (vector,T), TEMPLATE_DECL1 (T))
+template <typename T>
+inline istream& operator>> (istream& is, vector<T>& v)
+    { v.read (is); return (is); }
+template <typename T>
+inline ostream& operator<< (ostream& os, const vector<T>& v)
+    { v.write (os); return (os); }
+template <typename T>
+inline ostringstream& operator<< (ostringstream& os, const vector<T>& v)
+    { v.text_write (os); return (os); }
 
 template <typename T>
 inline size_t alignof (const vector<T>&)
@@ -160,17 +170,22 @@ istringstream& operator>> (istringstream& is, bitset<Size>& v)
 
 /// Returns the number of bytes necessary to write this object to a stream
 template <size_t Size>
-inline size_t stream_size_of (const bitset<Size>& v)
-{
-    return (v.capacity() / CHAR_BIT);
-}
+struct object_stream_size<bitset<Size> > {
+    inline size_t operator()(const bitset<Size>& v) const
+	{ return (v.capacity() / CHAR_BIT); }
+};
 
 //----{ tuple }---------------------------------------------------------
 
-STD_TEMPLATE_NR_CTR_STREAMABLE (
-    TEMPLATE_TYPE2 (tuple,N,T),
-    TEMPLATE_FULL_DECL2 (size_t,N,typename,T)
-)
+template <size_t N, typename T>
+inline istream& operator>> (istream& is, tuple<N,T>& v)
+    { v.read (is); return (is); }
+template <size_t N, typename T>
+inline ostream& operator<< (ostream& os, const tuple<N,T>& v)
+    { v.write (os); return (os); }
+template <size_t N, typename T>
+inline ostringstream& operator<< (ostringstream& os, const tuple<N,T>& v)
+    { v.text_write (os); return (os); }
 
 template <size_t N, typename T>
 struct numeric_limits<tuple<N,T> > {

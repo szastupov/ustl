@@ -14,46 +14,30 @@
 
 namespace ustl {
 
+/// For partial specialization of stream_size_of for objects
+template <typename T>
+struct object_stream_size {
+    inline size_t operator()(const T& v) const { return (v.stream_size()); }
+};
+
+// Helper template to route the call to sizeof for integral objects
+template <typename T, bool Integral>
+struct _stream_size_integral_router {
+    inline size_t operator()(const T& v) const { return (object_stream_size<T>()(v)); }
+};
+template <typename T>
+struct _stream_size_integral_router<T,true> {
+    inline size_t operator()(const T& v) const { return (sizeof(v)); }
+};
+
 /// Returns the size of the given object. Overloads for standard types are available.
 template <typename T>
-inline size_t stream_size_of (T*)	{ return (sizeof(T*));		}
-#ifndef DOXYGEN_SHOULD_IGNORE_THIS
-inline size_t stream_size_of (int8_t)	{ return (sizeof(int8_t));	}
-inline size_t stream_size_of (uint8_t)	{ return (sizeof(uint8_t));	}
-inline size_t stream_size_of (int16_t)	{ return (sizeof(int16_t));	}
-inline size_t stream_size_of (uint16_t)	{ return (sizeof(uint16_t));	}
-inline size_t stream_size_of (int32_t)	{ return (sizeof(int32_t));	}
-inline size_t stream_size_of (uint32_t)	{ return (sizeof(uint32_t));	}
-inline size_t stream_size_of (float)	{ return (sizeof(float));	}
-inline size_t stream_size_of (double)	{ return (sizeof(double));	}
-inline size_t stream_size_of (bool)	{ return (sizeof(uint8_t));	}
-inline size_t stream_size_of (wchar_t)	{ return (sizeof(wchar_t));	}
-#if HAVE_THREE_CHAR_TYPES
-inline size_t stream_size_of (char)	{ return (sizeof(char));	}
-#endif
-#if HAVE_INT64_T
-inline size_t stream_size_of (int64_t)	{ return (sizeof(int64_t));	}
-inline size_t stream_size_of (uint64_t)	{ return (sizeof(uint64_t));	}
-#endif
-#if SIZE_OF_LONG == SIZE_OF_INT
-inline size_t stream_size_of (long v)			{ return (sizeof (v));	}
-inline size_t stream_size_of (unsigned long v)		{ return (sizeof (v));	}
-#endif
-#if HAVE_LONG_LONG && (!HAVE_INT64_T || SIZE_OF_LONG_LONG > 8)
-inline size_t stream_size_of (long long v)		{ return (sizeof (v));	}
-inline size_t stream_size_of (unsigned long long v)	{ return (sizeof (v));	}
-#endif
-#endif // DOXYGEN_SHOULD_IGNORE_THIS
+inline size_t stream_size_of (const T& v)
+    { return (_stream_size_integral_router<T,numeric_limits<T>::is_integral>()(v)); }
+template <>
+inline size_t stream_size_of (const bool&) { return (sizeof(uint8_t)); }
 
 } // namespace ustl
-
-/// Declares that T is not written to istream/ostream.
-#define NOT_STREAMABLE(T)	\
-    namespace ustl {		\
-	inline istream& operator>> (istream& is, T&)		{ return (is); }	\
-	inline ostream& operator<< (ostream& os, const T&)	{ return (os); }	\
-	inline size_t stream_size_of (const T&)			{ return (0); }		\
-    }
 
 //
 // Extra overloads in this macro are needed because it is the one used for
@@ -70,8 +54,7 @@ inline size_t stream_size_of (unsigned long long v)	{ return (sizeof (v));	}
 	inline istream& operator>> (istream& is, T& v)		{ is.iread(v);  return (is); }	\
 	inline ostream& operator<< (ostream& os, const T& v)	{ os.iwrite(v); return (os); }	\
 	inline ostream& operator<< (ostream& os, T& v)		{ os.iwrite(v); return (os); }	\
-	inline size_t stream_size_of (const T& v)		{ return (sizeof(v)); }		\
-	inline size_t stream_size_of (T& v)			{ return (sizeof(v)); }		\
+	template <> inline size_t stream_size_of (const T& v)	{ return (sizeof(v)); }		\
     }
 
 #ifdef NDEBUG
@@ -91,15 +74,15 @@ inline size_t stream_size_of (unsigned long long v)	{ return (sizeof (v));	}
     namespace ustl {		\
 	inline istream& operator>> (istream& is, T& v)		{ assert (is.aligned (alignof (v))); v.read (is);  return (is); }	\
 	inline ostream& operator<< (ostream& os, const T& v)	{ STD_STREAMABLE_SZCHK_BEGIN; v.write (os); STD_STREAMABLE_SZCHK_END; return (os); }	\
-	inline size_t stream_size_of (const T& v)		{ return (v.stream_size()); }	\
+	template <> inline size_t stream_size_of (const T& v)	{ return (v.stream_size()); }	\
     }
 
 /// Declares that T is to be cast into TSUB for streaming.
 #define CAST_STREAMABLE(T,TSUB)	\
     namespace ustl {		\
 	inline istream& operator>> (istream& is, T& v)		{ TSUB sv; is >> sv; v = (T)(sv); return (is); }	\
-	inline ostream& operator<< (ostream& os, const T& v)	{ os << TSUB(v); return (os); }			\
-	inline size_t stream_size_of (const T& v)		{ return (sizeof(TSUB(v))); }				\
+	inline ostream& operator<< (ostream& os, const T& v)	{ os << TSUB(v); return (os); }				\
+	template <> inline size_t stream_size_of (const T& v)	{ return (stream_size_of (TSUB(v))); }			\
     }
 
 /// Placed into a class it declares the methods required by STD_STREAMABLE. Syntactic sugar.
@@ -121,10 +104,7 @@ inline size_t stream_size_of (unsigned long long v)	{ return (sizeof (v));	}
     namespace ustl {		\
 	inline ostringstream& operator<< (ostringstream& os, const T& v)	\
 	{				\
-	    if (uoff_t(v) < (nNames))	\
-		os << Names[v];		\
-	    else			\
-		os << uoff_t(v);	\
+	    os << Names[min(uoff_t(v),uoff_t(nNames))];	\
 	    return (os);		\
 	}				\
     }

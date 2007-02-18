@@ -99,6 +99,10 @@ public:
     inline void			link (pointer first, pointer last)		{ m_Data.link (first, last); }
 				OVERLOAD_POINTER_AND_SIZE_T_V2(link, pointer)
 				OVERLOAD_POINTER_AND_SIZE_T_V2(link, const_pointer)
+    inline void			read (istream& is)			{ container_read (is, *this); }
+    inline void			write (ostream& os) const		{ container_write (os, *this); }
+    inline void			text_write (ostringstream& os) const	{ container_text_write (os, *this); }
+    inline size_t		stream_size (void) const		{ return (container_stream_size (*this)); }
 private:
     inline iterator		insert_space (iterator ip, size_type n);
 private:

@@ -1,4 +1,12 @@
 Release 1.1
+	* Fixed various aliasing problems complained about by gcc 4.2.
+	* Added noalias_cast<type>(v) to aid in working around the above
+		aliasing problem. The aliased variables also must be
+		explicitly touched by an empty asm statement or something.
+	* Reimplemented stream_size_of as a template stack because the old
+		implmentation is invalid in gcc 4.2+ due to a change in
+		overloaded set lookup scope. vector and tuple now have the
+		standard read/write/stream_size members.
 	* Fixed some bsconf warnings.
 	* memblock is_linked now correctly returns true when linked to NULL.
 	* Added back() to string.
