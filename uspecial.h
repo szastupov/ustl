@@ -107,13 +107,10 @@ template <typename Pair> struct select2nd : public unary_function<Pair,typename 
 /// This is an extension, available in uSTL.
 template <typename Container>
 inline pair<typename Container::iterator, typename Container::iterator>
-unconst (const pair<typename Container::const_iterator, typename Container::const_iterator>& i, Container& ctr)
+unconst (const pair<typename Container::const_iterator, typename Container::const_iterator>& i, Container&)
 {
-    assert (i.first >= ctr.begin() && i.first <= ctr.end() && "unconst algorithm must be given iterators from the argument container");
-    pair<typename Container::iterator, typename Container::iterator> result;
-    result.first = ctr.begin() + (i.first - ctr.begin());
-    result.second = ctr.begin() + (i.second - ctr.begin());
-    return (result);
+    typedef pair<typename Container::iterator, typename Container::iterator> unconst_pair_t;
+    return (*noalias_cast<unconst_pair_t*>(&i));
 }
 
 //----{ vector }--------------------------------------------------------

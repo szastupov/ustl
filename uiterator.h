@@ -228,11 +228,8 @@ inline void indexv_to_iteratorv (typename IteratorContainer::value_type ibase, c
 /// Converts the given const_iterator into an iterator.
 ///
 template <typename Container>
-inline typename Container::iterator unconst (typename Container::const_iterator i, Container& ctr)
-{
-    const Container& cctr = ctr;
-    return (ctr.begin() + (i - cctr.begin()));
-}
+inline typename Container::iterator unconst (typename Container::const_iterator i, Container&)
+    { return (const_cast<typename Container::iterator>(i)); }
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 
