@@ -104,7 +104,7 @@ inline size_t stream_size_of (const bool&) { return (sizeof(uint8_t)); }
     namespace ustl {		\
 	inline ostringstream& operator<< (ostringstream& os, const T& v)	\
 	{				\
-	    os << Names[min(uoff_t(v),uoff_t(nNames))];	\
+	    os << Names[min(uoff_t(v),uoff_t(nNames-1))];	\
 	    return (os);		\
 	}				\
     }

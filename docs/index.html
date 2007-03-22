@@ -87,10 +87,10 @@ You might want to specify a different installation prefix with
 Developers will want to build with <kbd>--with-debug</kbd> to get a lot
 of assert error checking, which I highly recommend. If you are the type
 to edit configuration manually, it's in Config.mk and config.h. When
-it's built, you can run the included tests with <kbd>cd bvt; make run</kbd>.
+it's built, you can run the included tests with <kbd>make check</kbd>.
 Finally, here's a simple hello world application:
 </p><pre>
-#include &lt;ustl.h&gt;	// Yes, just one header file. The better to precompile it.
+#include &lt;ustl.h&gt;
 using namespace ustl;
 
 int main (void)
@@ -382,7 +382,7 @@ of the cost.
 Linking is not limited to memlink. You can link memblock objects.
 You can link string objects. You can even link containers! Now
 you can use alloca to create a vector on the stack; use the
-<tt>typed_alloca_link (v, int, 99)</tt> macro. All linked objects
+<tt>typed_alloca_link(v,int,99)</tt> macro. All linked objects
 will allocate memory and copy the linked data when you increase their
 size. You can also do it explicitly by calling <tt>copy_link</tt>.
 Why link? It's cheaper than copying and easier than keeping track
@@ -551,7 +551,7 @@ try {
 	cerr &lt;&lt; e.backtrace();
     #endif
 } catch (...) {
-    cerr &lt;&lt; "Unexpected fatal error has occured." &lt;&lt; endl;
+    cerr &lt;&lt; "Unexpected fatal error has occured.\n";
 }
 </pre><p>
 Second, each exception stores a backtrace (callstack) at the time
@@ -625,7 +625,8 @@ _ZNSt6vectorIiSaIiEE5eraseEN9__gnu_cxx17__normal_iteratorIPiS1_EES5_            
 .gnu.linkonce.t._ZNSt6vectorIiSaIiEE6insertEN9__gnu_cxx17__normal_iteratorIPiS1_EERKi              116      0
 .gnu.linkonce.t._ZNSt6vectorIiSaIiEE14_M_fill_insertEN9__gnu_cxx17__normal_iteratorIPiS1_EEmRKi    560      0
 .gnu.linkonce.t._ZNSt6vectorIiSaIiEE5eraseEN9__gnu_cxx17__normal_iteratorIPiS1_EES5_                80      0
-.gcc_except_table                                                                                   15      0 .eh_frame                                                                                          376      0
+.gcc_except_table                                                                                   15      0
+.eh_frame                                                                                          376      0
 .comment                                                                                            18      0
 .note.GNU-stack                                                                                      0      0
 Total                                                                                             1898
