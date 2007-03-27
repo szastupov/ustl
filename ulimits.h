@@ -52,7 +52,7 @@ struct numeric_limits<type> {					\
 //		type		min		max		signed	integer	integral
 //--------------------------------------------------------------------------------------
 _NUMERIC_LIMITS (bool,		false,		true,		false,	true,	true);
-_NUMERIC_LIMITS (char,		SCHAR_MIN,	SCHAR_MAX,	true,	true,	true);
+_NUMERIC_LIMITS (char,		CHAR_MIN,	CHAR_MAX,	true,	true,	true);
 _NUMERIC_LIMITS (int,		INT_MIN,	INT_MAX,	true,	true,	true);
 _NUMERIC_LIMITS (short,		SHRT_MIN,	SHRT_MAX,	true,	true,	true);
 _NUMERIC_LIMITS (long,		LONG_MIN,	LONG_MAX,	true,	true,	true);
