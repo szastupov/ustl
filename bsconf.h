@@ -90,18 +90,12 @@ static cpchar_t	g_Headers [] = {
 /*   NAME               IF NOT FOUND                    IF FOUND */
 static cpchar_t g_Libs [] = {
     "supc++",		"",				"-lsupc++",
-#if __GNUC__ >= 4
-    "gcc",		"-lgcc_s",			"-lgcc_s",
-    "gcc_eh",		"",				"",
-#elif __GNUC__ >= 3
-    "gcc",		"-lgcc_s",			"-lgcc",
+#if __GNUC__ == 3
     "gcc_eh",		"-lgcc_s",			"-lgcc_eh",
 #else
-    "gcc",		"",				"-lgcc",
     "gcc_eh",		"",				"",
 #endif
-    "SystemStubs",	"",				"-lSystemStubs", /* For MacOS 10.4+ */
-    "c",		"",				"-lc"
+    "SystemStubs",	"",				"-lSystemStubs" /* For MacOS 10.4+ */
 };
 
 /*   NAME               IF NOT FOUND                    IF FOUND */
@@ -133,7 +127,7 @@ static cpchar_t g_Components [] = {
     "mmx",		"#undef WANT_MMX",			"#define WANT_MMX 1 ",
 #endif
     "libstdc++",	"#define WITHOUT_LIBSTDCPP 1",		"#undef WITHOUT_LIBSTDCPP",
-    "libstdc++",	"NOLIBSTDCPP\t= -nodefaultlibs ",	"#NOLIBSTDCPP\t= -nodefaultlibs"
+    "libstdc++",	"NOLIBSTDCPP\t=",	"#NOLIBSTDCPP\t="
 };
 
 /* Parallel to g_Components */

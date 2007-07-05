@@ -7,10 +7,7 @@ BVTS	= $(BVTCCS:.cc=)
 OBJS	= $(SRCS:.cc=.o)
 LIBS	= -l${LIBNAME}
 ifdef NOLIBSTDCPP
-ifndef BUILD_SHARED
-LIBS	+= ${STAL_LIBS}
-endif
-LIBS	+= ${LANG_LIBS} -lm
+LIBS	+= ${STAL_LIBS} -lm
 endif
 TOCLEAN	+= ${BVTS} bench
 

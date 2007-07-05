@@ -5,9 +5,15 @@ MAJOR		= @LIB_MAJOR@
 MINOR		= @LIB_MINOR@
 BUILD		= @LIB_BUILD@
 
+################ Build options #######################################
+
+#BUILD_SHARED	= 1
+#BUILD_STATIC	= 1
+#DEBUG		= 1
+#NOLIBSTDCPP	= 1
+
 ################ Progams #############################################
 
-CC		= @CC@ 
 CXX		= @CXX@ 
 LD		= @CXX@ 
 AR		= @AR@
@@ -30,44 +36,29 @@ LIBDIR		= @libdir@
 
 ################ Compiler options ####################################
 
-CWARNOPTS	= -Wall -W -Wpointer-arith -Wno-cast-align -Wcast-qual \
-		-Wwrite-strings -Wshadow -Wredundant-decls @SYSWARNS@
-CXXWARNOPTS	= ${CWARNOPTS} -Wconversion -Wsign-promo -Wsynth -Woverloaded-virtual
-PROCESSOR_OPTS	=@PROCESSOR_OPTS@
+WARNOPTS	= -Wall -Wpointer-arith -Wno-cast-align -Wcast-qual -Wsynth \
+		-W -Wconversion -Wsign-promo -Woverloaded-virtual -Wshadow  \
+		-Wwrite-strings -Wredundant-decls @SYSWARNS@
+PROCESSOR_OPTS	=@PROCESSOR_OPTS@ -fPIC
 INLINE_OPTS	=@INLINE_OPTS@
 CUSTOMINCDIR	=@CUSTOMINCDIR@
 CUSTOMLIBDIR	=@CUSTOMLIBDIR@
 
-#BUILD_SHARED	= 1
-#BUILD_STATIC	= 1
-#DEBUG		= 1
-#NOLIBSTDCPP	= -nodefaultlibs
-
-CFLAGS		= @CFLAGS@ \
-		${CUSTOMINCDIR} ${PROCESSOR_OPTS} ${CWARNOPTS} ${NOLIBSTDCPP}
-CXXFLAGS	= @CXXFLAGS@ \
-		${CUSTOMINCDIR} ${PROCESSOR_OPTS} ${INLINE_OPTS} \
-		${CXXWARNOPTS} ${NOLIBSTDCPP}
-LDFLAGS		= @LDFLAGS@ ${CUSTOMLIBDIR} ${NOLIBSTDCPP}
+CXXFLAGS	= @CXXFLAGS@ ${CUSTOMINCDIR} ${PROCESSOR_OPTS} ${INLINE_OPTS} ${WARNOPTS}
+LDFLAGS		= @LDFLAGS@ ${CUSTOMLIBDIR}
 ifdef DEBUG
-    CFLAGS	+= -O0 -g
     CXXFLAGS	+= -O0 -g
 else
-    CFLAGS	+= -O3 -DNDEBUG=1
     CXXFLAGS	+= -O3 -DNDEBUG=1
-    LDFLAGS	+= 
+    LDFLAGS	+= -s
 endif
 
 ################ Linker options ######################################
 
 ifdef NOLIBSTDCPP
-    STAL_LIBS	= @libsupc++@ @libSystemStubs@
-    LANG_LIBS	= @libgcc_eh@ @libgcc@ @libc@
-    LIBS	= ${STAL_LIBS} ${LANG_LIBS}
-endif
-ifdef BUILD_SHARED
-    CFLAGS	+= -fPIC
-    CXXFLAGS	+= -fPIC
+    LD		= @CC@
+    STAL_LIBS	= @libsupc++@ @libgcc_eh@ @libSystemStubs@ 
+    LIBS	= ${STAL_LIBS}
 endif
 SHBLDFL		= @SHBLDFL@
 LIBA		= lib${LIBNAME}.a
