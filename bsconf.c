@@ -726,7 +726,7 @@ static void SubstitutePrograms (void)
     buf_free (&match);
 }
 
-#if defined(__GNUC__) && (__i386__ || __x86_64)
+#if defined(__GNUC__) && (__i386__ || __x86_64) && !defined(__PIC__)
 static uint cpuid_supported (void)
 {
     unsigned long forig, fnew;
