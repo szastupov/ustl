@@ -71,12 +71,12 @@
     <type name=memlink_ptr_t extends=cmemlink_ptr_t/>
     <type name=memblock_ptr_t extends=memlink_ptr_t/>
     <type name=cmemlink format=struct>
-	<var name=data_size type=size_t />
+	<var name=data_size type=uint32_t />
 	<var name=data format=unstructured size=data_size />
     </type>
     <type name=memlink extends=cmemlink />
     <type name=memblock extends=cmemlink />
-    <type name=string extends=memblock>
+    <type name=string format=struct>
 	<var name=data_size type=utf8 />
 	<var name=data format=array type=utf8 size=data_size />
     </type>
