@@ -274,6 +274,45 @@ MMX_TUPLE_SPECS(8,uint8_t)
 #undef MMX_TUPLE_SPECS
 #endif
 
+#if __i386__ || __x86_64__
+#define UINT32_TUPLE_SPECS(type,otype)		\
+template <> inline tuple<2,type>::tuple (void)	\
+{ asm(""::"m"(m_v[0]),"m"(m_v[1]));		\
+  *noalias_cast<uint32_t*>(m_v) = 0;		\
+  asm("":"=m"(m_v[0]),"=m"(m_v[1])); }		\
+template <> inline const tuple<2,type>& tuple<2,type>::operator= (const tuple<2,type>& v)\
+{ asm ("mov %3, %0"							\
+       :"=m"(*noalias_cast<uint32_t*>(m_v)),"=m"(m_v[0]),"=m"(m_v[1])	\
+       :"r"(*noalias_cast<const uint32_t*>(v.begin())),"m"(v[0]),"m"(v[1]));	\
+  return (*this); }							\
+template <> template <>							\
+inline const tuple<2,type>& tuple<2,type>::operator= (const tuple<2,otype>& v)\
+{ asm ("mov %3, %0"							\
+       :"=m"(*noalias_cast<uint32_t*>(m_v)),"=m"(m_v[0]),"=m"(m_v[1])	\
+       :"r"(*noalias_cast<const uint32_t*>(v.begin())),"m"(v[0]),"m"(v[1]));	\
+  return (*this); }							\
+template <> inline tuple<2,type>::tuple (const tuple<2,type>& v)	\
+{ operator= (v); }							\
+template <> template <>							\
+inline tuple<2,type>::tuple (const tuple<2,otype>& v)			\
+{ operator= (v); }							\
+template<> inline void tuple<2,type>::swap (tuple<2,type>& v)		\
+{ asm(""::"m"(m_v[0]),"m"(m_v[1]),"m"(v.m_v[0]),"m"(v.m_v[1]));		\
+  iter_swap (noalias_cast<uint32_t*>(m_v), noalias_cast<uint32_t*>(v.m_v));			\
+  asm("":"=m"(m_v[0]),"=m"(m_v[1]),"=m"(v.m_v[0]),"=m"(v.m_v[1])); }				\
+template <> inline const tuple<2,type>& operator+= (tuple<2,type>& t1, const tuple<2,type>& t2)	\
+    { t1[0] += t2[0]; t1[1] += t2[1]; return (t1); }						\
+template <> inline const tuple<2,type>& operator-= (tuple<2,type>& t1, const tuple<2,type>& t2)	\
+    { t1[0] -= t2[0]; t1[1] -= t2[1]; return (t1); }						\
+template <> inline const tuple<2,type> operator+ (const tuple<2,type>& t1, const tuple<2,type>& t2) \
+    { return (tuple<2,type> (t1[0] + t2[0], t1[1] + t2[1])); }					\
+template <> inline const tuple<2,type> operator- (const tuple<2,type>& t1, const tuple<2,type>& t2) \
+    { return (tuple<2,type> (t1[0] - t2[0], t1[1] - t2[1])); }
+UINT32_TUPLE_SPECS(int16_t,uint16_t)
+UINT32_TUPLE_SPECS(uint16_t,int16_t)
+#undef UINT32_TUPLE_SPECS
+#endif
+
 #undef TUPLEV_R1
 #undef TUPLEV_R2
 #undef TUPLEV_W1
