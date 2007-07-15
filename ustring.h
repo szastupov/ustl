@@ -140,7 +140,6 @@ public:
     void			erase (uoff_t start, size_type size = 1);
     inline iterator		erase (iterator first, const_iterator last)	{ return (erase (first, size_type(distance(first,last)))); }
 				OVERLOAD_POINTER_AND_SIZE_T_V2(erase, iterator)
-    inline iterator		eraser (iterator first, const_iterator last)	{ return (erase (first, last)); }
     inline void			eraser (uoff_t first, uoff_t last)		{ erase (iat(first), iat(last)); }
     inline void			push_back (const_reference c)	{ append (1, c); }
     inline void			push_back (wvalue_type c)	{ append (1, c); }
