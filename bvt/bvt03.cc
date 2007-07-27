@@ -62,10 +62,9 @@ void TestStreams (void)
     os << si;
     os << usi;
     if (b.size() == os.pos())
-	cout << "Correct";
+	cout << "Correct number of bytes written\n";
     else
-	cout << "Incorrect (" << os.pos() << " of " << b.size() << ')';
-    cout << " number of bytes written" << endl;
+	cout.format ("Incorrect (%zu of %zu) number of bytes written\n", os.pos(), b.size());
     cout.flush();
 
     c = 0;
@@ -88,20 +87,22 @@ void TestStreams (void)
     is >> si;
     is >> usi;
     if (is.pos() != b.size())
-	cout << "Positional error" << endl;
+	cout << "Positional error\n";
 
-    cout << "Values:" << endl;
-    cout.format ("char:    0x%02X\n", static_cast<int>(c));
-    cout.format ("u_char:  0x%02X\n", static_cast<int>(uc));
-    cout.format ("bool:    %d\n", static_cast<int>(bv));
-    cout.format ("int:     0x%08X\n", i);
-    cout.format ("u_int:   0x%08X\n", ui);
-    cout.format ("long:    0x%08lX\n", li);
-    cout.format ("u_long:  0x%08lX\n", uli);
-    cout.format ("float:   %.8f\n", f);
-    cout.format ("double:  %.16f\n", d);
-    cout.format ("short:   0x%04X\n", static_cast<int>(si));
-    cout.format ("u_short: 0x%04X\n", static_cast<int>(usi));
+    cout.format ("Values:\n"
+	"char:    0x%02X\n"
+	"u_char:  0x%02X\n"
+	"bool:    %d\n"
+	"int:     0x%08X\n"
+	"u_int:   0x%08X\n"
+	"long:    0x%08lX\n"
+	"u_long:  0x%08lX\n"
+	"float:   %.8f\n"
+	"double:  %.16f\n"
+	"short:   0x%04X\n"
+	"u_short: 0x%04X\n",
+	static_cast<int>(c), static_cast<int>(uc), static_cast<int>(bv),
+	i, ui, li, uli, f, d, static_cast<int>(si), static_cast<int>(usi));
 
     if (isatty (STDIN_FILENO)) {
 	cout << "\nBinary dump:\n";

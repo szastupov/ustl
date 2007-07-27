@@ -8,7 +8,7 @@
 
 void WriteCML (const cmemlink& l)
 {
-    cout << "cmemlink{" << l.size() << "}: ";
+    cout.format ("cmemlink{%zu}: ", l.size());
     const void* pv = l.cdata();
     const char* pc = reinterpret_cast<const char*>(pv);
     size_t nc = l.size();
@@ -25,24 +25,20 @@ void TestCML (void)
 
     cmemlink a, b;
     a.link (phello, VectorSize(hello));
-    if (a.begin() != phello) {
-	cout << "a.begin() failed: " << ios::hex << uintptr_t(a.begin());
-        cout << " != " << uintptr_t(phello) << ios::dec << endl;
-    }
+    if (a.begin() != phello)
+	cout.format ("a.begin() failed: %p != %p\n", a.begin(), phello);
     a.link (VectorRange (hello));
-    if (*(const char*)(a.begin() + 5) != hello[5]) {
-	cout << "begin()[5] failed: " << *(const char*)(a.begin() + 5);
-	cout << " != " << hello[5] << endl;
-    }
+    if (*(const char*)(a.begin() + 5) != hello[5])
+	cout.format ("begin()[5] failed: %c != %c\n", *(const char*)(a.begin() + 5), VectorElement(hello,5));
     if (a.size() != VectorSize(hello))
-	cout << "link to VectorRange doesn't work" << endl;
+	cout << "link to VectorRange doesn't work\n";
     if (0 != memcmp (a.begin(), hello, VectorSize(hello)))
-	cout << "memcmp failed on cmemlink" << endl;
+	cout << "memcmp failed on cmemlink\n";
     b.static_link (hello);
     WriteCML (a);
     WriteCML (b);
     if (!(a == b))
-	cout << "operator== failed on cmemlink" << endl;
+	cout << "operator== failed on cmemlink\n";
     b.resize (VectorSize(hello) - 5);
     a = b;
     WriteCML (a);

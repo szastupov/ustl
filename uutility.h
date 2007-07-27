@@ -33,6 +33,9 @@ namespace ustl {
 /// Expands into a begin,end expression for the given static vector; useful for algorithm arguments.
 #define VectorRange(v)	VectorBlock(v)+(v)
 
+/// Indexes into a static array with bounds limit
+#define VectorElement(v,i)	v[min(uoff_t(i),uoff_t(VectorSize(v)-1))]
+
 /// Returns the number of bits in the given type
 #define BitsInType(t)	(sizeof(t) * CHAR_BIT)
 

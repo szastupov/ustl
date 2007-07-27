@@ -30,22 +30,19 @@ void TestObjectVector (void)
 	offset += l;
 	v.push_back (memblock(links[l]));
     }
-    cout << "---" << endl;
-    cout << "vector<memblock> of " << v.size() << " elements:" << endl;
-    cout << "---" << endl;
+    cout.format ("---\nvector<memblock> of %zu elements:\n---\n", v.size());
     for_each (v.begin(), v.end(), &PrintBlock);
-    cout << "---" << endl;
-    cout << "size() = " << v.size();
-    cout << ", max_size() = ";
+    cout.format ("---\nsize() = %zu, max_size() = ", v.size());
     if (v.max_size() == SIZE_MAX / sizeof(memblock))
 	cout << "SIZE_MAX/elsize";
     else
 	cout << v.max_size();
-    cout << ", empty() = " << (v.empty() ? "true" : "false") << endl;
+    static const char tf[2][6]={"false","true"};
+    cout.format (", empty() = %s\n", tf[v.empty()]);
     v.push_back (memblock(5));
-    cout << "back()->size() = " << v.back().size() << endl;
+    cout.format ("back()->size() = %zu\n", v.back().size());
     v.back().resize (40);
-    cout << "back()->size() = " << v.back().size() << endl;
+    cout.format ("back()->size() = %zu\n", v.back().size());
     v.pop_back();
     PrintBlock (v.back());
     vector<memblock> cache;
@@ -55,11 +52,9 @@ void TestObjectVector (void)
     v.erase (v.begin() + 5, 2);
     v.erase (v.end() - 1, 1);
     v.erase (v.end(), size_t(0));
-    cout << "---" << endl;
-    cout << "vector of " << v.size() << " elements backwards:" << endl;
-    cout << "---" << endl;
+    cout.format ("---\nvector of %zu elements backwards:\n---\n", v.size());
     for_each (v.rbegin(), v.rend(), &PrintBlock);
-    cout << "---" << endl;
+    cout << "---\n";
 }
 
 StdBvtMain (TestObjectVector)
