@@ -76,9 +76,9 @@ typedef struct {
 
 typedef struct {
     uint	m_Bit;
-    cpchar_t	m_Description;
-    cpchar_t	m_Disabled;
-    cpchar_t	m_Enabled;
+    char	m_Description [10];
+    char	m_Disabled [26];
+    char	m_Enabled [28];
 } SCpuCaps;
 
 typedef enum {
@@ -91,7 +91,7 @@ typedef enum {
 } ESysType;
 
 typedef struct {
-    cpchar_t	sysname;
+    char	sysname[8];
     ESysType	type;
 } SHostType;
 
@@ -539,9 +539,9 @@ static void DetermineHost (void)
 static void FillInDefaultConfigVarValues (void)
 {
     typedef struct _SDefaultPathMap {
-	EVV		var;
-	EVV		base;
-	cpchar_t	path;
+	unsigned char	var;
+	unsigned char	base;
+	char		path[10];
     } SDefaultPathMap;
     static const SDefaultPathMap c_Defaults[] = {
 	{ vv_bindir,		vv_exec_prefix,	"/bin" },
