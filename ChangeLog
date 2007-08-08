@@ -17,6 +17,12 @@ Release 1.1
 	* talign will no longer generate a temp object when called with
 		non-trivial classes. Uses NullValue template to avoid.
 	* Linking with gcc instead of using -nodefaultlibs is simpler.
+	* Removed link number overloads. Sadly, I don't know what this will
+		break, if anything. On my machine the only case is link(p,0),
+		which generates an ambiguity error and is easily fixed by
+		explicitly casting the zero to a size_t. The benefit is
+		cleaner code and fewer problems for the Symbian port, so the
+		change stays until/unless somebody reports it as a problem.
 
 2006-10-27 Release 1.0 SVN 428
 	* API CHANGE: ostringstream now works like std::ostringstream, with

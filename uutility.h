@@ -363,35 +363,6 @@ namespace simd {
 #endif
 } // namespace simd
 
-/// \brief Type that is not size_t
-///
-/// Because size_t may be declared as unsigned long or unsigned int on
-/// different machines, this macro is convenient when defining overloads
-/// of size_t to use other types.
-///
-#ifdef SIZE_T_IS_LONG
-    #define NOT_SIZE_T_I_OR_L	unsigned int
-#else
-    #define NOT_SIZE_T_I_OR_L	unsigned long
-#endif
-
-/// \brief Required when you want to overload size_t and a pointer.
-///
-/// The compiler will happily cast a number to a pointer and declare
-/// that the overload is ambiguous unless you define overloads for all
-/// possible integral types that a number may represent. This behaviour,
-/// although braindead, is in the ANSI standard, and thus not a bug. If
-/// you want to change the standard, the best solution is to disallow any
-/// implicit casts to pointer from an integral type. Ironically, such an
-/// implicit cast is already detected by gcc.
-///
-#define OVERLOAD_POINTER_AND_SIZE_T_V2(name, arg1type)						\
-    inline void	name (arg1type a1, short a2)			{ name (a1, size_t(a2)); }	\
-    inline void	name (arg1type a1, unsigned short a2)		{ name (a1, size_t(a2)); }	\
-    inline void	name (arg1type a1, int a2)			{ name (a1, size_t(a2)); }	\
-    inline void	name (arg1type a1, long a2)			{ name (a1, size_t(a2)); }	\
-    inline void	name (arg1type a1, NOT_SIZE_T_I_OR_L a2)	{ name (a1, size_t(a2)); }
-
 } // namespace ustl
 
 #endif

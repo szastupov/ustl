@@ -33,7 +33,7 @@ typedef utf8out_iterator<string::iterator> utf8ostring_iterator;
 string::string (void)
 : memblock ()
 {
-    link (empty_string, 0U);
+    link (VectorBlock(empty_string)-1);
 }
 
 /// Assigns itself the value of string \p s

@@ -58,7 +58,6 @@ public:
     inline		cmemlink (const cmemlink& l)		: m_Data (l.m_Data), m_Size (l.m_Size) {}
     inline virtual     ~cmemlink (void)				{}
     void		link (const void* p, size_type n);
-			OVERLOAD_POINTER_AND_SIZE_T_V2(link, const void*)
     inline void		link (const cmemlink& l)	{ link (l.begin(), l.size()); }
     inline void		link (const void* first, const void* last)	{ link (first, distance (first, last)); }
     inline void		relink (const void* p, size_type n);

@@ -62,8 +62,6 @@ public:
     inline void		link (void* p, size_type n)		{ cmemlink::link (p, n); }
     inline void		link (const cmemlink& l)		{ cmemlink::link (l); }
     inline void		link (memlink& l)			{ cmemlink::link (l); }
-			OVERLOAD_POINTER_AND_SIZE_T_V2(link, void*)
-			OVERLOAD_POINTER_AND_SIZE_T_V2(link, const void*)
     inline void		link (const void* first, const void* last)	{ link (first, distance (first, last)); }
     inline void		link (void* first, void* last)		{ link (first, distance (first, last)); }
     inline void		relink (const void* p, size_type n)	{ cmemlink::relink (p, n); }

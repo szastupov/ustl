@@ -97,8 +97,6 @@ public:
     inline void			link (vector<T>& v)			{ m_Data.link (v); }
     inline void			link (const_pointer first, const_pointer last)	{ m_Data.link (first, last); }
     inline void			link (pointer first, pointer last)		{ m_Data.link (first, last); }
-				OVERLOAD_POINTER_AND_SIZE_T_V2(link, pointer)
-				OVERLOAD_POINTER_AND_SIZE_T_V2(link, const_pointer)
     inline void			read (istream& is)			{ container_read (is, *this); }
     inline void			write (ostream& os) const		{ container_write (os, *this); }
     inline void			text_write (ostringstream& os) const	{ container_text_write (os, *this); }
