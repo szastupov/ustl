@@ -1,1 +1,9 @@
 config.h
+Config.mk
+.depend
+*.o
+*.a
+*.so.*
+bsconf
+bvt/bvt??
+bvt/bench
