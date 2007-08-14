@@ -62,8 +62,8 @@ void TestMB (void)
     a.fill (a.begin() + 5, "TEST", 4, 3); 
     WriteCML (a);
 
-    a.resize (a.size() + strTestLen);
-    a.fill (a.begin() + strTestLen, "-+=", 3, strTestLen / 3);
+    a.resize (26 + 24);
+    a.fill (a.begin() + 26, "-+=", 3, 24 / 3);
     WriteCML (a);
     a.resize (0);
     WriteCML (a);
