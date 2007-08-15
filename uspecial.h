@@ -227,6 +227,65 @@ ostringstream& operator<< (ostringstream& os, const matrix<NX,NY,T>& v)
     return (os);
 }
 
+//----{ long4grain }----------------------------------------------------
+
+#if SIZE_OF_LONG == 8 && HAVE_INT64_T
+/// Helper class for long4grain and ptr4grain wrappers.
+class _long4grain {
+public:
+    inline	_long4grain (uint64_t v)	: m_v (v) {}
+#if __x86_64__
+    inline void	read (istream& is)
+    {
+	assert (is.aligned(4));
+	#ifdef WANT_STREAM_BOUNDS_CHECKING
+	    is.verify_remaining ("read", "long4grain", sizeof(m_v));
+	#else
+	    assert (is.remaining() >= sizeof(m_v));
+	#endif
+	m_v = *reinterpret_cast<const uint64_t*>(is.ipos());
+	is.skip (sizeof(m_v));
+    }
+    inline void	write (ostream& os) const
+    {
+	assert (os.aligned(4));
+	#ifdef WANT_STREAM_BOUNDS_CHECKING
+	    os.verify_remaining ("write", "long4grain", sizeof(m_v));
+	#else
+	    assert (os.remaining() >= sizeof(m_v));
+	#endif
+	*reinterpret_cast<uint64_t*>(os.ipos()) = m_v;
+	os.skip (sizeof(m_v));
+    }
+#elif USTL_BYTE_ORDER == USTL_BIG_ENDIAN
+    inline void	read (istream& is)		{ uint32_t vl, vh; is >> vh >> vl; m_v = (uint64_t(vh) << 32) | uint64_t(vl); }
+    inline void	write (ostream& os) const	{ os << uint32_t(m_v >> 32) << uint32_t(m_v); }
+#else
+    inline void	read (istream& is)		{ uint32_t vl, vh; is >> vl >> vh; m_v = (uint64_t(vh) << 32) | uint64_t(vl); }
+    inline void	write (ostream& os) const	{ os << uint32_t(m_v) << uint32_t(m_v >> 32); }
+#endif
+    inline size_t stream_size (void) const	{ return (stream_size_of(m_v)); }
+private:
+    uint64_t	m_v;
+};
+
+/// Wrap long values to allow writing them on 4-grain even on 64bit platforms.
+inline _long4grain& long4grain (unsigned long& v)		{ asm("":"+m"(v)); return (*noalias_cast<_long4grain*>(&v)); }
+/// Wrap long values to allow writing them on 4-grain even on 64bit platforms.
+inline const _long4grain long4grain (const unsigned long& v)	{ return (_long4grain(v)); }
+/// Wrap pointer values to allow writing them on 4-grain even on 64bit platforms.
+template <typename T>
+inline _long4grain& ptr4grain (T*& p)				{ asm("":"+m"(p)); return (*noalias_cast<_long4grain*>(&p)); }
+/// Wrap pointer values to allow writing them on 4-grain even on 64bit platforms.
+template <typename T>
+inline const _long4grain ptr4grain (const T* const& p)		{ return (_long4grain(uintptr_t(p))); }
+#else	// if not SIZE_OF_LONG == 8 && HAVE_INT64_T
+inline unsigned long& long4grain (unsigned long& v)		{ return (v); }
+inline const unsigned long& long4grain (const unsigned long& v)	{ return (v); }
+template <typename T> inline T*& ptr4grain (T*& p)		{ return (p); }
+template <typename T> inline const T* const& ptr4grain (const T* const& p) { return (p); }
+#endif	// SIZE_OF_LONG == 8
+
 //----------------------------------------------------------------------
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
@@ -266,6 +325,10 @@ TEXT_STREAMABLE(istream)
 TEXT_STREAMABLE(ostream)
 TEXT_STREAMABLE(exception)
 TEXT_STREAMABLE(CBacktrace)
+#if SIZE_OF_LONG == 8 && HAVE_INT64_T
+ALIGNOF (_long4grain, 4)
+STD_STREAMABLE (_long4grain)
+#endif
 
 #endif
 

@@ -23,6 +23,8 @@ Release 1.1
 		explicitly casting the zero to a size_t. The benefit is
 		cleaner code and fewer problems for the Symbian port, so the
 		change stays until/unless somebody reports it as a problem.
+	* Added long4grain and ptr4grain wrappers to explicitly write long
+		values on 4-grain, even on 64bit platforms.
 
 2006-10-27 Release 1.0 SVN 428
 	* API CHANGE: ostringstream now works like std::ostringstream, with
