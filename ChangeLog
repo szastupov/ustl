@@ -7,6 +7,11 @@ Release 1.1
 		implmentation is invalid in gcc 4.2+ due to a change in
 		overloaded set lookup scope. vector and tuple now have the
 		standard read/write/stream_size members.
+	* Reimplemented flow operators as templates.
+	* STD_STREAMABLE and TEXT_STREAMABLE are no longer necessary.
+	* Merged some template metaprogramming stuff from Alexandrescu's Loki
+		library, including typelists and type traits.
+	* Implemented generic macro list macros. See metamac.h.
 	* Fixed some bsconf warnings.
 	* memblock is_linked now correctly returns true when linked to NULL.
 	* Added back() to string.

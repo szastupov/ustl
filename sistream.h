@@ -32,7 +32,7 @@ public:
     void			iread (bool& v);
     void			iread (wchar_t& v);
     void			iread (string& v);
-#ifdef HAVE_INT64_T
+#if HAVE_INT64_T
     void			iread (int64_t& v);
 #endif
 #if HAVE_LONG_LONG && (!HAVE_INT64_T || SIZE_OF_LONG_LONG > 8)
@@ -89,23 +89,32 @@ inline void _cast_read (istringstream& is, RealT& v)
     v = RealT (cv);
 }
 
-inline istringstream& operator>> (istringstream& is, int8_t& v)	{ is.iread (v); return (is); }
-inline istringstream& operator>> (istringstream& is, int32_t& v){ is.iread (v); return (is); }
-inline istringstream& operator>> (istringstream& is, double& v)	{ is.iread (v); return (is); }
-inline istringstream& operator>> (istringstream& is, bool& v)	{ is.iread (v); return (is); }
-inline istringstream& operator>> (istringstream& is, wchar_t& v){ is.iread (v); return (is); }
-inline istringstream& operator>> (istringstream& is, string& v)	{ is.iread (v); return (is); }
-#if HAVE_INT64_T
-inline istringstream& operator>> (istringstream& is, int64_t& v){ is.iread (v); return (is); }
-#endif
-#if HAVE_LONG_LONG && (!HAVE_INT64_T || SIZE_OF_LONG_LONG > 8)
-inline istringstream& operator>> (istringstream& is, long long& v) { is.iread (v); return (is); }
-#endif
+//----------------------------------------------------------------------
 
-#define ISTRSTREAM_CAST_OPERATOR(RealT, CastT)			\
-inline istringstream& operator>> (istringstream& is, RealT& v)	\
-{ _cast_read<RealT,CastT>(is, v); return (is); }
+template <typename T> struct object_text_reader {
+    inline void operator()(istringstream& is, T& v) const { v.text_read (is); }
+};
+template <typename T> struct integral_text_object_reader {
+    inline void operator()(istringstream& is, T& v) const { is.iread (v); }
+};
+template <typename T>
+inline istringstream& operator>> (istringstream& is, T& v) {
+    typedef typename tm::Select <numeric_limits<T>::is_integral,
+	integral_text_object_reader<T>, object_text_reader<T> >::Result object_reader_t;
+    object_reader_t()(is, v);
+    return (is);
+}
 
+//----------------------------------------------------------------------
+
+template <> struct object_text_reader<string> {
+    inline void operator()(istringstream& is, string& v) const { is.iread (v); }
+};
+#define ISTRSTREAM_CAST_OPERATOR(RealT, CastT)		\
+template <> struct integral_text_object_reader<RealT> {	\
+    inline void operator() (istringstream& is, RealT& v) const	\
+	{ _cast_read<RealT,CastT>(is, v); }		\
+};
 ISTRSTREAM_CAST_OPERATOR (uint8_t,	int8_t)
 ISTRSTREAM_CAST_OPERATOR (int16_t,	int32_t)
 ISTRSTREAM_CAST_OPERATOR (uint16_t,	int32_t)

@@ -15,27 +15,19 @@
 namespace ustl {
 
 /// For partial specialization of stream_size_of for objects
-template <typename T>
-struct object_stream_size {
+template <typename T> struct object_stream_size {
     inline size_t operator()(const T& v) const { return (v.stream_size()); }
 };
-
-// Helper template to route the call to sizeof for integral objects
-template <typename T, bool Integral>
-struct _stream_size_integral_router {
-    inline size_t operator()(const T& v) const { return (object_stream_size<T>()(v)); }
-};
-template <typename T>
-struct _stream_size_integral_router<T,true> {
+template <typename T> struct integral_object_stream_size {
     inline size_t operator()(const T& v) const { return (sizeof(v)); }
 };
-
 /// Returns the size of the given object. Overloads for standard types are available.
 template <typename T>
-inline size_t stream_size_of (const T& v)
-    { return (_stream_size_integral_router<T,numeric_limits<T>::is_integral>()(v)); }
-template <>
-inline size_t stream_size_of (const bool&) { return (sizeof(uint8_t)); }
+inline size_t stream_size_of (const T& v) {
+    typedef typename tm::Select <numeric_limits<T>::is_integral,
+	integral_object_stream_size<T>, object_stream_size<T> >::Result stream_sizer_t;
+    return (stream_sizer_t()(v));
+}
 
 } // namespace ustl
 
@@ -57,25 +49,11 @@ inline size_t stream_size_of (const bool&) { return (sizeof(uint8_t)); }
 	template <> inline size_t stream_size_of (const T& v)	{ return (sizeof(v)); }		\
     }
 
-#ifdef NDEBUG
-    #define STD_STREAMABLE_SZCHK_BEGIN
-    #define STD_STREAMABLE_SZCHK_END
-#else
-    #define STD_STREAMABLE_SZCHK_BEGIN		\
-	assert (os.aligned (alignof (v)));	\
-	const uoff_t vStart (os.pos())
-    #define STD_STREAMABLE_SZCHK_END		\
-	if (os.pos() - vStart != v.stream_size()) \
-	    throw stream_bounds_exception ("write", typeid(v).name(), vStart, os.pos() - vStart, v.stream_size())
-#endif
+/// Declares that T contains read, write, and stream_size methods. This is no longer needed and is deprecated.
+#define STD_STREAMABLE(T)
 
-/// Declares that T contains read, write, and stream_size methods.
-#define STD_STREAMABLE(T)	\
-    namespace ustl {		\
-	inline istream& operator>> (istream& is, T& v)		{ assert (is.aligned (alignof (v))); v.read (is);  return (is); }	\
-	inline ostream& operator<< (ostream& os, const T& v)	{ STD_STREAMABLE_SZCHK_BEGIN; v.write (os); STD_STREAMABLE_SZCHK_END; return (os); }	\
-	template <> inline size_t stream_size_of (const T& v)	{ return (v.stream_size()); }	\
-    }
+/// Declares \p T to be writable to text streams. This is no longer needed and is deprecated.
+#define TEXT_STREAMABLE(T)
 
 /// Declares that T is to be cast into TSUB for streaming.
 #define CAST_STREAMABLE(T,TSUB)	\
@@ -91,13 +69,6 @@ inline size_t stream_size_of (const bool&) { return (sizeof(uint8_t)); }
 	void	read (istream& is);		\
 	void	write (ostream& os) const;	\
 	size_t	stream_size (void) const
-
-/// Declares \p T to be writable to text streams. Reading is not implemented because you should not do it.
-#define TEXT_STREAMABLE(T)	\
-    namespace ustl {		\
-	inline ostringstream& operator<< (ostringstream& os, const T& v)	\
-	    { v.text_write (os); return (os); }	\
-    }
 
 /// Specifies that \p T is printed by using it as an index into \p Names string array.
 #define LOOKUP_TEXT_STREAMABLE(T,Names,nNames)	\

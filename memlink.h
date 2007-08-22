@@ -96,13 +96,6 @@ inline void memlink::erase (iterator start, size_type n)
     rotate (start, start + n, end());
 }
 
-/// Reads object \p l from stream \p is
-inline istream& operator>> (istream& is, memlink& l)
-{
-    l.read (is);
-    return (is);
-}
-
 /// Use with memlink-derived classes to allocate and link to stack space.
 #define alloca_link(m,n)	(m).link (alloca (n), (n))
 

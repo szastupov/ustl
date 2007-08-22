@@ -116,16 +116,6 @@ unconst (const pair<typename Container::const_iterator, typename Container::cons
 //----{ vector }--------------------------------------------------------
 
 template <typename T>
-inline istream& operator>> (istream& is, vector<T>& v)
-    { v.read (is); return (is); }
-template <typename T>
-inline ostream& operator<< (ostream& os, const vector<T>& v)
-    { v.write (os); return (os); }
-template <typename T>
-inline ostringstream& operator<< (ostringstream& os, const vector<T>& v)
-    { v.text_write (os); return (os); }
-
-template <typename T>
 inline size_t alignof (const vector<T>&)
 {
     typedef typename vector<T>::written_size_type written_size_type;
@@ -133,27 +123,6 @@ inline size_t alignof (const vector<T>&)
 }
 
 //----{ bitset }--------------------------------------------------------
-
-/// Reads bitset \p v from stream \p is.
-template <size_t Size>
-inline istream& operator>> (istream& is, bitset<Size>& v)
-{
-    return (nr_container_read (is, v));
-}
-
-/// Writes bitset \p v into stream \p os.
-template <size_t Size>
-inline ostream& operator<< (ostream& os, const bitset<Size>& v)
-{
-    return (nr_container_write (os, v));
-}
-
-/// Writes bitset \p v into stream \p os.
-template <size_t Size>
-inline ostringstream& operator<< (ostringstream& os, const bitset<Size>& v)
-{
-    return (os << v.to_string());
-}
 
 /// Writes bitset \p v into stream \p os.
 template <size_t Size>
@@ -164,13 +133,6 @@ istringstream& operator>> (istringstream& is, bitset<Size>& v)
 	v.set (i, c == '1');
     return (is);
 }
-
-/// Returns the number of bytes necessary to write this object to a stream
-template <size_t Size>
-struct object_stream_size<bitset<Size> > {
-    inline size_t operator()(const bitset<Size>& v) const
-	{ return (v.capacity() / CHAR_BIT); }
-};
 
 //----{ tuple }---------------------------------------------------------
 
@@ -313,21 +275,10 @@ inline hashvalue_t hash_value (const string::const_pointer& v)
 #if SIZE_OF_BOOL != SIZE_OF_CHAR
 // bool is a big type on some machines (like DEC Alpha), so it's written as a byte.
 ALIGNOF(bool, sizeof(uint8_t))
+CAST_STREAMABLE(bool, uint8_t)
 #endif
-STD_STREAMABLE(cmemlink)
-STD_STREAMABLE(istream)
-STD_STREAMABLE(ostream)
-STD_STREAMABLE(string)
-STD_STREAMABLE(exception)
-STD_STREAMABLE(CBacktrace)
-TEXT_STREAMABLE(cmemlink)
-TEXT_STREAMABLE(istream)
-TEXT_STREAMABLE(ostream)
-TEXT_STREAMABLE(exception)
-TEXT_STREAMABLE(CBacktrace)
 #if SIZE_OF_LONG == 8 && HAVE_INT64_T
 ALIGNOF (_long4grain, 4)
-STD_STREAMABLE (_long4grain)
 #endif
 
 #endif

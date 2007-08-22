@@ -118,6 +118,10 @@ public:
 			    { transform (begin(), end(), v.begin(), begin(), bitwise_or<value_type>()); return (*this); }
    inline const bitset&	operator^= (const bitset<Size>& v)
 			    { transform (begin(), end(), v.begin(), begin(), bitwise_xor<value_type>()); return (*this); }
+    inline void		read (istream& is)			{ nr_container_read (is, *this); }
+    inline void		write (ostream& os) const		{ nr_container_write (os, *this); }
+    inline void		text_write (ostringstream& os) const	{ os << to_string(); }
+    inline size_t	stream_size (void) const		{ return (nr_container_stream_size (*this)); }
 private:
     value_type		m_Bits [s_nWords];
 };

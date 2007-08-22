@@ -61,13 +61,6 @@ private:
     size_type			m_Capacity;	///< Number of bytes allocated by Resize.
 };
 
-/// Reads object \p l from stream \p is
-inline istream& operator>> (istream& is, memblock& l)
-{
-    l.read (is);
-    return (is);
-}
-
 } // namespace ustl
 
 #endif

@@ -117,39 +117,45 @@ inline void ostringstream::iwrite (fmtflags f)
 
 //----------------------------------------------------------------------
 
-#define OSTRSTREAM_OPERATOR(RealT, CastT)			\
-inline ostringstream& operator<< (ostringstream& os, RealT v)	\
-{ os.iwrite ((CastT) v); return (os); }
-
+template <typename T> struct object_text_writer {
+    inline void operator()(ostringstream& os, const T& v) const { v.text_write (os); }
+};
+template <typename T> struct integral_text_object_writer {
+    inline void operator()(ostringstream& os, const T& v) const { os.iwrite (v); }
+};
 template <typename T>
-OSTRSTREAM_OPERATOR (T*,		unsigned long int)
-OSTRSTREAM_OPERATOR (const void*,	unsigned long int)
-OSTRSTREAM_OPERATOR (void*,		unsigned long int)
-OSTRSTREAM_OPERATOR (const char*,	const char*)
-OSTRSTREAM_OPERATOR (char*,		const char*)
-OSTRSTREAM_OPERATOR (uint8_t*,		const char*)
-OSTRSTREAM_OPERATOR (const uint8_t*,	const char*)
-OSTRSTREAM_OPERATOR (const string&,	const string&)
-OSTRSTREAM_OPERATOR (ios_base::fmtflags,ios_base::fmtflags)
-OSTRSTREAM_OPERATOR (int8_t,		uint8_t)
-OSTRSTREAM_OPERATOR (uint8_t,		uint8_t)
-OSTRSTREAM_OPERATOR (short int,		int)
-OSTRSTREAM_OPERATOR (unsigned short,	unsigned int)
-OSTRSTREAM_OPERATOR (int,		int)
-OSTRSTREAM_OPERATOR (unsigned int,	unsigned int)
-OSTRSTREAM_OPERATOR (long,		long)
-OSTRSTREAM_OPERATOR (unsigned long,	unsigned long)
-OSTRSTREAM_OPERATOR (float,		float)
-OSTRSTREAM_OPERATOR (double,		double)
-OSTRSTREAM_OPERATOR (bool,		bool)
-OSTRSTREAM_OPERATOR (wchar_t,		wchar_t)
+inline ostringstream& operator<< (ostringstream& os, const T& v) {
+    typedef typename tm::Select <numeric_limits<T>::is_integral,
+	integral_text_object_writer<T>, object_text_writer<T> >::Result object_writer_t;
+    object_writer_t()(os, v);
+    return (os);
+}
+// Needed because if called with a char[], numeric_limits will not work. Should be removed if I find out how to partial specialize for arrays...
+inline ostringstream& operator<< (ostringstream& os, const char* v)
+    { os.iwrite (v); return (os); }
+
+//----------------------------------------------------------------------
+
+template <> struct object_text_writer<string> {
+    inline void operator()(ostringstream& os, const string& v) const { os.iwrite (v); }
+};
+template <typename T> struct integral_text_object_writer<T*> {
+    inline void operator() (ostringstream& os, const T* const& v) const
+	{ os.iwrite ((uintptr_t)(v)); }
+};
+#define OSTRSTREAM_CAST_OPERATOR(RealT, CastT)		\
+template <> inline ostringstream& operator<< (ostringstream& os, const RealT& v) \
+    { os.iwrite ((CastT)(v)); return (os); }
+OSTRSTREAM_CAST_OPERATOR (uint8_t* const,	const char*)
+OSTRSTREAM_CAST_OPERATOR (int8_t,		uint8_t)
+OSTRSTREAM_CAST_OPERATOR (short int,		int)
+OSTRSTREAM_CAST_OPERATOR (unsigned short,	unsigned int)
 #if HAVE_THREE_CHAR_TYPES
-OSTRSTREAM_OPERATOR (char,		uint8_t)
+OSTRSTREAM_CAST_OPERATOR (char,			uint8_t)
 #endif
-#if HAVE_LONG_LONG
-OSTRSTREAM_OPERATOR (long long,		long long)
-OSTRSTREAM_OPERATOR (unsigned long long, unsigned long long)
-#endif
+#undef OSTRSTREAM_CAST_OPERATOR
+
+//----------------------------------------------------------------------
 
 } // namespace ustl
 

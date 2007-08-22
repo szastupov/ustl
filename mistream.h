@@ -235,41 +235,23 @@ inline void istream::iread (T& v)
     m_Pos += sizeof(T);
 }
 
-#define ISTREAM_OPERATOR(type)	\
-inline istream&	operator>> (istream& is, type& v)	{ is.iread(v); return (is); }
+//----------------------------------------------------------------------
 
+template <typename T> struct object_reader {
+    inline void operator()(istream& is, T& v) const { v.read (is); }
+};
+template <typename T> struct integral_object_reader {
+    inline void operator()(istream& is, T& v) const { is.iread (v); }
+};
 template <typename T>
-ISTREAM_OPERATOR(T*)
-ISTREAM_OPERATOR(int8_t)
-ISTREAM_OPERATOR(uint8_t)
-ISTREAM_OPERATOR(int16_t)
-ISTREAM_OPERATOR(uint16_t)
-ISTREAM_OPERATOR(int32_t)
-ISTREAM_OPERATOR(uint32_t)
-ISTREAM_OPERATOR(float)
-ISTREAM_OPERATOR(double)
-ISTREAM_OPERATOR(wchar_t)
-#if SIZE_OF_BOOL == SIZE_OF_CHAR
-ISTREAM_OPERATOR(bool)
-#else
-inline istream&	operator>> (istream& is, bool& v)
-{ uint8_t v8; is.iread (v8); v = v8; return (is); }
-#endif
-#if HAVE_THREE_CHAR_TYPES
-ISTREAM_OPERATOR(char)
-#endif
-#if HAVE_INT64_T
-ISTREAM_OPERATOR(int64_t)
-ISTREAM_OPERATOR(uint64_t)
-#endif
-#if SIZE_OF_LONG == SIZE_OF_INT
-ISTREAM_OPERATOR(long)
-ISTREAM_OPERATOR(unsigned long)
-#endif
-#if HAVE_LONG_LONG && (!HAVE_INT64_T || SIZE_OF_LONG_LONG > 8)
-ISTREAM_OPERATOR(long long)
-ISTREAM_OPERATOR(unsigned long long)
-#endif
+inline istream& operator>> (istream& is, T& v) {
+    typedef typename tm::Select <numeric_limits<T>::is_integral,
+	integral_object_reader<T>, object_reader<T> >::Result object_reader_t;
+    object_reader_t()(is, v);
+    return (is);
+}
+template <typename T>
+inline istream& operator>> (istream& is, const T& v) { v.read (is); return (is); }
 
 //----------------------------------------------------------------------
 

@@ -12,7 +12,9 @@
 #include "uexception.h"
 #include "utf8.h"
 #include "uios.h"
-#include <typeinfo>
+#ifdef WANT_STREAM_BOUNDS_CHECKING
+    #include <typeinfo>
+#endif
 
 namespace ustl {
 
@@ -216,41 +218,23 @@ inline void ostream::iwrite (const T& v)
     SetPos (pos() + sizeof(T));
 }
 
-#define OSTREAM_OPERATOR(type)	\
-inline ostream&	operator<< (ostream& os, type v)	{ os.iwrite(v); return (os); }
+//----------------------------------------------------------------------
 
+template <typename T> struct object_writer {
+    inline void operator()(ostream& os, const T& v) const { v.write (os); }
+};
+template <typename T> struct integral_object_writer {
+    inline void operator()(ostream& os, const T& v) const { os.iwrite (v); }
+};
 template <typename T>
-OSTREAM_OPERATOR(T*)
-OSTREAM_OPERATOR(int8_t)
-OSTREAM_OPERATOR(uint8_t)
-OSTREAM_OPERATOR(int16_t)
-OSTREAM_OPERATOR(uint16_t)
-OSTREAM_OPERATOR(int32_t)
-OSTREAM_OPERATOR(uint32_t)
-OSTREAM_OPERATOR(float)
-OSTREAM_OPERATOR(double)
-OSTREAM_OPERATOR(wchar_t)
-#if SIZE_OF_BOOL == SIZE_OF_CHAR
-OSTREAM_OPERATOR(bool)
-#else
-inline ostream&	operator<< (ostream& os, bool v)
-{ os.iwrite (uint8_t(v)); return (os); }
-#endif
-#if HAVE_THREE_CHAR_TYPES
-OSTREAM_OPERATOR(char)
-#endif
-#if HAVE_INT64_T
-OSTREAM_OPERATOR(int64_t)
-OSTREAM_OPERATOR(uint64_t)
-#endif
-#if SIZE_OF_LONG == SIZE_OF_INT
-OSTREAM_OPERATOR(long)
-OSTREAM_OPERATOR(unsigned long)
-#endif
-#if HAVE_LONG_LONG && (!HAVE_INT64_T || SIZE_OF_LONG_LONG > 8)
-OSTREAM_OPERATOR(long long)
-OSTREAM_OPERATOR(unsigned long long)
-#endif
+inline ostream& operator<< (ostream& os, const T& v) {
+    typedef typename tm::Select <numeric_limits<T>::is_integral,
+	integral_object_writer<T>, object_writer<T> >::Result object_writer_t;
+    object_writer_t()(os, v);
+    return (os);
+}
+
+//----------------------------------------------------------------------
 
 } // namespace ustl
 
