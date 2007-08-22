@@ -15,6 +15,7 @@
 #define UUTILITY_H_6A58BD296269A82A4AAAA4FD19FDB3AC
 
 #include "utypes.h"
+#include "traits.h"
 #include <assert.h>
 
 namespace ustl {

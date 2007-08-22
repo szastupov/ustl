@@ -10,6 +10,7 @@
 #define UTUPLE_H_7324ADEC49B397CA74A56F6050FD5A6B
 
 #include "ualgo.h"
+#include "metamac.h"
 
 namespace ustl {
 
@@ -201,7 +202,7 @@ inline const tuple<N,T1> operator/ (const tuple<N,T1>& t1, const tuple<N,T2>& t2
 //----------------------------------------------------------------------
 // Define SIMD specializations for member functions.
 
-// All the REPEAT mess is to tell the compiler that each element is indeed referenced.
+// All the COMMA_LIST mess is to tell the compiler that each element is indeed referenced.
 #define TUPLEV_R1(n)		"m"(m_v[n])
 #define TUPLEV_R2(n)		"m"(v.m_v[n])
 #define TUPLEV_W1(n)		"=m"(m_v[n])
@@ -210,18 +211,18 @@ inline const tuple<N,T1> operator/ (const tuple<N,T1>& t1, const tuple<N,T2>& t2
 #if CPU_HAS_SSE
 #define SSE_TUPLE_SPECS(n,type)							\
 template <> inline tuple<n,type>::tuple (void)					\
-{   asm(""::SIMD_REPEAT_4(TUPLEV_R1));						\
+{   asm(""::COMMA_LIST_4(TUPLEV_R1));						\
     asm("xorps %%xmm0, %%xmm0\n\tmovups %%xmm0, %0"				\
-	: SIMD_REPEAT_4(TUPLEV_W1) : :"xmm0"); }				\
+	: COMMA_LIST_4(TUPLEV_W1) : :"xmm0"); }				\
 template<> inline void tuple<n,type>::swap (tuple<n,type>& v)			\
 {										\
-    asm(""::SIMD_REPEAT_4(TUPLEV_R1), SIMD_REPEAT_4(TUPLEV_R2));		\
+    asm(""::COMMA_LIST_4(TUPLEV_R1), COMMA_LIST_4(TUPLEV_R2));		\
     asm volatile ("movups %2,%%xmm0\n\tmovups %3,%%xmm1\n\t"			\
 	"movups %%xmm0,%1\n\tmovups %%xmm1,%0"					\
 	: "=m"(m_v[0]), "=m"(v.m_v[0])						\
 	: "m"(m_v[0]), "m"(v.m_v[0])						\
 	: "xmm0","xmm1");							\
-    asm("":SIMD_REPEAT_4(TUPLEV_W1), SIMD_REPEAT_4(TUPLEV_W2));			\
+    asm("":COMMA_LIST_4(TUPLEV_W1), COMMA_LIST_4(TUPLEV_W2));			\
 }
 SSE_TUPLE_SPECS(4,float)
 SSE_TUPLE_SPECS(4,int32_t)
@@ -231,15 +232,15 @@ SSE_TUPLE_SPECS(4,uint32_t)
 #if SIZE_OF_LONG == 8 && __GNUC__
 #define LONG_TUPLE_SPECS(n,type)		\
 template <> inline tuple<n,type>::tuple (void)	\
-{ asm(""::SIMD_REPEAT(n,TUPLEV_R1));		\
+{ asm(""::COMMA_LIST(n,TUPLEV_R1));		\
   *noalias_cast<long*>(m_v) = 0;		\
-  asm("":SIMD_REPEAT(n,TUPLEV_W1)); }		\
+  asm("":COMMA_LIST(n,TUPLEV_W1)); }		\
 template<> inline void tuple<n,type>::swap (tuple<n,type>& v)	\
-{ asm(""::SIMD_REPEAT(n,TUPLEV_R1));				\
-  asm(""::SIMD_REPEAT(n,TUPLEV_R2));				\
+{ asm(""::COMMA_LIST(n,TUPLEV_R1));				\
+  asm(""::COMMA_LIST(n,TUPLEV_R2));				\
   iter_swap (noalias_cast<long*>(m_v), noalias_cast<long*>(v.m_v));	\
-  asm("":SIMD_REPEAT(n,TUPLEV_W1));				\
-  asm("":SIMD_REPEAT(n,TUPLEV_W2));				\
+  asm("":COMMA_LIST(n,TUPLEV_W1));				\
+  asm("":COMMA_LIST(n,TUPLEV_W2));				\
 }
 LONG_TUPLE_SPECS(2,float)
 LONG_TUPLE_SPECS(4,int16_t)
@@ -253,15 +254,15 @@ LONG_TUPLE_SPECS(8,uint8_t)
 #define MMX_TUPLE_SPECS(n,type)		\
 template <> inline tuple<n,type>::tuple (void)	\
 {  asm ("pxor %%mm0, %%mm0\n\tmovq %%mm0, %0"	\
-	: SIMD_REPEAT(n,TUPLEV_W1) ::"mm0", "st"); simd::reset_mmx(); }	\
+	: COMMA_LIST(n,TUPLEV_W1) ::"mm0", "st"); simd::reset_mmx(); }	\
 template<> inline void tuple<n,type>::swap (tuple<n,type>& v)		\
-{  asm (""::SIMD_REPEAT(n,TUPLEV_R1));					\
-   asm (""::SIMD_REPEAT(n,TUPLEV_R2));					\
+{  asm (""::COMMA_LIST(n,TUPLEV_R1));					\
+   asm (""::COMMA_LIST(n,TUPLEV_R2));					\
    asm volatile ("movq %0,%%mm0\n\tmovq %1,%%mm1\n\t"			\
 	"movq %%mm0,%1\n\tmovq %%mm1,%0"				\
 	::"m"(m_v[0]),"m"(v.m_v[0]):"mm0","mm1","st","st(1)");		\
-   asm ("":SIMD_REPEAT(n,TUPLEV_W1));					\
-   asm ("":SIMD_REPEAT(n,TUPLEV_W2));					\
+   asm ("":COMMA_LIST(n,TUPLEV_W1));					\
+   asm ("":COMMA_LIST(n,TUPLEV_W2));					\
    simd::reset_mmx();							\
 }
 MMX_TUPLE_SPECS(2,float)
