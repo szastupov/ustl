@@ -34,6 +34,17 @@ namespace ustl {
 /// 	- length returns the number of _characters_, not bytes.
 ///		This function is O(N), so use wisely.
 ///
+/// An additional note is in order regarding the use of indexes. All indexes
+/// passed in as arguments or returned by find are byte offsets, not character
+/// offsets. Likewise, sizes are specified in bytes, not characters. The
+/// rationale is that there is no way for you to know what is in the string.
+/// There is no way for you to know how many characters are needed to express
+/// one thing or another. The only thing you can do to a localized string is
+/// search for delimiters and modify text between them as opaque blocks. If you
+/// do anything else, you are hardcoding yourself into a locale! So stop it!
+/// A single exception is provided in the erase(epo) call, where there is no
+/// size provided, and only erasing the whole character makes sense.
+///
 class string : public memblock {
 public:
     typedef char		value_type;
@@ -83,6 +94,8 @@ public:
     inline reference		at (uoff_t pos)		{ assert (pos <= size() && begin()); return (begin()[pos]); }
     inline const_iterator	iat (uoff_t pos) const	{ return (begin() + min (pos, size())); }
     inline iterator		iat (uoff_t pos)	{ return (begin() + min (pos, size())); }
+    const_iterator		wiat (uoff_t i) const;
+    inline iterator		wiat (uoff_t i)		{ return (const_cast<iterator>(const_cast<const string*>(this)->wiat(i))); }
     inline const_reference	back (void) const	{ return (at(size()-1)); }
     inline reference		back (void)		{ return (at(size()-1)); }
     inline size_type		length (void) const	{ return (distance (utf8_begin(), utf8_end())); }
@@ -136,8 +149,9 @@ public:
     inline void			insert (uoff_t ip, const_pointer s, size_type nlen)		{ insert (iat(ip), s, s + nlen); }
     inline void			insert (uoff_t ip, size_type n, value_type c)			{ insert (iat(ip), c, n); }
     inline void			insert (uoff_t ip, const string& s, uoff_t sp, size_type slen)	{ insert (iat(ip), s.iat(sp), s.iat(sp + slen)); }
-    iterator			erase (iterator start, size_type size = 1);
-    void			erase (uoff_t start, size_type size = 1);
+    iterator			erase (iterator epo, size_type n = 1);
+    void			erase (uoff_t epo);
+    void			erase (uoff_t epo, size_type n);
     inline iterator		erase (iterator first, const_iterator last)	{ return (erase (first, size_type(distance(first,last)))); }
     inline void			eraser (uoff_t first, uoff_t last)		{ erase (iat(first), iat(last)); }
     inline void			push_back (const_reference c)	{ append (1, c); }
@@ -168,8 +182,6 @@ public:
     void			write (ostream& os) const;
     size_t			stream_size (void) const;
     static hashvalue_t		hash (const char* f1, const char* l1);
-private:
-    DLL_LOCAL iterator		utf8_iat (uoff_t i);
 protected:
     inline virtual size_type	minimumFreeCapacity (void) const { return (size_Terminator); }
 };

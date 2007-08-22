@@ -23,10 +23,6 @@ const string::size_type string::size_Terminator;
 const string::value_type string::c_Terminator;
 const char string::empty_string[string::size_Terminator] = "";
 
-typedef utf8in_iterator<string::const_iterator> utf8icstring_iterator;
-typedef utf8in_iterator<string::iterator> utf8istring_iterator;
-typedef utf8out_iterator<string::iterator> utf8ostring_iterator;
-
 //----------------------------------------------------------------------
 
 /// Creates an empty string.
@@ -147,39 +143,37 @@ bool string::operator== (const_pointer s) const
 }
 
 /// Returns the beginning of character \p i.
-string::iterator string::utf8_iat (uoff_t i)
+string::const_iterator string::wiat (uoff_t i) const
 {
-    utf8istring_iterator cfinder (begin());
+    utf8in_iterator<string::const_iterator> cfinder (begin());
     cfinder += i;
     return (cfinder.base());
 }
 
-/// Inserts wide character \p c at \p ip \p n times as a UTF-8 string.
+/// Inserts wide character \p c at \p ipo \p n times as a UTF-8 string.
 ///
-/// \p ip is a character position, not a byte position, and must fall in
-/// the 0 through length() range.
-/// The first argument is not an iterator because it is rather difficult
-/// to get one. You'd have to use ((utf8begin() + n).base()) as the first
-/// argument, which is rather ugly. Besides, then this insert would be
-/// ambiguous with the regular character insert.
+/// \p ipo is a byte position, not a character position, and is intended
+/// to be obtained from one of the find functions. Generally you are not
+/// able to know the character position in a localized string; different
+/// languages will have different character counts, so use find instead.
 ///
-void string::insert (const uoff_t ip, wchar_t c, size_type n)
+void string::insert (const uoff_t ipo, wchar_t c, size_type n)
 {
-    iterator ipp (utf8_iat (ip));
-    ipp = iterator (memblock::insert (memblock::iterator(ipp), n * Utf8Bytes(c)));
-    fill_n (utf8out (ipp), n, c);
+    iterator ip (iat(ipo));
+    ip = iterator (memblock::insert (memblock::iterator(ip), n * Utf8Bytes(c)));
+    fill_n (utf8out (ip), n, c);
     *end() = c_Terminator;
 }
 
-/// Inserts sequence of wide characters at \p ip.
-void string::insert (const uoff_t ip, const wchar_t* first, const wchar_t* last, const size_type n)
+/// Inserts sequence of wide characters at \p ipo (byte position from a find call)
+void string::insert (const uoff_t ipo, const wchar_t* first, const wchar_t* last, const size_type n)
 {
-    iterator ipp (utf8_iat (ip));
+    iterator ip (iat(ipo));
     size_type nti = distance (first, last), bti = 0;
     for (uoff_t i = 0; i < nti; ++ i)
 	bti += Utf8Bytes(first[i]);
-    ipp = iterator (memblock::insert (memblock::iterator(ipp), n * bti));
-    utf8ostring_iterator uout (utf8out (ipp));
+    ip = iterator (memblock::insert (memblock::iterator(ip), n * bti));
+    utf8out_iterator<string::iterator> uout (utf8out (ip));
     for (uoff_t j = 0; j < n; ++ j)
 	for (uoff_t k = 0; k < nti; ++ k, ++ uout)
 	    *uout = first[k];
@@ -215,7 +209,7 @@ string::iterator string::insert (iterator start, const_pointer first, const_poin
     return (start);
 }
 
-/// Erases \p size bytes at \p start.
+/// Erases \p size bytes at \p ep.
 string::iterator string::erase (iterator ep, size_type n)
 {
     string::iterator rv = memblock::erase (memblock::iterator(ep), n);
@@ -223,16 +217,18 @@ string::iterator string::erase (iterator ep, size_type n)
     return (rv);
 }
 
-/// Erases \p size characters at \p start.
-/// \p start is a character position, not a byte position, and must be
-/// in the 0..length() range.
-///
-void string::erase (uoff_t ep, size_type n)
+/// Erases a single character at \p ep.
+/// This is an exception to the general rule that all numbers are bytes,
+/// since deleting a single byte never makes sense.
+void string::erase (uoff_t epo)
 {
-    iterator first (utf8_iat(ep));
-    size_t nbytes (utf8_iat(ep + n) - first);
-    memblock::erase (first, nbytes);
-    *end() = c_Terminator;
+    erase (iat(epo), Utf8SequenceBytes(at(epo)));
+}
+
+/// Erases \p n bytes at byte offset \p epo.
+void string::erase (uoff_t epo, size_type n)
+{
+    erase (iat(epo), n);
 }
 
 /// Replaces range [\p start, \p start + \p len] with string \p s.

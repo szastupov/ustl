@@ -44,6 +44,15 @@ inline size_t Utf8Bytes (wchar_t v)
     return (bi);
 }
 
+/// Measures the size of a wchar_t array in UTF-8 encoding.
+inline size_t Utf8Bytes (const wchar_t* first, const wchar_t* last)
+{
+    size_t bc = 0;
+    for (; first < last; ++first)
+	bc += Utf8Bytes(*first);
+    return (bc);
+}
+
 /// Returns the number of bytes in a UTF-8 sequence that starts with \p c.
 inline size_t Utf8SequenceBytes (wchar_t c)	// a wchar_t to keep c in a full register
 {
