@@ -217,14 +217,6 @@ string::iterator string::erase (iterator ep, size_type n)
     return (rv);
 }
 
-/// Erases a single character at \p ep.
-/// This is an exception to the general rule that all numbers are bytes,
-/// since deleting a single byte never makes sense.
-void string::erase (uoff_t epo)
-{
-    erase (iat(epo), Utf8SequenceBytes(at(epo)));
-}
-
 /// Erases \p n bytes at byte offset \p epo.
 void string::erase (uoff_t epo, size_type n)
 {
