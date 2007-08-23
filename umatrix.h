@@ -78,26 +78,19 @@ inline typename matrix<NX,NY,T>::column_type matrix<NX,NY,T>::column (size_type 
 // Define SIMD specializations for member functions.
 
 #if CPU_HAS_SSE
-#define TOUCH_MATRIX_R(v)	asm(""::"m"(v[0]),"m"(v[1]),"m"(v[2]),"m"(v[3]),"m"(v[4]),"m"(v[5]),"m"(v[6]),"m"(v[7]));\
-				asm(""::"m"(v[8]),"m"(v[9]),"m"(v[10]),"m"(v[11]),"m"(v[12]),"m"(v[13]),"m"(v[14]),"m"(v[15]))
-#define TOUCH_MATRIX_W(v)	asm("":"=m"(v[0]),"=m"(v[1]),"=m"(v[2]),"=m"(v[3]),"=m"(v[4]),"=m"(v[5]),"=m"(v[6]),"=m"(v[7]));\
-				asm("":"=m"(v[8]),"=m"(v[9]),"=m"(v[10]),"=m"(v[11]),"=m"(v[12]),"=m"(v[13]),"=m"(v[14]),"=m"(v[15]))
 #define MATRIX_R(v)		"m"(v[0]),"m"(v[4]),"m"(v[8]),"m"(v[12])
 #define MATRIX_W(v)		"=m"(v[0]),"=m"(v[4]),"=m"(v[8]),"=m"(v[12])
 #define SSE_TUPLE_SPECS(n,type)				\
 template <> inline tuple<n,type>::tuple (void)		\
-{   TOUCH_MATRIX_R(m_v);				\
-    asm volatile ("xorps %%xmm0, %%xmm0\n\t"		\
+{   asm volatile ("xorps %%xmm0, %%xmm0\n\t"		\
 	"movups %%xmm0, %0\n\t"				\
 	"movups %%xmm0, %1\n\t"				\
 	"movups %%xmm0, %2\n\t"				\
 	"movups %%xmm0, %3"				\
-	: MATRIX_W(m_v) ::"xmm0");			\
-    TOUCH_MATRIX_W(m_v);				\
+	: MATRIX_W(m_v) ::"xmm0","memory");		\
 }							\
 template<> inline void tuple<n,type>::swap (tuple<n,type>& v)	\
-{   TOUCH_MATRIX_R(m_v); TOUCH_MATRIX_R(v.m_v);		\
-    asm volatile ("movups %0, %%xmm0\n\t"		\
+{   asm volatile ("movups %0, %%xmm0\n\t"		\
 	"movups %1, %%xmm1\n\t"				\
 	"movups %2, %%xmm2\n\t"				\
 	"movups %3, %%xmm3\n\t"				\
@@ -106,7 +99,7 @@ template<> inline void tuple<n,type>::swap (tuple<n,type>& v)	\
 	"movups %6, %%xmm6\n\t"				\
 	"movups %7, %%xmm7"				\
 	: : MATRIX_R(m_v), MATRIX_R(v.m_v)		\
-	: "xmm0", "xmm1", "xmm2", "xmm3", "xmm4", "xmm5", "xmm6", "xmm7");\
+	: "xmm0", "xmm1", "xmm2", "xmm3", "xmm4", "xmm5", "xmm6", "xmm7", "memory");\
     asm volatile ("movups %%xmm0, %0\n\t"		\
 	"movups %%xmm1, %1\n\t"				\
 	"movups %%xmm2, %2\n\t"				\
@@ -116,13 +109,11 @@ template<> inline void tuple<n,type>::swap (tuple<n,type>& v)	\
 	"movups %%xmm6, %6\n\t"				\
 	"movups %%xmm7, %7"				\
 	: MATRIX_W(v.m_v), MATRIX_W(m_v)		\
-	: : "xmm0", "xmm1", "xmm2", "xmm3", "xmm4", "xmm5", "xmm6", "xmm7");\
-    TOUCH_MATRIX_W(m_v); TOUCH_MATRIX_W(v.m_v);		\
+	: : "xmm0", "xmm1", "xmm2", "xmm3", "xmm4", "xmm5", "xmm6", "xmm7", "memory");\
 }							\
 namespace simd {					\
 SIMD_PASSIGN_SPEC(n,type)				\
-{   TOUCH_MATRIX_R(oin);				\
-    asm volatile ("movups %4, %%xmm0\n\t"		\
+{   asm volatile ("movups %4, %%xmm0\n\t"		\
 	"movups %5, %%xmm1\n\t"				\
 	"movups %6, %%xmm2\n\t"				\
 	"movups %7, %%xmm3\n\t"				\
@@ -131,8 +122,7 @@ SIMD_PASSIGN_SPEC(n,type)				\
 	"movups %%xmm2, %2\n\t"				\
 	"movups %%xmm3, %3"				\
 	: MATRIX_W(oout) : MATRIX_R(oin)		\
-	: "xmm0", "xmm1", "xmm2", "xmm3");		\
-    TOUCH_MATRIX_W(oout);				\
+	: "xmm0", "xmm1", "xmm2", "xmm3", "memory");	\
 }							\
 }
 SSE_TUPLE_SPECS(16,float)

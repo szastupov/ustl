@@ -202,27 +202,15 @@ inline const tuple<N,T1> operator/ (const tuple<N,T1>& t1, const tuple<N,T2>& t2
 //----------------------------------------------------------------------
 // Define SIMD specializations for member functions.
 
-// All the COMMA_LIST mess is to tell the compiler that each element is indeed referenced.
-#define TUPLEV_R1(n)		"m"(m_v[n])
-#define TUPLEV_R2(n)		"m"(v.m_v[n])
-#define TUPLEV_W1(n)		"=m"(m_v[n])
-#define TUPLEV_W2(n)		"=m"(v.m_v[n])
-
 #if CPU_HAS_SSE
 #define SSE_TUPLE_SPECS(n,type)							\
 template <> inline tuple<n,type>::tuple (void)					\
-{   asm(""::COMMA_LIST_4(TUPLEV_R1));						\
-    asm("xorps %%xmm0, %%xmm0\n\tmovups %%xmm0, %0"				\
-	: COMMA_LIST_4(TUPLEV_W1) : :"xmm0"); }				\
+{ asm("xorps %%xmm0, %%xmm0\n\tmovups %%xmm0, %0":"+m"(m_v[0])::"xmm0","memory"); } \
 template<> inline void tuple<n,type>::swap (tuple<n,type>& v)			\
 {										\
-    asm(""::COMMA_LIST_4(TUPLEV_R1), COMMA_LIST_4(TUPLEV_R2));		\
-    asm volatile ("movups %2,%%xmm0\n\tmovups %3,%%xmm1\n\t"			\
+    asm ("movups %0,%%xmm0\n\tmovups %1,%%xmm1\n\t"				\
 	"movups %%xmm0,%1\n\tmovups %%xmm1,%0"					\
-	: "=m"(m_v[0]), "=m"(v.m_v[0])						\
-	: "m"(m_v[0]), "m"(v.m_v[0])						\
-	: "xmm0","xmm1");							\
-    asm("":COMMA_LIST_4(TUPLEV_W1), COMMA_LIST_4(TUPLEV_W2));			\
+	: "+m"(m_v[0]), "+m"(v.m_v[0]) :: "xmm0","xmm1","memory");		\
 }
 SSE_TUPLE_SPECS(4,float)
 SSE_TUPLE_SPECS(4,int32_t)
@@ -232,15 +220,12 @@ SSE_TUPLE_SPECS(4,uint32_t)
 #if SIZE_OF_LONG == 8 && __GNUC__
 #define LONG_TUPLE_SPECS(n,type)		\
 template <> inline tuple<n,type>::tuple (void)	\
-{ asm(""::COMMA_LIST(n,TUPLEV_R1));		\
-  *noalias_cast<long*>(m_v) = 0;		\
-  asm("":COMMA_LIST(n,TUPLEV_W1)); }		\
+{ asm("":"+m"(m_v[0])::"memory");		\
+  *noalias_cast<long*>(m_v) = 0; }				\
 template<> inline void tuple<n,type>::swap (tuple<n,type>& v)	\
-{ asm(""::COMMA_LIST(n,TUPLEV_R1));				\
-  asm(""::COMMA_LIST(n,TUPLEV_R2));				\
+{ asm("":"+m"(m_v[0]),"+m"(v.m_v[0])::"memory");			\
   iter_swap (noalias_cast<long*>(m_v), noalias_cast<long*>(v.m_v));	\
-  asm("":COMMA_LIST(n,TUPLEV_W1));				\
-  asm("":COMMA_LIST(n,TUPLEV_W2));				\
+  asm("":"+m"(m_v[0]),"+m"(v.m_v[0])::"memory");			\
 }
 LONG_TUPLE_SPECS(2,float)
 LONG_TUPLE_SPECS(4,int16_t)
@@ -254,15 +239,11 @@ LONG_TUPLE_SPECS(8,uint8_t)
 #define MMX_TUPLE_SPECS(n,type)		\
 template <> inline tuple<n,type>::tuple (void)	\
 {  asm ("pxor %%mm0, %%mm0\n\tmovq %%mm0, %0"	\
-	: COMMA_LIST(n,TUPLEV_W1) ::"mm0", "st"); simd::reset_mmx(); }	\
+	:"+m"(m_v[0])::"mm0","st","memory"); simd::reset_mmx(); }	\
 template<> inline void tuple<n,type>::swap (tuple<n,type>& v)		\
-{  asm (""::COMMA_LIST(n,TUPLEV_R1));					\
-   asm (""::COMMA_LIST(n,TUPLEV_R2));					\
-   asm volatile ("movq %0,%%mm0\n\tmovq %1,%%mm1\n\t"			\
+{  asm ("movq %0,%%mm0\n\tmovq %1,%%mm1\n\t"				\
 	"movq %%mm0,%1\n\tmovq %%mm1,%0"				\
-	::"m"(m_v[0]),"m"(v.m_v[0]):"mm0","mm1","st","st(1)");		\
-   asm ("":COMMA_LIST(n,TUPLEV_W1));					\
-   asm ("":COMMA_LIST(n,TUPLEV_W2));					\
+	:"+m"(m_v[0]),"+m"(v.m_v[0])::"mm0","mm1","st","st(1)","memory"); \
    simd::reset_mmx();							\
 }
 MMX_TUPLE_SPECS(2,float)
@@ -278,19 +259,19 @@ MMX_TUPLE_SPECS(8,uint8_t)
 #if __i386__ || __x86_64__
 #define UINT32_TUPLE_SPECS(type,otype)		\
 template <> inline tuple<2,type>::tuple (void)	\
-{ asm(""::"m"(m_v[0]),"m"(m_v[1]));		\
+{ asm("":"+m"(m_v[0]),"+m"(m_v[1])::"memory");	\
   *noalias_cast<uint32_t*>(m_v) = 0;		\
-  asm("":"=m"(m_v[0]),"=m"(m_v[1])); }		\
+  asm("":"+m"(m_v[0]),"+m"(m_v[1])::"memory"); }\
 template <> inline const tuple<2,type>& tuple<2,type>::operator= (const tuple<2,type>& v)\
 { asm ("mov %3, %0"							\
        :"=m"(*noalias_cast<uint32_t*>(m_v)),"=m"(m_v[0]),"=m"(m_v[1])	\
-       :"r"(*noalias_cast<const uint32_t*>(v.begin())),"m"(v[0]),"m"(v[1]));	\
+       :"r"(*noalias_cast<const uint32_t*>(v.begin())),"m"(v[0]),"m"(v[1]):"memory");	\
   return (*this); }							\
 template <> template <>							\
 inline const tuple<2,type>& tuple<2,type>::operator= (const tuple<2,otype>& v)\
 { asm ("mov %3, %0"							\
        :"=m"(*noalias_cast<uint32_t*>(m_v)),"=m"(m_v[0]),"=m"(m_v[1])	\
-       :"r"(*noalias_cast<const uint32_t*>(v.begin())),"m"(v[0]),"m"(v[1]));	\
+       :"r"(*noalias_cast<const uint32_t*>(v.begin())),"m"(v[0]),"m"(v[1]):"memory");	\
   return (*this); }							\
 template <> inline tuple<2,type>::tuple (const tuple<2,type>& v)	\
 { operator= (v); }							\
@@ -298,9 +279,9 @@ template <> template <>							\
 inline tuple<2,type>::tuple (const tuple<2,otype>& v)			\
 { operator= (v); }							\
 template<> inline void tuple<2,type>::swap (tuple<2,type>& v)		\
-{ asm(""::"m"(m_v[0]),"m"(m_v[1]),"m"(v.m_v[0]),"m"(v.m_v[1]));		\
+{ asm(""::"m"(m_v[0]),"m"(m_v[1]),"m"(v.m_v[0]),"m"(v.m_v[1]):"memory");\
   iter_swap (noalias_cast<uint32_t*>(m_v), noalias_cast<uint32_t*>(v.m_v));			\
-  asm("":"=m"(m_v[0]),"=m"(m_v[1]),"=m"(v.m_v[0]),"=m"(v.m_v[1])); }				\
+  asm("":"=m"(m_v[0]),"=m"(m_v[1]),"=m"(v.m_v[0]),"=m"(v.m_v[1])::"memory"); }				\
 template <> inline const tuple<2,type>& operator+= (tuple<2,type>& t1, const tuple<2,type>& t2)	\
     { t1[0] += t2[0]; t1[1] += t2[1]; return (t1); }						\
 template <> inline const tuple<2,type>& operator-= (tuple<2,type>& t1, const tuple<2,type>& t2)	\
