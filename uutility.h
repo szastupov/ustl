@@ -71,14 +71,14 @@ namespace ustl {
 
 /// Returns the minimum of \p a and \p b
 template <typename T1, typename T2>
-inline const T1 min (const T1& a, const T2& b)
+inline T1 min (const T1& a, const T2& b)
 {
     return (a < b ? a : b);
 }
 
 /// Returns the maximum of \p a and \p b
 template <typename T1, typename T2>
-inline const T1 max (const T1& a, const T2& b)
+inline T1 max (const T1& a, const T2& b)
 {
     return (b < a ? a : b);
 }
