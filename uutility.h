@@ -55,8 +55,9 @@ namespace ustl {
 /// Shorthand for container reverse iteration.
 #define eachfor(type,i,ctr)	for (type i = (ctr).rbegin(); i != (ctr).rend(); ++ i)
 
-/// Macro for passing template types as macro arguments.
-/// \@{
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+// Macro for passing template types as macro arguments.
+// These are deprecated. Use metamac macros instead. Will remove by next release.
 #define TEMPLATE_FULL_DECL1(d1,t1)		template <d1 t1>
 #define TEMPLATE_FULL_DECL2(d1,t1,d2,t2)	template <d1 t1, d2 t2>
 #define TEMPLATE_FULL_DECL3(d1,t1,d2,t2,d3,t3)	template <d1 t1, d2 t2, d3 t3>
@@ -66,7 +67,7 @@ namespace ustl {
 #define TEMPLATE_TYPE1(type,a1)		type<a1>
 #define TEMPLATE_TYPE2(type,a1,a2)	type<a1,a2>
 #define TEMPLATE_TYPE3(type,a1,a2,a3)	type<a1,a2,a3>
-/// \@}
+#endif
 
 /// Returns the minimum of \p a and \p b
 template <typename T1, typename T2>

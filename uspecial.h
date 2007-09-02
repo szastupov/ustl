@@ -192,7 +192,7 @@ ostringstream& operator<< (ostringstream& os, const matrix<NX,NY,T>& v)
 //----{ long4grain }----------------------------------------------------
 
 #if SIZE_OF_LONG == 8 && HAVE_INT64_T
-/// Helper class for long4grain and ptr4grain wrappers.
+// Helper class for long4grain and ptr4grain wrappers.
 class _long4grain {
 public:
     inline	_long4grain (uint64_t v)	: m_v (v) {}

@@ -1,4 +1,6 @@
-// Copyright (c) 2006 by Mike Sharov <msharov@users.sourceforge.net>
+// This file is part of the ustl library, an STL implementation.
+//
+// Copyright (c) 2007 by Mike Sharov <msharov@users.sourceforge.net>
 //
 // This implementation is adapted from the Loki library, distributed under
 // the MIT license with Copyright (c) 2001 by Andrei Alexandrescu.
@@ -12,6 +14,8 @@
 #ifndef TYPET_H_70B4C9693A05E0B405B225F356DE5450
 #define TYPET_H_70B4C9693A05E0B405B225F356DE5450
 
+namespace ustl {
+/// Template metaprogramming tools
 namespace tm {
 
 /// An empty type useful as a placeholder.
@@ -65,8 +69,8 @@ struct Conversion<void, void> { enum { exists = true, exists2Way = true, sameTyp
 /// SuperSubclass<T,U>::value is true when U is derived from T, or when U is T
 template <typename T, typename U>
 struct SuperSubclass {
-    enum { value = (::tm::Conversion<const volatile U*, const volatile T*>::exists &&
-		    !::tm::Conversion<const volatile T*, const volatile void*>::sameType) };
+    enum { value = (::ustl::tm::Conversion<const volatile U*, const volatile T*>::exists &&
+		    !::ustl::tm::Conversion<const volatile T*, const volatile void*>::sameType) };
     enum { dontUseWithIncompleteTypes = sizeof(T)==sizeof(U) };	// Dummy enum to make sure that both classes are fully defined.
 };
 template <>
@@ -86,10 +90,11 @@ struct SuperSubclass<T, void> {
 template <typename T, typename U>
 struct SuperSubclassStrict {
     enum { value = SuperSubclass<T,U>::value &&
-		    !::tm::Conversion<const volatile T*, const volatile U*>::sameType };
+		    !::ustl::tm::Conversion<const volatile T*, const volatile U*>::sameType };
 };
 
 } // namespace tm
+} // namespace ustl
 
 #endif
 

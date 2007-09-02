@@ -1,4 +1,7 @@
-Release 1.1
+2007-09-02 Release 1.1
+	* Due to the demise of SourceForge compile farm, this and subsequent
+		releases are not as well tested the previous ones. So please
+		report compilation problems, if any, on non-x86_64 platforms.
 	* Fixed various aliasing problems complained about by gcc 4.2.
 	* Added noalias_cast<type>(v) to aid in working around the above
 		aliasing problem. The aliased variables also must be

@@ -1,4 +1,6 @@
-// Copyright (c) 2006 by Mike Sharov <msharov@users.sourceforge.net>
+// This file is part of the ustl library, an STL implementation.
+//
+// Copyright (c) 2007 by Mike Sharov <msharov@users.sourceforge.net>
 //
 // This implementation is adapted from the Loki library, distributed under
 // the MIT license with Copyright (c) 2001 by Andrei Alexandrescu.
@@ -12,6 +14,7 @@
 #include "metamac.h"
 #include "typet.h"
 
+namespace ustl {
 namespace tm {
 
 /// The building block of typelists. Use it throught the Seq templates.
@@ -218,6 +221,7 @@ public:
 
 } // namespace tl
 } // namespace tm
+} // namespace ustl
 
 #endif
 

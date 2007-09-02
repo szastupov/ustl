@@ -109,7 +109,7 @@ TMPDIR	= /tmp
 DISTDIR	= ${HOME}/stored
 DISTNAM	= ${LIBNAME}-${MAJOR}.${MINOR}
 DISTTAR	= ${DISTNAM}.${BUILD}.tar.bz2
-DDOCTAR	= ${LIBNAME}-docs-${MAJOR}.${MINOR}-${BUILD}.tar.bz2
+DDOCTAR	= ${LIBNAME}-docs-${MAJOR}.${MINOR}.${BUILD}.tar.bz2
 
 dist:
 	mkdir ${TMPDIR}/${DISTNAM}

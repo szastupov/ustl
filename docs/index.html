@@ -78,7 +78,7 @@ files page</a>. If you like living dangerously, you can pull the working branch
 directly from <a href="http://repo.or.cz/w/ustl.git">git://repo.or.cz/ustl.git</a>.
 The mainline source should build on any unix-based system, including Linux,
 BSD, MacOS, SunOS, and Solaris. A separate port for Symbian OS is maintained by <a
-href="http://www.penrillian.com/index.php?option=com_content&task=view&id=82&Itemid=73">Penrillian</a>.
+href="http://www.penrillian.com/index.php?option=com_content&amp;task=view&amp;id=82&amp;Itemid=73">Penrillian</a>.
 Windows-based systems are not, and will not be supported by the
 mainline. However, if you make a port, I'll be happy to mention it here.
 After unpacking:
@@ -263,7 +263,34 @@ copy (s.utf8_begin(), s.utf8_end(), result.begin());
 </pre><p>
 To write wide characters to the string, wchar_t values can be directly
 given to push_back, insert, append, or assign, in the same way as the
-char ones. And that's about all one can say about the string object.
+char ones.
+</p><p>
+A few words must be said regarding reading wide characters. The shortest
+possible rule to follow is "don't!" I have received a few complaints about
+the fact that all offsets given to and returned by string functions are
+byte offsets and not character offsets. The problem with modifying or even
+looking for specific wide characters is that you are not supposed to know
+what they are. Your strings will be localized into many languages and it
+is impossible for you to know how the translation will be accomplished.
+As a result, whenever you are hardcoding a specific character value,
+or a specific character length (like a three-character extension),
+you are effectively hardcoding yourself into a locale. The only valid
+operation on localized strings is parsing it via standard delimiters,
+treating anything between those delimiters as opaque blocks. For this
+reason, whenever you think you need to do something at a particular
+character offset, you should recognize it as a mistake and find the
+offset by the content that is supposed to be there.
+</p><p>
+If this philosophy is consistently followed, it becomes clear that
+actual character boundaries are entirely irrelevant. There are only
+two exceptions to this: first occurs if you are writing a text editor
+and want to insert user data at a character position, the second occurs
+if you are writing a font renderer and want to translate characters to
+glyphs. In both cases you should make use of the utf8_iterator to find
+character boundaries and values. Given that these two cases apply to
+just a handful of people who are involved in implementing user interface
+frameworks, I believe that the opacity restriction is well justified by
+the amount of code space it saves for the vast majority of library users.
 </p>
 <h2><a name="Algorithms">Algorithms</a></h2>
 <p>
@@ -602,70 +629,61 @@ int main (void)
 }
 </pre><p>
 Feel free to compile it and see for yourself. I'm compiling on an Athlon
-64 with gcc 4.0.2 and <kbd>-O3 -march=athlon64 -DNDEBUG=1</kbd>. The
+64 with gcc 4.2.1 and <kbd>-O3 -march=athlon64 -DNDEBUG=1</kbd>. The
 libstdc++ version is linked implicitly with it, and uSTL version is linked
-with <kbd>-nodefaultlibs -lustl -lc</kbd>. Both executables are stripped.
+with gcc (instead of g++) and <kbd>-lustl</kbd>. Both executables are stripped.
 The libstdc++ version looks like this:
 </p><pre>
 % ls -l std/tes
-7168 tes*
+6856 tes*
 % size std/tes
 text    data     bss     dec     hex filename
-3868     608       8    4484    1184 tes
+3154     608       8    3770     eba tes
 % size -A std/tes.o
-tes.o:
-section                                                                                           size   addr
-_ZNSt6vectorIiSaIiEE5eraseEN9__gnu_cxx17__normal_iteratorIPiS1_EE                                    8      0
-_ZNSt6vectorIiSaIiEE13_M_insert_auxEN9__gnu_cxx17__normal_iteratorIPiS1_EERKi                        8      0
-_ZNSt6vectorIiSaIiEE6insertEN9__gnu_cxx17__normal_iteratorIPiS1_EERKi                                8      0
-_ZNSt6vectorIiSaIiEE14_M_fill_insertEN9__gnu_cxx17__normal_iteratorIPiS1_EEmRKi                      8      0
-_ZNSt6vectorIiSaIiEE5eraseEN9__gnu_cxx17__normal_iteratorIPiS1_EES5_                                 8      0
-.text                                                                                              235      0
-.data                                                                                                0      0
-.bss                                                                                                 0      0
-.gnu.linkonce.t._ZNSt6vectorIiSaIiEE5eraseEN9__gnu_cxx17__normal_iteratorIPiS1_EE                   74      0
-.rodata.str1.1                                                                                      45      0
-.gnu.linkonce.t._ZNSt6vectorIiSaIiEE13_M_insert_auxEN9__gnu_cxx17__normal_iteratorIPiS1_EERKi      339      0
-.gnu.linkonce.t._ZNSt6vectorIiSaIiEE6insertEN9__gnu_cxx17__normal_iteratorIPiS1_EERKi              116      0
-.gnu.linkonce.t._ZNSt6vectorIiSaIiEE14_M_fill_insertEN9__gnu_cxx17__normal_iteratorIPiS1_EEmRKi    560      0
-.gnu.linkonce.t._ZNSt6vectorIiSaIiEE5eraseEN9__gnu_cxx17__normal_iteratorIPiS1_EES5_                80      0
-.gcc_except_table                                                                                   15      0
-.eh_frame                                                                                          376      0
-.comment                                                                                            18      0
-.note.GNU-stack                                                                                      0      0
-Total                                                                                             1898
+std/tes.o  :
+section                                                                                 size   addr
+_ZNSt6vectorIiSaIiEE13_M_insert_auxEN9__gnu_cxx17__normal_iteratorIPiS1_EERKi              8      0
+_ZNSt6vectorIiSaIiEE14_M_fill_insertEN9__gnu_cxx17__normal_iteratorIPiS1_EEmRKi            8      0
+.text                                                                                    328      0
+.data                                                                                      0      0
+.bss                                                                                       0      0
+.rodata.str1.1                                                                            45      0
+.text._ZNSt6vectorIiSaIiEE13_M_insert_auxEN9__gnu_cxx17__normal_iteratorIPiS1_EERKi      351      0
+.text._ZNSt6vectorIiSaIiEE14_M_fill_insertEN9__gnu_cxx17__normal_iteratorIPiS1_EEmRKi    546      0
+.gcc_except_table                                                                         15      0
+.eh_frame                                                                                144      0
+.comment                                                                                  18      0
+.note.GNU-stack                                                                            0      0
+Total                                                                                   1463
 </pre><p>
 The uSTL version looks like this:
 </p><pre>
 % ls -l ustl/tes
-5960 tes*
+5672 tes*
 % size ustl/tes
 text    data     bss     dec     hex filename
-2671     608       8    3287     cd7 tes
+2380     600       8    2988     bac tes
 % size -A ustl/tes.o
-tes.o  :
-section                                            size   addr
-_ZN4ustl6vectorIiE10deallocateEv                      8      0
-.text                                               269      0
-.data                                                 0      0
-.bss                                                  0      0
-.gnu.linkonce.t._ZN4ustl6vectorIiE10deallocateEv      5      0
-.gcc_except_table                                    49      0
-.eh_frame                                           136      0
-.comment                                             18      0
-.note.GNU-stack                                       0      0
-Total                                               485
+ustl/tes.o  :
+section             size   addr
+.text                258      0
+.data                  0      0
+.bss                   0      0
+.gcc_except_table     45      0
+.eh_frame             72      0
+.comment              18      0
+.note.GNU-stack        0      0
+Total                393
 </pre><p>
-Let's see what's going on here. The .text size is about the same, but look at the
-other things instantiated: libstdc++ instantiates all those vector functions.
-Two versions of erase are 74 and 80 bytes, insert_aux (used by insert and
-push_back) is 339 bytes, insert is 116 bytes, and _fill_insert is 560 bytes.
-That's 1169 bytes total for just one vector type. These functions will become
-larger for containers with objects, but about 1k in savings is a good measure.
-The uSTL version only instantiates a 5 byte deallocate function, which calls
-the nonexistent destructors of the int vector (it isn't marked inline because
-when there are destructors, it can get larger). The rest is basically inlined
-casts and calls to memblock functions.
+Let's see what's going on here. The .text size in the std version is
+27% larger, indicating more inlined functionality. This version of gcc
+libstdc++ instantiates two vector functions, _insert_aux (used by insert
+and push_back) of 351 bytes and _fill_insert of 546 bytes. (Previous
+earlier gcc versions (4.0.2) also instantiated extra erase functions of 74
+and 80 bytes, which now appear to be inlined) That's 967 bytes total for
+just one vector type. These functions will become larger for containers
+with objects, but about 1k in savings is a good measure.  The uSTL version
+inlines everything and calls memblock functions instead.
 </p><p>
 1k doesn't seem like much, but consider that you get it for <em>every type
 of container you instantiate</em>! An int vector here, a float vector
@@ -675,36 +693,38 @@ are using half your executable just for container overhead.
 But wait, there is more! Let's look at the total memory footprint:
 </p><pre>
 % ldd std/tes
-libstdc++.so.6 =&gt; /usr/lib64/libstdc++.so.6 (0x00002b0914d86000)
-libm.so.6 =&gt; /lib64/tls/libm.so.6 (0x00002b0914f86000)
-libgcc_s.so.1 =&gt; /usr/lib64/libgcc_s.so.1 (0x00002b091510e000)
-libc.so.6 =&gt; /lib64/tls/libc.so.6 (0x00002b091521b000)
-/lib64/ld-linux-x86-64.so.2 (0x00002b0914c6e000)
+libstdc++.so.6 =&gt; /usr/lib/libstdc++.so.6
+libm.so.6 =&gt; /lib/tls/libm.so.6
+libgcc_s.so.1 =&gt; /usr/lib/libgcc_s.so.1
+libc.so.6 =&gt; /lib/tls/libc.so.6
+/lib64/ld-linux-x86-64.so.2
 
 % ldd ustl/tes
-libustl.so.1 =&gt; /usr/local/lib/libustl.so.1 (0x00002ae4edd99000)
-libc.so.6 =&gt; /lib64/tls/libc.so.6 (0x00002ae4edeea000)
-libgcc_s.so.1 =&gt; /usr/lib64/libgcc_s.so.1 (0x00002ae4ee122000)
-/lib64/ld-linux-x86-64.so.2 (0x00002ae4edc81000)
+libustl.so.1 =&gt; /usr/local/lib/libustl.so.1
+libc.so.6 =&gt; /lib64/tls/libc.so.6
+libgcc_s.so.1 =&gt; /usr/lib64/libgcc_s.so.1
+/lib64/ld-linux-x86-64.so.2
 
 % size of each lib
    text    data     bss     dec     hex filename
-1122960   11312   10900 1145172  117954 /lib/libc-2.3.5.so
- 131871     376      64  132311   204d7 /lib/libm-2.3.5.so
-  38110     412     296   38818    97a2 /usr/lib/libgcc_s.so.1
- 827715   19916   23800  871431   d4c07 /usr/lib/libstdc++.so.6.0.6
- 144672	  10152	  66088	 220912	  35ef0	libustl.so.1.0.0
+1248112   19928   18536 1286576  13a1b0 /lib/libc-2.3.6.so
+ 543701     960      72  544733   84fdd /lib/libm-2.3.6.so
+  45598     840     536   46974    b77e /usr/lib/libgcc_s.so.1
+ 773236   33232   76360  882828   d788c /usr/lib/libstdc++.so.6.0.9
+ 121898    7576   66032  195506   2fbb2 libustl.so.1.1.0
 </pre><p>
-After adding up the numbers (from the dec column) std/tes loads 2187732
-bytes of shared libraries and ustl/tes loads 1404902 bytes, saving 782438
-bytes or 35%. If you don't count libc, measuring only the C++-specific
-overhead, libstdc++ loads 1042560 while libustl only 259730, <em>four
-times less</em>! Finally, much of uSTL's size comes from gcc's support
-libraries; if you compile uSTL without the <tt>NOLIBSTDCPP</tt> option in
-Config.mk, you'll see that it only takes up 88815 bytes then (of which
-only 28696 are used by .text), meaning that only 40% of the library size
-is my fault. gcc developers will have to reduce the size of libsupc++
-and libgcc_eh before any further size reduction would be practical.
+After adding up the numbers (from the dec column) std/tes loads 2761111
+bytes of shared libraries and ustl/tes loads 1529056 bytes, saving
+1232055 bytes or 45%! (It should be noted that libm quadrupled in size
+between 2.3.5 and 2.3.6, contributing quite a bit to this) If you don't
+count libc, measuring only the C++-specific overhead, libstdc++ loads
+1474535 while libustl only 242480, <em>six times less</em>! Finally,
+much of uSTL's size comes from gcc's support libraries; if you compile
+uSTL without the <tt>NOLIBSTDCPP</tt> option in Config.mk, then you'll
+see that it only takes up 80697 bytes, of which only 25632 are used
+by .text, meaning that only about a third of the library size is my
+fault. gcc developers will have to reduce the size of libsupc++ and
+libgcc_eh before any further size reduction would be practical.
 </p>
 <h2><a name="Contact">Bug reporting</a></h2>
 <p>
