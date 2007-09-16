@@ -1,0 +1,18 @@
+Begin4
+Title:		uSTL
+Version:	1.1
+Entered-date:	2007-09-02
+Description:	A size-optimized implementation of the C++ STL.
+		This implementation of the standard template library
+		reduces template bloat by factoring out memory
+		management functionality from STL containers
+		and using templates for type safety only.
+Keywords:	C++ STL standard template library size optimized bloat
+Author:		msharov@users.sourceforge.net (Mike Sharov)
+Maintained-by:	msharov@users.sourceforge.net (Mike Sharov)
+Primary-site:	ibiblio.org /pub/linux/devel/lang/c++
+		131k ustl-1.1.0.tar.bz2
+Alternate-site:	http://ustl.sourceforge.net
+Platforms:	POSIX
+Copying-policy:	MIT
+End
