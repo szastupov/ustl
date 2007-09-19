@@ -107,17 +107,25 @@ check:	install
 
 TMPDIR	= /tmp
 DISTDIR	= ${HOME}/stored
-DISTNAM	= ${LIBNAME}-${MAJOR}.${MINOR}
-DISTTAR	= ${DISTNAM}.${BUILD}.tar.bz2
-DDOCTAR	= ${LIBNAME}-docs-${MAJOR}.${MINOR}.${BUILD}.tar.bz2
+ifeq (${BUILD},0)
+DISTVER	= ${MAJOR}.${MINOR}
+else
+DISTVER	= ${MAJOR}.${MINOR}.${BUILD}
+endif
+DISTNAM	= ${LIBNAME}-${DISTVER}
+DISTLSM	= ${DISTNAM}.lsm
+DISTTAR	= ${DISTNAM}.tar.bz2
+DDOCTAR	= ${DISTNAM}-docs.tar.bz2
 
 dist:
 	mkdir ${TMPDIR}/${DISTNAM}
 	cp -r . ${TMPDIR}/${DISTNAM}
 	+${MAKE} -C ${TMPDIR}/${DISTNAM} dox distclean
-	(cd ${TMPDIR}; tar jcf ${DISTDIR}/${DDOCTAR} ${DISTNAM}/docs/html)
-	(cd ${TMPDIR}/${DISTNAM}; rm -rf `find . -name .svn` docs/html)
-	(cd ${TMPDIR}; tar jcf ${DISTDIR}/${DISTTAR} ${DISTNAM}; rm -rf ${DISTNAM})
+	(cd ${TMPDIR};							\
+	    tar jcf ${DISTDIR}/${DDOCTAR} ${DISTNAM}/docs/html;		\
+	    rm -f ${DISTNAM}/.git; rm -rf ${DISTNAM}/docs/html;		\
+	    cp ${DISTNAM}/docs/${LIBNAME}.lsm ${DISTDIR}/${DISTLSM};	\
+	    tar --numeric-owner --same-owner -jcf ${DISTDIR}/${DISTTAR} ${DISTNAM}; rm -rf ${DISTNAM})
 
 distclean:	clean
 	@rm -f Config.mk config.h ${LIBNAME}.spec bsconf.o bsconf .depend bvt/.depend
