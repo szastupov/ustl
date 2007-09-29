@@ -125,8 +125,9 @@ ifstream::size_type ifstream::underflow (size_type n)
     }
     cout.flush();
 
-    while (br - oldPos < n && m_File.good())
-	br += m_File.readsome (m_Buffer.begin() + br, m_Buffer.size() - br);
+    size_type brn = 1;
+    for (; br < oldPos + n && brn && m_File.good(); br += brn)
+	brn = m_File.readsome (m_Buffer.begin() + br, m_Buffer.size() - br);
     clear (m_File.rdstate());
 
     m_Buffer[br] = string::c_Terminator;
