@@ -104,6 +104,19 @@ inline void destroy (T* p) throw()
     p->~T();
 }
 
+// Helper templates to not instantiate anything for integral types.
+template <typename T>
+void dtors (T first, T last) throw()
+    { for (; first < last; ++ first) destroy (&*first); }
+template <typename T, bool bIntegral>
+struct Sdtorsr {
+    inline void operator()(T first, T last) throw() { dtors (first, last); }
+};
+template <typename T>
+struct Sdtorsr<T,true> {
+    inline void operator()(T, T) throw() {}
+};
+
 /// Calls the destructor on elements in range [first, last) without calling delete.
 /// \ingroup RawStorageAlgorithms
 ///
@@ -111,9 +124,7 @@ template <typename ForwardIterator>
 inline void destroy (ForwardIterator first, ForwardIterator last) throw()
 {
     typedef typename iterator_traits<ForwardIterator>::value_type value_type;
-    if (!numeric_limits<value_type>::is_integral)
-	for (; first < last; ++ first)
-	    destroy (&*first);
+    Sdtorsr<ForwardIterator,numeric_limits<value_type>::is_integral>()(first, last);
 }
 
 /// Casts \p p to the type of the second pointer argument.

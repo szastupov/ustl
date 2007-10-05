@@ -2,6 +2,11 @@ Release 1.2
 	* Fixed ifstream readsome to work correctly on nonblocking fds.
 	* Yet another try at fixing noalias rearrangments.
 		Added a memory clobber and +g to noalias templates.
+	* Added dtors template which will embody range destructors for
+		destroy and vector dtor instead of vector deallocate. It is
+		called by destroy through a selector template, turning it off
+		completely for integral types. This removes empty deallocate
+		instantiations for integral type vectors.
 
 2007-09-02 Release 1.1
 	* Due to the demise of SourceForge compile farm, this and subsequent

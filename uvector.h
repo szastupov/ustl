@@ -78,7 +78,7 @@ public:
     inline void			push_back (const T& v = T());
     inline void			pop_back (void)			{ m_Data.memlink::resize (m_Data.size() - sizeof(T)); }
     inline void			clear (void)			{ m_Data.clear(); }
-    void			deallocate (void) throw();
+    inline void			deallocate (void) throw();
     inline void			assign (const_iterator i1, const_iterator i2);
     inline void			assign (size_type n, const T& v);
     inline void			swap (vector<T>& v)		{ m_Data.swap (v.m_Data); }
@@ -109,7 +109,7 @@ private:
 
 /// Allocates space for at least \p n elements.
 template <typename T>
-void vector<T>::reserve (size_type n, bool bExact)
+inline void vector<T>::reserve (size_type n, bool bExact)
 {
     const size_type oldCapacity = capacity();
     m_Data.reserve (n * sizeof(T), bExact);
@@ -119,7 +119,7 @@ void vector<T>::reserve (size_type n, bool bExact)
 
 /// Resizes the vector to contain \p n elements.
 template <typename T>
-void vector<T>::resize (size_type n, bool bExact)
+inline void vector<T>::resize (size_type n, bool bExact)
 {
     if (m_Data.capacity() < n * sizeof(T))
 	reserve (n, bExact);
@@ -128,7 +128,7 @@ void vector<T>::resize (size_type n, bool bExact)
 
 /// Calls element destructors and frees storage.
 template <typename T>
-void vector<T>::deallocate (void) throw()
+inline void vector<T>::deallocate (void) throw()
 {
     if (!is_linked())
 	destroy (begin(), begin() + capacity());
@@ -181,8 +181,8 @@ vector<T>::vector (const_iterator i1, const_iterator i2)
 template <typename T>
 inline vector<T>::~vector (void) throw()
 {
-    if (!numeric_limits<value_type>::is_integral)
-	deallocate();
+    if (!is_linked())
+	destroy (begin(), begin() + capacity());
 }
 
 /// Copies the range [\p i1, \p i2]
@@ -212,7 +212,7 @@ inline const vector<T>& vector<T>::operator= (const vector<T>& v)
 
 /// Inserts \p n uninitialized elements at \p ip.
 template <typename T>
-typename vector<T>::iterator vector<T>::insert_space (iterator ip, size_type n)
+inline typename vector<T>::iterator vector<T>::insert_space (iterator ip, size_type n)
 {
     const uoff_t ipmi = distance (m_Data.begin(), memblock::iterator(ip));
     reserve (size() + n, false);
@@ -221,7 +221,7 @@ typename vector<T>::iterator vector<T>::insert_space (iterator ip, size_type n)
 
 /// Inserts \p n elements with value \p v at offsets \p ip.
 template <typename T>
-typename vector<T>::iterator vector<T>::insert (iterator ip, size_type n, const T& v)
+inline typename vector<T>::iterator vector<T>::insert (iterator ip, size_type n, const T& v)
 {
     ip = insert_space (ip, n);
     ::ustl::fill (ip, ip + n, v);
@@ -230,7 +230,7 @@ typename vector<T>::iterator vector<T>::insert (iterator ip, size_type n, const 
 
 /// Inserts value \p v at offset \p ip.
 template <typename T>
-typename vector<T>::iterator vector<T>::insert (iterator ip, const T& v)
+inline typename vector<T>::iterator vector<T>::insert (iterator ip, const T& v)
 {
     *(ip = insert_space (ip, 1)) = v;
     return (ip);
@@ -238,7 +238,7 @@ typename vector<T>::iterator vector<T>::insert (iterator ip, const T& v)
 
 /// Inserts range [\p i1, \p i2] at offset \p ip.
 template <typename T>
-typename vector<T>::iterator vector<T>::insert (iterator ip, const_iterator i1, const_iterator i2)
+inline typename vector<T>::iterator vector<T>::insert (iterator ip, const_iterator i1, const_iterator i2)
 {
     assert (i1 <= i2);
     ip = insert_space (ip, distance (i1, i2));
@@ -263,7 +263,7 @@ inline typename vector<T>::iterator vector<T>::erase (iterator ep1, iterator ep2
 
 /// Inserts value \p v at the end of the vector.
 template <typename T>
-void vector<T>::push_back (const T& v)
+inline void vector<T>::push_back (const T& v)
 {
     resize (size() + 1, false);
     back() = v;
