@@ -337,7 +337,7 @@ inline bool TestAndSet (int* pm)
 template <typename DEST, typename SRC>
 inline DEST noalias (const DEST&, SRC* s)
 {
-    asm(""::"g"(s));
+    asm("":"+g"(s)::"memory");
     union UPun { SRC s; DEST d; };
     return (((UPun*)(s))->d);
 }
@@ -345,7 +345,7 @@ inline DEST noalias (const DEST&, SRC* s)
 template <typename DEST, typename SRC>
 inline DEST noalias_cast (SRC s)
 {
-    asm(""::"g"(s));
+    asm("":"+g"(s)::"memory");
     union { SRC s; DEST d; } u = {s};
     return (u.d);
 }

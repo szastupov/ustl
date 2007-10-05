@@ -1,5 +1,7 @@
 Release 1.2
 	* Fixed ifstream readsome to work correctly on nonblocking fds.
+	* Yet another try at fixing noalias rearrangments.
+		Added a memory clobber and +g to noalias templates.
 
 2007-09-02 Release 1.1
 	* Due to the demise of SourceForge compile farm, this and subsequent
