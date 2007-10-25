@@ -5,7 +5,7 @@
     <title>uSTL - the small STL library</title>
     <link rel="stylesheet" type="text/css" href="style/default.css" />
     <meta http-equiv="Content-Type" content="text/xhtml+xml; charset=ISO-8859-1" />
-    <meta name="verify-v1" content="EEGh2qVCVexiTEfFrDpo5le9s8mktGRXmjz63MtKufc=" />
+    <meta name="verify-v1" content="/fXe51SIkBhDzzEnY6l1J+PzhPSgYDL33GBy6ldjxYo=" />
     <meta name="Description" content="API and usage description for uSTL, a size-optimized STL implementation" />
     <meta name="Keywords" content="C++, STL, template, bloat, optimization" />
 </head>
@@ -540,14 +540,15 @@ size_t CMyClass::stream_size (void) const
 <h2><a name="Tuples">Tuples</a></h2>
 <p>
 One last container I'll mention is a <tt>tuple</tt>, which is a fixed-size
-array of identical elements. No, it's not the same as the tuple in boost,
-which is more like a template-defined struct. I think the name fits
-my object better. What are they good for? Graphical objects. Points,
-sizes, rectangles, triangles, etc. As a bonus, operations on tuples can
-automatically use SIMD instructions if they are available. Any fixed
-size-array also works better as a tuple, since it becomes a standard
-STL container, which you can use with any algorithm, copy by assignment,
-initialize in the constructor, etc.
+array of identical elements. No, it's not the same as the tuple in
+boost, which is more like a template-defined struct. This one should
+have been named "array", which is what it will be called in the next STL
+standard, but I guess I'm stuck with the name now. What are they good
+for? Graphical objects. Points, sizes, rectangles, triangles, etc. As a
+bonus, operations on tuples can automatically use SIMD instructions if
+they are available. Any fixed size-array also works better as a tuple,
+since it becomes a standard STL container, which you can use with any
+algorithm, copy by assignment, initialize in the constructor, etc.
 </p><pre>
 typedef int32_t			coord_t;
 typedef tuple&lt;2, coord_t&gt;	Point2d;
