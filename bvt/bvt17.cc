@@ -7,6 +7,11 @@
 
 #include "stdtest.h"
 
+size_t SizeOfSet (const bitset<30>& v)
+{
+    return (stream_size_of (v));
+}
+
 void TestBitset (void)
 {
     bitset<30> bs1;
@@ -79,7 +84,16 @@ void TestBitset (void)
     cout << "\nbs4 ^= bs1; bs4 = " << bs4;
     bs4 = 0x50505050;
     bs4 = bs4 ^ 0x30303030;
-    cout << "\nbs4 ^ bs1;  bs4 = " << bs4 << endl;
+    cout << "\nbs4 ^ bs1;  bs4 = " << bs4;
+
+    memblock b (stream_size_of (bs4));
+    ostream os (b);
+    os << bs4;
+    istream is (b);
+    bs4 = 0;
+    is >> bs4;
+    cout.format ("\nstream[%zu];  bs4 = ", b.size());
+    cout << bs4 << endl;
 }
 
 StdBvtMain (TestBitset)

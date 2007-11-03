@@ -121,7 +121,7 @@ public:
     inline void		read (istream& is)			{ nr_container_read (is, *this); }
     inline void		write (ostream& os) const		{ nr_container_write (os, *this); }
     inline void		text_write (ostringstream& os) const	{ os << to_string(); }
-    inline size_t	stream_size (void) const		{ return (nr_container_stream_size (*this)); }
+    inline size_t	stream_size (void) const		{ return (sizeof(m_Bits)); }
 private:
     value_type		m_Bits [s_nWords];
 };

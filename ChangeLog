@@ -7,6 +7,7 @@ Release 1.2
 		called by destroy through a selector template, turning it off
 		completely for integral types. This removes empty deallocate
 		instantiations for integral type vectors.
+	* Fixed bitset stream_size (bits-words confusion)
 
 2007-09-02 Release 1.1
 	* Due to the demise of SourceForge compile farm, this and subsequent
