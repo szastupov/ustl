@@ -504,7 +504,7 @@ static void DetermineHost (void)
     append2 ("-", g_Uname.sysname, &g_ConfigVV [vv_host]);
     foreach (i, g_HostTypes)
 	if (compare (g_Uname.sysname, g_HostTypes[i].sysname))
-	    g_SysType = g_HostTypes[i].type;
+	    g_SysType = (ESysType) g_HostTypes[i].type;
     if (compare (g_Uname.machine, "alpha"))
 	g_SysType = sys_Alpha;
 }
@@ -545,7 +545,7 @@ static void FillInDefaultConfigVarValues (void)
 	copy ("/usr/include", &g_ConfigVV [vv_oldincludedir]);
 
     foreach (i, c_Defaults)
-	DefaultConfigVarValue (c_Defaults[i].var, c_Defaults[i].base, c_Defaults[i].path);
+	DefaultConfigVarValue ((EVV) c_Defaults[i].var, (EVV) c_Defaults[i].base, c_Defaults[i].path);
 
     if (!*S(g_ConfigVV [vv_prefix]))
 	copy ("/usr", &g_ConfigVV [vv_prefix]);
