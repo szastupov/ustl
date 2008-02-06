@@ -1,4 +1,4 @@
-#! /bin/bash
+#! /bin/sh
 #
 # This file is part of bsconf - a configure replacement.
 # Copyright (C) 2005 by Mike Sharov <msharov@users.sourceforge.net>
