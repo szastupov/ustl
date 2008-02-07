@@ -133,6 +133,8 @@ inline ostringstream& operator<< (ostringstream& os, const T& v) {
 // Needed because if called with a char[], numeric_limits will not work. Should be removed if I find out how to partial specialize for arrays...
 inline ostringstream& operator<< (ostringstream& os, const char* v)
     { os.iwrite (v); return (os); }
+inline ostringstream& operator<< (ostringstream& os, char* v)
+    { os.iwrite (v); return (os); }
 
 //----------------------------------------------------------------------
 

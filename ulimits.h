@@ -32,7 +32,7 @@ struct numeric_limits {
 template <typename T>
 struct numeric_limits<T*> {
     static inline T* min (void)	{ return (NULL); }
-    static inline T* max (void)	{ return (UINTPTR_MAX); }
+    static inline T* max (void)	{ return (reinterpret_cast<T*>(UINTPTR_MAX)); }
     static const bool is_signed = false;
     static const bool is_integer = true;
     static const bool is_integral = true;
