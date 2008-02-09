@@ -93,6 +93,11 @@ struct SuperSubclassStrict {
 		    !::ustl::tm::Conversion<const volatile T*, const volatile U*>::sameType };
 };
 
+// static assert support
+template <bool> struct CompileTimeError;
+template <> struct CompileTimeError<true> {};
+#define static_assert(cond,msg)	{ ::ustl::tm::CompileTimeError<!!(cond)> ERROR_##msg; (void) ERROR_##msg; }
+
 } // namespace tm
 } // namespace ustl
 

@@ -9,6 +9,7 @@ Release 1.2
 		instantiations for integral type vectors.
 	* Fixed bitset stream_size (bits-words confusion)
 	* Added workaround for compile error when printing a char array.
+	* Added static_assert from Loki.
 
 2007-09-02 Release 1.1
 	* Due to the demise of SourceForge compile farm, this and subsequent
