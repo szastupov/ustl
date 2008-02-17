@@ -239,11 +239,11 @@ LONG_TUPLE_SPECS(8,uint8_t)
 #define MMX_TUPLE_SPECS(n,type)		\
 template <> inline tuple<n,type>::tuple (void)	\
 {  asm ("pxor %%mm0, %%mm0\n\tmovq %%mm0, %0"	\
-	:"+m"(m_v[0])::"mm0","st","memory"); simd::reset_mmx(); }	\
+	:"=m"(m_v[0])::"mm0","st","memory"); simd::reset_mmx(); }	\
 template<> inline void tuple<n,type>::swap (tuple<n,type>& v)		\
-{  asm ("movq %0,%%mm0\n\tmovq %1,%%mm1\n\t"				\
+{  asm ("movq %2,%%mm0\n\tmovq %3,%%mm1\n\t"				\
 	"movq %%mm0,%1\n\tmovq %%mm1,%0"				\
-	:"+m"(m_v[0]),"+m"(v.m_v[0])::"mm0","mm1","st","st(1)","memory"); \
+	:"=m"(m_v[0]),"=m"(v.m_v[0]):"m"(m_v[0]),"m"(v.m_v[0]):"mm0","mm1","st","st(1)","memory"); \
    simd::reset_mmx();							\
 }
 MMX_TUPLE_SPECS(2,float)

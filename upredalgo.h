@@ -560,7 +560,7 @@ RandomAccessIterator partial_sort_copy (InputIterator first, InputIterator last,
     return (rend);
 }
 
-/// \brief Like \ref partition, but preserves equal element order.
+/// \brief Like partition, but preserves equal element order.
 /// \ingroup SortingAlgorithms
 /// \ingroup PredicateAlgorithms
 template <typename ForwardIterator, typename Predicate>

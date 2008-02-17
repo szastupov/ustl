@@ -1,4 +1,4 @@
-Release 1.2
+2008-02-17 Release 1.2
 	* Fixed ifstream readsome to work correctly on nonblocking fds.
 	* Yet another try at fixing noalias rearrangments.
 		Added a memory clobber and +g to noalias templates.

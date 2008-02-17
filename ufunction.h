@@ -98,7 +98,7 @@ template <class T1, class T2> struct project2nd	: public binary_function<T1,T2,T
 //----------------------------------------------------------------------
 
 /// \brief Wrapper object for unary function pointers.
-/// Use the \ref ptr_fun accessor to create this object.
+/// Use the ptr_fun accessor to create this object.
 /// \ingroup FunctorObjects
 template <typename Arg, typename Result>
 class pointer_to_unary_function : public unary_function<Arg,Result> {
@@ -114,7 +114,7 @@ private:
 };
 
 /// \brief Wrapper object for binary function pointers.
-/// Use the \ref ptr_fun accessor to create this object.
+/// Use the ptr_fun accessor to create this object.
 /// \ingroup FunctorObjects
 template <typename Arg1, typename Arg2, typename Result>
 class pointer_to_binary_function : public binary_function<Arg1,Arg2,Result> {
@@ -151,7 +151,7 @@ inline pointer_to_binary_function<Arg1,Arg2,Result> ptr_fun (Result (*pfn)(Arg1,
 //----------------------------------------------------------------------
 
 /// \brief Wraps a unary function to return its logical negative.
-/// Use the \ref unary_negator accessor to create this object.
+/// Use the unary_negator accessor to create this object.
 /// \ingroup FunctorObjects
 template <class UnaryFunction>
 class unary_negate : public unary_function<typename UnaryFunction::argument_type,
@@ -180,7 +180,7 @@ inline unary_negate<UnaryFunction> unary_negator (UnaryFunction pfn)
 
 /// \brief Converts a binary function to a unary function
 /// by binding a constant value to the first argument.
-/// Use the \ref bind1st accessor to create this object.
+/// Use the bind1st accessor to create this object.
 /// \ingroup FunctorObjects
 template <class BinaryFunction> 
 class binder1st : public unary_function<typename BinaryFunction::second_argument_type,
@@ -199,7 +199,7 @@ protected:
 
 /// \brief Converts a binary function to a unary function
 /// by binding a constant value to the second argument.
-/// Use the \ref bind2nd accessor to create this object.
+/// Use the bind2nd accessor to create this object.
 /// \ingroup FunctorObjects
 template <class BinaryFunction> 
 class binder2nd : public unary_function<typename BinaryFunction::first_argument_type,

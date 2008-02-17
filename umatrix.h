@@ -87,42 +87,26 @@ template <> inline tuple<n,type>::tuple (void)		\
 	"movups %%xmm0, %1\n\t"				\
 	"movups %%xmm0, %2\n\t"				\
 	"movups %%xmm0, %3"				\
-	: MATRIX_W(m_v) ::"xmm0","memory");		\
-}							\
-template<> inline void tuple<n,type>::swap (tuple<n,type>& v)	\
-{   asm volatile ("movups %0, %%xmm0\n\t"		\
-	"movups %1, %%xmm1\n\t"				\
-	"movups %2, %%xmm2\n\t"				\
-	"movups %3, %%xmm3\n\t"				\
-	"movups %4, %%xmm4\n\t"				\
-	"movups %5, %%xmm5\n\t"				\
-	"movups %6, %%xmm6\n\t"				\
-	"movups %7, %%xmm7"				\
-	: : MATRIX_R(m_v), MATRIX_R(v.m_v)		\
-	: "xmm0", "xmm1", "xmm2", "xmm3", "xmm4", "xmm5", "xmm6", "xmm7", "memory");\
-    asm volatile ("movups %%xmm0, %0\n\t"		\
-	"movups %%xmm1, %1\n\t"				\
-	"movups %%xmm2, %2\n\t"				\
-	"movups %%xmm3, %3\n\t"				\
-	"movups %%xmm4, %4\n\t"				\
-	"movups %%xmm5, %5\n\t"				\
-	"movups %%xmm6, %6\n\t"				\
-	"movups %%xmm7, %7"				\
-	: MATRIX_W(v.m_v), MATRIX_W(m_v)		\
-	: : "xmm0", "xmm1", "xmm2", "xmm3", "xmm4", "xmm5", "xmm6", "xmm7", "memory");\
+	: "=m"(m_v[0]),"=m"(m_v[4]),"=m"(m_v[8]),"=m"(m_v[12])	\
+	::"xmm0","memory");				\
 }							\
 namespace simd {					\
 SIMD_PASSIGN_SPEC(n,type)				\
-{   asm volatile ("movups %4, %%xmm0\n\t"		\
-	"movups %5, %%xmm1\n\t"				\
-	"movups %6, %%xmm2\n\t"				\
-	"movups %7, %%xmm3\n\t"				\
+{  							\
+    asm volatile ("movups %2, %%xmm0\n\t"		\
+	"movups %3, %%xmm1\n\t"				\
 	"movups %%xmm0, %0\n\t"				\
-	"movups %%xmm1, %1\n\t"				\
-	"movups %%xmm2, %2\n\t"				\
-	"movups %%xmm3, %3"				\
-	: MATRIX_W(oout) : MATRIX_R(oin)		\
-	: "xmm0", "xmm1", "xmm2", "xmm3", "memory");	\
+	"movups %%xmm1, %1"				\
+	: "=m"(oout[0]),"=m"(oout[4])			\
+	: "m"(oin[0]),"m"(oin[4])			\
+	: "xmm0", "xmm1", "memory");			\
+    asm volatile ("movups %2, %%xmm0\n\t"		\
+	"movups %3, %%xmm1\n\t"				\
+	"movups %%xmm0, %0\n\t"				\
+	"movups %%xmm1, %1"				\
+	: "=m"(oout[8]),"=m"(oout[12])			\
+	: "m"(oin[8]),"m"(oin[12])			\
+	: "xmm0", "xmm1", "memory");			\
 }							\
 }
 SSE_TUPLE_SPECS(16,float)

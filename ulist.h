@@ -17,7 +17,7 @@ namespace ustl {
 /// \class list ulist.h ustl.h
 /// \ingroup Sequences
 ///
-/// \brief Linked list, defined as an alias to \ref vector.
+/// \brief Linked list, defined as an alias to vector.
 ///
 template <typename T>
 class list : public vector<T> {

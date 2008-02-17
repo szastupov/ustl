@@ -1,7 +1,7 @@
 Begin4
 Title:		uSTL
-Version:	1.1
-Entered-date:	2007-09-02
+Version:	1.2
+Entered-date:	2008-02-17
 Description:	A size-optimized implementation of the C++ STL.
 		This implementation of the standard template library
 		reduces template bloat by factoring out memory
