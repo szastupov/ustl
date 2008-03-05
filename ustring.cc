@@ -62,6 +62,8 @@ string::string (size_type n, value_type c)
 /// Resize the string to \p n characters. New space contents is undefined.
 void string::resize (size_type n)
 {
+    if (!n && is_linked())
+	return (link (VectorBlock(empty_string)-1));
     memblock::resize (n);
     at(n) = c_Terminator;
 }
