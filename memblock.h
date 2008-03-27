@@ -34,7 +34,7 @@ public:
     explicit			memblock (const memlink& b);
 				memblock (const memblock& b);
     virtual		       ~memblock (void);
-    virtual void		unlink (void);
+    virtual void		unlink (void) throw();
     inline void			assign (const cmemlink& l)	{ assign (l.cdata(), l.readable_size()); }
     inline const memblock&	operator= (const cmemlink& l)	{ assign (l); return (*this); }
     inline const memblock&	operator= (const memlink& l)	{ assign (l); return (*this); }

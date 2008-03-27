@@ -109,7 +109,7 @@ void istream::text_write (ostringstream& os) const
 }
 
 /// Links to \p p of size \p n
-void istream::unlink (void)
+void istream::unlink (void) throw()
 {
     cmemlink::unlink();
     m_Pos = 0;
@@ -142,7 +142,7 @@ ostream::ostream (const memlink& source)
 }
 
 /// Links to \p p of size \p n
-void ostream::unlink (void)
+void ostream::unlink (void) throw()
 {
     memlink::unlink();
     m_Pos = 0;

@@ -29,17 +29,19 @@ const char string::empty_string[string::size_Terminator] = "";
 string::string (void)
 : memblock ()
 {
-    link (VectorBlock(empty_string)-1);
+    relink (VectorBlock(empty_string)-1);
 }
 
 /// Assigns itself the value of string \p s
 string::string (const string& s)
-: memblock()
+: memblock ((s.size() + size_Terminator) & (s.is_linked()-1))	// Allocate with terminator if not linked (can't call virtuals from base ctor)
 {
     if (s.is_linked())
-	link (s.c_str(), s.size());
-    else
-	assign (s);
+	relink (s.c_str(), s.size());
+    else {
+	copy_n (s.begin(), size(), begin());
+	relink (begin(), size() - size_Terminator);	// --m_Size
+    }
 }
 
 /// Links to \p s
@@ -48,22 +50,23 @@ string::string (const_pointer s)
 {
     if (!s)
 	s = empty_string;
-    link (s, strlen(s));
+    relink (s, strlen(s));
 }
 
 /// Creates a string of length \p n filled with character \p c.
 string::string (size_type n, value_type c)
-: memblock ()
+: memblock (n + size_Terminator)	// because base ctor can't call virtuals of this class
 {
-    resize (n);
+    relink (begin(), size() - size_Terminator);	// --m_Size
     fill_n (begin(), n, c);
+    at(n) = c_Terminator;
 }
 
 /// Resize the string to \p n characters. New space contents is undefined.
 void string::resize (size_type n)
 {
-    if (!n && is_linked())
-	return (link (VectorBlock(empty_string)-1));
+    if (!(n | memblock::capacity()))
+	return (relink (VectorBlock(empty_string)-1));
     memblock::resize (n);
     at(n) = c_Terminator;
 }

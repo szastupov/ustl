@@ -30,16 +30,16 @@ class ostream;
 ///
 class CBacktrace {
 public:
-			CBacktrace (void);
-			CBacktrace (const CBacktrace& v);
-		       ~CBacktrace (void);
-    const CBacktrace&	operator= (const CBacktrace& v);
+			CBacktrace (void) throw();
+			CBacktrace (const CBacktrace& v) throw();
+		       ~CBacktrace (void) throw();
+    const CBacktrace&	operator= (const CBacktrace& v) throw();
     void		text_write (ostringstream& os) const;
     void		read (istream& is);
     void		write (ostream& os) const;
     size_t		stream_size (void) const;
 private:
-    void		GetSymbols (void);
+    void		GetSymbols (void) throw() DLL_LOCAL;
 private:
     void*		m_Addresses [64];	///< Addresses of each function on the stack.
     char*		m_Symbols;		///< Symbols corresponding to each address.

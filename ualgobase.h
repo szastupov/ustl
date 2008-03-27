@@ -125,24 +125,24 @@ inline OutputIterator fill_n (OutputIterator first, size_t count, const T& value
 }
 
 #if CPU_HAS_MMX
-extern "C" void copy_n_fast (const void* src, size_t count, void* dest);
+extern "C" void copy_n_fast (const void* src, size_t count, void* dest) throw();
 #else
-inline void copy_n_fast (const void* src, size_t count, void* dest)
+inline void copy_n_fast (const void* src, size_t count, void* dest) throw()
     { memcpy (dest, src, count); }
 #endif
 #if __i386__ || __x86_64__
-extern "C" void copy_backward_fast (const void* first, const void* last, void* result);
+extern "C" void copy_backward_fast (const void* first, const void* last, void* result) throw();
 #else
-inline void copy_backward_fast (const void* first, const void* last, void* result)
+inline void copy_backward_fast (const void* first, const void* last, void* result) throw()
 {
     const size_t nBytes (distance (first, last));
     memmove (advance (result, -nBytes), first, nBytes);
 }
 #endif
-extern "C" void fill_n8_fast (uint8_t* dest, size_t count, uint8_t v);
-extern "C" void fill_n16_fast (uint16_t* dest, size_t count, uint16_t v);
-extern "C" void fill_n32_fast (uint32_t* dest, size_t count, uint32_t v);
-extern "C" void rotate_fast (void* first, void* middle, void* last);
+extern "C" void fill_n8_fast (uint8_t* dest, size_t count, uint8_t v) throw();
+extern "C" void fill_n16_fast (uint16_t* dest, size_t count, uint16_t v) throw();
+extern "C" void fill_n32_fast (uint32_t* dest, size_t count, uint32_t v) throw();
+extern "C" void rotate_fast (void* first, void* middle, void* last) throw();
 
 #if __GNUC__ >= 4
 /// \brief Computes the number of 1 bits in a number.

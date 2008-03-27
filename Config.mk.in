@@ -63,6 +63,10 @@ LIBA		= lib${LIBNAME}.a
 LIBSO		= lib${LIBNAME}.so
 ifdef MAJOR
     LIBSOLNK	= ${LIBSO}.${MAJOR}
+ifeq (${BUILD},0)
+    LIBSOBLD	= ${LIBSO}.${MAJOR}.${MINOR}
+else
     LIBSOBLD	= ${LIBSO}.${MAJOR}.${MINOR}.${BUILD}
+endif
 endif
 

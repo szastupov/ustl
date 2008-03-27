@@ -107,10 +107,11 @@ void memblock::manage (void* p, size_type n)
 /// "Instantiate" a linked block by allocating and copying the linked data.
 void memblock::copy_link (void)
 {
-    const cmemlink l (*this);
+    const pointer p (begin());
+    const size_t sz (size());
     if (is_linked())
 	unlink();
-    assign (l);
+    assign (p, sz);
 }
  
 /// Copies data from \p p, \p n.
@@ -176,7 +177,7 @@ memblock::iterator memblock::erase (iterator start, size_type n)
 }
 
 /// Unlinks object.
-void memblock::unlink (void)
+void memblock::unlink (void) throw()
 {
     memlink::unlink();
     m_Capacity = 0;

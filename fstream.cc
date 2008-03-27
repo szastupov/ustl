@@ -64,12 +64,12 @@ void fstream::set_and_throw (iostate s, const char* op)
 void fstream::attach (int nfd, const char* filename)
 {
     assert (filename && "Don't do that");
+    m_Filename = filename;
     clear (goodbit);
-    if (nfd < 0 && ios_base::set_and_throw (badbit))
-	throw file_exception ("open", filename);
+    if (nfd < 0)
+	set_and_throw (badbit, "open");
     close();
     m_fd = nfd;
-    m_Filename = filename;
 }
 
 /// Detaches from the current fd.

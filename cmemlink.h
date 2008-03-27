@@ -61,7 +61,7 @@ public:
     inline void		link (const cmemlink& l)	{ link (l.begin(), l.size()); }
     inline void		link (const void* first, const void* last)	{ link (first, distance (first, last)); }
     inline void		relink (const void* p, size_type n);
-    inline virtual void	unlink (void)			{ m_Data = NULL; m_Size = 0; }
+    inline virtual void	unlink (void) throw()		{ m_Data = NULL; m_Size = 0; }
     inline rcself_t	operator= (const cmemlink& l)	{ link (l); return (*this); }
     bool		operator== (const cmemlink& l) const;
     void		swap (cmemlink& l);

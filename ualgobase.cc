@@ -17,7 +17,7 @@
 namespace ustl {
 
 // Generic version for implementing fill_nX_fast on non-i386 architectures.
-template <typename T> inline void stosv (T*& p, size_t n, T v)
+template <typename T> static inline void stosv (T*& p, size_t n, T v)
     { while (n--) *p++ = v; }
 
 #if defined(__i386__) || defined(__x86_64__)
@@ -52,11 +52,11 @@ static inline void movsd (const void*& src, size_t nWords, void*& dest)
 	: "memory");
 }
 
-template <> inline void stosv (uint8_t*& p, size_t n, uint8_t v)
+template <> static inline void stosv (uint8_t*& p, size_t n, uint8_t v)
 { asm volatile ("rep;\n\tstosb" : "=&D"(p), "=c"(n) : "0"(p), "1"(n), "a"(v) : "memory"); }
-template <> inline void stosv (uint16_t*& p, size_t n, uint16_t v)
+template <> static inline void stosv (uint16_t*& p, size_t n, uint16_t v)
 { asm volatile ("rep;\n\tstosw" : "=&D"(p), "=c"(n) : "0"(p), "1"(n), "a"(v) : "memory"); }
-template <> inline void stosv (uint32_t*& p, size_t n, uint32_t v)
+template <> static inline void stosv (uint32_t*& p, size_t n, uint32_t v)
 { asm volatile ("rep;\n\tstosl" : "=&D"(p), "=c"(n) : "0"(p), "1"(n), "a"(v) : "memory"); }
 
 #if CPU_HAS_MMX
@@ -126,7 +126,7 @@ static inline void simd_block_cleanup (void)
 }
 
 /// The fastest optimized raw memory copy.
-void copy_n_fast (const void* src, size_t nBytes, void* dest)
+void copy_n_fast (const void* src, size_t nBytes, void* dest) throw()
 {
     movsb_dir_up();
     size_t nHeadBytes = Align(uintptr_t(src), MMX_ALIGN) - uintptr_t(src);
@@ -149,7 +149,7 @@ void copy_n_fast (const void* src, size_t nBytes, void* dest)
 #endif // CPU_HAS_MMX
 
 /// The fastest optimized backwards raw memory copy.
-void copy_backward_fast (const void* first, const void* last, void* result)
+void copy_backward_fast (const void* first, const void* last, void* result) throw()
 {
     prefetch (first, 0, 0);
     prefetch (result, 1, 0);
@@ -177,20 +177,20 @@ void copy_backward_fast (const void* first, const void* last, void* result)
 //----------------------------------------------------------------------
 
 #if CPU_HAS_MMX
-template <typename T> inline void build_block (T) {}
-template <> inline void build_block (uint8_t v)
+template <typename T> static inline void build_block (T) {}
+template <> static inline void build_block (uint8_t v)
 {
     asm volatile (
 	"movd %0, %%mm0\n\tpunpcklbw %%mm0, %%mm0\n\tpshufw $0, %%mm0, %%mm0"
 	: : "g"(uint32_t(v)) : "mm0");
 }
-template <> inline void build_block (uint16_t v)
+template <> static inline void build_block (uint16_t v)
 {
     asm volatile (
 	"movd %0, %%mm0\n\tpshufw $0, %%mm0, %%mm0"
 	: : "g"(uint32_t(v)) : "mm0");
 }
-template <> inline void build_block (uint32_t v)
+template <> static inline void build_block (uint32_t v)
 {
     asm volatile (
 	"movd %0, %%mm0\n\tpunpckldq %%mm0, %%mm0"
@@ -207,7 +207,7 @@ static inline void simd_block_fill_loop (uint8_t*& dest, size_t count)
 }
 
 template <typename T>
-inline void fill_n_fast (T* dest, size_t count, T v)
+static inline void fill_n_fast (T* dest, size_t count, T v)
 {
     size_t nHead = Align(uintptr_t(dest), MMX_ALIGN) - uintptr_t(dest) / sizeof(T);
     nHead = min (nHead, count);
@@ -221,20 +221,20 @@ inline void fill_n_fast (T* dest, size_t count, T v)
     stosv (dest, count, v);
 }
 
-void fill_n8_fast (uint8_t* dest, size_t count, uint8_t v)
+void fill_n8_fast (uint8_t* dest, size_t count, uint8_t v) throw()
     { fill_n_fast (dest, count, v); }
-void fill_n16_fast (uint16_t* dest, size_t count, uint16_t v)
+void fill_n16_fast (uint16_t* dest, size_t count, uint16_t v) throw()
     { fill_n_fast (dest, count, v); }
-void fill_n32_fast (uint32_t* dest, size_t count, uint32_t v)
+void fill_n32_fast (uint32_t* dest, size_t count, uint32_t v) throw()
     { fill_n_fast (dest, count, v); }
 #else
-void fill_n8_fast (uint8_t* dest, size_t count, uint8_t v) { memset (dest, v, count); }
-void fill_n16_fast (uint16_t* dest, size_t count, uint16_t v) { stosv (dest, count, v); }
-void fill_n32_fast (uint32_t* dest, size_t count, uint32_t v) { stosv (dest, count, v); }
+void fill_n8_fast (uint8_t* dest, size_t count, uint8_t v) throw() { memset (dest, v, count); }
+void fill_n16_fast (uint16_t* dest, size_t count, uint16_t v) throw() { stosv (dest, count, v); }
+void fill_n32_fast (uint32_t* dest, size_t count, uint32_t v) throw() { stosv (dest, count, v); }
 #endif // CPU_HAS_MMX
 
 /// Exchanges ranges [first, middle) and [middle, last)
-void rotate_fast (void* first, void* middle, void* last)
+void rotate_fast (void* first, void* middle, void* last) throw()
 {
 #ifdef HAVE_ALLOCA_H
     const size_t half1 (distance (first, middle)), half2 (distance (middle, last));
