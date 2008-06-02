@@ -25,7 +25,7 @@ public:
     explicit		ofstream (const char* filename, openmode mode = out);
     virtual	       ~ofstream (void);
     inline void		open (const char* filename, openmode mode = out) { m_File.open (filename, mode); clear (m_File.rdstate()); }
-    inline void		close (void)		{ m_File.close(); clear (m_File.rdstate()); }
+    void		close (void);
     inline bool		is_open (void) const	{ return (m_File.is_open()); }
     inline iostate	exceptions (iostate v)	{ ostringstream::exceptions(v); return (m_File.exceptions(v)); }
     inline void		setstate (iostate v)	{ ostringstream::setstate(v); m_File.setstate(v); }

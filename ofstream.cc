@@ -55,6 +55,14 @@ ofstream::~ofstream (void)
     try { flush(); } catch (...) {}
 }
 
+/// Flushes the buffer and closes the file.
+void ofstream::close (void)
+{
+    clear (m_File.rdstate());
+    flush();
+    m_File.close();
+}
+
 /// Flushes the buffer to the file.
 void ofstream::flush (void)
 {
