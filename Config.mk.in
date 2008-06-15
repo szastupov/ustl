@@ -3,14 +3,13 @@
 LIBNAME		= @LIBNAME@
 MAJOR		= @LIB_MAJOR@
 MINOR		= @LIB_MINOR@
-BUILD		= @LIB_BUILD@
 
 ################ Build options #######################################
 
-#BUILD_SHARED	= 1
+BUILD_SHARED	= 1
 #BUILD_STATIC	= 1
 #DEBUG		= 1
-#NOLIBSTDCPP	= 1
+NOLIBSTDCPP	= 1
 
 ################ Progams #############################################
 
@@ -55,18 +54,11 @@ endif
 
 ifdef NOLIBSTDCPP
     LD		= @CC@
-    STAL_LIBS	= @libsupc++@ @libgcc_eh@ @libSystemStubs@ 
+    STAL_LIBS	= @libsupc++@ @libgcc_eh@ @libSystemStubs@
     LIBS	= ${STAL_LIBS}
 endif
 SHBLDFL		= @SHBLDFL@
 LIBA		= lib${LIBNAME}.a
 LIBSO		= lib${LIBNAME}.so
-ifdef MAJOR
-    LIBSOLNK	= ${LIBSO}.${MAJOR}
-ifeq (${BUILD},0)
-    LIBSOBLD	= ${LIBSO}.${MAJOR}.${MINOR}
-else
-    LIBSOBLD	= ${LIBSO}.${MAJOR}.${MINOR}.${BUILD}
-endif
-endif
-
+LIBSOLNK	= ${LIBSO}.${MAJOR}
+LIBSOBLD	= ${LIBSO}.${MAJOR}.${MINOR}

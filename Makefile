@@ -3,7 +3,7 @@ include Config.mk
 ################ Source files ##########################################
 
 SRCS	= $(wildcard *.cc)
-INCS	= $(filter-out bsconf.%,$(wildcard *.h)) ustl.tbff
+INCS	= $(wildcard *.h) ustl.tbff
 OBJS	= $(SRCS:.cc=.o)
 DOCT	= ustldoc.in
 
@@ -128,7 +128,7 @@ dist:
 	    tar --numeric-owner --same-owner -jcf ${DISTDIR}/${DISTTAR} ${DISTNAM}; rm -rf ${DISTNAM})
 
 distclean:	clean
-	@rm -f Config.mk config.h ${LIBNAME}.spec bsconf.o bsconf .depend bvt/.depend
+	@rm -f Config.mk config.h ${LIBNAME}.spec .depend bvt/.depend
 
 maintainer-clean: distclean
 	@rm -rf docs/html

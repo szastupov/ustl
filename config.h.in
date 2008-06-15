@@ -19,22 +19,22 @@
 /// insufficient data or insufficient space. All these errors should
 /// be preventable in output code; the input code should verify the
 /// data in a separate step. It slows down stream operations a lot,
-/// but it's your call. By default only debug builds throw.
+/// but it is your decision. By default only debug builds throw.
 ///
-#undef WANT_STREAM_BOUNDS_CHECKING
+#define WANT_STREAM_BOUNDS_CHECKING 1
 
 #if !defined(WANT_STREAM_BOUNDS_CHECKING) && !defined(NDEBUG)
     #define WANT_STREAM_BOUNDS_CHECKING 1
 #endif
 
 /// Define to 1 if you want to build without libstdc++
-#undef WITHOUT_LIBSTDCPP
+#define WITHOUT_LIBSTDCPP 1
 
 /// Define GNU extensions if unavailable.
 #ifndef __GNUC__
     /// GCC (and some other compilers) define '__attribute__'; ustl is using this
     /// macro to alert the compiler to flag inconsistencies in printf/scanf-like
-    /// function calls.  Just in case '__attribute__' isn't defined, make a dummy.
+    /// function calls.  Just in case '__attribute__' is undefined, make a dummy.
     /// 
     #ifndef __attribute__
 	#define __attribute__(p)
@@ -62,8 +62,8 @@
     #endif
 #endif
 
-/// Define to 1 if you have the `atexit' function.
-#undef HAVE_ATEXIT
+/// Define to 1 if you have the 'atexit' function.
+#define HAVE_ATEXIT 1
 
 /// Define to 1 if you have the <assert.h> header file.
 #undef HAVE_ASSERT_H
@@ -89,8 +89,8 @@
 /// Define to 1 if you have the <locale.h> header file.
 #undef HAVE_LOCALE_H
 
-/// Define to 1 if your system has a working `malloc' function.
-#undef HAVE_MALLOC
+/// Define to 1 if your system has a working 'malloc' function.
+#define HAVE_MALLOC 1
 
 // Define to 1 if you have the <malloc.h> header file.
 #undef HAVE_MALLOC_H
@@ -98,28 +98,28 @@
 // Define to 1 if you have the <alloca.h> header file.
 #undef HAVE_ALLOCA_H
 
-// Define to 1 if you have the `memchr' function.
-#undef HAVE_MEMCHR
+// Define to 1 if you have the 'memchr' function.
+#define HAVE_MEMCHR 1
 
-// Define to 1 if you have the `memmove' function.
-#undef HAVE_MEMMOVE
+// Define to 1 if you have the 'memmove' function.
+#define HAVE_MEMMOVE 1
 
 // Define to 1 if you have the <memory.h> header file.
 #undef HAVE_MEMORY_H
 
-// Define to 1 if you have the `memset' function.
-#undef HAVE_MEMSET
+// Define to 1 if you have the 'memset' function.
+#define HAVE_MEMSET 1
 
-// Define to 1 if the system has the type `ptrdiff_t'.
-#undef HAVE_PTRDIFF_T
+// Define to 1 if the system has the type 'ptrdiff_t'.
+#define HAVE_PTRDIFF_T 1
 
 // Define to 1 if you have the <signal.h> header file.
 #undef HAVE_SIGNAL_H
 
 // Define to 1 if you have the __va_copy function
-#undef HAVE_VA_COPY
+#define HAVE_VA_COPY 1
 
-// Define to 1 if `stat' has the bug that it succeeds when given the
+// Define to 1 if 'stat' has the bug that it succeeds when given the
 // zero-length file name argument.
 #undef HAVE_STAT_EMPTY_STRING_BUG
 
@@ -138,8 +138,8 @@
 // Define to 1 if you have the <stdlib.h> header file.
 #undef HAVE_STDLIB_H
 
-// Define to 1 if you have the `strerror' function.
-#undef HAVE_STRERROR
+// Define to 1 if you have the 'strerror' function.
+#define HAVE_STRERROR 1
 
 // Define to 1 if you have the <strings.h> header file.
 #undef HAVE_STRINGS_H
@@ -147,14 +147,14 @@
 // Define to 1 if you have the <string.h> header file.
 #undef HAVE_STRING_H
 
-// Define to 1 if you have the `strrchr' function.
-#undef HAVE_STRRCHR
+// Define to 1 if you have the 'strrchr' function.
+#define HAVE_STRRCHR 1
 
-// Define to 1 if you have the `strsignal' function.
-#undef HAVE_STRSIGNAL
+// Define to 1 if you have the 'strsignal' function.
+#define HAVE_STRSIGNAL 1
 
-// Define to 1 if you have the `strtol' function.
-#undef HAVE_STRTOL
+// Define to 1 if you have the 'strtol' function.
+#define HAVE_STRTOL 1
 
 // Define to 1 if you have the <sys/stat.h> header file.
 #undef HAVE_SYS_STAT_H
@@ -193,14 +193,14 @@
 #define STDUNIX_HEADERS 1
 #endif
 
-// Define to 1 if `lstat' dereferences a symlink specified with a trailing slash.
+// Define to 1 if 'lstat' dereferences a symlink specified with a trailing slash.
 #undef LSTAT_FOLLOWS_SLASHED_SYMLINK
 
 // Define to 1 if your compiler treats char as a separate type along with
 // signed char and unsigned char. This will create overloads for char.
 #undef HAVE_THREE_CHAR_TYPES
 
-// Define as the return type of signal handlers (`int' or `void').
+// Define as the return type of signal handlers ('int' or 'void').
 #undef RETSIGTYPE
 
 // Define to 1 if you have 64 bit types available
@@ -210,20 +210,20 @@
 #undef HAVE_LONG_LONG
 
 // Define to 1 if you want unrolled specializations for fill and copy
-#undef WANT_UNROLLED_COPY
+#define WANT_UNROLLED_COPY 1
 
 // Define to 1 if you want to use MMX/SSE/3dNow! processor instructions
-#undef WANT_MMX
+#define WANT_MMX 1
 
 // Define to byte sizes of types
 #undef SIZE_OF_CHAR
 #undef SIZE_OF_SHORT
 #undef SIZE_OF_INT
-#undef SIZE_OF_LONG 
+#undef SIZE_OF_LONG
 #undef SIZE_OF_LONG_LONG
-#undef SIZE_OF_POINTER 
-#undef SIZE_OF_SIZE_T 
-#undef SIZE_OF_BOOL 
+#undef SIZE_OF_POINTER
+#undef SIZE_OF_SIZE_T
+#undef SIZE_OF_BOOL
 #undef SIZE_T_IS_LONG
 
 // Byte order macros, converted in utypes.h
@@ -263,18 +263,17 @@
     #define __sse_align	
 #endif
 
-// Define to empty if `const' does not conform to ANSI C.
+// Define to empty if 'const' does not conform to ANSI C.
 #undef const
 
-// Define as `__inline' if that's what the C compiler calls it, or to nothing
+// Define as '__inline' if that is what the C compiler calls it, or to nothing
 // if it is not supported.
 #undef inline
 
-// Define to `long' if <sys/types.h> does not define.
+// Define to 'long' if <sys/types.h> does not define.
 #undef off_t
 
-// Define to `unsigned' if <sys/types.h> does not define.
+// Define to 'unsigned' if <sys/types.h> does not define.
 #undef size_t
 
 #endif	// CONFIG_H_01E33670634DAAC779EE5FF41CCBB36F
-
