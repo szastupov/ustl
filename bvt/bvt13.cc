@@ -8,6 +8,7 @@
 //
 
 #include "stdtest.h"
+#include <stdio.h>
 
 void TestCoutCinCerr (void)
 {
@@ -29,7 +30,8 @@ void TestCoutCinCerr (void)
     for (int i = 0; i < 3; ++ i)
 	cout << testString;
     cout.flush();
-    cerr << "All done." << endl;
+    fprintf (stderr, "All ");
+    cerr << "done.\n";
 }
 
 StdBvtMain (TestCoutCinCerr)

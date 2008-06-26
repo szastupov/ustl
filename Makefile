@@ -98,7 +98,7 @@ clean:
 	@+${MAKE} -C bvt clean
 
 depend: ${SRCS}
-	@${CXX} ${CXXFLAGS} -M ${SRCS} > .depend;
+	@${CXX} ${CXXFLAGS} -MM ${SRCS} > .depend;
 	@+${MAKE} -C bvt depend
 
 check:	install
