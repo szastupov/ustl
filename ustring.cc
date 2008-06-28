@@ -291,8 +291,8 @@ uoff_t string::rfind (const string& s, uoff_t pos) const
     const_iterator d = iat(pos) - 1;
     const_iterator sp = begin() + s.size() - 1;
     const_iterator m = s.end() - 1;
-    for (uoff_t i = 0; d > sp && i < s.size(); -- d)
-	for (i = 0; i < s.size(); ++ i)
+    for (long int i = 0; d > sp && size_type(i) < s.size(); -- d)
+	for (i = 0; size_type(i) < s.size(); ++ i)
 	    if (m[-i] != d[-i])
 		break;
     return (d > sp ? distance (begin(), d + 2 - s.size()) : npos);
