@@ -1,9 +1,10 @@
 config.h
 Config.mk
 .depend
-*.o
-*.a
+*.[oa]
 *.so.*
 bvt/bvt??
 bvt/bench
 docs/html
+config.status
+ustl

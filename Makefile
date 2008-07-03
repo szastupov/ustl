@@ -1,4 +1,4 @@
-include Config.mk
+-include Config.mk
 
 ################ Source files ##########################################
 
@@ -10,16 +10,24 @@ DOCT	:= ustldoc.in
 ################ Compilation ###########################################
 
 .PHONY: all clean depend dox html check dist distclean maintainer-clean
-ifdef BUILD_SHARED
-all:	${LIBSOBLD}
 
+ALLTGTS	:= Config.mk config.h ${LIBNAME}
+all:	${ALLTGTS}
+
+${LIBNAME}:	.
+	@rm -f ${LIBNAME}; ln -s . ${LIBNAME}
+
+ifdef BUILD_SHARED
+ALLTGTS	+= ${LIBSOBLD} ${LIBSOLNK} ${LIBSO}
 ${LIBSOBLD}:	${OBJS}
 	@echo "Linking $@ ..."
 	@${LD} ${LDFLAGS} ${SHBLDFL} -o $@ $^ ${LIBS}
+${LIBSOLNK} ${LIBSO}:	${LIBSOBLD}
+	@rm -f $@; ln -s $(notdir $<) $(notdir $@)
+
 endif
 ifdef BUILD_STATIC
-all:	${LIBA}
-
+ALLTGTS	+= ${LIBA}
 ${LIBA}:	${OBJS}
 	@echo "Linking $@ ..."
 	@${AR} r $@ $?
@@ -34,14 +42,13 @@ endif
 	@echo "    Compiling $< to assembly ..."
 	@${CXX} ${CXXFLAGS} -S -o $@ -c $<
 
-html:
-dox:
-	@${DOXYGEN} ${DOCT}
+include bvt/Module.mk
 
 ################ Installation ##########################################
 
 .PHONY:	install uninstall install-incs uninstall-incs
 
+ifdef INCDIR
 LIDIR	:= ${INCDIR}/${LIBNAME}
 INCSI	:= $(addprefix ${LIDIR}/,$(filter-out ${LIBNAME}.h,${INCS}))
 RINCI	:= ${LIDIR}.h
@@ -57,6 +64,7 @@ ${RINCI}: ${LIBNAME}.h
 uninstall-incs:
 	@echo "Removing ${LIDIR}/ and ${LIDIR}.h ..."
 	@(cd ${INCDIR}; rm -rf ${LIBNAME} ${LIBNAME}.h)
+endif
 
 ifdef BUILD_SHARED
 .PHONY: install-shared uninstall-shared
@@ -86,18 +94,14 @@ uninstall:	uninstall-incs
 
 ################ Maintenance ###########################################
 
-clean:
+clean:	bvt/clean
 	@echo "Removing generated files ..."
-	@rm -f ${OBJS} ${LIBSO} ${LIBA} ${LIBSOBLD}
-	@+${MAKE} -C bvt clean
+	@rm -f ${OBJS} ${LIBA} ${LIBSOBLD} ${LIBSO} ${LIBSOLNK}
 
 depend: ${SRCS}
 	@${CXX} ${CXXFLAGS} -MM ${SRCS} > .depend;
-	@+${MAKE} -C bvt depend
 
-check:	install
-	@echo "Compiling and running build verification tests ..."
-	@+${MAKE} -C bvt run
+check:	bvt/run
 
 TMPDIR	:= /tmp
 DISTDIR	:= ${HOME}/stored
@@ -118,9 +122,21 @@ dist:
 	    tar --numeric-owner --same-owner -jcf ${DISTDIR}/${DISTTAR} ${DISTNAM}; rm -rf ${DISTNAM})
 
 distclean:	clean
-	@rm -f Config.mk config.h .depend bvt/.depend
+	@rm -f Config.mk config.h config.status ${LIBNAME} .depend bvt/.depend
 
 maintainer-clean: distclean
 	@rm -rf docs/html
+
+html:
+dox:
+	@${DOXYGEN} ${DOCT}
+
+${OBJS} ${bvt/OBJS}:	Makefile Config.mk config.h
+${bvt/OBJS}:		bvt/Module.mk
+Config.mk:		Config.mk.in
+config.h:		config.h.in
+Config.mk config.h:	configure
+	@if [ -x config.status ]; then echo "Reconfiguring ..."; ./config.status; \
+	else echo "Running configure ..."; ./configure; fi
 
 -include .depend

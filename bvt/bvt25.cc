@@ -8,8 +8,8 @@
 
 void TestFStream (void)
 {
-    fstream fs ("bvt25.std");
-    if (!fs)
+    fstream fs ("bvt/bvt25.std", ios::in | ios::nocreate);
+    if (!fs && !(fs.open("bvt25.std", ios::in | ios::nocreate),fs))
 	cout << "Failed to open bvt25.std" << endl;
     string buf;
     buf.resize (fs.size());

@@ -1,48 +1,46 @@
 ################ Library version #####################################
 
-LIBNAME		= @LIBNAME@
-MAJOR		= @LIB_MAJOR@
-MINOR		= @LIB_MINOR@
+LIBNAME		:= @LIBNAME@
+MAJOR		:= @LIB_MAJOR@
+MINOR		:= @LIB_MINOR@
 
 ################ Build options #######################################
 
-BUILD_SHARED	= 1
-#BUILD_STATIC	= 1
-#DEBUG		= 1
-NOLIBSTDCPP	= 1
+BUILD_SHARED	:= 1
+#BUILD_STATIC	:= 1
+#DEBUG		:= 1
+NOLIBSTDCPP	:= 1
 
 ################ Progams #############################################
 
-CXX		= @CXX@ 
-LD		= @CXX@ 
-AR		= @AR@
-RANLIB		= @RANLIB@
-DOXYGEN		= @DOXYGEN@
-INSTALL		= @INSTALL@
+CXX		:= @CXX@ 
+LD		:= @CXX@ 
+AR		:= @AR@
+RANLIB		:= @RANLIB@
+DOXYGEN		:= @DOXYGEN@
+INSTALL		:= @INSTALL@
 
-INSTALLDIR	= ${INSTALL} -d
-INSTALLLIB	= ${INSTALL} -p -m 644
-INSTALLEXE	= ${INSTALL} -p -m 755
-INSTALLDATA	= ${INSTALL} -p -m 644
+INSTALLLIB	:= ${INSTALL} -D -p -m 644
+INSTALLDATA	:= ${INSTALL} -D -p -m 644
 
 ################ Destination #########################################
 
-prefix		= @prefix@
-exec_prefix	= @exec_prefix@
-BINDIR		= @bindir@
-INCDIR		= @includedir@
-LIBDIR		= @libdir@
+prefix		:= @prefix@
+exec_prefix	:= @exec_prefix@
+BINDIR		:= @bindir@
+INCDIR		:= @includedir@
+LIBDIR		:= @libdir@
 
 ################ Compiler options ####################################
 
-WARNOPTS	= -Wall -Wpointer-arith -Wno-cast-align -Wcast-qual -Wsynth \
+WARNOPTS	:= -Wall -Wpointer-arith -Wno-cast-align -Wcast-qual -Wsynth \
 		-W -Wconversion -Wsign-promo -Woverloaded-virtual -Wshadow  \
 		-Wwrite-strings -Wredundant-decls @SYSWARNS@
-TGT_OPTS	=@PROCESSOR_OPTS@ -fPIC \
+TGT_OPTS	:= @PROCESSOR_OPTS@ -fPIC \
 		@INLINE_OPTS@
 
-CXXFLAGS	= @CXXFLAGS@ @CUSTOMINCDIR@ ${TGT_OPTS} ${WARNOPTS}
-LDFLAGS		= @LDFLAGS@ @CUSTOMLIBDIR@
+CXXFLAGS	:= @CUSTOMINCDIR@ ${TGT_OPTS} ${WARNOPTS}
+LDFLAGS		:= @CUSTOMLIBDIR@
 ifdef DEBUG
     CXXFLAGS	+= -O0 -g
 else
@@ -53,12 +51,12 @@ endif
 ################ Linker options ######################################
 
 ifdef NOLIBSTDCPP
-    LD		= @CC@
-    STAL_LIBS	= @libsupc++@ @libgcc_eh@ @libSystemStubs@
-    LIBS	= ${STAL_LIBS}
+    LD		:= @CC@
+    STAL_LIBS	:= @libsupc++@ @libgcc_eh@ @libSystemStubs@
+    LIBS	:= ${STAL_LIBS}
 endif
-SHBLDFL		= @SHBLDFL@
-LIBA		= lib${LIBNAME}.a
-LIBSO		= lib${LIBNAME}.so
-LIBSOLNK	= ${LIBSO}.${MAJOR}
-LIBSOBLD	= ${LIBSO}.${MAJOR}.${MINOR}
+LIBA		:= lib${LIBNAME}.a
+LIBSO		:= lib${LIBNAME}.so
+LIBSOLNK	:= ${LIBSO}.${MAJOR}
+LIBSOBLD	:= ${LIBSO}.${MAJOR}.${MINOR}
+SHBLDFL		:= @SHBLDFL@

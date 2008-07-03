@@ -20,15 +20,15 @@ COMPONENTS="
 {
 name=[without-shared]
 desc=[Builds the shared library (if supported by the OS)]
-seds=[s/BUILD_SHARED\t= 1/#BUILD_SHARED\t= 1/]
+seds=[s/BUILD_SHARED\t:= 1/#BUILD_SHARED\t:= 1/]
 }{
 name=[with-static]
 desc=[	Builds the static library]
-seds=[s/#BUILD_STATIC\t= 1/BUILD_STATIC\t= 1/]
+seds=[s/#BUILD_STATIC\t:= 1/BUILD_STATIC\t:= 1/]
 }{
 name=[with-debug]
 desc=[	Compiles the library with debugging information]
-seds=[s/#DEBUG\t\t= 1/DEBUG\t\t= 1/]
+seds=[s/#DEBUG\t\t:= 1/DEBUG\t\t:= 1/]
 }{
 name=[without-bounds]
 desc=[Disable runtime bounds checking on stream reads/writes]
@@ -470,8 +470,8 @@ for i in $PROGS; do
 done
 # And, finally, the environment variables
 for i in $ENVIRONS; do
-    local esci="`echo $i | sed 's/\//\\\&/g'`"
-    local esciv=`eval echo '"'\$\{$esci\}'"'`
+    local esciv=`eval echo '"'\$\{$i\}'"'`
+    esciv="`echo $esciv | sed 's/\//\\\&/g'`"
     [ ! -z "$esciv" ] && esciv=" $esciv"
     echo "s/ \?@$i@/$esciv/g" >>config.sed
 done
