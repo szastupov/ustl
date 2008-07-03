@@ -1,9 +1,9 @@
 bvt/SRCS	:= $(wildcard bvt/bvt*.cc)
 bvt/BVTS	:= $(bvt/SRCS:.cc=)
-bvt/OBJS	:= $(bvt/SRCS:.cc=.o)
-bvt/LIBS	:= -L. -l${LIBNAME}
+bvt/OBJS	:= $(addprefix $O,$(bvt/SRCS:.cc=.o))
+bvt/LIBS	:= -L$(abspath $O.) -l${LIBNAME}
 ifdef BUILD_SHARED
-bvt/LIBS	+= -Wl,--rpath=$(abspath .)
+bvt/LIBS	:= -Wl,--rpath=$(abspath $O.) ${bvt/LIBS}
 endif
 ifdef NOLIBSTDCPP
 bvt/LIBS	+= ${STAL_LIBS} -lm
@@ -22,13 +22,16 @@ bvt/run:	${bvt/BVTS}
 	    diff $$i.std $$i.out && rm -f $$i.out; \
 	done
 
-${bvt/BVTS}: bvt/bvt%: bvt/bvt%.o bvt/stdtest.o ${ALLTGTS}
+${bvt/BVTS}: bvt/bvt%: $Obvt/bvt%.o $Obvt/stdtest.o ${ALLTGTS}
 	@echo "Linking $@ ..."
-	@${LD} ${LDFLAGS} -o $@ $< bvt/stdtest.o ${bvt/LIBS}
+	@${LD} ${LDFLAGS} -o $@ $< $Obvt/stdtest.o ${bvt/LIBS}
 
-bvt/bench:	bvt/bench.o
+bvt/bench:	$Obvt/bench.o
 	@echo "Linking $@ ..."
-	@${LD} ${LDFLAGS} -o $@ $^ ${bvt/LIBS}
+	${LD} ${LDFLAGS} -o $@ $< ${bvt/LIBS}
 
 bvt/clean:
-	@rm -f ${bvt/BVTS} ${bvt/OBJS} bvt/bench bvt/bench.o bvt/stdtest.o
+	@rm -f ${bvt/BVTS} ${bvt/OBJS} $(bvt/OBJS:.o=.d) bvt/bench $Obvt/bench.o $Obvt/stdtest.o $Obvt/bench.d $Obvt/stdtest.d
+	@rmdir $O/bvt &> /dev/null || true
+
+$Obvt/stdtest.o $Obvt/bench.o: bvt/Module.mk

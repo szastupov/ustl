@@ -276,7 +276,7 @@ if [ "$SYSNAME" = "bsd" ]; then
 	s/#define HAVE_VA_COPY 1/#undef HAVE_VA_COPY/g" >>config.sed
 fi
 if [ "$SYSNAME" = "linux" -o "$SYSNAME" = "bsd" ]; then
-    echo "s/@SHBLDFL@/-shared -Wl,-soname=\$\{LIBSOLNK\}/g" >>config.sed
+    echo "s/@SHBLDFL@/-shared -Wl,-soname=\$1/g" >>config.sed
 elif [ "$SYSNAME" = "alpha" ]; then
     echo "s/BUILD_SHARED\\t= 1 /#BUILD_SHARED\\t= 1/g
 	s/#BUILD_STATIC\\t= 1/BUILD_STATIC\\t= 1 /g" >>config.sed
@@ -288,7 +288,7 @@ if [ "$SYSNAME" = "mac" ]; then
 	s/\$\{LIBSO\}.\$\{MAJOR\}.\$\{MINOR\}.\$\{BUILD\}/lib\$\{LIBNAME\}.\$\{MAJOR\}.\$\{MINOR\}.\$\{BUILD\}.dylib/g
 	s/\$\{LIBSO\}.\$\{MAJOR\}.\$\{MINOR\}/lib\$\{LIBNAME\}.\$\{MAJOR\}.\$\{MINOR\}.dylib/g
 	s/\$\{LIBSO\}.\$\{MAJOR\}/lib\$\{LIBNAME\}.\$\{MAJOR\}.dylib/g
-	s/@SHBLDFL@/-Wl,-single_module -compatibility_version 1 -current_version 1 -install_name \$\{LIBSOLNK\} -Wl,-Y,1455 -dynamiclib -mmacosx-version-min=10.4/g" >>config.sed
+	s/@SHBLDFL@/-Wl,-single_module -compatibility_version 1 -current_version 1 -install_name \$1 -Wl,-Y,1455 -dynamiclib -mmacosx-version-min=10.4/g" >>config.sed
 else
     echo "s/ \\?@SYSWARNS@//g" >>config.sed
 fi

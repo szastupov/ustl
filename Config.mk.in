@@ -47,6 +47,7 @@ else
     CXXFLAGS	+= -O3 -DNDEBUG=1
     LDFLAGS	+= -s
 endif
+O		:= .o/
 
 ################ Linker options ######################################
 
@@ -55,8 +56,8 @@ ifdef NOLIBSTDCPP
     STAL_LIBS	:= @libsupc++@ @libgcc_eh@ @libSystemStubs@
     LIBS	:= ${STAL_LIBS}
 endif
-LIBA		:= lib${LIBNAME}.a
-LIBSO		:= lib${LIBNAME}.so
+LIBA		:= $Olib${LIBNAME}.a
+LIBSO		:= $Olib${LIBNAME}.so
 LIBSOLNK	:= ${LIBSO}.${MAJOR}
 LIBSOBLD	:= ${LIBSO}.${MAJOR}.${MINOR}
-SHBLDFL		:= @SHBLDFL@
+shlib_flags	= @SHBLDFL@

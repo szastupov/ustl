@@ -4,12 +4,12 @@
 
 SRCS	:= $(wildcard *.cc)
 INCS	:= $(wildcard *.h)
-OBJS	:= $(SRCS:.cc=.o)
+OBJS	:= $(addprefix $O,$(SRCS:.cc=.o))
 DOCT	:= ustldoc.in
 
 ################ Compilation ###########################################
 
-.PHONY: all clean depend dox html check dist distclean maintainer-clean
+.PHONY: all clean dox html check dist distclean maintainer-clean
 
 ALLTGTS	:= Config.mk config.h ${LIBNAME}
 all:	${ALLTGTS}
@@ -18,15 +18,17 @@ ${LIBNAME}:	.
 	@rm -f ${LIBNAME}; ln -s . ${LIBNAME}
 
 ifdef BUILD_SHARED
+all:	${LIBSOBLD} ${LIBSOLNK} ${LIBSO}
 ALLTGTS	+= ${LIBSOBLD} ${LIBSOLNK} ${LIBSO}
 ${LIBSOBLD}:	${OBJS}
-	@echo "Linking $@ ..."
-	@${LD} ${LDFLAGS} ${SHBLDFL} -o $@ $^ ${LIBS}
+	@echo "Linking $(notdir $@) ..."
+	@${LD} ${LDFLAGS} $(call shlib_flags,$(subst $O,,${LIBSOLNK})) -o $@ $^ ${LIBS}
 ${LIBSOLNK} ${LIBSO}:	${LIBSOBLD}
-	@rm -f $@; ln -s $(notdir $<) $(notdir $@)
+	@(cd $(dir $@); rm -f $(notdir $@); ln -s $(notdir $<) $(notdir $@))
 
 endif
 ifdef BUILD_STATIC
+all:	${LIBA}
 ALLTGTS	+= ${LIBA}
 ${LIBA}:	${OBJS}
 	@echo "Linking $@ ..."
@@ -34,9 +36,10 @@ ${LIBA}:	${OBJS}
 	@${RANLIB} $@
 endif
 
-%.o:	%.cc
+$O%.o:	%.cc
 	@echo "    Compiling $< ..."
-	@${CXX} ${CXXFLAGS} -o $@ -c $<
+	@[ -d $(dir $@) ] || mkdir -p $(dir $@)
+	@${CXX} ${CXXFLAGS} -MMD -o $@ -c $<
 
 %.s:	%.cc
 	@echo "    Compiling $< to assembly ..."
@@ -68,9 +71,9 @@ endif
 
 ifdef BUILD_SHARED
 .PHONY: install-shared uninstall-shared
-LIBTI	:= ${LIBDIR}/${LIBSOBLD}
-LIBLI	:= ${LIBDIR}/${LIBSOLNK}
-LIBSI	:= ${LIBDIR}/${LIBSO}
+LIBTI	:= ${LIBDIR}/$(notdir ${LIBSOBLD})
+LIBLI	:= ${LIBDIR}/$(notdir ${LIBSOLNK})
+LIBSI	:= ${LIBDIR}/$(notdir ${LIBSO})
 install:	${LIBTI} ${LIBLI} ${LIBSI}
 ${LIBTI}:	${LIBSOBLD}
 	@echo "Installing $@ ..."
@@ -96,10 +99,8 @@ uninstall:	uninstall-incs
 
 clean:	bvt/clean
 	@echo "Removing generated files ..."
-	@rm -f ${OBJS} ${LIBA} ${LIBSOBLD} ${LIBSO} ${LIBSOLNK}
-
-depend: ${SRCS}
-	@${CXX} ${CXXFLAGS} -MM ${SRCS} > .depend;
+	@rm -f ${OBJS} $(OBJS:.o=.d) ${LIBA} ${LIBSOBLD} ${LIBSO} ${LIBSOLNK}
+	@rmdir $O &> /dev/null || true
 
 check:	bvt/run
 
@@ -122,7 +123,7 @@ dist:
 	    tar --numeric-owner --same-owner -jcf ${DISTDIR}/${DISTTAR} ${DISTNAM}; rm -rf ${DISTNAM})
 
 distclean:	clean
-	@rm -f Config.mk config.h config.status ${LIBNAME} .depend bvt/.depend
+	@rm -f Config.mk config.h config.status ${LIBNAME}
 
 maintainer-clean: distclean
 	@rm -rf docs/html
@@ -139,4 +140,4 @@ Config.mk config.h:	configure
 	@if [ -x config.status ]; then echo "Reconfiguring ..."; ./config.status; \
 	else echo "Running configure ..."; ./configure; fi
 
--include .depend
+-include ${OBJS:.o=.d}
