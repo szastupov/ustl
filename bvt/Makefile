@@ -1,11 +1,11 @@
 include ../Config.mk
 
-BVTCCS	= $(wildcard bvt*.cc)
-SRCS	= ${BVTCCS} bench.cc stdtest.cc
+BVTCCS	:= $(wildcard bvt*.cc)
+SRCS	:= ${BVTCCS} bench.cc stdtest.cc
 
-BVTS	= $(BVTCCS:.cc=)
-OBJS	= $(SRCS:.cc=.o)
-LIBS	= -l${LIBNAME}
+BVTS	:= $(BVTCCS:.cc=)
+OBJS	:= $(SRCS:.cc=.o)
+LIBS	:= -l${LIBNAME}
 ifdef NOLIBSTDCPP
 LIBS	+= ${STAL_LIBS} -lm
 endif

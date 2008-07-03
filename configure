@@ -3,18 +3,6 @@
 # Copyright (C) 2008 by Mike Sharov <msharov@users.sourceforge.net>
 # This file is free software, distributed under the MIT License.
 #
-# This file is a replacement for autoconf configure, written due to the
-# enormous size of the latter and its slow performance. Autoconf runs a
-# whole suite of tests to determine each an every available feature. In
-# this script, the approach is to assume that Linux is the sane system,
-# and treat all others as braindead exceptions. Also, this configure is
-# assuming a more or less recent POSIX environment, eliminating many of
-# the legacy tests. For the point of view of the user, however, all the
-# functionality is identical to autoconf. For the developer, the change
-# is only in the way dependencies and substitutions are specified here.
-# The top sections are configuration, and are inteded to be seen as the
-# example of how to write them for your own project.
-#
 ######################################################################
 #### Project Configuration ###########################################
 ######################################################################
@@ -153,28 +141,28 @@ int main (void)
 {
     typedef struct {
 	char	m_Bit;
-	char	m_Sub [55];
+	char	m_Sub [11];
     } SCpuCaps;
     static const short int boCheck = 0x0001;
     static const char boNames[2][16] = { "BIG", "LITTLE" };
     static const SCpuCaps s_CpuCaps [] = {
-	{  0, "#undef CPU_HAS_FPU/#define CPU_HAS_FPU 1"		},
-	{  2, "#undef CPU_HAS_EXT_DEBUG/#define CPU_HAS_EXT_DEBUG 1"	},
-	{  4, "#undef CPU_HAS_TIMESTAMPC/#define CPU_HAS_TIMESTAMPC 1"	},
-	{  5, "#undef CPU_HAS_MSR/#define CPU_HAS_MSR 1"		},
-	{  8, "#undef CPU_HAS_CMPXCHG8/#define CPU_HAS_CMPXCHG8 1"	},
-	{  9, "#undef CPU_HAS_APIC/#define CPU_HAS_APIC 1"		},
-	{ 11, "#undef CPU_HAS_SYSCALL/#define CPU_HAS_SYSCALL 1"	},
-	{ 12, "#undef CPU_HAS_MTRR/#define CPU_HAS_MTRR 1"		},
-	{ 15, "#undef CPU_HAS_CMOV/#define CPU_HAS_CMOV 1"		},
-	{ 16, "#undef CPU_HAS_FCMOV/#define CPU_HAS_FCMOV 1"		},
-	{ 22, "#undef CPU_HAS_SSE /#define CPU_HAS_SSE 1"		},
-	{ 23, "#undef CPU_HAS_MMX/#define CPU_HAS_MMX 1"		},
-	{ 24, "#undef CPU_HAS_FXSAVE/#define CPU_HAS_FXSAVE 1"		},
-	{ 25, "#undef CPU_HAS_SSE /#define CPU_HAS_SSE 1"		},
-	{ 26, "#undef CPU_HAS_SSE2/#define CPU_HAS_SSE2 1"		},
-	{ 30, "#undef CPU_HAS_EXT_3DNOW/#define CPU_HAS_EXT_3DNOW 1"	},
-	{ 31, "#undef CPU_HAS_3DNOW/#define CPU_HAS_3DNOW 1"		}
+	{  0, "FPU"		},
+	{  2, "EXT_DEBUG"	},
+	{  4, "TIMESTAMPC"	},
+	{  5, "MSR"		},
+	{  8, "CMPXCHG8"	},
+	{  9, "APIC"		},
+	{ 11, "SYSCALL"		},
+	{ 12, "MTRR"		},
+	{ 15, "CMOV"		},
+	{ 16, "FCMOV"		},
+	{ 22, "SSE "		},
+	{ 23, "MMX"		},
+	{ 24, "FXSAVE"		},
+	{ 25, "SSE "		},
+	{ 26, "SSE2"		},
+	{ 30, "EXT_3DNOW"	},
+	{ 31, "3DNOW"		}
     };
     uint i, caps;
 
@@ -240,7 +228,7 @@ int main (void)
     caps = cpuid();
     for (i = 0; i < sizeof(s_CpuCaps)/sizeof(SCpuCaps); ++i)
 	if (caps & (1 << s_CpuCaps[i].m_Bit))
-	    printf ("s/%s/g\n", s_CpuCaps[i].m_Sub);
+	    printf ("s/#undef CPU_HAS_%s/#define CPU_HAS_%s 1/g\n", s_CpuCaps[i].m_Sub, s_CpuCaps[i].m_Sub);
 #if __GNUC__ >= 3
     printf ("s/ \\?@PROCESSOR_OPTS@/");
     if (caps & (1 << 23))
@@ -496,4 +484,13 @@ SubHeadLibsProgs
 for i in $FILES; do
     sed -f config.sed $i.in > $i
 done
+
+touch config.status
+cp config.status config.status.old
+echo "#! /bin/sh
+$0 $*
+`tail -n+3 config.status.old`" > config.status
+chmod u+x config.status
+rm -f config.status.old
+
 die

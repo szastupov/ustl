@@ -2,32 +2,29 @@ include Config.mk
 
 ################ Source files ##########################################
 
-SRCS	= $(wildcard *.cc)
-INCS	= $(wildcard *.h) ustl.tbff
-OBJS	= $(SRCS:.cc=.o)
-DOCT	= ustldoc.in
-
-################ Library link names ####################################
-
-TOCLEAN	+= ${LIBSO} ${LIBA} ${LIBSOBLD}
-
-ALLINST	= install-incs
-ifdef BUILD_SHARED
-ALLLIBS	+= ${LIBSOBLD}
-ALLINST	+= install-shared
-endif
-ifdef BUILD_STATIC
-ALLLIBS	+= ${LIBA}
-ALLINST	+= install-static
-endif
+SRCS	:= $(wildcard *.cc)
+INCS	:= $(wildcard *.h)
+OBJS	:= $(SRCS:.cc=.o)
+DOCT	:= ustldoc.in
 
 ################ Compilation ###########################################
 
-.PHONY:	all install uninstall install-incs uninstall-incs
-.PHONY: install-static install-shared uninstall-static uninstall-shared
-.PHONY:	clean depend dox html check dist distclean maintainer-clean
+.PHONY: all clean depend dox html check dist distclean maintainer-clean
+ifdef BUILD_SHARED
+all:	${LIBSOBLD}
 
-all:	${ALLLIBS}
+${LIBSOBLD}:	${OBJS}
+	@echo "Linking $@ ..."
+	@${LD} ${LDFLAGS} ${SHBLDFL} -o $@ $^ ${LIBS}
+endif
+ifdef BUILD_STATIC
+all:	${LIBA}
+
+${LIBA}:	${OBJS}
+	@echo "Linking $@ ..."
+	@${AR} r $@ $?
+	@${RANLIB} $@
+endif
 
 %.o:	%.cc
 	@echo "    Compiling $< ..."
@@ -37,64 +34,61 @@ all:	${ALLLIBS}
 	@echo "    Compiling $< to assembly ..."
 	@${CXX} ${CXXFLAGS} -S -o $@ -c $<
 
-${LIBA}:	${OBJS}
-	@echo "Linking $@ ..."
-	@${AR} r $@ $?
-	@${RANLIB} $@
-
-${LIBSOBLD}:	${OBJS}
-	@echo "Linking $@ ..."
-	@${LD} ${LDFLAGS} ${SHBLDFL} -o $@ $^ ${LIBS}
-
 html:
 dox:
 	@${DOXYGEN} ${DOCT}
 
 ################ Installation ##########################################
 
-install:	${ALLINST}
-uninstall:	$(subst install,uninstall,${ALLINST})
+.PHONY:	install uninstall install-incs uninstall-incs
 
-install-shared: ${LIBSOBLD}
-	@echo "Installing ${LIBSOBLD} to ${LIBDIR} ..."
-	@${INSTALLDIR} ${LIBDIR}
-	@${INSTALLLIB} ${LIBSOBLD} ${LIBDIR}
-	@(cd ${LIBDIR}; \
-	    rm -f ${LIBSO} ${LIBSOLNK}; \
-	    ln -sf ${LIBSOBLD} ${LIBSO}; \
-	    ln -sf ${LIBSOBLD} ${LIBSOLNK})
+LIDIR	:= ${INCDIR}/${LIBNAME}
+INCSI	:= $(addprefix ${LIDIR}/,$(filter-out ${LIBNAME}.h,${INCS}))
+RINCI	:= ${LIDIR}.h
 
-uninstall-shared:
-	@echo "Removing ${LIBSOBLD} from ${LIBDIR} ..."
-	@(cd ${LIBDIR}; \
-	    rm -f ${LIBSO} ${LIBSOLNK} ${LIBSOBLD})
-
-install-static: ${LIBA}
-	@echo "Installing ${LIBA} to ${LIBDIR} ..."
-	@${INSTALLDIR} ${LIBDIR}
-	@${INSTALLLIB} ${LIBA} ${LIBDIR}
-
-uninstall-static:
-	@echo "Removing ${LIBA} from ${LIBDIR} ..."
-	@rm -f ${LIBDIR}/${LIBA}
-
-install-incs: ${INCS}
-	@echo "Installing headers to ${INCDIR} ..."
-	@${INSTALLDIR} ${INCDIR}/${LIBNAME}
-	@for i in $(filter-out ${LIBNAME}.h,${INCS}); do	\
-	    ${INSTALLDATA} $$i ${INCDIR}/${LIBNAME}/$$i;	\
-	done;
-	@${INSTALLDATA} ${LIBNAME}.h ${INCDIR}
-
+install:	install-incs
+install-incs: ${INCSI} ${RINCI}
+${INCSI}: ${LIDIR}/%.h: %.h
+	@echo "Installing $@ ..."
+	@${INSTALLDATA} $< $@
+${RINCI}: ${LIBNAME}.h
+	@echo "Installing $@ ..."
+	@${INSTALLDATA} $< $@
 uninstall-incs:
-	@echo "Removing headers from ${INCDIR} ..."
-	@rm -rf ${INCDIR}/${LIBNAME} ${INCDIR}/${LIBNAME}.h
+	@echo "Removing ${LIDIR}/ and ${LIDIR}.h ..."
+	@(cd ${INCDIR}; rm -rf ${LIBNAME} ${LIBNAME}.h)
+
+ifdef BUILD_SHARED
+.PHONY: install-shared uninstall-shared
+LIBTI	:= ${LIBDIR}/${LIBSOBLD}
+LIBLI	:= ${LIBDIR}/${LIBSOLNK}
+LIBSI	:= ${LIBDIR}/${LIBSO}
+install:	${LIBTI} ${LIBLI} ${LIBSI}
+${LIBTI}:	${LIBSOBLD}
+	@echo "Installing $@ ..."
+	@${INSTALLLIB} $< $@
+${LIBLI} ${LIBSI}: ${LIBTI}
+	@(cd ${LIBDIR}; rm -f $@; ln -s $(notdir $<) $(notdir $@))
+endif
+
+ifdef BUILD_STATIC
+.PHONY: install-static uninstall-static
+LIBAI	:= ${LIBDIR}/${LIBA}
+install:	${LIBAI}
+${LIBAI}:	${LIBA}
+	@echo "Installing $@ ..."
+	@${INSTALLLIB} $< $@
+endif
+
+uninstall:	uninstall-incs
+	@echo "Removing library from ${LIBDIR} ..."
+	@rm -f ${LIBTI} ${LIBLI} ${LIBSI} ${LIBAI}
 
 ################ Maintenance ###########################################
 
 clean:
 	@echo "Removing generated files ..."
-	@rm -f ${OBJS} ${TOCLEAN} *.rpo
+	@rm -f ${OBJS} ${LIBSO} ${LIBA} ${LIBSOBLD}
 	@+${MAKE} -C bvt clean
 
 depend: ${SRCS}
@@ -105,17 +99,13 @@ check:	install
 	@echo "Compiling and running build verification tests ..."
 	@+${MAKE} -C bvt run
 
-TMPDIR	= /tmp
-DISTDIR	= ${HOME}/stored
-ifeq (${BUILD},0)
-DISTVER	= ${MAJOR}.${MINOR}
-else
-DISTVER	= ${MAJOR}.${MINOR}.${BUILD}
-endif
-DISTNAM	= ${LIBNAME}-${DISTVER}
-DISTLSM	= ${DISTNAM}.lsm
-DISTTAR	= ${DISTNAM}.tar.bz2
-DDOCTAR	= ${DISTNAM}-docs.tar.bz2
+TMPDIR	:= /tmp
+DISTDIR	:= ${HOME}/stored
+DISTVER	:= ${MAJOR}.${MINOR}
+DISTNAM	:= ${LIBNAME}-${DISTVER}
+DISTLSM	:= ${DISTNAM}.lsm
+DISTTAR	:= ${DISTNAM}.tar.bz2
+DDOCTAR	:= ${DISTNAM}-docs.tar.bz2
 
 dist:
 	mkdir ${TMPDIR}/${DISTNAM}
@@ -128,10 +118,9 @@ dist:
 	    tar --numeric-owner --same-owner -jcf ${DISTDIR}/${DISTTAR} ${DISTNAM}; rm -rf ${DISTNAM})
 
 distclean:	clean
-	@rm -f Config.mk config.h ${LIBNAME}.spec .depend bvt/.depend
+	@rm -f Config.mk config.h .depend bvt/.depend
 
 maintainer-clean: distclean
 	@rm -rf docs/html
 
 -include .depend
- 
