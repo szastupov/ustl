@@ -28,7 +28,7 @@ ${bvt/BVTS}: bvt/bvt%: $Obvt/bvt%.o $Obvt/stdtest.o ${ALLTGTS}
 
 bvt/bench:	$Obvt/bench.o
 	@echo "Linking $@ ..."
-	${LD} ${LDFLAGS} -o $@ $< ${bvt/LIBS}
+	@${LD} ${LDFLAGS} -o $@ $< ${bvt/LIBS}
 
 bvt/clean:
 	@rm -f ${bvt/BVTS} ${bvt/OBJS} $(bvt/OBJS:.o=.d) bvt/bench $Obvt/bench.o $Obvt/stdtest.o $Obvt/bench.d $Obvt/stdtest.d

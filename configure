@@ -284,10 +284,10 @@ fi
 if [ "$SYSNAME" = "mac" ]; then
     echo "s/ \\?@libgcc_eh@//g
 	s/@SYSWARNS@/-Wno-long-double/g
-	s/lib\$\{LIBNAME\}.so/lib\$\{LIBNAME\}.dylib/g
-	s/\$\{LIBSO\}.\$\{MAJOR\}.\$\{MINOR\}.\$\{BUILD\}/lib\$\{LIBNAME\}.\$\{MAJOR\}.\$\{MINOR\}.\$\{BUILD\}.dylib/g
-	s/\$\{LIBSO\}.\$\{MAJOR\}.\$\{MINOR\}/lib\$\{LIBNAME\}.\$\{MAJOR\}.\$\{MINOR\}.dylib/g
-	s/\$\{LIBSO\}.\$\{MAJOR\}/lib\$\{LIBNAME\}.\$\{MAJOR\}.dylib/g
+	s/lib\$1.so/lib\$1.dylib/g
+	s/lib\$1.so.\$\{MAJOR\}.\$\{MINOR\}.\$\{BUILD\}/lib\$1.\$\{MAJOR\}.\$\{MINOR\}.\$\{BUILD\}.dylib/g
+	s/lib\$1.so.\$\{MAJOR\}.\$\{MINOR\}/lib\$1.\$\{MAJOR\}.\$\{MINOR\}.dylib/g
+	s/lib\$1.so.\$\{MAJOR\}/lib\$1.\$\{MAJOR\}.dylib/g
 	s/@SHBLDFL@/-Wl,-single_module -compatibility_version 1 -current_version 1 -install_name \$1 -Wl,-Y,1455 -dynamiclib -mmacosx-version-min=10.4/g" >>config.sed
 else
     echo "s/ \\?@SYSWARNS@//g" >>config.sed

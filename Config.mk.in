@@ -56,8 +56,7 @@ ifdef NOLIBSTDCPP
     STAL_LIBS	:= @libsupc++@ @libgcc_eh@ @libSystemStubs@
     LIBS	:= ${STAL_LIBS}
 endif
-LIBA		:= $Olib${LIBNAME}.a
-LIBSO		:= $Olib${LIBNAME}.so
-LIBSOLNK	:= ${LIBSO}.${MAJOR}
-LIBSOBLD	:= ${LIBSO}.${MAJOR}.${MINOR}
+slib_lnk	= lib$1.so
+slib_son	= lib$1.so.${MAJOR}
+slib_tgt	= lib$1.so.${MAJOR}.${MINOR}
 shlib_flags	= @SHBLDFL@

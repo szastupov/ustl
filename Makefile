@@ -18,16 +18,22 @@ ${LIBNAME}:	.
 	@rm -f ${LIBNAME}; ln -s . ${LIBNAME}
 
 ifdef BUILD_SHARED
-all:	${LIBSOBLD} ${LIBSOLNK} ${LIBSO}
-ALLTGTS	+= ${LIBSOBLD} ${LIBSOLNK} ${LIBSO}
-${LIBSOBLD}:	${OBJS}
+SLIBL	:= $O$(call slib_lnk,${LIBNAME})
+SLIBS	:= $O$(call slib_son,${LIBNAME})
+SLIBT	:= $O$(call slib_tgt,${LIBNAME})
+
+all:	${SLIBT} ${SLIBS} ${SLIBL}
+ALLTGTS	+= ${SLIBT} ${SLIBS} ${SLIBL}
+${SLIBT}:	${OBJS}
 	@echo "Linking $(notdir $@) ..."
-	@${LD} ${LDFLAGS} $(call shlib_flags,$(subst $O,,${LIBSOLNK})) -o $@ $^ ${LIBS}
-${LIBSOLNK} ${LIBSO}:	${LIBSOBLD}
+	@${LD} ${LDFLAGS} $(call shlib_flags,$(subst $O,,${SLIBS})) -o $@ $^ ${LIBS}
+${SLIBS} ${SLIBL}:	${SLIBT}
 	@(cd $(dir $@); rm -f $(notdir $@); ln -s $(notdir $<) $(notdir $@))
 
 endif
 ifdef BUILD_STATIC
+LIBA	:= $Olib${LIBNAME}.a
+
 all:	${LIBA}
 ALLTGTS	+= ${LIBA}
 ${LIBA}:	${OBJS}
@@ -66,16 +72,16 @@ ${RINCI}: ${LIBNAME}.h
 	@${INSTALLDATA} $< $@
 uninstall-incs:
 	@echo "Removing ${LIDIR}/ and ${LIDIR}.h ..."
-	@(cd ${INCDIR}; rm -rf ${LIBNAME} ${LIBNAME}.h)
+	@(cd ${INCDIR}; rm -f ${INCSI} ${LIBNAME}.h; rmdir ${LIBNAME} &> /dev/null || true)
 endif
 
 ifdef BUILD_SHARED
 .PHONY: install-shared uninstall-shared
-LIBTI	:= ${LIBDIR}/$(notdir ${LIBSOBLD})
-LIBLI	:= ${LIBDIR}/$(notdir ${LIBSOLNK})
-LIBSI	:= ${LIBDIR}/$(notdir ${LIBSO})
+LIBTI	:= ${LIBDIR}/$(notdir ${SLIBT})
+LIBLI	:= ${LIBDIR}/$(notdir ${SLIBS})
+LIBSI	:= ${LIBDIR}/$(notdir ${SLIBL})
 install:	${LIBTI} ${LIBLI} ${LIBSI}
-${LIBTI}:	${LIBSOBLD}
+${LIBTI}:	${SLIBT}
 	@echo "Installing $@ ..."
 	@${INSTALLLIB} $< $@
 ${LIBLI} ${LIBSI}: ${LIBTI}
@@ -99,7 +105,7 @@ uninstall:	uninstall-incs
 
 clean:	bvt/clean
 	@echo "Removing generated files ..."
-	@rm -f ${OBJS} $(OBJS:.o=.d) ${LIBA} ${LIBSOBLD} ${LIBSO} ${LIBSOLNK}
+	@rm -f ${OBJS} $(OBJS:.o=.d) ${LIBA} ${SLIBT} ${SLIBL} ${SLIBS}
 	@rmdir $O &> /dev/null || true
 
 check:	bvt/run
