@@ -83,7 +83,7 @@ s/@LIB_BUILD@/0/g"
 #### The rest of the file is configuration code. Leave it alone. #####
 ######################################################################
 
-die() { rm -f config.sed config.cpu config.cpu.c; }
+die() { rm -f config.sed config.cpu config.cpu.c; exit; }
 
 #### Compile the configurator and generate initial config.sed ########
 

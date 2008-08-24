@@ -85,14 +85,10 @@ inline T1 max (const T1& a, const T2& b)
 
 /// \brief Divides \p n1 by \p n2 and rounds the result up.
 /// This is in contrast to regular division, which rounds down.
-/// Negative numbers are rounded down because they are an unusual case, supporting
-/// which would require a branch. Since this is frequently used in graphics, the
-/// speed is important.
-///
 template <typename T1, typename T2>
 inline T1 DivRU (T1 n1, T2 n2)
 {
-    return (n1 / n2 + (n1 % n2 > 0));
+    return ((n1 + n2 - 1) / n2);
 }
 
 /// The alignment performed by default.
