@@ -103,7 +103,7 @@ public:
     void			append (size_type n, const_reference c);
     inline void			append (size_type n, wvalue_type c)		{ insert (size(), c, n); }
     inline void			append (const_wpointer s1, const_wpointer s2)	{ insert (size(), s1, s2); }
-    inline void			append (const_wpointer s)			{ const_wpointer se (s); for (;se&&*se;++se); append (s, se); }
+    inline void			append (const_wpointer s)			{ const_wpointer se (s); for (;se&&*se;++se) ; append (s, se); }
     inline void			append (const string& s)			{ append (s.begin(), s.end()); }
     inline void			append (const string& s, uoff_t o, size_type n)	{ append (s.iat(o), s.iat(o+n)); }
     inline void			assign (const_iterator i1, const_iterator i2)	{ assign (i1, distance (i1, i2)); }

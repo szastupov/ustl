@@ -34,8 +34,8 @@ LIBDIR		:= @libdir@
 ################ Compiler options ####################################
 
 WARNOPTS	:= -Wall -Wpointer-arith -Wno-cast-align -Wcast-qual -Wsynth \
-		-W -Wconversion -Wsign-promo -Woverloaded-virtual -Wshadow  \
-		-Wwrite-strings -Wredundant-decls @SYSWARNS@
+		-W -Wsign-promo -Woverloaded-virtual -Wshadow -Wwrite-strings \
+		-Wredundant-decls @SYSWARNS@
 TGT_OPTS	:= @PROCESSOR_OPTS@ -fPIC \
 		@INLINE_OPTS@
 

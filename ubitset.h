@@ -46,8 +46,8 @@ private:
     static const size_t	s_nBits		= s_nWords * s_WordBits;
 private:
     inline value_type&		BitRef (uoff_t n)	{ assert (n < Size); return (m_Bits [n / s_WordBits]); }
-    inline const value_type	BitRef (uoff_t n) const	{ assert (n < Size); return (m_Bits [n / s_WordBits]); }
-    inline const value_type	Mask (uoff_t n) const	{ assert (n < Size); return (1 << (n % s_WordBits)); }
+    inline value_type		BitRef (uoff_t n) const	{ assert (n < Size); return (m_Bits [n / s_WordBits]); }
+    inline value_type		Mask (uoff_t n) const	{ assert (n < Size); return (1 << (n % s_WordBits)); }
 public:
     inline		bitset (value_type v = 0)	{ fill_n (m_Bits, s_nWords, 0); m_Bits[0] = v; }
     inline		bitset (const string& buf)	{ convert_from_bitstring (buf, m_Bits, s_nWords); }
@@ -58,14 +58,14 @@ public:
     inline bitset	operator~ (void) const		{ bitset rv (*this); rv.flip(); return (rv); }
     inline size_type	size (void) const		{ return (Size); }
     inline size_type	capacity (void) const		{ return (s_nBits); }
-    inline const bool	test (uoff_t n) const		{ return (BitRef(n) & Mask(n)); }
-    inline const bool	operator[] (uoff_t n) const	{ return (test(n)); }
+    inline bool		test (uoff_t n) const		{ return (BitRef(n) & Mask(n)); }
+    inline bool		operator[] (uoff_t n) const	{ return (test(n)); }
   inline const_iterator	begin (void) const		{ return (m_Bits); }
     inline iterator	begin (void)			{ return (m_Bits); }
   inline const_iterator	end (void) const		{ return (m_Bits + s_nWords); }
     inline iterator	end (void)			{ return (m_Bits + s_nWords); }
  			/// Returns the value_type with the equivalent bits. If size() > 1, you'll get only the first BitsInType(value_type) bits.
-    inline const value_type	to_value (void) const		{ return (m_Bits[0]); }
+    inline value_type	to_value (void) const		{ return (m_Bits[0]); }
     			/// Flips all the bits in the set.
     inline void		flip (void) { transform (begin(), end(), begin(), bitwise_not<value_type>()); }
 			/// Sets or clears bit \p n.

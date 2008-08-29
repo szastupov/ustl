@@ -66,7 +66,7 @@ void ofstream::close (void)
 /// Flushes the buffer to the file.
 void ofstream::flush (void)
 {
-    while (pos() && overflow (remaining()));
+    while (pos() && overflow (remaining())) ;
     m_File.sync();
     clear (m_File.rdstate());
 }

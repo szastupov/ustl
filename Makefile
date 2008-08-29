@@ -45,7 +45,7 @@ endif
 $O%.o:	%.cc
 	@echo "    Compiling $< ..."
 	@[ -d $(dir $@) ] || mkdir -p $(dir $@)
-	@${CXX} ${CXXFLAGS} -MMD -o $@ -c $<
+	@${CXX} ${CXXFLAGS} -MMD -MT "$(<:.cc=.s) $@" -o $@ -c $<
 
 %.s:	%.cc
 	@echo "    Compiling $< to assembly ..."
@@ -146,4 +146,4 @@ Config.mk config.h:	configure
 	@if [ -x config.status ]; then echo "Reconfiguring ..."; ./config.status; \
 	else echo "Running configure ..."; ./configure; fi
 
--include ${OBJS:.o=.d}
+-include ${OBJS:.o=.d} ${bvt/OBJS:.o=.d}

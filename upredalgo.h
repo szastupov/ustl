@@ -292,7 +292,7 @@ ForwardIterator1 search (ForwardIterator1 first1, ForwardIterator1 last1, Forwar
     for (; first1 < slast; ++first1) {
 	ForwardIterator2 i = first2;
 	ForwardIterator1 j = first1;
-	for (; i != last2 && comp(*j, *i); ++i, ++j);
+	for (; i != last2 && comp(*j, *i); ++i, ++j) ;
 	if (i == last2)
 	    return (first1);
     }
@@ -308,7 +308,7 @@ ForwardIterator1 find_end (ForwardIterator1 first1, ForwardIterator1 last1, Forw
     ForwardIterator1 s = last1 - distance(first2, last2);
     for (; first1 < s; --s) {
 	ForwardIterator2 i = first2, j = s;
-	for (; i != last2 && comp(*j, *i); ++i, ++j);
+	for (; i != last2 && comp(*j, *i); ++i, ++j) ;
 	if (i == last2)
 	    return (s);
     }
@@ -471,7 +471,7 @@ bool next_permutation (BidirectionalIterator first, BidirectionalIterator last, 
 	--i;
 	if (comp (i[0], i[1])) {
 	    BidirectionalIterator j = last;
-	    while (!comp (*i, *--j));
+	    while (!comp (*i, *--j)) ;
 	    iter_swap (i, j);
 	    reverse (i + 1, last);
 	    return (true);
@@ -495,7 +495,7 @@ bool prev_permutation (BidirectionalIterator first, BidirectionalIterator last, 
 	--i;
 	if (comp(i[1], i[0])) {
 	    BidirectionalIterator j = last;
-	    while (!comp (*--j, *i));
+	    while (!comp (*--j, *i)) ;
 	    iter_swap (i, j);
 	    reverse (i + 1, last);
 	    return (true);
@@ -550,7 +550,7 @@ RandomAccessIterator partial_sort_copy (InputIterator first, InputIterator last,
     RandomAccessIterator rend = result_first;
     for (; first != last; ++first) {
 	RandomAccessIterator i = result_first;
-	for (; i != rend && comp (*i, *first); ++i);
+	for (; i != rend && comp (*i, *first); ++i) ;
 	if (i == result_last)
 	    continue;
 	rend += (rend < result_last);

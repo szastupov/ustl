@@ -52,11 +52,11 @@ static inline void movsd (const void*& src, size_t nWords, void*& dest)
 	: "memory");
 }
 
-template <> static inline void stosv (uint8_t*& p, size_t n, uint8_t v)
+template <> inline void stosv (uint8_t*& p, size_t n, uint8_t v)
 { asm volatile ("rep;\n\tstosb" : "=&D"(p), "=c"(n) : "0"(p), "1"(n), "a"(v) : "memory"); }
-template <> static inline void stosv (uint16_t*& p, size_t n, uint16_t v)
+template <> inline void stosv (uint16_t*& p, size_t n, uint16_t v)
 { asm volatile ("rep;\n\tstosw" : "=&D"(p), "=c"(n) : "0"(p), "1"(n), "a"(v) : "memory"); }
-template <> static inline void stosv (uint32_t*& p, size_t n, uint32_t v)
+template <> inline void stosv (uint32_t*& p, size_t n, uint32_t v)
 { asm volatile ("rep;\n\tstosl" : "=&D"(p), "=c"(n) : "0"(p), "1"(n), "a"(v) : "memory"); }
 
 #if CPU_HAS_MMX
@@ -178,19 +178,19 @@ void copy_backward_fast (const void* first, const void* last, void* result) thro
 
 #if CPU_HAS_MMX
 template <typename T> static inline void build_block (T) {}
-template <> static inline void build_block (uint8_t v)
+template <> inline void build_block (uint8_t v)
 {
     asm volatile (
 	"movd %0, %%mm0\n\tpunpcklbw %%mm0, %%mm0\n\tpshufw $0, %%mm0, %%mm0"
 	: : "g"(uint32_t(v)) : "mm0");
 }
-template <> static inline void build_block (uint16_t v)
+template <> inline void build_block (uint16_t v)
 {
     asm volatile (
 	"movd %0, %%mm0\n\tpshufw $0, %%mm0, %%mm0"
 	: : "g"(uint32_t(v)) : "mm0");
 }
-template <> static inline void build_block (uint32_t v)
+template <> inline void build_block (uint32_t v)
 {
     asm volatile (
 	"movd %0, %%mm0\n\tpunpckldq %%mm0, %%mm0"

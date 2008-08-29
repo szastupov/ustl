@@ -267,7 +267,7 @@ uoff_t string::find (const string& s, uoff_t pos) const
     const uoff_t endi = s.size() - 1;
     const_reference endchar = s[endi];
     uoff_t lastPos = endi;
-    while (lastPos-- && s[lastPos] != endchar);
+    while (lastPos-- && s[lastPos] != endchar) ;
     const size_type skip = endi - lastPos;
     const_iterator i = iat(pos) + endi;
     for (; i < end() && (i = ::ustl::find (i, end(), endchar)) < end(); i += skip)
@@ -407,7 +407,7 @@ void string::write (ostream& os) const
     hashvalue_t h = 0;
     // This has the bits flowing into each other from both sides of the number
     for (; first < last; ++ first)
-	h = *first + ((h << 7) | (h >> BitsInType(hashvalue_t) - 7));
+	h = *first + ((h << 7) | (h >> (BitsInType(hashvalue_t) - 7)));
     return (h);
 }
 
