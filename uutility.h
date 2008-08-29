@@ -83,14 +83,6 @@ inline T1 max (const T1& a, const T2& b)
     return (b < a ? a : b);
 }
 
-/// \brief Divides \p n1 by \p n2 and rounds the result up.
-/// This is in contrast to regular division, which rounds down.
-template <typename T1, typename T2>
-inline T1 DivRU (T1 n1, T2 n2)
-{
-    return ((n1 + n2 - 1) / n2);
-}
-
 /// The alignment performed by default.
 const size_t c_DefaultAlignment = __alignof__(void*);
 
@@ -286,6 +278,17 @@ inline void pack_type (TSmall s, TBig& b)
     b = (b << min (BitsInType(TSmall) * 2, BitsInType(TBig))) | b;
     if (n < 8) return;
     b = (b << min (BitsInType(TSmall) * 4, BitsInType(TBig))) | b;
+}
+
+/// \brief Divides \p n1 by \p n2 and rounds the result up.
+/// This is in contrast to regular division, which rounds down.
+template <typename T1, typename T2>
+inline T1 DivRU (T1 n1, T2 n2)
+{
+    T2 adj = n2 - 1;
+    if (n1 < 0)
+	adj = -adj;
+    return ((n1 + adj) / n2);
 }
 
 #if __GNUC__ >= 3

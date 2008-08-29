@@ -1,6 +1,6 @@
 DivRU(13,5) = 3
 DivRU(15,5) = 3
-DivRU(-12,5) = -2
+DivRU(-12,5) = -3
 
 Align(5) = 8
 Align(5,2) = 6
