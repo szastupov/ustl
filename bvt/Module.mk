@@ -1,3 +1,5 @@
+################ Source files ##########################################
+
 bvt/SRCS	:= $(wildcard bvt/bvt*.cc)
 bvt/BVTS	:= $(bvt/SRCS:.cc=)
 bvt/OBJS	:= $(addprefix $O,$(bvt/SRCS:.cc=.o))
@@ -10,10 +12,15 @@ bvt/LIBS	+= ${STAL_LIBS} -lm
 endif
 CXXFLAGS	+= -I.
 
+################ Compilation ###########################################
+
 .PHONY:	bvt/all bvt/run bvt/clean
 
 bvt/all:	${bvt/BVTS}
 
+# The correct output of a bvt is stored in bvtXX.std
+# When the bvt runs, its output is compared to .std
+#
 bvt/run:	${bvt/BVTS}
 	@echo "Running build verification tests:"
 	@for i in ${bvt/BVTS}; do \
@@ -26,12 +33,14 @@ ${bvt/BVTS}: bvt/bvt%: $Obvt/bvt%.o $Obvt/stdtest.o ${ALLTGTS}
 	@echo "Linking $@ ..."
 	@${LD} ${LDFLAGS} -o $@ $< $Obvt/stdtest.o ${bvt/LIBS}
 
-bvt/bench:	$Obvt/bench.o
+bvt/bench:	$Obvt/bench.o ${ALLTGTS}
 	@echo "Linking $@ ..."
 	@${LD} ${LDFLAGS} -o $@ $< ${bvt/LIBS}
+
+################ Maintenance ###########################################
 
 bvt/clean:
 	@rm -f ${bvt/BVTS} ${bvt/OBJS} $(bvt/OBJS:.o=.d) bvt/bench $Obvt/bench.o $Obvt/stdtest.o $Obvt/bench.d $Obvt/stdtest.d
 	@rmdir $O/bvt &> /dev/null || true
 
-$Obvt/stdtest.o $Obvt/bench.o: bvt/Module.mk
+${bvt/OBJS} $Obvt/stdtest.o $Obvt/bench.o: bvt/Module.mk ${LIBNAME}

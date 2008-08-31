@@ -5,25 +5,21 @@
 SRCS	:= $(wildcard *.cc)
 INCS	:= $(wildcard *.h)
 OBJS	:= $(addprefix $O,$(SRCS:.cc=.o))
-DOCT	:= ustldoc.in
 
 ################ Compilation ###########################################
 
-.PHONY: all clean dox html check dist distclean maintainer-clean
+.PHONY: all clean html check dist distclean maintainer-clean
 
+all:	Config.mk config.h ${LIBNAME}
 ALLTGTS	:= Config.mk config.h ${LIBNAME}
-all:	${ALLTGTS}
-
-${LIBNAME}:	.
-	@rm -f ${LIBNAME}; ln -s . ${LIBNAME}
 
 ifdef BUILD_SHARED
 SLIBL	:= $O$(call slib_lnk,${LIBNAME})
 SLIBS	:= $O$(call slib_son,${LIBNAME})
 SLIBT	:= $O$(call slib_tgt,${LIBNAME})
+ALLTGTS	+= ${SLIBT} ${SLIBS} ${SLIBL}
 
 all:	${SLIBT} ${SLIBS} ${SLIBL}
-ALLTGTS	+= ${SLIBT} ${SLIBS} ${SLIBL}
 ${SLIBT}:	${OBJS}
 	@echo "Linking $(notdir $@) ..."
 	@${LD} ${LDFLAGS} $(call shlib_flags,$(subst $O,,${SLIBS})) -o $@ $^ ${LIBS}
@@ -33,9 +29,9 @@ ${SLIBS} ${SLIBL}:	${SLIBT}
 endif
 ifdef BUILD_STATIC
 LIBA	:= $Olib${LIBNAME}.a
+ALLTGTS	+= ${LIBA}
 
 all:	${LIBA}
-ALLTGTS	+= ${LIBA}
 ${LIBA}:	${OBJS}
 	@echo "Linking $@ ..."
 	@${AR} r $@ $?
@@ -57,7 +53,9 @@ include bvt/Module.mk
 
 .PHONY:	install uninstall install-incs uninstall-incs
 
-ifdef INCDIR
+####### Install headers
+
+ifdef INCDIR	# These ifdefs allow cold bootstrap to work correctly
 LIDIR	:= ${INCDIR}/${LIBNAME}
 INCSI	:= $(addprefix ${LIDIR}/,$(filter-out ${LIBNAME}.h,${INCS}))
 RINCI	:= ${LIDIR}.h
@@ -75,6 +73,9 @@ uninstall-incs:
 	@(cd ${INCDIR}; rm -f ${INCSI} ${LIBNAME}.h; rmdir ${LIBNAME} &> /dev/null || true)
 endif
 
+####### Install libraries (shared and/or static)
+
+ifdef LIBDIR
 ifdef BUILD_SHARED
 .PHONY: install-shared uninstall-shared
 LIBTI	:= ${LIBDIR}/$(notdir ${SLIBT})
@@ -87,7 +88,6 @@ ${LIBTI}:	${SLIBT}
 ${LIBLI} ${LIBSI}: ${LIBTI}
 	@(cd ${LIBDIR}; rm -f $@; ln -s $(notdir $<) $(notdir $@))
 endif
-
 ifdef BUILD_STATIC
 .PHONY: install-static uninstall-static
 LIBAI	:= ${LIBDIR}/${LIBA}
@@ -100,43 +100,46 @@ endif
 uninstall:	uninstall-incs
 	@echo "Removing library from ${LIBDIR} ..."
 	@rm -f ${LIBTI} ${LIBLI} ${LIBSI} ${LIBAI}
+endif
 
 ################ Maintenance ###########################################
 
 clean:	bvt/clean
-	@echo "Removing generated files ..."
 	@rm -f ${OBJS} $(OBJS:.o=.d) ${LIBA} ${SLIBT} ${SLIBL} ${SLIBS}
 	@rmdir $O &> /dev/null || true
 
 check:	bvt/run
 
-TMPDIR	:= /tmp
-DISTDIR	:= ${HOME}/stored
+ifdef MAJOR
 DISTVER	:= ${MAJOR}.${MINOR}
 DISTNAM	:= ${LIBNAME}-${DISTVER}
 DISTLSM	:= ${DISTNAM}.lsm
 DISTTAR	:= ${DISTNAM}.tar.bz2
-DDOCTAR	:= ${DISTNAM}-docs.tar.bz2
 
 dist:
-	mkdir ${TMPDIR}/${DISTNAM}
-	cp -r . ${TMPDIR}/${DISTNAM}
-	+${MAKE} -C ${TMPDIR}/${DISTNAM} dox distclean
-	(cd ${TMPDIR};							\
-	    tar jcf ${DISTDIR}/${DDOCTAR} ${DISTNAM}/docs/html;		\
-	    rm -f ${DISTNAM}/.git; rm -rf ${DISTNAM}/docs/html;		\
-	    cp ${DISTNAM}/docs/${LIBNAME}.lsm ${DISTDIR}/${DISTLSM};	\
-	    tar --numeric-owner --same-owner -jcf ${DISTDIR}/${DISTTAR} ${DISTNAM}; rm -rf ${DISTNAM})
+	@echo "Generating ${DISTTAR} and ${DISTLSM} ..."
+	@mkdir .${DISTNAM}
+	@rm -f ${DISTTAR}
+	@cp -r * .${DISTNAM} && mv .${DISTNAM} ${DISTNAM}
+	@+${MAKE} -sC ${DISTNAM} maintainer-clean
+	@tar jcf ${DISTTAR} ${DISTNAM} && rm -rf ${DISTNAM}
+	@echo "s/@version@/${DISTVER}/" > ${DISTLSM}.sed
+	@echo "s/@date@/`date +%F`/" >> ${DISTLSM}.sed
+	@echo -n "s/@disttar@/`du -h --apparent-size ${DISTTAR}`/" >> ${DISTLSM}.sed;
+	@sed -f ${DISTLSM}.sed docs/${LIBNAME}.lsm > ${DISTLSM} && rm -f ${DISTLSM}.sed
+endif
 
 distclean:	clean
 	@rm -f Config.mk config.h config.status ${LIBNAME}
 
 maintainer-clean: distclean
-	@rm -rf docs/html
+	@if [ -d docs/html ]; then rm -f docs/html/*; rmdir docs/html; fi
 
 html:
-dox:
-	@${DOXYGEN} ${DOCT}
+	@${DOXYGEN} ${LIBNAME}doc.in
+
+${LIBNAME}:	.
+	@rm -f ${LIBNAME}; ln -s . ${LIBNAME}
 
 ${OBJS} ${bvt/OBJS}:	Makefile Config.mk config.h
 ${bvt/OBJS}:		bvt/Module.mk
