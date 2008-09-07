@@ -22,7 +22,7 @@ ALLTGTS	+= ${SLIBT} ${SLIBS} ${SLIBL}
 all:	${SLIBT} ${SLIBS} ${SLIBL}
 ${SLIBT}:	${OBJS}
 	@echo "Linking $(notdir $@) ..."
-	@${LD} ${LDFLAGS} $(call slib_flags,$(subst $O,,${SLIBS})) -o $@ $^ ${LIBS}
+	@${LD} -fPIC ${LDFLAGS} $(call slib_flags,$(subst $O,,${SLIBS})) -o $@ $^ ${LIBS}
 ${SLIBS} ${SLIBL}:	${SLIBT}
 	@(cd $(dir $@); rm -f $(notdir $@); ln -s $(notdir $<) $(notdir $@))
 
