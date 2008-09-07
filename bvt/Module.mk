@@ -3,7 +3,10 @@
 bvt/SRCS	:= $(wildcard bvt/*.cc)
 bvt/BVTS	:= $(bvt/SRCS:.cc=)
 bvt/OBJS	:= $(addprefix $O,$(bvt/SRCS:.cc=.o))
-bvt/LIBS	:=
+bvt/LIBS	:= -L$(abspath $O.) -l${NAME}
+ifdef BUILD_SHARED
+bvt/LIBS	:= -Wl,--rpath=$(abspath $O.) ${bvt/LIBS}
+endif
 CXXFLAGS	+= -I.
 
 ################ Compilation ###########################################

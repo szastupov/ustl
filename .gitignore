@@ -1,4 +1,6 @@
 *.o
+*.a
+*.so*
 config.status
 Config.mk
 config.h

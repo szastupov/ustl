@@ -5,15 +5,20 @@ MAJOR		:= @PKG_MAJOR@
 MINOR		:= @PKG_MINOR@
 
 #DEBUG		:= 1
+BUILD_SHARED	:= 1
+#BUILD_STATIC	:= 1
 
 ################ Programs ############################################
 
 CXX		:= @CXX@
 LD		:= @CC@
+AR		:= @AR@
+RANLIB		:= @RANLIB@
 DOXYGEN		:= @DOXYGEN@
 INSTALL		:= @INSTALL@
 
 INSTALLDATA	:= ${INSTALL} -D -p -m 644
+INSTALLLIB	:= ${INSTALLDATA}
 
 ################ Destination #########################################
 
@@ -31,8 +36,8 @@ WARNOPTS	:= -Wall -Wextra -Wpointer-arith -Wshadow -Wcast-qual \
 TGTOPTS		:= @PROCESSOR_OPTS@ \
 		@INLINE_OPTS@
 
-CXXFLAGS	:= ${WARNOPTS} ${TGTOPTS} @CUSTOMINCDIR@
-LDFLAGS		:= ${CUSTOMLIBDIR} @CUSTOMLIBDIR@
+CXXFLAGS	:= ${WARNOPTS} ${TGTOPTS} @CUSTOMINCDIR@ -fPIC
+LDFLAGS		:= ${CUSTOMLIBDIR} @CUSTOMLIBDIR@ -fPIC
 ifdef DEBUG
     CXXFLAGS	+= -O0 -g
 else
@@ -40,3 +45,8 @@ else
     LDFLAGS	+=
 endif
 O		:= .o/
+
+slib_lnk	= lib$1.so
+slib_son	= lib$1.so.${MAJOR}
+slib_tgt	= lib$1.so.${MAJOR}.${MINOR}
+slib_flags	= @SHBLDFL@
