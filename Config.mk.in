@@ -1,0 +1,42 @@
+################ Build options #######################################
+
+NAME		:= @PKG_NAME@
+MAJOR		:= @PKG_MAJOR@
+MINOR		:= @PKG_MINOR@
+
+#DEBUG		:= 1
+
+################ Programs ############################################
+
+CXX		:= @CXX@
+LD		:= @CC@
+DOXYGEN		:= @DOXYGEN@
+INSTALL		:= @INSTALL@
+
+INSTALLDATA	:= ${INSTALL} -D -p -m 644
+
+################ Destination #########################################
+
+prefix		:= @prefix@
+exec_prefix	:= @exec_prefix@
+BINDIR		:= @bindir@
+INCDIR		:= @includedir@
+LIBDIR		:= @libdir@
+
+################ Compiler options ####################################
+
+WARNOPTS	:= -Wall -Wextra -Wpointer-arith -Wshadow -Wcast-qual \
+		-Wsynth -Wwrite-strings -Wno-overflow -Wno-cast-align \
+		-Wsign-promo -Wredundant-decls -Woverloaded-virtual @SYSWARNS@
+TGTOPTS		:= @PROCESSOR_OPTS@ \
+		@INLINE_OPTS@
+
+CXXFLAGS	:= ${WARNOPTS} ${TGTOPTS} @CUSTOMINCDIR@
+LDFLAGS		:= ${CUSTOMLIBDIR} @CUSTOMLIBDIR@
+ifdef DEBUG
+    CXXFLAGS	+= -O0 -g
+else
+    CXXFLAGS	+= -Os -g0 -DNDEBUG=1 -fomit-frame-pointer
+    LDFLAGS	+=
+endif
+O		:= .o/
