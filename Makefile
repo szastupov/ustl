@@ -68,6 +68,7 @@ ${INCSI}: ${LIDIR}/%.h: %.h
 ${RINCI}: ${NAME}.h
 	@echo "Installing $@ ..."
 	@${INSTALLDATA} $< $@
+uninstall:	uninstall-incs
 uninstall-incs:
 	@echo "Removing ${LIDIR}/ and ${LIDIR}.h ..."
 	@(cd ${INCDIR}; rm -f ${INCSI} ${NAME}.h; rmdir ${NAME} &> /dev/null || true)
@@ -77,7 +78,6 @@ endif
 
 ifdef LIBDIR
 ifdef BUILD_SHARED
-.PHONY: install-shared uninstall-shared
 LIBTI	:= ${LIBDIR}/$(notdir ${SLIBT})
 LIBLI	:= ${LIBDIR}/$(notdir ${SLIBS})
 LIBSI	:= ${LIBDIR}/$(notdir ${SLIBL})
@@ -89,7 +89,6 @@ ${LIBLI} ${LIBSI}: ${LIBTI}
 	@(cd ${LIBDIR}; rm -f $@; ln -s $(notdir $<) $(notdir $@))
 endif
 ifdef BUILD_STATIC
-.PHONY: install-static uninstall-static
 LIBAI	:= ${LIBDIR}/$(notdir ${LIBA})
 install:	${LIBAI}
 ${LIBAI}:	${LIBA}
@@ -97,7 +96,7 @@ ${LIBAI}:	${LIBA}
 	@${INSTALLLIB} $< $@
 endif
 
-uninstall:	uninstall-incs
+uninstall:
 	@echo "Removing library from ${LIBDIR} ..."
 	@rm -f ${LIBTI} ${LIBLI} ${LIBSI} ${LIBAI}
 endif
