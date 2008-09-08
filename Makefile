@@ -10,31 +10,31 @@ OBJS	:= $(addprefix $O,$(SRCS:.cc=.o))
 
 .PHONY: all clean html check dist distclean maintainer-clean
 
-all:	Config.mk config.h ${LIBNAME}
-ALLTGTS	:= Config.mk config.h ${LIBNAME}
+all:	Config.mk config.h ${NAME}
+ALLTGTS	:= Config.mk config.h ${NAME}
 
 ifdef BUILD_SHARED
-SLIBL	:= $O$(call slib_lnk,${LIBNAME})
-SLIBS	:= $O$(call slib_son,${LIBNAME})
-SLIBT	:= $O$(call slib_tgt,${LIBNAME})
+SLIBL	:= $O$(call slib_lnk,${NAME})
+SLIBS	:= $O$(call slib_son,${NAME})
+SLIBT	:= $O$(call slib_tgt,${NAME})
 ALLTGTS	+= ${SLIBT} ${SLIBS} ${SLIBL}
 
 all:	${SLIBT} ${SLIBS} ${SLIBL}
 ${SLIBT}:	${OBJS}
 	@echo "Linking $(notdir $@) ..."
-	@${LD} ${LDFLAGS} $(call shlib_flags,$(subst $O,,${SLIBS})) -o $@ $^ ${LIBS}
+	@${LD} -fPIC ${LDFLAGS} $(call slib_flags,$(subst $O,,${SLIBS})) -o $@ $^ ${LIBS}
 ${SLIBS} ${SLIBL}:	${SLIBT}
 	@(cd $(dir $@); rm -f $(notdir $@); ln -s $(notdir $<) $(notdir $@))
 
 endif
 ifdef BUILD_STATIC
-LIBA	:= $Olib${LIBNAME}.a
+LIBA	:= $Olib${NAME}.a
 ALLTGTS	+= ${LIBA}
 
 all:	${LIBA}
 ${LIBA}:	${OBJS}
 	@echo "Linking $@ ..."
-	@${AR} r $@ $?
+	@${AR} rc $@ $?
 	@${RANLIB} $@
 endif
 
@@ -56,8 +56,8 @@ include bvt/Module.mk
 ####### Install headers
 
 ifdef INCDIR	# These ifdefs allow cold bootstrap to work correctly
-LIDIR	:= ${INCDIR}/${LIBNAME}
-INCSI	:= $(addprefix ${LIDIR}/,$(filter-out ${LIBNAME}.h,${INCS}))
+LIDIR	:= ${INCDIR}/${NAME}
+INCSI	:= $(addprefix ${LIDIR}/,$(filter-out ${NAME}.h,${INCS}))
 RINCI	:= ${LIDIR}.h
 
 install:	install-incs
@@ -65,19 +65,19 @@ install-incs: ${INCSI} ${RINCI}
 ${INCSI}: ${LIDIR}/%.h: %.h
 	@echo "Installing $@ ..."
 	@${INSTALLDATA} $< $@
-${RINCI}: ${LIBNAME}.h
+${RINCI}: ${NAME}.h
 	@echo "Installing $@ ..."
 	@${INSTALLDATA} $< $@
+uninstall:	uninstall-incs
 uninstall-incs:
 	@echo "Removing ${LIDIR}/ and ${LIDIR}.h ..."
-	@(cd ${INCDIR}; rm -f ${INCSI} ${LIBNAME}.h; rmdir ${LIBNAME} &> /dev/null || true)
+	@(cd ${INCDIR}; rm -f ${INCSI} ${NAME}.h; rmdir ${NAME} &> /dev/null || true)
 endif
 
 ####### Install libraries (shared and/or static)
 
 ifdef LIBDIR
 ifdef BUILD_SHARED
-.PHONY: install-shared uninstall-shared
 LIBTI	:= ${LIBDIR}/$(notdir ${SLIBT})
 LIBLI	:= ${LIBDIR}/$(notdir ${SLIBS})
 LIBSI	:= ${LIBDIR}/$(notdir ${SLIBL})
@@ -89,30 +89,30 @@ ${LIBLI} ${LIBSI}: ${LIBTI}
 	@(cd ${LIBDIR}; rm -f $@; ln -s $(notdir $<) $(notdir $@))
 endif
 ifdef BUILD_STATIC
-.PHONY: install-static uninstall-static
-LIBAI	:= ${LIBDIR}/${LIBA}
+LIBAI	:= ${LIBDIR}/$(notdir ${LIBA})
 install:	${LIBAI}
 ${LIBAI}:	${LIBA}
 	@echo "Installing $@ ..."
 	@${INSTALLLIB} $< $@
 endif
 
-uninstall:	uninstall-incs
+uninstall:
 	@echo "Removing library from ${LIBDIR} ..."
 	@rm -f ${LIBTI} ${LIBLI} ${LIBSI} ${LIBAI}
 endif
 
 ################ Maintenance ###########################################
 
-clean:	bvt/clean
+clean:
 	@rm -f ${OBJS} $(OBJS:.o=.d) ${LIBA} ${SLIBT} ${SLIBL} ${SLIBS}
 	@rmdir $O &> /dev/null || true
 
-check:	bvt/run
+html:	${SRCS} ${INCS} ${NAME}doc.in
+	@${DOXYGEN} ${NAME}doc.in
 
 ifdef MAJOR
 DISTVER	:= ${MAJOR}.${MINOR}
-DISTNAM	:= ${LIBNAME}-${DISTVER}
+DISTNAM	:= ${NAME}-${DISTVER}
 DISTLSM	:= ${DISTNAM}.lsm
 DISTTAR	:= ${DISTNAM}.tar.bz2
 
@@ -126,27 +126,23 @@ dist:
 	@echo "s/@version@/${DISTVER}/" > ${DISTLSM}.sed
 	@echo "s/@date@/`date +%F`/" >> ${DISTLSM}.sed
 	@echo -n "s/@disttar@/`du -h --apparent-size ${DISTTAR}`/" >> ${DISTLSM}.sed;
-	@sed -f ${DISTLSM}.sed docs/${LIBNAME}.lsm > ${DISTLSM} && rm -f ${DISTLSM}.sed
+	@sed -f ${DISTLSM}.sed docs/${NAME}.lsm > ${DISTLSM} && rm -f ${DISTLSM}.sed
 endif
 
 distclean:	clean
-	@rm -f Config.mk config.h config.status ${LIBNAME}
+	@rm -f Config.mk config.h config.status ${NAME}
 
 maintainer-clean: distclean
 	@if [ -d docs/html ]; then rm -f docs/html/*; rmdir docs/html; fi
 
-html:
-	@${DOXYGEN} ${LIBNAME}doc.in
+${NAME}:	.
+	@rm -f ${NAME}; ln -s . ${NAME}
 
-${LIBNAME}:	.
-	@rm -f ${LIBNAME}; ln -s . ${LIBNAME}
-
-${OBJS} ${bvt/OBJS}:	Makefile Config.mk config.h
-${bvt/OBJS}:		bvt/Module.mk
+${OBJS}:		Makefile Config.mk config.h
 Config.mk:		Config.mk.in
 config.h:		config.h.in
 Config.mk config.h:	configure
 	@if [ -x config.status ]; then echo "Reconfiguring ..."; ./config.status; \
 	else echo "Running configure ..."; ./configure; fi
 
--include ${OBJS:.o=.d} ${bvt/OBJS:.o=.d}
+-include ${OBJS:.o=.d}

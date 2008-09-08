@@ -7,13 +7,13 @@
 #define CONFIG_H_01E33670634DAAC779EE5FF41CCBB36F
 
 // Define to the one symbol short name of this package.
-#define USTL_NAME	"@PACKAGE_NAME@"
+#define USTL_NAME	"@PKG_NAME@"
 // Define to the full name and version of this package.
-#define USTL_STRING	"@PACKAGE_NAME@ @PACKAGE_VERSION@"
+#define USTL_STRING	"@PKG_NAME@ @PKG_VERSTR@"
 // Define to the version of this package.
-#define USTL_VERSION	0x@LIB_MAJOR@@LIB_MINOR@@LIB_BUILD@
+#define USTL_VERSION	@PKG_VERSION@
 // Define to the address where bug reports for this package should be sent.
-#define USTL_BUGREPORT	"@PACKAGE_BUGREPORT@"
+#define USTL_BUGREPORT	"@PKG_BUGREPORT@"
 
 /// Define to 1 if you want stream operations to throw exceptions on
 /// insufficient data or insufficient space. All these errors should
@@ -276,4 +276,4 @@
 // Define to 'unsigned' if <sys/types.h> does not define.
 #undef size_t
 
-#endif	// CONFIG_H_01E33670634DAAC779EE5FF41CCBB36F
+#endif

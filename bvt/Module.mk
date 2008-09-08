@@ -3,7 +3,7 @@
 bvt/SRCS	:= $(wildcard bvt/bvt*.cc)
 bvt/BVTS	:= $(bvt/SRCS:.cc=)
 bvt/OBJS	:= $(addprefix $O,$(bvt/SRCS:.cc=.o))
-bvt/LIBS	:= -L$(abspath $O.) -l${LIBNAME}
+bvt/LIBS	:= -L$(abspath $O.) -l${NAME}
 ifdef BUILD_SHARED
 bvt/LIBS	:= -Wl,--rpath=$(abspath $O.) ${bvt/LIBS}
 endif
@@ -14,7 +14,7 @@ CXXFLAGS	+= -I.
 
 ################ Compilation ###########################################
 
-.PHONY:	bvt/all bvt/run bvt/clean
+.PHONY:	bvt/all bvt/run bvt/clean bvt/check
 
 bvt/all:	${bvt/BVTS}
 
@@ -29,18 +29,22 @@ bvt/run:	${bvt/BVTS}
 	    diff $$i.std $$i.out && rm -f $$i.out; \
 	done
 
-${bvt/BVTS}: bvt/bvt%: $Obvt/bvt%.o $Obvt/stdtest.o ${ALLTGTS}
+${bvt/BVTS}: bvt/%: $Obvt/%.o $Obvt/stdtest.o ${ALLTGTS}
 	@echo "Linking $@ ..."
 	@${LD} ${LDFLAGS} -o $@ $< $Obvt/stdtest.o ${bvt/LIBS}
 
 bvt/bench:	$Obvt/bench.o ${ALLTGTS}
-	@echo "Linking $@ ..."
-	@${LD} ${LDFLAGS} -o $@ $< ${bvt/LIBS}
 
 ################ Maintenance ###########################################
 
+clean:	bvt/clean
 bvt/clean:
 	@rm -f ${bvt/BVTS} ${bvt/OBJS} $(bvt/OBJS:.o=.d) bvt/bench $Obvt/bench.o $Obvt/stdtest.o $Obvt/bench.d $Obvt/stdtest.d
 	@rmdir $O/bvt &> /dev/null || true
 
-${bvt/OBJS} $Obvt/stdtest.o $Obvt/bench.o: bvt/Module.mk ${LIBNAME}
+check:		bvt/run
+bvt/check:	check
+
+${bvt/OBJS} $Obvt/stdtest.o $Obvt/bench.o: Makefile bvt/Module.mk Config.mk config.h ${NAME}
+
+-include ${bvt/OBJS:.o=.d}

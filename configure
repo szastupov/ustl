@@ -1,8 +1,6 @@
 #! /bin/sh
 #
-# Copyright (C) 2008 by Mike Sharov <msharov@users.sourceforge.net>
 # This file is free software, distributed under the MIT License.
-#
 ######################################################################
 #### Project Configuration ###########################################
 ######################################################################
@@ -11,9 +9,11 @@ PKG_NAME="ustl"
 PKG_MAJOR="1"
 PKG_MINOR="2"
 
-FILES="Config.mk config.h"
 
 PKG_BUGREPORT="Mike Sharov <msharov@users.sourceforge.net>"
+
+# Files that get created by this script
+FILES="Config.mk config.h"
 
 # Package options
 COMPONENTS="
@@ -65,19 +65,22 @@ LD=ld AR=ar RANLIB=ranlib RANLIB=touch INSTALL=install"
 ENVIRONS="CXXFLAGS LDFLAGS"
 
 # Automatic vars
+[ -d .git ] && PKG_VERSTR=`git describe`
+PKG_MAJOR=`expr "$PKG_VERSTR" : 'v\([0-9]*\)\.[0-9]*'`
+PKG_MINOR=`expr "$PKG_VERSTR" : 'v[0-9]*\.\([0-9]*\)'`
 PKG_VERSTR="$PKG_MAJOR.$PKG_MINOR"
 PKG_STRING="$PKG_NAME $PKG_VERSTR"
 
 # Miscellaneous substitutions
-CUSTSUBS="s/@PACKAGE_NAME@/$PKG_NAME/g
-s/@PACKAGE_VERSION@/$PKG_VERSTR/g
-s/@PACKAGE_TARNAME@/$PKG_NAME/g
-s/@PACKAGE_STRING@/$PKG_STRING/g
-s/@PACKAGE_BUGREPORT@/$PKG_BUGREPORT/g
-s/@LIBNAME@/$PKG_NAME/g
-s/@LIB_MAJOR@/$PKG_MAJOR/g
-s/@LIB_MINOR@/$PKG_MINOR/g
-s/@LIB_BUILD@/0/g"
+CUSTSUBS="s/@PKG_NAME@/$PKG_NAME/g
+s/@PKG_VERSION@/"0x$PKG_MAJOR${PKG_MINOR}0"/g
+s/@PKG_VERSTR@/$PKG_VERSTR/g
+s/@PKG_TARNAME@/$PKG_NAME/g
+s/@PKG_STRING@/$PKG_STRING/g
+s/@PKG_UNAME@/`echo $PKG_NAME | tr [a-z] [A-Z]`/g
+s/@PKG_BUGREPORT@/$PKG_BUGREPORT/g
+s/@PKG_MAJOR@/$PKG_MAJOR/g
+s/@PKG_MINOR@/$PKG_MINOR/g"
 
 ######################################################################
 #### The rest of the file is configuration code. Leave it alone. #####
@@ -355,11 +358,7 @@ System types:
 }
 
 PrintVersion() {
-    echo "$PKG_NAME configure $PKG_VERSTR
-
-Copyright (c) 2003-2008, Mike Sharov <msharov@users.sourceforge.net>
-This configure script is free software under the MIT license.
-Unlimited permission to copy, distribute, and modify is granted."
+    echo "$PKG_NAME configure $PKG_VERSTR"
 }
 
 SubVar() {
