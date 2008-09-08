@@ -10,7 +10,6 @@ MINOR		:= @PKG_MINOR@
 
 CXX		:= @CXX@
 LD		:= @CC@
-DOXYGEN		:= @DOXYGEN@
 INSTALL		:= @INSTALL@
 
 INSTALLDATA	:= ${INSTALL} -D -p -m 644
