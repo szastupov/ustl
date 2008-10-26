@@ -47,7 +47,7 @@
     #define DLL_EXPORT
     #define DLL_LOCAL
 #endif
-#if defined(__GNUC__) && __GNUC__ >= 3 && __i386__
+#if defined(__GNUC__) && __GNUC__ >= 3 && (__i386__ || __x86_64__)
     /// GCC 3+ supports the prefetch directive, which some CPUs use to improve caching
     #define prefetch(p,rw,loc)	__builtin_prefetch(p,rw,loc)
 #else

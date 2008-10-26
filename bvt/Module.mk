@@ -33,7 +33,9 @@ ${bvt/BVTS}: bvt/%: $Obvt/%.o $Obvt/stdtest.o ${ALLTGTS}
 	@echo "Linking $@ ..."
 	@${LD} ${LDFLAGS} -o $@ $< $Obvt/stdtest.o ${bvt/LIBS}
 
-bvt/bench:	$Obvt/bench.o ${ALLTGTS}
+bvt/bench:	$Obvt/bench.o $Obvt/stdtest.o ${ALLTGTS}
+	@echo "Linking $@ ..."
+	@${LD} ${LDFLAGS} -o $@ $< $Obvt/stdtest.o ${bvt/LIBS}
 
 ################ Maintenance ###########################################
 
