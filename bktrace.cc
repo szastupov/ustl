@@ -64,12 +64,12 @@ static size_t ExtractAbiName (const char* isym, char* nmbuf) throw()
 	const char* isymEnd = isym + strlen (isym);
 	if (!mnEnd)
 	    mnEnd = isymEnd;
-	nmSize = min (size_t (distance (mnStart, mnEnd)), 256U);
+	nmSize = min (size_t (distance (mnStart, mnEnd)), 255U);
 	memcpy (nmbuf, mnStart, nmSize);
     }
     nmbuf[nmSize] = 0;
     // Demangle
-    demangle_type_name (nmbuf, 256U, &nmSize);
+    demangle_type_name (nmbuf, 255U, &nmSize);
     return (nmSize);
 }
 
