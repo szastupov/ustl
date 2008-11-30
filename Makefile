@@ -135,7 +135,7 @@ distclean:	clean
 maintainer-clean: distclean
 	@if [ -d docs/html ]; then rm -f docs/html/*; rmdir docs/html; fi
 
-${NAME}:	.
+${NAME}:	config.h
 	@rm -f ${NAME}; ln -s . ${NAME}
 
 ${OBJS}:		Makefile Config.mk config.h
