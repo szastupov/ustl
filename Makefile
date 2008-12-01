@@ -34,7 +34,8 @@ ALLTGTS	+= ${LIBA}
 all:	${LIBA}
 ${LIBA}:	${OBJS}
 	@echo "Linking $@ ..."
-	@${AR} rc $@ $?
+	@rm -f $@
+	@${AR} qc $@ ${OBJS}
 	@${RANLIB} $@
 endif
 
