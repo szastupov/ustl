@@ -112,8 +112,14 @@ void fstream::open (const char* filename, openmode mode, mode_t perms)
 /// Closes the file and throws on error.
 void fstream::close (void)
 {
-    if (m_fd >= 0 && ::close(m_fd))
-	set_and_throw (badbit | failbit, "close");
+    if (m_fd < 0)
+	return;	// already closed
+    while (::close(m_fd)) {
+	if (errno != EINTR) {
+	    set_and_throw (badbit | failbit, "close");
+	    break;
+	}
+    }
     detach();
 }
 
