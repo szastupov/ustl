@@ -10,8 +10,8 @@ OBJS	:= $(addprefix $O,$(SRCS:.cc=.o))
 
 .PHONY: all clean html check dist distclean maintainer-clean
 
-all:	Config.mk config.h ${NAME}
-ALLTGTS	:= Config.mk config.h ${NAME}
+all:	Config.mk config.h ${NAME}/config.h
+ALLTGTS	:= Config.mk config.h ${NAME}/config.h
 
 ifdef BUILD_SHARED
 SLIBL	:= $O$(call slib_lnk,${NAME})
@@ -136,7 +136,8 @@ distclean:	clean
 maintainer-clean: distclean
 	@if [ -d docs/html ]; then rm -f docs/html/*; rmdir docs/html; fi
 
-${NAME}:	config.h
+${NAME}/config.h:	config.h
+	@echo "    Linking inplace header location ..."
 	@rm -f ${NAME}; ln -s . ${NAME}
 
 ${OBJS}:		Makefile Config.mk config.h
