@@ -47,6 +47,6 @@ bvt/clean:
 check:		bvt/run
 bvt/check:	check
 
-${bvt/OBJS} $Obvt/stdtest.o $Obvt/bench.o: Makefile bvt/Module.mk Config.mk config.h ${NAME}
+${bvt/OBJS} $Obvt/stdtest.o $Obvt/bench.o: Makefile bvt/Module.mk Config.mk ${NAME}/config.h
 
 -include ${bvt/OBJS:.o=.d}
