@@ -136,6 +136,8 @@ distclean:	clean
 maintainer-clean: distclean
 	@if [ -d docs/html ]; then rm -f docs/html/*; rmdir docs/html; fi
 
+INPLACE_INCS := $(addprefix ${NAME}/,$(filter-out config.h,${INCS}))
+${INPLACE_INCS}: ${NAME}/%:	${NAME}/config.h
 ${NAME}/config.h:	config.h
 	@echo "    Linking inplace header location ..."
 	@rm -f ${NAME}; ln -s . ${NAME}
