@@ -40,6 +40,7 @@ public:
     typedef typename base_class::const_reverse_iterator	const_reverse_iterator;
     typedef pair<const_iterator,const_iterator>		const_range_t;
     typedef pair<iterator,iterator>			range_t;
+    typedef pair<iterator,bool>				insertrv_t;
 public:
     inline			map (void)			: vector<pair<K,V> > () {}
     explicit inline		map (size_type n)		: vector<pair<K,V> > (n) {}
@@ -59,7 +60,7 @@ public:
     inline iterator		find (const_key_ref k)	{ return (const_cast<iterator> (const_cast<rcself_t>(*this).find (k))); }
     inline const_iterator	find_data (const_data_ref v, const_iterator first = NULL, const_iterator last = NULL) const;
     inline iterator		find_data (const_data_ref v, iterator first = NULL, iterator last = NULL);
-    iterator			insert (const_reference v);
+    insertrv_t			insert (const_reference v);
     void			insert (const_iterator i1, const_iterator i2);
     inline void			erase (const_key_ref k);
     inline iterator		erase (iterator ep)	{ return (base_class::erase (ep)); }
@@ -129,14 +130,13 @@ typename map<K,V>::data_type& map<K,V>::operator[] (const_key_ref k)
 
 /// Inserts the pair into the container.
 template <typename K, typename V>
-typename map<K,V>::iterator map<K,V>::insert (const_reference v)
+typename map<K,V>::insertrv_t map<K,V>::insert (const_reference v)
 {
     iterator ip = lower_bound (v.first);
-    if (ip == end() || v.first < ip->first)
+    bool bInserted = ip == end() || v.first < ip->first;
+    if (bInserted)
 	ip = base_class::insert (ip, v);
-    else
-	*ip = v;
-    return (ip);
+    return (make_pair (ip, bInserted));
 }
 
 /// Inserts elements from range [i1,i2) into the container.

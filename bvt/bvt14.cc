@@ -50,7 +50,7 @@ void TestMap (void)
     cout << endl;
 
     mcopy = months;
-    monthmap_t::iterator frob = mcopy.insert (make_pair (string("frobuary"), 42));
+    monthmap_t::iterator frob = mcopy.insert (make_pair (string("frobuary"), 42)).first;
     cout << "After inserting " << frob->first << "," << frob->second << ":" << endl;
     for (i = mcopy.begin(); i < mcopy.end(); ++ i)
 	cout << i->first << " ";
