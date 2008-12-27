@@ -35,6 +35,7 @@ public:
     typedef typename base_class::iterator		iterator;
     typedef typename base_class::reverse_iterator	reverse_iterator;
     typedef typename base_class::const_reverse_iterator	const_reverse_iterator;
+    typedef pair<iterator,bool>				insertrv_t;
 public:
     inline			set (void)		: vector<T> () { }
     explicit inline		set (size_type n)	: vector<T> (n) { }
@@ -50,7 +51,7 @@ public:
     inline void			push_back (const_reference v)	{ insert (v); }
     inline const_iterator	find (const_reference v) const	{ return (binary_search (begin(), end(), v)); }
     inline iterator		find (const_reference v)	{ return (const_cast<iterator>(const_cast<rcself_t>(*this).find (v))); }
-    iterator			insert (const_reference v);
+    insertrv_t			insert (const_reference v);
     inline void			insert (const_iterator i1, const_iterator i2);
     inline void			erase (const_reference v);
     inline iterator		erase (iterator ep)	{ return (base_class::erase (ep)); }
@@ -60,14 +61,13 @@ public:
 
 /// Inserts \p v into the container, maintaining the sort order.
 template <typename T>
-typename set<T>::iterator set<T>::insert (const_reference v)
+typename set<T>::insertrv_t set<T>::insert (const_reference v)
 {
     iterator ip = lower_bound (begin(), end(), v);
-    if (ip == end() || v < *ip)
+    bool bInserted = (ip == end() || v < *ip);
+    if (bInserted)
 	ip = base_class::insert (ip, v);
-    else
-	*ip = v;
-    return (ip);
+    return (make_pair (ip, bInserted));
 }
 
 /// Inserts the contents of range [i1,i2)
@@ -89,8 +89,6 @@ inline void set<T>::erase (const_reference v)
 	erase (ip);
 }
 
-
 } // namespace ustl
 
 #endif
-
