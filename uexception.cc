@@ -13,7 +13,7 @@
 #include "strmsize.h"
 #include "uspecial.h"
 #include <errno.h>
-#if __GNUC__ >= 3
+#if __GNUC__ >= 3 && WANT_NAME_DEMANGLING
     #include <cxxabi.h>
 #endif
 
@@ -211,7 +211,7 @@ size_t file_exception::stream_size (void) const
 const char* demangle_type_name (char* buf, size_t bufSize, size_t* pdmSize)
 {
     size_t bl = strlen (buf);
-#if __GNUC__ >= 3
+#if __GNUC__ >= 3 && WANT_NAME_DEMANGLING
     char dmname [256];
     size_t sz = VectorSize(dmname);
     int bFailed;

@@ -30,6 +30,10 @@ name=[with-debug]
 desc=[	Compiles the library with debugging information]
 seds=[s/#DEBUG\t\t:= 1/DEBUG\t\t:= 1/]
 }{
+name=[with-demangler]
+desc=[Demangle C++ symbols in backtrace]
+seds=[s/#undef WANT_NAME_DEMANGLING/#define WANT_NAME_DEMANGLING 1/]
+}{
 name=[without-bounds]
 desc=[Disable runtime bounds checking on stream reads/writes]
 seds=[s/#define WANT_STREAM_BOUNDS_CHECKING 1/#undef WANT_STREAM_BOUNDS_CHECKING/]
