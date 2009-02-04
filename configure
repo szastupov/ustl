@@ -44,7 +44,7 @@ PROGS="CC=gcc CXX=g++ LD=ld AR=ar RANLIB=ranlib RANLIB=touch INSTALL=install DOX
 PKG_MAJOR=`expr "$PKG_VERSTR" : 'v\([0-9]*\)\.[0-9]*'`
 PKG_MINOR=`expr "$PKG_VERSTR" : 'v[0-9]*\.\([0-9]*\)'`
 PKG_STRING="$PKG_NAME $PKG_VERSTR"
-[ -x `which rot13` ] && MNT_MAIL=`echo $MNT_MAIL|rot13`
+MNT_MAIL=`echo $MNT_MAIL|tr a-z n-za-m`
 PKG_BUGREPORT="$MNT_NAME <$MNT_MAIL>"
 
 # Miscellaneous substitutions
@@ -53,7 +53,7 @@ s/@PKG_VERSION@/"0x$PKG_MAJOR${PKG_MINOR}0"/g
 s/@PKG_VERSTR@/$PKG_VERSTR/g
 s/@PKG_TARNAME@/$PKG_NAME/g
 s/@PKG_STRING@/$PKG_STRING/g
-s/@PKG_UNAME@/`echo $PKG_NAME | tr [a-z] [A-Z]`/g
+s/@PKG_UNAME@/`echo $PKG_NAME | tr a-z A-Z`/g
 s/@PKG_BUGREPORT@/$PKG_BUGREPORT/g
 s/@PKG_MAJOR@/$PKG_MAJOR/g
 s/@PKG_MINOR@/$PKG_MINOR/g"
@@ -230,8 +230,8 @@ $CC -o config.cpu config.cpu.c
 
 #### Set host-dependent options ######################################
 
-SYSNAME=`uname|tr "[A-Z]" "[a-z]"`
-[ "`uname -m|tr '[A-Z]' '[a-z]'`" = "alpha" ] && SYSNAME="alpha"
+SYSNAME=`uname|tr A-Z a-z`
+[ "`uname -m|tr A-Z a-z`" = "alpha" ] && SYSNAME="alpha"
 case "$SYSNAME" in
     *solaris*| *sun*)	SYSNAME="sun";;
     *darwin*| *osx*)	SYSNAME="mac";;
