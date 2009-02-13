@@ -273,7 +273,6 @@ int main (void)
 {
     cout << "Testing fill" << endl;
     cout << "---------------------------------------------------------" << endl;
-    TestFillFunction ("fill_n\t\t", &fill_n<char*, char>);
 #if __i386__ || __x86_64__
 #if CPU_HAS_SSE
     TestFillFunction ("sse_fill\t", &sse_fill);
@@ -287,11 +286,11 @@ int main (void)
     TestFillFunction ("risc_fill\t", &risc_fill);
 #endif
     TestFillFunction ("memset_fill\t", &memset_fill);
+    TestFillFunction ("fill_n\t\t", &fill_n<char*, char>);
 
     cout << endl;
     cout << "Testing copy" << endl;
     cout << "---------------------------------------------------------" << endl;
-    TestCopyFunction ("copy_n\t\t", &copy_n<const char*, char*>);
 #if __i386__ || __x86_64__
 #if CPU_HAS_SSE
     TestCopyFunction ("sse_copy\t", &sse_copy);
@@ -305,6 +304,7 @@ int main (void)
     TestCopyFunction ("unroll_copy\t", &unroll_copy);
 #endif
     TestCopyFunction ("memcpy_copy\t", &memcpy_copy);
+    TestCopyFunction ("copy_n\t\t", &copy_n<const char*, char*>);
 
     return (EXIT_SUCCESS);
 }

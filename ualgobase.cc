@@ -200,7 +200,7 @@ template <> inline void build_block (uint32_t v)
 static inline void simd_block_fill_loop (uint8_t*& dest, size_t count)
 {
     prefetch (advance (dest, 512), 1, 0);
-    for (uoff_t i = 0; i < count; ++ i, dest += MMX_BS)
+    for (const uint8_t* destEnd = dest + count * MMX_BS; dest < destEnd; dest += MMX_BS)
 	simd_block_store (dest);
     simd_block_cleanup();
     simd::reset_mmx();
