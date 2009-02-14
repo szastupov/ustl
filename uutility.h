@@ -189,7 +189,7 @@ inline uint16_t bswap_16 (uint16_t v)	{ asm ("rorw $8, %w0" : "=r"(v) : "0"(v) :
 inline uint32_t bswap_32 (uint32_t v)	{ asm ("bswap %0" : "=r"(v) : "0"(v)); return (v); }
 #else
 inline uint16_t bswap_16 (uint16_t v)	{ return (v << 8 | v >> 8); }
-inline uint32_t bswap_32 (uint32_t v)	{ return (v << 24 | (v & 0xFF00) << 8 | (v >> 8) & 0xFF00 | v >> 24); }
+inline uint32_t bswap_32 (uint32_t v)	{ return (v << 24 | (v & 0xFF00) << 8 | ((v >> 8) & 0xFF00) | v >> 24); }
 #endif
 #if HAVE_INT64_T
 inline uint64_t bswap_64 (uint64_t v)	{ return ((uint64_t(bswap_32(v)) << 32) | bswap_32(v >> 32)); }
@@ -206,7 +206,7 @@ inline T bswap (const T& v)
 #if HAVE_INT64_T
 	case 64:	return (T (bswap_64 (uint64_t (v))));
 #endif
-    };
+    }
 }
 
 #if BYTE_ORDER == BIG_ENDIAN

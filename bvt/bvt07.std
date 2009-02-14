@@ -29,3 +29,4 @@ X was not rfound
 s2 is empty [], capacity 5 bytes
 <31 bytes of 31> Format '<const] 42, [rfile>, 0xDEADBEEF'
 Custom vararg MyFormat: '<const] 42, [rfile>, 0xDEADBEEF'
+hash_value(s2) = 95A714F3, string::hash(s2) = 95A714F3

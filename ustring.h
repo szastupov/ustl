@@ -251,17 +251,10 @@ PTR_STRING_CMP (operator>=, (s2 <= s1))
 
 //----------------------------------------------------------------------
 
-template <typename T>
-inline hashvalue_t hash_value (const T& v)
-{ return (string::hash (v.begin(), v.end())); }
-
-template <>
-inline hashvalue_t hash_value (const string::const_pointer& v)
-{ return (string::hash (v, v + strlen(v))); }
-
-template <>
-inline hashvalue_t hash_value (const string::pointer& v)
-{ return (string::hash (v, v + strlen(v))); }
+inline hashvalue_t hash_value (const char* first, const char* last)
+{ return (string::hash (first, last)); }
+inline hashvalue_t hash_value (const char* v)
+{ return (hash_value (v, v + strlen(v))); }
 
 //----------------------------------------------------------------------
 

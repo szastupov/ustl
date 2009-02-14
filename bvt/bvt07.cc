@@ -121,6 +121,8 @@ void TestString (void)
     s2.format ("<const] %d, %s, 0x%08X", 42, "[rfile>", 0xDEADBEEF);
     cout.format ("<%zu bytes of %zu> Format '%s'\n", s2.length(), s2.capacity(), s2.c_str());
     MyFormat ("'<const] %d, %s, 0x%08X'", 42, "[rfile>", 0xDEADBEEF);
+
+    cout.format ("hash_value(s2) = %08X, string::hash(s2) = %08X\n", hash_value (s2.begin()), string::hash (s2.begin(), s2.end()));
 }
 
 void MyFormat (const char* fmt, ...)
