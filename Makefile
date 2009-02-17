@@ -73,6 +73,7 @@ uninstall:	uninstall-incs
 uninstall-incs:
 	@echo "Removing ${LIDIR}/ and ${LIDIR}.h ..."
 	@(cd ${INCDIR}; rm -f ${INCSI} ${NAME}.h; rmdir ${NAME} &> /dev/null || true)
+	@[ ! -d ${LIDIR} ] || echo "Error: package includes directory ($${LIDIR}) contains unexpected files. Please delete them manually."
 endif
 
 ####### Install libraries (shared and/or static)
