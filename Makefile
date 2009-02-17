@@ -73,6 +73,7 @@ uninstall:	uninstall-incs
 uninstall-incs:
 	@echo "Removing ${LIDIR}/ and ${LIDIR}.h ..."
 	@(cd ${INCDIR}; rm -f ${INCSI} ${NAME}.h; rmdir ${NAME} &> /dev/null || true)
+	@[ ! -d ${LIDIR} ] || echo "Error: package includes directory ($${LIDIR}) contains unexpected files. Please delete them manually."
 endif
 
 ####### Install libraries (shared and/or static)
@@ -107,6 +108,7 @@ endif
 clean:
 	@rm -f ${OBJS} $(OBJS:.o=.d) ${LIBA} ${SLIBT} ${SLIBL} ${SLIBS}
 	@rmdir $O &> /dev/null || true
+	@[ ! -d $O ] || echo "Error: output directory ($O) contains unexpected files. Please delete them manually."
 
 html:	${SRCS} ${INCS} ${NAME}doc.in
 	@${DOXYGEN} ${NAME}doc.in
