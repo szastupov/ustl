@@ -107,6 +107,7 @@ endif
 clean:
 	@rm -f ${OBJS} $(OBJS:.o=.d) ${LIBA} ${SLIBT} ${SLIBL} ${SLIBS}
 	@rmdir $O &> /dev/null || true
+	@[ ! -d $O ] || echo "Error: output directory ($O) contains unexpected files. Please delete them manually."
 
 html:	${SRCS} ${INCS} ${NAME}doc.in
 	@${DOXYGEN} ${NAME}doc.in
