@@ -8,6 +8,8 @@
     <meta name="verify-v1" content="/fXe51SIkBhDzzEnY6l1J+PzhPSgYDL33GBy6ldjxYo=" />
     <meta name="Description" content="API and usage description for uSTL, a size-optimized STL implementation" />
     <meta name="Keywords" content="C++, STL, template, bloat, optimization" />
+    <meta name="author" content="Mike Sharov" />
+    <meta name="date" content="2009-03-04" />
 </head>
 <body>
 
@@ -185,8 +187,8 @@ foreach (vector&lt;CEmployee&gt;::iterator, i, employees)
 This is pretty much all there is to say about containers. Create them,
 use them, resize them, that's what they are for. There are other
 container types, but you will probably not use them much. There's
-<tt>set</tt>, which is a perpetually sorted vector, useful when you
-want to binary_search a large collection. There's <tt>map</tt> which
+<code>set</code>, which is a perpetually sorted vector, useful when you
+want to binary_search a large collection. There's <code>map</code> which
 is an associative container where you can look up entries by key. Its
 utility goes down drastically when you have complex objects that need to
 be searched with more than one parameter, in which cast you are better
@@ -199,14 +201,14 @@ aliases to vector, which naturally changes their performance parameters.
 <p>
 Every program uses strings, and STL was kind enough to provide a
 specification. uSTL deviates a bit from the standard by not implementing
-wchar strings. There is only one <tt>string</tt> class, which assumes
+wchar strings. There is only one <code>string</code> class, which assumes
 all your strings will be UTF8-encoded, and provides some additional
 functionality to make working with those easier. I did that for the same
 reason I dropped the locale classes; bloat. It is simply too expensive to
 implement the standard locale classes, as the enormous size of libstdc++
 illustrates. If you need them, you can still include them from libstdc++,
 but it may be just as simple to use the locale support provided by libc
-through printf, which may be called through <tt>format</tt> functions
+through printf, which may be called through <code>format</code> functions
 in string and ostringstream.
 </p><p>
 Anyway, back to strings. You can think of the string object as a
@@ -238,10 +240,10 @@ space and processor time to copy them if you just want to read them? I
 thought it a good tradeoff, considering that it is trasparent for the
 most common uses.
 </p><p>
-Other nonstandard extensions include a <tt>format</tt> function to
+Other nonstandard extensions include a <code>format</code> function to
 give you the functionality of sprintf for string objects. Another is
-the UTF8 stuff. Differing a bit from the standard, <tt>size</tt>
-returns the string length in bytes, <tt>length</tt> in characters.
+the UTF8 stuff. Differing a bit from the standard, <code>size</code>
+returns the string length in bytes, <code>length</code> in characters.
 You can iterate by characters instead of bytes with a special utf8
 iterator:
 </p><pre>
@@ -311,7 +313,7 @@ operations, like inner_product, set operations, heap operations, and
 lots and lots of predicate algorithms. The latter are algorithms that
 take a functor (an object that can be called like a function) and were
 supposed to help promote code reuse by encapsulating common operations.
-For example, STL expects you to use the <tt>for_each</tt> algorithm and
+For example, STL expects you to use the <code>for_each</code> algorithm and
 write a little functor for all your iterative tasks:
 </p><pre>
 class CCompareAndReplace {
@@ -353,8 +355,8 @@ it, but, of course, the choice is up to you.
 </p><p>
 The major difference between the standart STL implementation and uSTL is
 that the former has memory management stuff all over the place, while
-the latter keeps it all together in the <tt>memblock</tt> class. Normally
-STL containers are resized by calling <tt>new</tt> to create more storage
+the latter keeps it all together in the <code>memblock</code> class. Normally
+STL containers are resized by calling <code>new</code> to create more storage
 and then copying the elements there from the old one. This method wastes
 space by fragmenting memory, wastes time by copying all the existing data
 to the new location, and wastes codespace by having to instantiate all
@@ -374,7 +376,7 @@ that you were rightly warned against before! It's a bitwise <em>move</em>
 that doesn't create a new object, but simply relocates an existing one.
 </p><p>
 What this one small concession does is allow aggregation of all memory
-management in one place, namely, the <tt>memblock</tt> class. All the
+management in one place, namely, the <code>memblock</code> class. All the
 containers are thus converted mostly into typecasting wrappers that
 exist to ensure type safety. Look at the assembly code and you'll see
 mostly calls to memblock's functions. This is precisely the feature
@@ -407,9 +409,9 @@ of the cost.
 Linking is not limited to memlink. You can link memblock objects.
 You can link string objects. You can even link containers! Now
 you can use alloca to create a vector on the stack; use the
-<tt>typed_alloca_link(v,int,99)</tt> macro. All linked objects
+<code>typed_alloca_link(v,int,99)</code> macro. All linked objects
 will allocate memory and copy the linked data when you increase their
-size. You can also do it explicitly by calling <tt>copy_link</tt>.
+size. You can also do it explicitly by calling <code>copy_link</code>.
 Why link? It's cheaper than copying and easier than keeping track
 of pointers. For example, here's a line parser:
 </p><pre>
@@ -434,7 +436,7 @@ inline into one or two instructions, avoiding the virtual unlink() call.
 The C++ standard library provides global stream objects called cin,
 cout, and cerr to replace printf and friends for accessing stdin, stdout,
 and stderr, respectively. uSTL versions work mostly the same as the
-standard ones (yes, the <tt>format</tt> call is a uSTL extension). Most
+standard ones (yes, the <code>format</code> call is a uSTL extension). Most
 calls use snprintf for output and thus use whatever locale libc uses.
 </p><pre>
 cout &lt;&lt; "Hello world!" &lt;&lt; endl;
@@ -531,9 +533,9 @@ size_t CMyClass::stream_size (void) const
 </pre>
 <h2><a name="Tuples">Tuples</a></h2>
 <p>
-One last container I'll mention is a <tt>tuple</tt>, which is a fixed-size
-array of identical elements. No, it's not the same as the tuple in
-boost, which is more like a template-defined struct. This one should
+One last container I'll mention is a <code>tuple</code>, which is a
+fixed-size array of identical elements. No, it's not the same as the tuple
+in boost, which is more like a template-defined struct. This one should
 have been named "array", which is what it will be called in the next STL
 standard, but I guess I'm stuck with the name now. What are they good
 for? Graphical objects. Points, sizes, rectangles, triangles, etc. As a
@@ -713,7 +715,7 @@ between 2.3.5 and 2.3.6, contributing quite a bit to this) If you don't
 count libc, measuring only the C++-specific overhead, libstdc++ loads
 1474535 while libustl only 242480, <em>six times less</em>! Finally,
 much of uSTL's size comes from gcc's support libraries; if you compile
-uSTL without the <tt>NOLIBSTDCPP</tt> option in Config.mk, then you'll
+uSTL without the <kbd>NOLIBSTDCPP</kbd> option in Config.mk, then you'll
 see that it only takes up 80697 bytes, of which only 25632 are used
 by .text, meaning that only about a third of the library size is my
 fault. gcc developers will have to reduce the size of libsupc++ and
