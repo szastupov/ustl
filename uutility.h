@@ -184,15 +184,31 @@ inline size_t size_of_elements (size_t n, const T*)
 #undef bswap_32
 #undef bswap_64
 
+inline uint16_t bswap_16 (uint16_t v)
+{
 #if CPU_HAS_CMPXCHG8	// If it has that, it has bswap.
-inline uint16_t bswap_16 (uint16_t v)	{ asm ("rorw $8, %w0" : "=r"(v) : "0"(v) : "cc"); return (v); }
-inline uint32_t bswap_32 (uint32_t v)	{ asm ("bswap %0" : "=r"(v) : "0"(v)); return (v); }
-#else
-inline uint16_t bswap_16 (uint16_t v)	{ return (v << 8 | v >> 8); }
-inline uint32_t bswap_32 (uint32_t v)	{ return (v << 24 | (v & 0xFF00) << 8 | ((v >> 8) & 0xFF00) | v >> 24); }
+    if (!__builtin_constant_p(v)) asm ("rorw $8, %0":"+r"(v)); else
 #endif
+	v = v << 8 | v >> 8;
+    return (v);
+}
+inline uint32_t bswap_32 (uint32_t v)
+{
+#if CPU_HAS_CMPXCHG8
+    if (!__builtin_constant_p(v)) asm ("bswap %0":"+r"(v)); else
+#endif
+	v = v << 24 | (v & 0xFF00) << 8 | ((v >> 8) & 0xFF00) | v >> 24;
+    return (v);
+}
 #if HAVE_INT64_T
-inline uint64_t bswap_64 (uint64_t v)	{ return ((uint64_t(bswap_32(v)) << 32) | bswap_32(v >> 32)); }
+inline uint64_t bswap_64 (uint64_t v)
+{
+#if x86_64
+    if (!__builtin_constant_p(v)) asm ("bswap %0":"+r"(v)); else
+#endif
+	v = (uint64_t(bswap_32(v)) << 32) | bswap_32(v >> 32);
+    return (v);
+}
 #endif
 
 /// \brief Swaps the byteorder of \p v.
