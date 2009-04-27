@@ -6,9 +6,7 @@
 ######################################################################
 
 PKG_NAME="ustl"
-PKG_MAJOR="1"
-PKG_MINOR="2"
-
+PKG_VERSTR="v1.2"
 
 PKG_BUGREPORT="Mike Sharov <msharov@users.sourceforge.net>"
 
@@ -72,7 +70,6 @@ ENVIRONS="CXXFLAGS LDFLAGS"
 [ -d .git ] && PKG_VERSTR=`git describe`
 PKG_MAJOR=`expr "$PKG_VERSTR" : 'v\([0-9]*\)\.[0-9]*'`
 PKG_MINOR=`expr "$PKG_VERSTR" : 'v[0-9]*\.\([0-9]*\)'`
-PKG_VERSTR="$PKG_MAJOR.$PKG_MINOR"
 PKG_STRING="$PKG_NAME $PKG_VERSTR"
 
 # Miscellaneous substitutions
@@ -81,7 +78,7 @@ s/@PKG_VERSION@/"0x$PKG_MAJOR${PKG_MINOR}0"/g
 s/@PKG_VERSTR@/$PKG_VERSTR/g
 s/@PKG_TARNAME@/$PKG_NAME/g
 s/@PKG_STRING@/$PKG_STRING/g
-s/@PKG_UNAME@/`echo $PKG_NAME | tr a-z A-Z`/g
+s/@PKG_UNAME@/`echo $PKG_NAME|tr a-z A-Z`/g
 s/@PKG_BUGREPORT@/$PKG_BUGREPORT/g
 s/@PKG_MAJOR@/$PKG_MAJOR/g
 s/@PKG_MINOR@/$PKG_MINOR/g"
