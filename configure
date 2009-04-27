@@ -15,20 +15,20 @@ MNT_MAIL="anzr@rknzcyr.pbz"
 FILES="Config.mk config.h"
 
 # Package options
-COMPONENTS="
+COMPONENTS='
 {
 name=[without-shared]
 desc=[Builds the shared library (if supported by the OS)]
-seds=[s/BUILD_SHARED\t:= 1/#BUILD_SHARED\t:= 1/]
+seds=[s/^\(BUILD_SHARED\)/#\1/]
 }{
 name=[with-static]
 desc=[	Builds the static library]
-seds=[s/#BUILD_STATIC\t:= 1/BUILD_STATIC\t:= 1/]
+seds=[s/^#\(BUILD_STATIC\)/\1/]
 }{
 name=[with-debug]
 desc=[	Compiles $PKG_NAME with debugging information]
 seds=[s/^#\(DEBUG\)/\1/]
-}";
+}';
 
 # Header files
 HEADERS=""
