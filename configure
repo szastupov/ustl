@@ -26,7 +26,7 @@ desc=[	Builds the static library]
 seds=[s/^#\(BUILD_STATIC\)/\1/]
 }{
 name=[with-debug]
-desc=[	Compiles $PKG_NAME with debugging information]
+desc=[	Compile for debugging]
 seds=[s/^#\(DEBUG\)/\1/]
 }';
 
