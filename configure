@@ -15,12 +15,12 @@ MNT_MAIL="anzr@rknzcyr.pbz"
 FILES="Config.mk config.h"
 
 # Package options
-COMPONENTS="
+COMPONENTS='
 {
 name=[with-debug]
-desc=[	Compiles $PKG_NAME with debugging information]
+desc=[	Compile for debugging]
 seds=[s/^#\(DEBUG\)/\1/]
-}";
+}';
 
 # Header files
 HEADERS=""
