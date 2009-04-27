@@ -33,8 +33,8 @@ PROGS="CC=gcc CXX=g++ LD=ld AR=ar RANLIB=ranlib RANLIB=touch INSTALL=install"
 
 # Automatic vars
 [ -d .git ] && PKG_VERSTR=`git describe`
-PKG_MAJOR=`expr "$PKG_VERSTR":'v\([0-9]*\)\.[0-9]*'`
-PKG_MINOR=`expr "$PKG_VERSTR":'v[0-9]*\.\([0-9]*\)'`
+PKG_MAJOR=`expr "$PKG_VERSTR" : 'v\([0-9]*\)\.[0-9]*'`
+PKG_MINOR=`expr "$PKG_VERSTR" : 'v[0-9]*\.\([0-9]*\)'`
 PKG_STRING="$PKG_NAME $PKG_VERSTR"
 MNT_MAIL=`echo $MNT_MAIL|tr a-z n-za-m`
 PKG_BUGREPORT="$MNT_NAME <$MNT_MAIL>"
