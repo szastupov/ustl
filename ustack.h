@@ -34,8 +34,8 @@ public:
     inline const_reference	top (void) const		{ return (m_Storage.back()); }
     inline void			push (const value_type& v)	{ m_Storage.push_back (v); }
     inline void			pop (void)			{ m_Storage.pop_back(); }
-    inline bool			operator== (const stack& s)	{ return (m_Storage == s.m_Storage); }
-    inline bool			operator< (const stack& s)	{ return (m_Storage.size() < s.m_Storage.size()); }
+    inline bool			operator== (const stack& s) const	{ return (m_Storage == s.m_Storage); }
+    inline bool			operator< (const stack& s) const	{ return (m_Storage.size() < s.m_Storage.size()); }
 private:
     Sequence			m_Storage;	///< Where the data actually is.
 };

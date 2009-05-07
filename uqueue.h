@@ -39,8 +39,8 @@ public:
     inline const_reference	back (void) const		{ return (m_Storage.back()); }
     inline void			push (const value_type& v);
     inline void			pop (void);
-    inline bool			operator== (const queue& s)	{ return (m_Storage == s.m_Storage && m_Front == s.m_Front); }
-    inline bool			operator< (const queue& s)	{ return (size() < s.size()); }
+    inline bool			operator== (const queue& s) const	{ return (m_Storage == s.m_Storage && m_Front == s.m_Front); }
+    inline bool			operator< (const queue& s) const	{ return (size() < s.size()); }
 private:
     Sequence			m_Storage;	///< Where the data actually is.
     size_type			m_Front;	///< Index of the element returned by next pop.
