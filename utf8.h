@@ -48,9 +48,10 @@ inline size_t Utf8Bytes (wchar_t v)
 	return (1);
     size_t n;
     #if __i386__ || __x86_64__
-	asm ("bsr\t%1, %%eax\n\t"
+        uint32_t r = 0;
+	asm ("bsr\t%2, %%eax\n\t"
 	    "add\t$4, %0\n\t"
-	    "div\t%%ecx" : "=a"(n) : "r"(v), "c"(5), "d"(0));
+	    "div\t%3":"=a"(n),"+d"(r):"r"(v),"c"(5));
     #else
 	static const uint32_t c_Bounds[7] = { 0x0000007F, 0x000007FF, 0x0000FFFF, 0x001FFFFF, 0x03FFFFFF, 0x7FFFFFFF, 0xFFFFFFFF };
 	for (n = 0; c_Bounds[n++] < uint32_t(v););
