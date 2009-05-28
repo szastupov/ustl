@@ -70,7 +70,7 @@ memblock::memblock (const memblock& b)
 /// their destructor, because upstream virtual functions are unavailable at
 /// this point and will not be called automatically.
 ///
-memblock::~memblock (void)
+memblock::~memblock (void) throw()
 {
     deallocate();
 }

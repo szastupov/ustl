@@ -50,7 +50,7 @@ ofstream::ofstream (const char* filename, openmode mode)
 }
 
 /// Default destructor.
-ofstream::~ofstream (void)
+ofstream::~ofstream (void) throw()
 {
     try { flush(); } catch (...) {}
 }
