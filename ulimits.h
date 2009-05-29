@@ -13,6 +13,9 @@
 
 namespace ustl {
 
+#define __limits_digits(T)	(sizeof(T)*8)
+#define __limits_digits10(T)	(sizeof(T)*8*643/2136+1)
+
 /// \class numeric_limits ulimits.h ustl.h
 /// \brief Defines numeric limits for a type.
 ///
@@ -25,6 +28,8 @@ struct numeric_limits {
     static const bool is_signed = false;	///< True if the type is signed.
     static const bool is_integer = false;	///< True if stores an exact value.
     static const bool is_integral = false;	///< True if fixed size and cast-copyable.
+    static const unsigned digits = __limits_digits(T);		///< Number of bits in T
+    static const unsigned digits10 = __limits_digits10(T);	///< Maximum number of decimal digits in printed version of T
 };
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
@@ -36,6 +41,8 @@ struct numeric_limits<T*> {
     static const bool is_signed = false;
     static const bool is_integer = true;
     static const bool is_integral = true;
+    static const unsigned digits = __limits_digits(T*);
+    static const unsigned digits10 = __limits_digits10(T*);
 };
 
 #define _NUMERIC_LIMITS(type, minVal, maxVal, bSigned, bInteger, bIntegral)	\
@@ -46,6 +53,8 @@ struct numeric_limits<type> {					\
     static const bool is_signed = bSigned;			\
     static const bool is_integer = bInteger;			\
     static const bool is_integral = bIntegral;			\
+    static const unsigned digits = __limits_digits(type);	\
+    static const unsigned digits10 = __limits_digits10(type);	\
 }
 
 //--------------------------------------------------------------------------------------
