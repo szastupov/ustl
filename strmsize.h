@@ -14,6 +14,9 @@
 
 namespace ustl {
 
+typedef size_t streamsize;
+typedef uoff_t streamoff;
+
 /// For partial specialization of stream_size_of for objects
 template <typename T> struct object_stream_size {
     inline size_t operator()(const T& v) const { return (v.stream_size()); }
