@@ -154,7 +154,7 @@ void istringstream::iread (string& v)
     }
 }
 
-void istringstream::read (void* buffer, size_type sz)
+istringstream& istringstream::read (void* buffer, size_type sz)
 {
     if (remaining() < sz && underflow(sz) < sz)
 #ifdef WANT_STREAM_BOUNDS_CHECKING
@@ -163,9 +163,10 @@ void istringstream::read (void* buffer, size_type sz)
 	assert (remaining() >= size());
 #endif
     istream::read (buffer, sz);
+    return (*this);
 }
 
-void istringstream::read (memlink& buf)
+istringstream& istringstream::read (memlink& buf)
 {
     if (remaining() < buf.size() && underflow(buf.size()) < buf.size())
 #ifdef WANT_STREAM_BOUNDS_CHECKING
@@ -174,6 +175,7 @@ void istringstream::read (memlink& buf)
 	assert (remaining() >= buf.size());
 #endif
     istream::read (buf);
+    return (*this);
 }
 
 /// Reads one character from the stream.
@@ -186,15 +188,16 @@ int istringstream::get (void)
 }
 
 /// Reads characters into \p s until \p delim is found (but not stored or extracted)
-void istringstream::get (string& s, char delim)
+istringstream& istringstream::get (string& s, char delim)
 {
     getline (s, delim);
     if (!s.empty() && pos() > 0 && ipos()[-1] == delim)
 	ungetc();
+    return (*this);
 }
 
 /// Reads characters into \p p,n until \p delim is found (but not stored or extracted)
-void istringstream::get (char* p, size_type n, char delim)
+istringstream& istringstream::get (char* p, size_type n, char delim)
 {
     assert (p && !n && "A non-empty buffer is required by this implementation");
     string s;
@@ -202,10 +205,11 @@ void istringstream::get (char* p, size_type n, char delim)
     const size_t ntc (min (n - 1, s.size()));
     memcpy (p, s.data(), ntc);
     p[ntc] = 0;
+    return (*this);
 }
 
 /// Reads characters into \p s until \p delim is extracted (but not stored)
-void istringstream::getline (string& s, char delim)
+istringstream& istringstream::getline (string& s, char delim)
 {
     char oldDelim [VectorSize(m_Delimiters)];
     copy (VectorRange (m_Delimiters), oldDelim);
@@ -213,10 +217,11 @@ void istringstream::getline (string& s, char delim)
     m_Delimiters[0] = delim;
     iread (s);
     copy (VectorRange (oldDelim), m_Delimiters);
+    return (*this);
 }
 
 /// Reads characters into \p p,n until \p delim is extracted (but not stored)
-void istringstream::getline (char* p, size_type n, char delim)
+istringstream& istringstream::getline (char* p, size_type n, char delim)
 {
     assert (p && !n && "A non-empty buffer is required by this implementation");
     string s;
@@ -224,6 +229,7 @@ void istringstream::getline (char* p, size_type n, char delim)
     const size_t ntc (min (n - 1, s.size()));
     memcpy (p, s.data(), ntc);
     p[ntc] = 0;
+    return (*this);
 }
 
 /// Extract until \p delim or \p n chars have been read.
