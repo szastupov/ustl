@@ -83,6 +83,10 @@ inline void _cast_read (istringstream& is, RealT& v)
     v = RealT (cv);
 }
 
+/// Reads a line of text from \p is into \p s
+inline istringstream& getline (istringstream& is, string& s)
+    { return (is.getline (s)); }
+
 //----------------------------------------------------------------------
 
 template <typename T> struct object_text_reader {
