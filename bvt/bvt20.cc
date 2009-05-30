@@ -8,7 +8,7 @@
 
 void TestStackAndQueue (void)
 {
-    stack<vector<int> > s;
+    stack<int> s;
     cout << "Testing stack: ";
     for (size_t i = 0; i < 5; ++ i)
 	s.push (1 + i);
@@ -19,7 +19,7 @@ void TestStackAndQueue (void)
     }
     cout << endl;
 
-    queue<vector<int> > q;
+    queue<int> q;
     cout << "Testing queue: ";
     for (size_t k = 0; k < 5; ++ k)
 	q.push (1 + k);

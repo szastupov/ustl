@@ -19,18 +19,20 @@ namespace ustl {
 /// The most efficient way to use this implementation is to fill the queue
 /// and the completely empty it before filling again.
 ///
-template <typename Sequence>
+template <typename T>
 class queue {
 public:
-    typedef typename Sequence::value_type	value_type;
-    typedef typename Sequence::size_type	size_type;
-    typedef typename Sequence::difference_type	difference_type;
-    typedef typename Sequence::reference	reference;
-    typedef typename Sequence::const_reference	const_reference;
-    typedef typename Sequence::pointer		pointer;
+    typedef T			value_type;
+    typedef size_t		size_type;
+    typedef ptrdiff_t		difference_type;
+    typedef T&			reference;
+    typedef const T&		const_reference;
+    typedef T*			pointer;
+    typedef const T*		const_pointer;
 public:
     inline			queue (void)			: m_Storage (), m_Front (0) { }
-    explicit inline		queue (const Sequence& s)	: m_Storage (s), m_Front (0) { }
+    explicit inline		queue (const vector<T>& s)	: m_Storage (s), m_Front (0) { }
+    explicit inline		queue (const queue& s)		: m_Storage (s.m_Storage), m_Front (0) { }
     inline size_type		size (void) const		{ return (m_Storage.size() - m_Front); }
     inline bool			empty (void) const		{ return (!size()); }
     inline reference		front (void)			{ return (m_Storage [m_Front]); }
@@ -42,13 +44,13 @@ public:
     inline bool			operator== (const queue& s) const	{ return (m_Storage == s.m_Storage && m_Front == s.m_Front); }
     inline bool			operator< (const queue& s) const	{ return (size() < s.size()); }
 private:
-    Sequence			m_Storage;	///< Where the data actually is.
+    vector<T>			m_Storage;	///< Where the data actually is.
     size_type			m_Front;	///< Index of the element returned by next pop.
 };
 
 /// Pushes \p v on the queue.
-template <class Sequence>
-inline void queue<Sequence>::push (const value_type& v)
+template <typename T>
+inline void queue<T>::push (const value_type& v)
 {
     if (m_Front) {
 	m_Storage.erase (m_Storage.begin(), m_Front);
@@ -58,8 +60,8 @@ inline void queue<Sequence>::push (const value_type& v)
 }
 
 /// Pops the topmost element from the queue.
-template <class Sequence>
-inline void queue<Sequence>::pop (void)
+template <typename T>
+inline void queue<T>::pop (void)
 {
     if (++m_Front >= m_Storage.size())
 	m_Storage.resize (m_Front = 0);
@@ -68,4 +70,3 @@ inline void queue<Sequence>::pop (void)
 } // namespace ustl
 
 #endif
-

@@ -16,18 +16,20 @@ namespace ustl {
 ///
 /// \brief Stack adapter to uSTL containers.
 ///
-template <typename Sequence>
+template <typename T>
 class stack {
 public:
-    typedef typename Sequence::value_type	value_type;
-    typedef typename Sequence::size_type	size_type;
-    typedef typename Sequence::difference_type	difference_type;
-    typedef typename Sequence::reference	reference;
-    typedef typename Sequence::const_reference	const_reference;
-    typedef typename Sequence::pointer		pointer;
+    typedef T			value_type;
+    typedef size_t		size_type;
+    typedef ptrdiff_t		difference_type;
+    typedef T&			reference;
+    typedef const T&		const_reference;
+    typedef T*			pointer;
+    typedef const T*		const_pointer;
 public:
     inline			stack (void)			: m_Storage () { }
-    explicit inline		stack (const Sequence& s)	: m_Storage (s) { }
+    explicit inline		stack (const vector<T>& s)	: m_Storage (s) { }
+    explicit inline		stack (const stack& s)		: m_Storage (s.m_Storage) { }
     inline bool			empty (void) const		{ return (m_Storage.empty()); }
     inline size_type		size (void) const		{ return (m_Storage.size()); }
     inline reference		top (void)			{ return (m_Storage.back()); }
@@ -37,10 +39,9 @@ public:
     inline bool			operator== (const stack& s) const	{ return (m_Storage == s.m_Storage); }
     inline bool			operator< (const stack& s) const	{ return (m_Storage.size() < s.m_Storage.size()); }
 private:
-    Sequence			m_Storage;	///< Where the data actually is.
+    vector<T>			m_Storage;	///< Where the data actually is.
 };
 
 } // namespace ustl
 
 #endif
-
