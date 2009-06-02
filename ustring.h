@@ -77,6 +77,7 @@ public:
     inline size_type		max_size (void) const	{ size_type s (memblock::max_size()); return (s - !!s); }
     inline size_type		capacity (void) const	{ size_type c (memblock::capacity()); return (c - !!c); }
     void			resize (size_type n);
+    inline void			resize (size_type n, value_type c);
     inline void			clear (void)		{ resize (0); }
     inline const_iterator	begin (void) const	{ return (const_iterator (memblock::begin())); }
     inline iterator		begin (void)		{ return (iterator (memblock::begin())); }
@@ -164,7 +165,7 @@ public:
     inline void			replace (uoff_t rp, size_type n, const_pointer s, size_type slen)		{ replace (iat(rp), iat(rp + n), s, s + slen); }
     inline void			replace (uoff_t rp, size_type n, const_pointer s)				{ replace (iat(rp), iat(rp + n), string(s)); }
     inline void			replace (uoff_t rp, size_type n, size_type count, value_type c)			{ replace (iat(rp), iat(rp + n), count, c); }
-    inline string		substr (uoff_t o, size_type n) const	{ return (string (*this, o, n)); }
+    inline string		substr (uoff_t o, size_type n = npos) const	{ return (string (*this, o, n)); }
     uoff_t			find (const_reference c, uoff_t pos = 0) const;
     uoff_t			find (const string& s, uoff_t pos = 0) const;
     uoff_t			rfind (const_reference c, uoff_t pos = npos) const;
@@ -234,6 +235,14 @@ inline string string::operator+ (const string& s) const
     string result (*this);
     result += s;
     return (result);
+}
+
+/// Resize to \p n and fill new entries with \p c
+inline void string::resize (size_type n, value_type c)
+{
+    const size_type oldn = size();
+    resize (n);
+    fill_n (iat(oldn), max(ssize_t(n-oldn),0), c);
 }
 
 //----------------------------------------------------------------------
