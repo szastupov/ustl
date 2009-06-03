@@ -196,7 +196,7 @@ off_t fstream::size (void) const
 void fstream::sync (void)
 {
     if (fsync (m_fd))
-	set_and_throw (failbit, "sync");
+	set_and_throw (badbit | failbit, "sync");
 }
 
 /// Get the stat structure.
@@ -257,4 +257,3 @@ void fstream::set_nonblock (bool v)
 }
 
 } // namespace ustl
-

@@ -46,17 +46,18 @@ public:
     istringstream&		get (string& s, char delim = '\n');
     istringstream&		getline (char* p, size_type n, char delim = '\n');
     istringstream&		getline (string& s, char delim = '\n');
-    void			ignore (size_type n, char delim = '\0');
+    istringstream&		ignore (size_type n, char delim = '\0');
     inline char			peek (void)	{ int8_t v; iread (v); ungetc(); return (v); }
-    inline void			putback (char)	{ ungetc(); }
-    inline void			unget (void)	{ ungetc(); }
+    inline istringstream&	putback (char)	{ ungetc(); return (*this); }
+    inline istringstream&	unget (void)	{ ungetc(); return (*this); }
     void			set_delimiters (const char* delimiters);
     inline void			set_base (short base);
     inline void			set_decimal_separator (char)	{ }
     inline void			set_thousand_separator (char)	{ }
     istringstream&		read (void* buffer, size_type size);
     istringstream&		read (memlink& buf);
-    inline void			sync (void)	{ skip (remaining()); }
+    inline istringstream&	seekg (off_t p, seekdir d =beg)	{ istream::seekg(p,d); return (*this); }
+    inline int			sync (void)			{ skip (remaining()); return (0); }
 protected:
     char			skip_delimiters (void);
 private:

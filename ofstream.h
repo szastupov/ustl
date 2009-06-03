@@ -37,8 +37,8 @@ public:
     inline int		ioctl (const char* rname, int request, long argument = 0)	{ return (m_File.ioctl (rname, request, argument)); }
     inline int		ioctl (const char* rname, int request, int argument)		{ return (m_File.ioctl (rname, request, argument)); }
     inline int		ioctl (const char* rname, int request, void* argument)		{ return (m_File.ioctl (rname, request, argument)); }
-    void		seekp (off_t p, seekdir d = beg);
-    void		flush (void);
+    ofstream&		seekp (off_t p, seekdir d = beg);
+    ofstream&		flush (void);
     virtual size_type	overflow (size_type n = 1);
 private:
     fstream		m_File;
@@ -65,8 +65,8 @@ public:
     inline int		ioctl (const char* rname, int request, long argument = 0)	{ return (m_File.ioctl (rname, request, argument)); }
     inline int		ioctl (const char* rname, int request, int argument)		{ return (m_File.ioctl (rname, request, argument)); }
     inline int		ioctl (const char* rname, int request, void* argument)		{ return (m_File.ioctl (rname, request, argument)); }
-    void		seekg (off_t p, seekdir d = beg);
-    void		sync (void);
+    ifstream&		seekg (off_t p, seekdir d = beg);
+    int			sync (void);
     virtual size_type	underflow (size_type n = 1);
 private:
     string		m_Buffer;

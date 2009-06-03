@@ -64,20 +64,22 @@ void ofstream::close (void)
 }
 
 /// Flushes the buffer to the file.
-void ofstream::flush (void)
+ofstream& ofstream::flush (void)
 {
     clear();
     while (good() && pos() && overflow (remaining())) ;
     m_File.sync();
     clear (m_File.rdstate());
+    return (*this);
 }
 
 /// Seeks to \p p based on \p d.
-void ofstream::seekp (off_t p, seekdir d)
+ofstream& ofstream::seekp (off_t p, seekdir d)
 {
     flush();
     m_File.seekp (p, d);
     clear (m_File.rdstate());
+    return (*this);
 }
 
 /// Called when more buffer space (\p n bytes) is needed.
@@ -146,24 +148,25 @@ ifstream::size_type ifstream::underflow (size_type n)
 }
 
 /// Flushes the input.
-void ifstream::sync (void)
+int ifstream::sync (void)
 {
     istringstream::sync();
     underflow (0U);
     m_File.sync();
     clear (m_File.rdstate());
+    return (-good());
 }
 
 /// Seeks to \p p based on \p d.
-void ifstream::seekg (off_t p, seekdir d)
+ifstream& ifstream::seekg (off_t p, seekdir d)
 {
     m_Buffer.clear();
     link (m_Buffer);
     m_File.seekg (p, d);
     clear (m_File.rdstate());
+    return (*this);
 }
 
 //----------------------------------------------------------------------
 
 } // namespace ustl
-

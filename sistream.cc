@@ -233,10 +233,10 @@ istringstream& istringstream::getline (char* p, size_type n, char delim)
 }
 
 /// Extract until \p delim or \p n chars have been read.
-void istringstream::ignore (size_type n, char delim)
+istringstream& istringstream::ignore (size_type n, char delim)
 {
     while (n-- && (remaining() || underflow()) && get() != delim) ;
+    return (*this);
 }
 
 } // namespace ustl
-

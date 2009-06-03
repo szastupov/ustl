@@ -67,7 +67,7 @@
     /// __alignof__ returns the recommended alignment for the type
     #define __alignof__(v)	min(sizeof(v), sizeof(void*))
     /// This macro returns 1 if the value of x is known at compile time.
-    #ifndef __builtin_constant_p(x)
+    #ifndef __builtin_constant_p
 	#define __builtin_constant_p(x)	0
     #endif
 #endif

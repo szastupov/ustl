@@ -42,7 +42,7 @@ public:
     inline void			iwrite (unsigned long long v)	{ iformat (v); }
 #endif
     inline size_type		max_size (void) const		{ return (m_Buffer.max_size()); }
-    inline void			put (char c)			{ iwrite (uint8_t(c)); }
+    inline ostringstream&	put (char c)			{ iwrite (uint8_t(c)); return (*this); }
     int				vformat (const char* fmt, va_list args);
     int				format (const char* fmt, ...) __attribute__((__format__(__printf__, 2, 3)));
     inline void			set_base (uint16_t b)		{ m_Base = b; }
@@ -54,16 +54,17 @@ public:
     inline void			link (memlink& l)		{ link (l.data(), l.writable_size()); }
     inline const string&	str (void)			{ flush(); return (m_Buffer); }
     void			str (const string& s);
-    void			write (const void* buffer, size_type size);
-    void			write (const cmemlink& buf);
-    inline void			write_strz (const char*)	{ assert (!"Writing nul characters into a text stream is not allowed"); }
-    void			flush (void);
+    ostringstream&		write (const void* buffer, size_type size);
+    inline ostringstream&	write (const cmemlink& buf)	{ return (write (buf.begin(), buf.size())); }
+    inline ostringstream&	seekp (off_t p, seekdir d =beg)	{ ostream::seekp(p,d); return (*this); }
+    ostringstream&		flush (void)			{ m_Buffer.resize (pos()); return (*this); }
     virtual size_type		overflow (size_type n = 1);
 protected:
     void			write_buffer (const char* buf, size_type bufSize);
     inline void			reserve (size_type n)		{ m_Buffer.reserve (n, false); }
     inline size_type		capacity (void) const		{ return (m_Buffer.capacity()); }
 private:
+    inline void			write_strz (const char*)	{ assert (!"Writing nul characters into a text stream is not allowed"); }
     inline char*		encode_dec (char* fmt, uint32_t n) const;
     void			fmtstring (char* fmt, const char* typestr, bool bInteger) const;
     template <typename T>

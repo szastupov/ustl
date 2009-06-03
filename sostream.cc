@@ -152,25 +152,11 @@ void ostringstream::link (void* p, size_t n)
 }
 
 /// Writes the contents of \p buffer of \p size into the stream.
-void ostringstream::write (const void* buffer, size_type sz)
+ostringstream& ostringstream::write (const void* buffer, size_type sz)
 {
-    if (remaining() < sz && overflow(sz) < sz)
-	return;
-    ostream::write (buffer, sz);
-}
-
-/// Writes the contents of \p buf into the stream.
-void ostringstream::write (const cmemlink& buf)
-{
-    if (remaining() < buf.size() && overflow(buf.size()) < buf.size())
-	return;
-    ostream::write (buf);
-}
-
-/// Flushes the internal buffer by truncating it at the current position.
-void ostringstream::flush (void)
-{
-    m_Buffer.resize (pos());
+    if (remaining() >= sz || overflow(sz) >= sz)
+	ostream::write (buffer, sz);
+    return (*this);
 }
 
 /// Attempts to create more output space. Returns remaining().
