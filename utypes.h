@@ -13,10 +13,10 @@
 
 #include "config.h"
 #ifndef STDC_HEADERS
-    #error This library requires standard C and C++ headers to compile.
+    #error "This library requires standard C and C++ headers to compile."
 #endif
 #ifndef STDUNIX_HEADERS
-    #error This library compiles only on UNIX systems.
+    #error "This library compiles only on UNIX systems."
 #endif
 #define __STDC_LIMIT_MACROS	// For WCHAR_MIN and WCHAR_MAX in stdint.
 #define __STDC_CONSTANT_MACROS	// For UINT??_C macros to avoid using L and UL suffixes on constants.
@@ -25,7 +25,7 @@
 #elif HAVE_INTTYPES_H
     #include <inttypes.h>
 #else
-    #error Need standard integer types definitions, usually in stdint.h
+    #error "Need standard integer types definitions, usually in stdint.h"
 #endif
 #include <stddef.h>		// For ptrdiff_t, size_t
 #include <limits.h>
@@ -63,5 +63,7 @@
 typedef size_t		uoff_t;		///< A type for storing offsets into blocks measured by size_t.
 typedef uint32_t	hashvalue_t;	///< Value type returned by the hash functions.
 
+#if !defined(UINTPTR_MAX) || !defined(UINT32_C)
+    #error "If you include stdint.h before ustl.h, ensure you define __STDC_LIMIT_MACROS and __STDC_CONSTANT_MACROS before doing it"
 #endif
-
+#endif
