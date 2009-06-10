@@ -29,7 +29,8 @@ class error_message : public exception {
 public:
     explicit		error_message (const char* arg) throw();
     virtual	       ~error_message (void) throw();
-    inline virtual const char*	what (void) const throw() { return ("error"); }
+    inline virtual const char*	what (void) const throw() { return (m_Arg.c_str()); }
+    inline virtual const char*	name (void) const throw() { return ("error"); }
     virtual void	info (string& msgbuf, const char* fmt = NULL) const throw();
     virtual void	read (istream& is);
     virtual void	write (ostream& os) const;
@@ -46,7 +47,7 @@ protected:
 class logic_error : public error_message {
 public:
     inline explicit		logic_error (const char* arg) throw() : error_message (arg) {}
-    inline virtual const char*	what (void) const throw() { return ("logic error"); }
+    inline virtual const char*	name (void) const throw() { return ("logic error"); }
 };
 
 /// \class domain_error ustdxept.h ustl.h
@@ -57,7 +58,7 @@ public:
 class domain_error : public logic_error {
 public:
     inline explicit		domain_error (const char* arg) throw() : logic_error (arg) {}
-    inline virtual const char*	what (void) const throw() { return ("domain error"); }
+    inline virtual const char*	name (void) const throw() { return ("domain error"); }
 };
 
 /// \class invalid_argument ustdxept.h ustl.h
@@ -68,7 +69,7 @@ public:
 class invalid_argument : public logic_error {
 public:
     inline explicit		invalid_argument (const char* arg) throw() : logic_error (arg) {}
-    inline virtual const char*	what (void) const throw() { return ("invalid argument"); }
+    inline virtual const char*	name (void) const throw() { return ("invalid argument"); }
 };
 
 /// \class length_error ustdxept.h ustl.h
@@ -79,7 +80,7 @@ public:
 class length_error : public logic_error {
 public:
     inline explicit		length_error (const char* arg) throw() : logic_error (arg) {} 
-    inline virtual const char*	what (void) const throw() { return ("length error"); }
+    inline virtual const char*	name (void) const throw() { return ("length error"); }
 };
 
 /// \class out_of_range ustdxept.h ustl.h
@@ -90,7 +91,7 @@ public:
 class out_of_range : public logic_error {
 public:
     inline explicit		out_of_range (const char* arg) throw() : logic_error (arg) {}
-    inline virtual const char*	what (void) const throw() { return ("out of range"); }
+    inline virtual const char*	name (void) const throw() { return ("out of range"); }
 };
 
 /// \class runtime_error ustdxept.h ustl.h
@@ -101,7 +102,7 @@ public:
 class runtime_error : public error_message {
 public:
     inline explicit		runtime_error (const char* arg) throw() : error_message (arg) {}
-    inline virtual const char*	what (void) const throw() { return ("runtime error"); }
+    inline virtual const char*	name (void) const throw() { return ("runtime error"); }
 };
 
 /// \class range_error ustdxept.h ustl.h
@@ -112,7 +113,7 @@ public:
 class range_error : public runtime_error {
 public:
     inline explicit		range_error (const char* arg) throw() : runtime_error (arg) {}
-    inline virtual const char*	what (void) const throw() { return ("range error"); }
+    inline virtual const char*	name (void) const throw() { return ("range error"); }
 };
 
 /// \class overflow_error ustdxept.h ustl.h
@@ -123,7 +124,7 @@ public:
 class overflow_error : public runtime_error {
 public:
     inline explicit		overflow_error (const char* arg) throw() : runtime_error (arg) {}
-    inline virtual const char*	what (void) const throw() { return ("overflow error"); }
+    inline virtual const char*	name (void) const throw() { return ("overflow error"); }
 };
 
 /// \class underflow_error ustdxept.h ustl.h
@@ -134,7 +135,7 @@ public:
 class underflow_error : public runtime_error {
 public:
     inline explicit		underflow_error (const char* arg) throw() : runtime_error (arg) {}
-    inline virtual const char*	what (void) const throw() { return ("underflow error"); }
+    inline virtual const char*	name (void) const throw() { return ("underflow error"); }
 };
 
 } // namespace ustl

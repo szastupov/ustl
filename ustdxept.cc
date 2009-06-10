@@ -34,7 +34,7 @@ error_message::~error_message (void) throw()
 void error_message::info (string& msgbuf, const char* fmt) const throw()
 {
     if (!fmt) fmt = "%s: %s";
-    try { msgbuf.format (fmt, what(), m_Arg.cdata()); } catch (...) {}
+    try { msgbuf.format (fmt, name(), m_Arg.cdata()); } catch (...) {}
 }
 
 /// Reads the object from stream \p is.
@@ -57,8 +57,4 @@ size_t error_message::stream_size (void) const
     return (exception::stream_size() + Align (stream_size_of (m_Arg)));
 }
 
-//----------------------------------------------------------------------
-
 } // namespace ustl
-
-
