@@ -16,6 +16,7 @@
 
 #include "utypes.h"
 #include "traits.h"
+#include "ulimits.h"
 #include <assert.h>
 
 namespace ustl {
@@ -150,19 +151,25 @@ UNVOID_DISTANCE(const,)
 #undef UNVOID_DISTANCE
 #endif
 
+// The compiler issues a warning if an unsigned type is compared to 0.
+template <typename T, bool IsSigned> struct __is_negative { inline bool operator()(const T& v) { return (v < 0); } };
+template <typename T> struct __is_negative<T,false> { inline bool operator()(const T&) { return (false); } };
+/// Warning-free way to check if \p v is negative, even if for unsigned types.
+template <typename T> inline bool is_negative (const T& v) { return (__is_negative<T,numeric_limits<T>::is_signed>()(v)); }
+
 /// \brief Returns the absolute value of \p v
 /// Unlike the stdlib functions, this is inline and works with all types.
 template <typename T>
 inline T absv (T v)
 {
-    return (v < 0 ? -v : v);
+    return (is_negative(v) ? -v : v);
 }
 
 /// \brief Returns -1 for negative values, 1 for positive, and 0 for 0
 template <typename T>
 inline T sign (T v)
 {
-    return ((0 < v) - (v < 0));
+    return ((0 < v) - is_negative(v));
 }
 
 /// Returns the absolute value of the distance i1 and i2
@@ -302,7 +309,7 @@ template <typename T1, typename T2>
 inline T1 DivRU (T1 n1, T2 n2)
 {
     T2 adj = n2 - 1;
-    if (n1 < 0)
+    if (is_negative (n1))
 	adj = -adj;
     return ((n1 + adj) / n2);
 }
