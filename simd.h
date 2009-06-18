@@ -1,6 +1,6 @@
-// This file is part of the ustl library, an STL implementation.
+// This file is part of the uSTL library, an STL implementation.
 //
-// Copyright (C) 2005 by Mike Sharov <msharov@users.sourceforge.net>
+// Copyright (c) 2005-2009 by Mike Sharov <msharov@users.sourceforge.net>
 // This file is free software, distributed under the MIT License.
 //
 /// \file simd.h
@@ -13,7 +13,6 @@
 /// Specializations are only for the tuple template because the container
 /// must be of a fixed and compile-time-known size for the compiler to be
 /// able to choose the specialization.
-///
 
 #ifndef SIMD_H_39BE2D970DF4BD00508CCFFB482496F9
 #define SIMD_H_39BE2D970DF4BD00508CCFFB482496F9
@@ -465,4 +464,3 @@ SSE_IPASSIGN_SPEC(4,uint32_t)
 } // namespace ustl
 
 #endif
-

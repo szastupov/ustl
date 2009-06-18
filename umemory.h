@@ -1,10 +1,7 @@
-// This file is part of the ustl library, an STL implementation.
+// This file is part of the uSTL library, an STL implementation.
 //
-// Copyright (C) 2005 by Mike Sharov <msharov@users.sourceforge.net>
+// Copyright (c) 2005-2009 by Mike Sharov <msharov@users.sourceforge.net>
 // This file is free software, distributed under the MIT License.
-//
-// umemory.h
-//
 
 #ifndef UMEMORY_H_4AB5B0DB5BF09140541409CC47BCD17A
 #define UMEMORY_H_4AB5B0DB5BF09140541409CC47BCD17A
@@ -207,4 +204,3 @@ ForwardIterator uninitialized_fill_n (ForwardIterator first, size_t n, const T& 
 } // namespace ustl
 
 #endif
-

@@ -1,15 +1,10 @@
-// This file is part of the ustl library, an STL implementation.
+// This file is part of the uSTL library, an STL implementation.
 //
-// Copyright (C) 2005 by Mike Sharov <msharov@users.sourceforge.net>
+// Copyright (c) 2005-2009 by Mike Sharov <msharov@users.sourceforge.net>
 // This file is free software, distributed under the MIT License.
 //
 /// \file uutility.h
-///
 /// \brief Utility templates.
-///
-/// Everything in here except min(), max(), distance(), and advance()
-/// are uSTL extensions and are absent from other STL implementations.
-///
 
 #ifndef UUTILITY_H_6A58BD296269A82A4AAAA4FD19FDB3AC
 #define UUTILITY_H_6A58BD296269A82A4AAAA4FD19FDB3AC
@@ -390,4 +385,3 @@ namespace simd {
 } // namespace ustl
 
 #endif
-

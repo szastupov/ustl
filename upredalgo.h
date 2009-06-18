@@ -1,16 +1,7 @@
-// This file is part of the ustl library, an STL implementation.
+// This file is part of the uSTL library, an STL implementation.
 //
-// Copyright (C) 2005 by Mike Sharov <msharov@users.sourceforge.net>
+// Copyright (c) 2005-2009 by Mike Sharov <msharov@users.sourceforge.net>
 // This file is free software, distributed under the MIT License.
-//
-// ualgo.h
-//
-// Implementation of STL algorithms with custom predicates.
-//
-// The function prototypes are copied
-// exactly from the SGI version of STL documentation along with comments about
-// their use. The code is NOT the same, though the functionality usually is.
-//
 
 #ifndef UPREDALGO_H_2CB058AE0807A01A2F6A51BA5D5820A5
 #define UPREDALGO_H_2CB058AE0807A01A2F6A51BA5D5820A5
@@ -594,4 +585,3 @@ inline ForwardIterator partition (ForwardIterator first, ForwardIterator last, P
 } // namespace ustl
 
 #endif
-

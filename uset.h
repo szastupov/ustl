@@ -1,10 +1,7 @@
-// This file is part of the ustl library, an STL implementation.
+// This file is part of the uSTL library, an STL implementation.
 //
-// Copyright (C) 2005 by Mike Sharov <msharov@users.sourceforge.net>
+// Copyright (c) 2005-2009 by Mike Sharov <msharov@users.sourceforge.net>
 // This file is free software, distributed under the MIT License.
-//
-// uset.h
-//
 
 #ifndef USET_H_45543F516E02A87A3FCEA5024052A6F5
 #define USET_H_45543F516E02A87A3FCEA5024052A6F5

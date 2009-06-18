@@ -1,10 +1,7 @@
-// This file is part of the ustl library, an STL implementation.
+// This file is part of the uSTL library, an STL implementation.
 //
-// Copyright (C) 2005 by Mike Sharov <msharov@users.sourceforge.net>
+// Copyright (c) 2005-2009 by Mike Sharov <msharov@users.sourceforge.net>
 // This file is free software, distributed under the MIT License.
-//
-// sistream.h
-//
 
 #ifndef SISTREAM_H_0CCA102229A49F5D65EE852E62B27CE2
 #define SISTREAM_H_0CCA102229A49F5D65EE852E62B27CE2
@@ -151,4 +148,3 @@ ISTRSTREAM_CAST_OPERATOR (unsigned long long, long long)
 } // namespace ustl
 
 #endif
-

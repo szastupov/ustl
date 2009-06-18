@@ -1,12 +1,7 @@
-// This file is part of the ustl library, an STL implementation.
+// This file is part of the uSTL library, an STL implementation.
 //
-// Copyright (C) 2005 by Mike Sharov <msharov@users.sourceforge.net>
+// Copyright (c) 2005-2009 by Mike Sharov <msharov@users.sourceforge.net>
 // This file is free software, distributed under the MIT License.
-//
-// mstream.cpp
-//
-//	Helper classes to read and write packed binary streams.
-//
 
 #include "mistream.h"
 #include "sostream.h"

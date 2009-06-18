@@ -1,10 +1,7 @@
-// This file is part of the ustl library, an STL implementation.
+// This file is part of the uSTL library, an STL implementation.
 //
-// Copyright (C) 2006 by Mike Sharov <msharov@users.sourceforge.net>
+// Copyright (c) 2006-2009 by Mike Sharov <msharov@users.sourceforge.net>
 // This file is free software, distributed under the MIT License.
-//
-// bktrace.cc
-//
 
 #include "bktrace.h"
 #include "sostream.h"
@@ -148,4 +145,3 @@ size_t CBacktrace::stream_size (void) const
 }
 
 } // namespace ustl
-

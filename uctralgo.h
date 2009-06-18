@@ -1,16 +1,7 @@
-// This file is part of the ustl library, an STL implementation.
+// This file is part of the uSTL library, an STL implementation.
 //
-// Copyright (C) 2005 by Mike Sharov <msharov@users.sourceforge.net>
+// Copyright (c) 2005-2009 by Mike Sharov <msharov@users.sourceforge.net>
 // This file is free software, distributed under the MIT License.
-//
-// \file uctralgo.h
-//
-// \brief Implementation of STL algorithms with container shortcuts.
-//
-// The function prototypes are copied
-// exactly from the SGI version of STL documentation along with comments about
-// their use. The code is NOT the same, though the functionality usually is.
-//
 
 #ifndef UCTRALGO_H_0D1AEDFA74B09791489FE25B1EC644B0
 #define UCTRALGO_H_0D1AEDFA74B09791489FE25B1EC644B0
@@ -477,4 +468,3 @@ inline void stable_sort (Container& ctr, Compare comp)
 } // namespace ustl
 
 #endif
-

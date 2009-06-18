@@ -1,16 +1,7 @@
-// This file is part of the ustl library, an STL implementation.
+// This file is part of the uSTL library, an STL implementation.
 //
-// Copyright (C) 2005 by Mike Sharov <msharov@users.sourceforge.net>
+// Copyright (c) 2005-2009 by Mike Sharov <msharov@users.sourceforge.net>
 // This file is free software, distributed under the MIT License.
-//
-// uheap.h
-//
-// Implementation of STL heap algorithms.
-//
-// The function prototypes are copied
-// exactly from the SGI version of STL documentation along with comments about
-// their use. The code is NOT the same, though the functionality is.
-//
 
 #ifndef UHEAP_H_574B9EAF271A1C107190B4D575A356C5
 #define UHEAP_H_574B9EAF271A1C107190B4D575A356C5
@@ -149,4 +140,3 @@ private:
 } // namespace ustl
 
 #endif
-

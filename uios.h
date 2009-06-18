@@ -1,12 +1,7 @@
-// This file is part of the ustl library, an STL implementation.
+// This file is part of the uSTL library, an STL implementation.
 //
-// Copyright (C) 2005 by Mike Sharov <msharov@users.sourceforge.net>
+// Copyright (c) 2005-2009 by Mike Sharov <msharov@users.sourceforge.net>
 // This file is free software, distributed under the MIT License.
-//
-// uios.h
-//
-// Types used by the streams for option setting.
-//
 
 #ifndef UIOS_H_630C16E316F7650E3A02E1C6611B789A
 #define UIOS_H_630C16E316F7650E3A02E1C6611B789A
@@ -106,4 +101,3 @@ private:
 } // namespace ustl
 
 #endif
-

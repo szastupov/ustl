@@ -1,11 +1,7 @@
-// This file is part of the ustl library, an STL implementation.
+// This file is part of the uSTL library, an STL implementation.
 //
-// Copyright (C) 2005 by Mike Sharov <msharov@users.sourceforge.net>
+// Copyright (c) 2005-2009 by Mike Sharov <msharov@users.sourceforge.net>
 // This file is free software, distributed under the MIT License.
-//
-// \file stdtest.cc
-// \brief Standard BVT harness.
-//
 
 #define _GNU_SOURCE 1
 #include "stdtest.h"
@@ -69,4 +65,3 @@ int StdTestHarness (stdtestfunc_t testFunction)
     }
     return (rv);
 }
-

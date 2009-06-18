@@ -1,11 +1,10 @@
-// This file is part of the ustl library, an STL implementation.
+// This file is part of the uSTL library, an STL implementation.
 //
-// Copyright (c) 2005 by Mike Sharov <msharov@users.sourceforge.net>
+// Copyright (c) 2005-2009 by Mike Sharov <msharov@users.sourceforge.net>
 // This file is free software, distributed under the MIT License.
 //
 /// \file metamac.h
 /// \brief Macros for complex metaprogramming involving pseudoiteration.
-///
 
 #ifndef METAMAC_H_7235D14A209C29332F2330EF553B81AF
 #define METAMAC_H_7235D14A209C29332F2330EF553B81AF
@@ -91,4 +90,3 @@
 //----------------------------------------------------------------------
 
 #endif
-

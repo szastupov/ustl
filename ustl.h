@@ -1,10 +1,24 @@
-// This file is part of the ustl library, an STL implementation.
+// This file is part of the uSTL library, an STL implementation.
 //
-// Copyright (C) 2005 by Mike Sharov <msharov@users.sourceforge.net>
+// Copyright (c) 2005-2009 by Mike Sharov <msharov@users.sourceforge.net>
 // This file is free software, distributed under the MIT License.
-//
-// ustl.h
-//
+
+#ifndef USTL_H_6A5A10410D2CD7FC2D78FE470F045EB7
+#define USTL_H_6A5A10410D2CD7FC2D78FE470F045EB7
+
+#include "ustl/uspecial.h"
+#include "ustl/umap.h"
+#include "ustl/umultimap.h"
+#include "ustl/ustack.h"
+#include "ustl/uqueue.h"
+#include "ustl/ofstream.h"
+#include "ustl/unumeric.h"
+#include "ustl/ulist.h"
+#include "ustl/uheap.h"
+#include "ustl/ustdxept.h"
+
+#endif
+
 /// \mainpage
 ///
 /// \section intro Introduction
@@ -172,21 +186,3 @@
 ///	Because C++ is so very unsuited to functional programming, trying
 ///	to do so may require a lot of typing. These accessor functions
 ///	are somewhat helpful in making functional constructs more readable.
-//
-
-#ifndef USTL_H_6A5A10410D2CD7FC2D78FE470F045EB7
-#define USTL_H_6A5A10410D2CD7FC2D78FE470F045EB7
-
-#include "ustl/uspecial.h"
-#include "ustl/umap.h"
-#include "ustl/umultimap.h"
-#include "ustl/ustack.h"
-#include "ustl/uqueue.h"
-#include "ustl/ofstream.h"
-#include "ustl/unumeric.h"
-#include "ustl/ulist.h"
-#include "ustl/uheap.h"
-#include "ustl/ustdxept.h"
-
-#endif
-

@@ -1,10 +1,7 @@
-// This file is part of the ustl library, an STL implementation.
+// This file is part of the uSTL library, an STL implementation.
 //
-// Copyright (C) 2005 by Mike Sharov <msharov@users.sourceforge.net>
+// Copyright (c) 2005-2009 by Mike Sharov <msharov@users.sourceforge.net>
 // This file is free software, distributed under the MIT License.
-//
-// umultimap.h
-//
 
 #ifndef UMULTIMAP_H_45743F516E02A87A3FCEA5024052A6F5
 #define UMULTIMAP_H_45743F516E02A87A3FCEA5024052A6F5
@@ -117,4 +114,3 @@ void multimap<K,V>::insert (const_iterator i1, const_iterator i2)
 } // namespace ustl
 
 #endif
-

@@ -1,10 +1,7 @@
-// This file is part of the ustl library, an STL implementation.
+// This file is part of the uSTL library, an STL implementation.
 //
-// Copyright (C) 2005 by Mike Sharov <msharov@users.sourceforge.net>
+// Copyright (c) 2005-2009 by Mike Sharov <msharov@users.sourceforge.net>
 // This file is free software, distributed under the MIT License.
-//
-// uexception.cc
-//
 
 #include "uexception.h"
 #include "ustring.h"
@@ -277,4 +274,3 @@ size_t stream_bounds_exception::stream_size (void) const
 }
 
 } // namespace ustl
-

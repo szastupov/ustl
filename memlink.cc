@@ -1,12 +1,7 @@
-// This file is part of the ustl library, an STL implementation.
+// This file is part of the uSTL library, an STL implementation.
 //
-// Copyright (C) 2005 by Mike Sharov <msharov@users.sourceforge.net>
+// Copyright (c) 2005-2009 by Mike Sharov <msharov@users.sourceforge.net>
 // This file is free software, distributed under the MIT License.
-//
-// memlink.cc
-//
-//	A pointer to a sized block of memory.
-//
 
 #include "mistream.h"
 #include "ustdxept.h"
@@ -55,4 +50,3 @@ void memlink::fill (iterator start, const void* p, size_type elSize, size_type e
 }
 
 } // namespace ustl
-

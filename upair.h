@@ -1,10 +1,7 @@
-// This file is part of the ustl library, an STL implementation.
+// This file is part of the uSTL library, an STL implementation.
 //
-// Copyright (C) 2005 by Mike Sharov <msharov@users.sourceforge.net>
+// Copyright (c) 2005-2009 by Mike Sharov <msharov@users.sourceforge.net>
 // This file is free software, distributed under the MIT License.
-//
-/// \file upair.h
-/// \brief Pair-related functionality.
 
 #ifndef UPAIR_H_7DC08F1B7FECF8AE6856D84C3B617A75
 #define UPAIR_H_7DC08F1B7FECF8AE6856D84C3B617A75
@@ -60,4 +57,3 @@ inline pair<T1,T2> make_pair (const T1& a, const T2& b)
 } // namespace ustl
 
 #endif
-

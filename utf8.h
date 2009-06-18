@@ -1,9 +1,7 @@
-// This file is part of the ustl library, an STL implementation.
+// This file is part of the uSTL library, an STL implementation.
 //
-// Copyright (C) 2005 by Mike Sharov <msharov@users.sourceforge.net>
+// Copyright (c) 2005-2009 by Mike Sharov <msharov@users.sourceforge.net>
 // This file is free software, distributed under the MIT License.
-//
-// utf8.h
 //
 // This file contains stream iterators that read and write UTF-8 encoded
 // characters. The encoding is defined as follows:
@@ -15,13 +13,7 @@
 // U-00200000 - U-03FFFFFF: 111110xx 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx
 // U-04000000 - U-7FFFFFFF: 1111110x 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx
 // U-80000000 - U-FFFFFFFF: 11111110 100000xx 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx
-//
-// The last range in not in the UTF-8 standard because Unicode forbids
-// characters of those values. However, since ustl::string uses this code
-// to write its length, the support is here. The reason it was put here
-// in the first place, is that extra code would have been necessary to
-// flag that range as invalid.
-//
+
 #ifndef UTF8_H_3D7AEEEB3A88928D4D280B785F78B6F4
 #define UTF8_H_3D7AEEEB3A88928D4D280B785F78B6F4
 
@@ -221,4 +213,3 @@ inline utf8in_iterator<Iterator> utf8in (Iterator i)
 } // namespace ustl
 
 #endif
-

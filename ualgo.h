@@ -1,16 +1,7 @@
-// This file is part of the ustl library, an STL implementation.
+// This file is part of the uSTL library, an STL implementation.
 //
-// Copyright (C) 2005 by Mike Sharov <msharov@users.sourceforge.net>
+// Copyright (c) 2005-2009 by Mike Sharov <msharov@users.sourceforge.net>
 // This file is free software, distributed under the MIT License.
-//
-// ualgo.h
-//
-// Implementation of STL algorithms.
-//
-// The function prototypes are copied
-// exactly from the SGI version of STL documentation along with comments about
-// their use. The code is NOT the same, though the functionality usually is.
-//
 
 #ifndef UALGO_H_711AB4214D417A51166694D47A662D6E
 #define UALGO_H_711AB4214D417A51166694D47A662D6E
@@ -674,4 +665,3 @@ inline RandomAccessIterator partial_sort_copy (InputIterator first, InputIterato
 } // namespace ustl
 
 #endif
-

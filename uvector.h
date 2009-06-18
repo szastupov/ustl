@@ -1,10 +1,7 @@
-// This file is part of the ustl library, an STL implementation.
+// This file is part of the uSTL library, an STL implementation.
 //
-// Copyright (C) 2005 by Mike Sharov <msharov@users.sourceforge.net>
+// Copyright (c) 2005-2009 by Mike Sharov <msharov@users.sourceforge.net>
 // This file is free software, distributed under the MIT License.
-//
-// uvector.h
-//
 
 #ifndef UVECTOR_H_00BB13AF082BEB7829C031B265518169
 #define UVECTOR_H_00BB13AF082BEB7829C031B265518169
@@ -275,4 +272,3 @@ inline void vector<T>::push_back (const T& v)
 } // namespace ustl
 
 #endif
-

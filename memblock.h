@@ -1,10 +1,7 @@
-// This file is part of the ustl library, an STL implementation.
+// This file is part of the uSTL library, an STL implementation.
 //
-// Copyright (C) 2005 by Mike Sharov <msharov@users.sourceforge.net>
+// Copyright (c) 2005-2009 by Mike Sharov <msharov@users.sourceforge.net>
 // This file is free software, distributed under the MIT License.
-//
-// memblock.h
-//
 
 #ifndef MEMBLOCK_H_7ED63A891164CC43578E63664D52A196
 #define MEMBLOCK_H_7ED63A891164CC43578E63664D52A196
@@ -64,4 +61,3 @@ private:
 } // namespace ustl
 
 #endif
-

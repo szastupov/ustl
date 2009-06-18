@@ -1,10 +1,7 @@
-// This file is part of the ustl library, an STL implementation.
+// This file is part of the uSTL library, an STL implementation.
 //
-// Copyright (C) 2005 by Mike Sharov <msharov@users.sourceforge.net>
+// Copyright (c) 2005-2009 by Mike Sharov <msharov@users.sourceforge.net>
 // This file is free software, distributed under the MIT License.
-//
-// ulist.h
-//
 
 #ifndef ULIST_H_54E3B510498982C87A0A1E1932E6729D
 #define ULIST_H_54E3B510498982C87A0A1E1932E6729D
@@ -75,4 +72,3 @@ void list<T>::splice (iterator ip, list<T>& l, iterator first, iterator last)
 } // namespace ustl
 
 #endif
-

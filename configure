@@ -51,17 +51,15 @@ s/^#\(NOLIBSTDCPP\)/\1/]
 }';
 
 # Header files
-HEADERS="assert.h ctype.h errno.h fcntl.h float.h inttypes.h limits.h locale.h
-malloc.h alloca.h memory.h signal.h stdarg.h stddef.h stdint.h stdio.h
-stdlib.h string.h strings.h sys/stat.h sys/types.h sys/wait.h time.h
-unistd.h math.h stdlib.h";
+HEADERS="assert.h ctype.h errno.h fcntl.h float.h inttypes.h limits.h stdio.h
+locale.h alloca.h signal.h stdarg.h stddef.h sys/stat.h sys/types.h stdint.h
+stdlib.h string.h time.h unistd.h math.h stdlib.h";
 
 # Libraries
 LIBS="supc++ gcc_eh SystemStubs"
 
 # First pair is used if nothing matches
-PROGS="CC=gcc CC=cc CXX=g++ CXX=c++ DOXYGEN=doxygen
-LD=ld AR=ar RANLIB=ranlib RANLIB=touch INSTALL=install"
+PROGS="CC=gcc CC=cc CXX=g++ CXX=c++ DOXYGEN=doxygen LD=ld AR=ar RANLIB=ranlib RANLIB=touch INSTALL=install"
 
 # Environment variables
 ENVIRONS="CXXFLAGS LDFLAGS"

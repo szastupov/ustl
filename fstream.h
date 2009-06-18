@@ -1,10 +1,7 @@
-// This file is part of the ustl library, an STL implementation.
+// This file is part of the uSTL library, an STL implementation.
 //
-// Copyright (C) 2005 by Mike Sharov <msharov@users.sourceforge.net>
+// Copyright (c) 2005-2009 by Mike Sharov <msharov@users.sourceforge.net>
 // This file is free software, distributed under the MIT License.
-//
-// fstream.h
-//
 
 #ifndef FSTREAM_H_056E10F70EAD416443E3B36A2D6B5FA3
 #define FSTREAM_H_056E10F70EAD416443E3B36A2D6B5FA3
@@ -72,7 +69,6 @@ private:
 #define IOCTLID(r)	"ioctl("#r")", r
 #define FCNTLID(r)	"fcntl("#r")", r
 
-}
+} // namespace ustl
 
 #endif
-

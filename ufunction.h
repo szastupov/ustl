@@ -1,21 +1,7 @@
-// This file is part of the ustl library, an STL implementation.
+// This file is part of the uSTL library, an STL implementation.
 //
-// Copyright (C) 2005 by Mike Sharov <msharov@users.sourceforge.net>
+// Copyright (c) 2005-2009 by Mike Sharov <msharov@users.sourceforge.net>
 // This file is free software, distributed under the MIT License.
-//
-// \file ufunction.h
-//
-// \brief Implements STL standard functors.
-//
-// See STL specification and bvts for usage of these. The only
-// extension is the mem_var functors for member variable access:
-// \code
-//	f = find_if (ctr, mem_var_equal_to(&MyClass::m_Var, matchVar));
-//	f = find_if (ctr, mem_var_less(&MyClass::m_Var, matchVar));
-// \endcode
-// There are a couple of others but the syntax is much harder to grasp.
-// See bvt10.cc for more examples.
-//
 
 #ifndef UFUNCTION_H_221ABA8551801799263C927234C085F3
 #define UFUNCTION_H_221ABA8551801799263C927234C085F3
@@ -477,4 +463,3 @@ DEREFERENCER_T(const_deref2_t,	const T, 	FUNCTOR_BINARY_BASE(const T*),	DEREF_BI
 } // namespace ustl
 
 #endif
-

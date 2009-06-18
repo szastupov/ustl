@@ -1,9 +1,7 @@
-// This file is part of the ustl library, an STL implementation.
+// This file is part of the uSTL library, an STL implementation.
 //
-// Copyright (C) 2005 by Mike Sharov <msharov@users.sourceforge.net>
+// Copyright (c) 2005-2009 by Mike Sharov <msharov@users.sourceforge.net>
 // This file is free software, distributed under the MIT License.
-//
-// memlink.h
 
 #ifndef MEMLINK_H_798D25827C8E322D2D7E734B169FF5FC
 #define MEMLINK_H_798D25827C8E322D2D7E734B169FF5FC
@@ -102,4 +100,3 @@ inline void memlink::erase (iterator start, size_type n)
 } // namespace ustl
 
 #endif
-

@@ -1,11 +1,10 @@
-// This file is part of the ustl library, an STL implementation.
+// This file is part of the uSTL library, an STL implementation.
 //
-// Copyright (C) 2005 by Mike Sharov <msharov@users.sourceforge.net>
+// Copyright (c) 2005-2009 by Mike Sharov <msharov@users.sourceforge.net>
 // This file is free software, distributed under the MIT License.
 //
 /// \file uiterator.h
 /// \brief Contains various iterator adapters.
-//
 
 #ifndef UITERATOR_H_5BCA176C7214A30F2069E2614D2DC226
 #define UITERATOR_H_5BCA176C7214A30F2069E2614D2DC226
@@ -265,4 +264,3 @@ inline typename Container2::iterator ibyi (typename Container1::iterator idx, Co
 } // namespace ustl
 
 #endif
-

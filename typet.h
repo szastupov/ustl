@@ -1,15 +1,9 @@
-// This file is part of the ustl library, an STL implementation.
+// This file is part of the uSTL library, an STL implementation.
 //
-// Copyright (c) 2007 by Mike Sharov <msharov@users.sourceforge.net>
+// Copyright (c) 2007-2009 by Mike Sharov <msharov@users.sourceforge.net>
 //
 // This implementation is adapted from the Loki library, distributed under
 // the MIT license with Copyright (c) 2001 by Andrei Alexandrescu.
-//
-// typet.h
-//
-// This file contains type information templates useful for template
-// parameter manipulation and deduction.
-//
 
 #ifndef TYPET_H_70B4C9693A05E0B405B225F356DE5450
 #define TYPET_H_70B4C9693A05E0B405B225F356DE5450
@@ -102,4 +96,3 @@ template <> struct CompileTimeError<true> {};
 } // namespace ustl
 
 #endif
-

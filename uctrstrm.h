@@ -1,6 +1,6 @@
-// This file is part of the ustl library, an STL implementation.
+// This file is part of the uSTL library, an STL implementation.
 //
-// Copyright (C) 2005 by Mike Sharov <msharov@users.sourceforge.net>
+// Copyright (c) 2005-2009 by Mike Sharov <msharov@users.sourceforge.net>
 // This file is free software, distributed under the MIT License.
 //
 /// \file uctrstrm.h
@@ -9,7 +9,6 @@
 /// Because containers are templates, a single operator>> is impossible.
 /// Making virtual read/write is also impossible because not all containers
 /// contain serializable elements. Therefore, use the macros in this file.
-///
 
 #ifndef UCTRSTRM_H_75B2C3EA4980DDDC6B6DFFF767A3B7AC
 #define UCTRSTRM_H_75B2C3EA4980DDDC6B6DFFF767A3B7AC
@@ -180,4 +179,3 @@ ostringstream& container_text_write (ostringstream& os, const Container& v)
 } // namespace ustl
 
 #endif
-

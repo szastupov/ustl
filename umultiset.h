@@ -1,10 +1,7 @@
-// This file is part of the ustl library, an STL implementation.
+// This file is part of the uSTL library, an STL implementation.
 //
-// Copyright (C) 2005 by Mike Sharov <msharov@users.sourceforge.net>
+// Copyright (c) 2005-2009 by Mike Sharov <msharov@users.sourceforge.net>
 // This file is free software, distributed under the MIT License.
-//
-// umultiset.h
-//
 
 #ifndef UMULTISET_H_446AEDBB7F61C6994DC228C25D5FA3A1
 #define UMULTISET_H_446AEDBB7F61C6994DC228C25D5FA3A1
@@ -102,4 +99,3 @@ void multiset<T>::erase (const_reference v)
 } // namespace ustl
 
 #endif
-

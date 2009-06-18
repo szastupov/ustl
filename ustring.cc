@@ -1,12 +1,7 @@
-// This file is part of the ustl library, an STL implementation.
+// This file is part of the uSTL library, an STL implementation.
 //
-// Copyright (C) 2005 by Mike Sharov <msharov@users.sourceforge.net>
+// Copyright (c) 2005-2009 by Mike Sharov <msharov@users.sourceforge.net>
 // This file is free software, distributed under the MIT License.
-//
-// ustring.cpp
-//
-//	STL basic_string equivalent functionality.
-//
 
 #include "ustring.h"
 #include "mistream.h"
@@ -412,4 +407,3 @@ void string::write (ostream& os) const
 }
 
 } // namespace ustl
-

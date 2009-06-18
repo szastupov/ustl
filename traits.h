@@ -1,14 +1,9 @@
-// This file is part of the ustl library, an STL implementation.
+// This file is part of the uSTL library, an STL implementation.
 //
-// Copyright (c) 2007 by Mike Sharov <msharov@users.sourceforge.net>
+// Copyright (c) 2007-2009 by Mike Sharov <msharov@users.sourceforge.net>
 //
 // This implementation is adapted from the Loki library, distributed under
 // the MIT license with Copyright (c) 2001 by Andrei Alexandrescu.
-//
-// traits.h
-//
-// Implements type trait templates for metaprogramming.
-//
 
 #ifndef TRAITS_H_4AA3DDE15E16C947392711ED08FB1FF6
 #define TRAITS_H_4AA3DDE15E16C947392711ED08FB1FF6
@@ -254,4 +249,3 @@ public:
 } // namespace ustl
 
 #endif
-

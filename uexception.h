@@ -1,14 +1,7 @@
-// This file is part of the ustl library, an STL implementation.
+// This file is part of the uSTL library, an STL implementation.
 //
-// Copyright (C) 2005 by Mike Sharov <msharov@users.sourceforge.net>
+// Copyright (c) 2005-2009 by Mike Sharov <msharov@users.sourceforge.net>
 // This file is free software, distributed under the MIT License.
-//
-// uexception.h
-//
-// This file contains stuff from \<exception\>.
-// The standard C++ headers are duplicated because uSTL is intended
-// to completely replace all C++ standard library functions.
-//
 
 #ifndef UEXCEPTION_H_18DE3EF55C4F00673268F0D66546AF5D
 #define UEXCEPTION_H_18DE3EF55C4F00673268F0D66546AF5D
@@ -20,7 +13,7 @@
 #endif
 #include "bktrace.h"
 
-#ifdef WITHOUT_LIBSTDCPP	// This code is copied from <exception>
+#ifdef WITHOUT_LIBSTDCPP
 namespace std {
 /// If you write a replacement terminate handler, it must be of this type.
 typedef void (*terminate_handler) (void);
@@ -191,4 +184,3 @@ const char* demangle_type_name (char* buf, size_t bufSize, size_t* pdmSize = NUL
 } // namespace ustl
 
 #endif
-

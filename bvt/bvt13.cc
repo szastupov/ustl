@@ -1,9 +1,9 @@
 // "Testing string reads" 12345678 4321 0x78675645 1.234567890123456
 // (the above line is the input to this test, so must be at the beginning)
 //
-// This file is part of the ustl library, an STL implementation.
+// This file is part of the uSTL library, an STL implementation.
 //
-// Copyright (C) 2005 by Mike Sharov <msharov@users.sourceforge.net>
+// Copyright (c) 2005-2009 by Mike Sharov <msharov@users.sourceforge.net>
 // This file is free software, distributed under the MIT License.
 
 #include "stdtest.h"

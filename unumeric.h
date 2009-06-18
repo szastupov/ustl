@@ -1,12 +1,7 @@
-// This file is part of the ustl library, an STL implementation.
+// This file is part of the uSTL library, an STL implementation.
 //
-// Copyright (C) 2005 by Mike Sharov <msharov@users.sourceforge.net>
+// Copyright (c) 2005-2009 by Mike Sharov <msharov@users.sourceforge.net>
 // This file is free software, distributed under the MIT License.
-//
-// unumeric.h
-//
-//	This file contains numeric algorithm templates.
-//
 
 #ifndef UNUMERIC_H_6C99D6F6363832C644A6FFF336E84E18
 #define UNUMERIC_H_6C99D6F6363832C644A6FFF336E84E18
@@ -157,4 +152,3 @@ inline T power (T x, unsigned n, BinaryOperation op)
 } // namespace ustl
 
 #endif
-

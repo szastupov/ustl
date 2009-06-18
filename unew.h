@@ -1,12 +1,7 @@
-// This file is part of the ustl library, an STL implementation.
+// This file is part of the uSTL library, an STL implementation.
 //
-// Copyright (C) 2005 by Mike Sharov <msharov@users.sourceforge.net>
+// Copyright (c) 2005-2009 by Mike Sharov <msharov@users.sourceforge.net>
 // This file is free software, distributed under the MIT License.
-//
-/// \file unew.h
-///
-/// \brief Same as \<new\>, but throws ustl:: exceptions.
-//
 
 #ifndef UNEW_H_11D237512B324C9C05A55DAF1BF086F1
 #define UNEW_H_11D237512B324C9C05A55DAF1BF086F1
@@ -49,4 +44,3 @@ inline void  operator delete[](void*, void*) throw() { }
 #endif	// WITHOUT_LIBSTDCPP
 
 #endif
-

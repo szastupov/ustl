@@ -1,12 +1,9 @@
-// This file is part of the ustl library, an STL implementation.
+// This file is part of the uSTL library, an STL implementation.
 //
-// Copyright (c) 2007 by Mike Sharov <msharov@users.sourceforge.net>
+// Copyright (c) 2007-2009 by Mike Sharov <msharov@users.sourceforge.net>
 //
 // This implementation is adapted from the Loki library, distributed under
 // the MIT license with Copyright (c) 2001 by Andrei Alexandrescu.
-//
-// typelist.h
-//
 
 #ifndef TYPELIST_H_2A8F84704780530D531716D41B3EA3FE
 #define TYPELIST_H_2A8F84704780530D531716D41B3EA3FE
@@ -224,4 +221,3 @@ public:
 } // namespace ustl
 
 #endif
-

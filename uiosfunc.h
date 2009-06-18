@@ -1,10 +1,7 @@
-// This file is part of the ustl library, an STL implementation.
+// This file is part of the uSTL library, an STL implementation.
 //
-// Copyright (C) 2005 by Mike Sharov <msharov@users.sourceforge.net>
+// Copyright (c) 2005-2009 by Mike Sharov <msharov@users.sourceforge.net>
 // This file is free software, distributed under the MIT License.
-//
-// uiosfunc.h
-//
 
 #ifndef UIOSFUNC_H_730C16E316F7650E3A02E1C6611B789A
 #define UIOSFUNC_H_730C16E316F7650E3A02E1C6611B789A
@@ -97,4 +94,3 @@ CAST_STREAMABLE(ustl::ios::fmtflags, uint32_t)
 NUMERIC_LIMITS(ustl::ios::fmtflags, ustl::ios::boolalpha, ustl::ios::floatfield, false, true, true)
 
 #endif
-

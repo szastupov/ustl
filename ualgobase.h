@@ -1,16 +1,7 @@
-// This file is part of the ustl library, an STL implementation.
+// This file is part of the uSTL library, an STL implementation.
 //
-// Copyright (C) 2005 by Mike Sharov <msharov@users.sourceforge.net>
+// Copyright (c) 2005-2009 by Mike Sharov <msharov@users.sourceforge.net>
 // This file is free software, distributed under the MIT License.
-//
-// ualgobase.h
-//
-// Implementation of STL algorithms.
-//
-// The function prototypes are copied
-// exactly from the SGI version of STL documentation along with comments about
-// their use. The code is NOT the same, though the functionality usually is.
-//
 
 #ifndef UALGOBASE_H_683A0BE77546133C4CE0E3622CFAA2EB
 #define UALGOBASE_H_683A0BE77546133C4CE0E3622CFAA2EB
@@ -328,4 +319,3 @@ extern const char _FmtPrtChr[2][8];
 } // namespace ustl
 
 #endif
-

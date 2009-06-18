@@ -1,12 +1,7 @@
-// This file is part of the ustl library, an STL implementation.
+// This file is part of the uSTL library, an STL implementation.
 //
-// Copyright (C) 2005 by Mike Sharov <msharov@users.sourceforge.net>
+// Copyright (c) 2005-2009 by Mike Sharov <msharov@users.sourceforge.net>
 // This file is free software, distributed under the MIT License.
-//
-// ualgobase.cc
-//
-// Copy and fill optimizations are here.
-//
 
 #ifndef NDEBUG	// Optimized code here. asserts slow it down, and are checked elsewhere.
 #define NDEBUG
@@ -298,4 +293,3 @@ size_t popcount (uint64_t v)
 const char _FmtPrtChr[2][8]={"'%c'","%d"};
 
 } // namespace ustl
-

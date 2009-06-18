@@ -1,13 +1,12 @@
-// This file is part of the ustl library, an STL implementation.
+// This file is part of the uSTL library, an STL implementation.
 //
-// Copyright (C) 2005 by Mike Sharov <msharov@users.sourceforge.net>
+// Copyright (c) 2005-2009 by Mike Sharov <msharov@users.sourceforge.net>
 // This file is free software, distributed under the MIT License.
 //
 /// \file strmsize.h
 /// \brief This file contains stream_size_of functions for basic types and *STREAMABLE macros.
 /// stream_size_of functions return the size of the object's data that is written or
 /// read from a stream.
-//
 
 #ifndef STRMSIZE_H_052FF16B2D8A608761BF10333D065073
 #define STRMSIZE_H_052FF16B2D8A608761BF10333D065073
@@ -84,4 +83,3 @@ inline size_t stream_size_of (const T& v) {
     }
 
 #endif
-

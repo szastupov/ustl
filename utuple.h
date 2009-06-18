@@ -1,10 +1,7 @@
-// This file is part of the ustl library, an STL implementation.
+// This file is part of the uSTL library, an STL implementation.
 //
-// Copyright (C) 2005 by Mike Sharov <msharov@users.sourceforge.net>
+// Copyright (c) 2005-2009 by Mike Sharov <msharov@users.sourceforge.net>
 // This file is free software, distributed under the MIT License.
-//
-// utuple.h
-//
 
 #ifndef UTUPLE_H_7324ADEC49B397CA74A56F6050FD5A6B
 #define UTUPLE_H_7324ADEC49B397CA74A56F6050FD5A6B
@@ -333,4 +330,3 @@ SIMD_TUPLE_PACKOP(8,uint8_t)
 } // namespace ustl
 
 #endif
-
