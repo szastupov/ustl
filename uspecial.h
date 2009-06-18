@@ -201,7 +201,7 @@ public:
     {
 	assert (is.aligned(4));
 	#ifdef WANT_STREAM_BOUNDS_CHECKING
-	    is.verify_remaining ("read", "long4grain", sizeof(m_v));
+	    if (!is.verify_remaining ("read", "long4grain", sizeof(m_v))) return;
 	#else
 	    assert (is.remaining() >= sizeof(m_v));
 	#endif
@@ -212,7 +212,7 @@ public:
     {
 	assert (os.aligned(4));
 	#ifdef WANT_STREAM_BOUNDS_CHECKING
-	    os.verify_remaining ("write", "long4grain", sizeof(m_v));
+	    if (!os.verify_remaining ("write", "long4grain", sizeof(m_v))) return;
 	#else
 	    assert (os.remaining() >= sizeof(m_v));
 	#endif

@@ -53,11 +53,11 @@ class string;
 ///
 class ostream : public memlink, public ios_base {
 public:
-			ostream (void);
-			ostream (void* p, size_type n);
-    explicit		ostream (const memlink& source);
-    inline iterator	end (void)			{ return (memlink::end()); }
-    inline const_iterator	end (void) const	{ return (memlink::end()); }
+    inline		ostream (void);
+    inline		ostream (void* p, size_type n);
+    inline explicit	ostream (const memlink& source);
+    inline iterator	end (void)		{ return (memlink::end()); }
+    inline const_iterator end (void) const	{ return (memlink::end()); }
     inline void		seek (uoff_t newPos);
     inline void		iseek (const_iterator newPos);
     inline void		skip (size_type nBytes);
@@ -66,7 +66,7 @@ public:
     inline const_iterator ipos (void) const	{ return (begin() + pos()); }
     inline size_type	remaining (void) const;
     inline bool		aligned (size_type grain = c_DefaultAlignment) const;
-    void		verify_remaining (const char* op, const char* type, size_t n) const;
+    bool		verify_remaining (const char* op, const char* type, size_t n);
     inline size_type	align_size (size_type grain = c_DefaultAlignment) const;
     void		align (size_type grain = c_DefaultAlignment);
     void		write (const void* buffer, size_type size);
@@ -145,6 +145,39 @@ inline utf8ostream_iterator utf8out (ostream& os)
 
 //----------------------------------------------------------------------
 
+/// \brief Constructs a stream attached to nothing.
+/// A stream attached to nothing is not usable. Call Link() functions
+/// inherited from memlink to attach to some memory block.
+///
+inline ostream::ostream (void)
+: memlink (),
+  m_Pos (0)
+{
+}
+
+/// Attaches the stream to a block at \p p of size \p n.
+inline ostream::ostream (void* p, size_type n)
+: memlink (p, n),
+  m_Pos (0)
+{
+}
+
+/// Attaches to the block pointed to by \p source.
+inline ostream::ostream (const memlink& source)
+: memlink (source),
+  m_Pos (0)
+{
+}
+
+/// Checks that \p n bytes are available in the stream, or else throws.
+inline bool ostream::verify_remaining (const char* op, const char* type, size_t n)
+{
+    const size_t rem = remaining();
+    bool enough = n <= rem;
+    if (!enough) overrun (op, type, n, pos(), rem);
+    return (enough);
+}
+
 /// Move the write pointer to \p newPos
 inline void ostream::seek (uoff_t newPos)
 {
@@ -210,7 +243,8 @@ inline void ostream::iwrite (const T& v)
 {
     assert (aligned (alignof (v)));
 #ifdef WANT_STREAM_BOUNDS_CHECKING
-    verify_remaining ("write", typeid(v).name(), sizeof(T));
+    if (!verify_remaining ("write", typeid(v).name(), sizeof(T)))
+	return;
 #else
     assert (remaining() >= sizeof(T));
 #endif

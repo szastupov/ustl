@@ -34,8 +34,8 @@ public:
     inline void			iwrite (float v)		{ iformat (v); }
     inline void			iwrite (double v)		{ iformat (v); }
     void			iwrite (bool v);
-    inline void			iwrite (const char* s)		{ write_buffer (s, strlen(s)); }
-    inline void			iwrite (const string& v)	{ write_buffer (v.begin(), v.size()); }
+    inline void			iwrite (const char* s)		{ write (s, strlen(s)); }
+    inline void			iwrite (const string& v)	{ write (v.begin(), v.size()); }
     inline void			iwrite (fmtflags f);
 #if HAVE_LONG_LONG
     inline void			iwrite (long long v)		{ iformat (v); }
@@ -60,7 +60,6 @@ public:
     ostringstream&		flush (void)			{ m_Buffer.resize (pos()); return (*this); }
     virtual size_type		overflow (size_type n = 1);
 protected:
-    void			write_buffer (const char* buf, size_type bufSize);
     inline void			reserve (size_type n)		{ m_Buffer.reserve (n, false); }
     inline size_type		capacity (void) const		{ return (m_Buffer.capacity()); }
 private:

@@ -118,7 +118,8 @@ istream& container_read (istream& is, Container& v)
     written_size_type n;
     is >> n;
     const size_t expectedSize = n * stream_size_of(value_type());
-    is.verify_remaining ("read", typeid(v).name(), expectedSize);
+    if (!is.verify_remaining ("read", typeid(v).name(), expectedSize))
+	return (is);
     if (alignof(NullValue<value_type>()) > alignof(n))
 	is >> ios::talign<value_type>();
     v.resize (n);

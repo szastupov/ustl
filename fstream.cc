@@ -24,6 +24,7 @@ fstream::fstream (void)
   m_fd (-1),
   m_Filename ()
 {
+    exceptions (goodbit);
 }
 
 /// Opens \p filename in \p mode.
@@ -32,6 +33,7 @@ fstream::fstream (const char* filename, openmode mode)
   m_fd (-1),
   m_Filename ()
 {
+    exceptions (goodbit);
     open (filename, mode);
 }
 
@@ -41,6 +43,7 @@ fstream::fstream (int nfd, const char* filename)
   m_fd (-1),
   m_Filename ()
 {
+    exceptions (goodbit);
     attach (nfd, filename);
 }
 

@@ -66,9 +66,9 @@ class string;
 ///
 class istream : public cmemlink, public ios_base {
 public:
-			istream (void);
-			istream (const void* p, size_type n);
-    explicit		istream (const cmemlink& source);
+    inline		istream (void);
+    inline		istream (const void* p, size_type n);
+    inline explicit	istream (const cmemlink& source);
     explicit		istream (const ostream& source);
     inline iterator	end (void) const			{ return (cmemlink::end()); }
     inline void		link (const void* p, size_type n)	{ cmemlink::link (p, n); }
@@ -85,7 +85,7 @@ public:
     inline void		iseek (const_iterator newPos);
     inline void		skip (size_type nBytes);
     inline bool		aligned (size_type grain = c_DefaultAlignment) const;
-    void		verify_remaining (const char* op, const char* type, size_t n) const;
+    inline bool		verify_remaining (const char* op, const char* type, size_t n);
     inline size_type	align_size (size_type grain = c_DefaultAlignment) const;
     inline void		align (size_type grain = c_DefaultAlignment);
     void		swap (istream& is);
@@ -168,6 +168,39 @@ private:
 
 //----------------------------------------------------------------------
 
+/// \brief Constructs a stream attached to nothing.
+/// A stream attached to nothing is not usable. Call Link() functions
+/// inherited from cmemlink to attach to some memory block.
+///
+inline istream::istream (void)
+: cmemlink (),
+  m_Pos (0)
+{
+}
+
+/// Attaches the stream to a block at \p p of size \p n.
+inline istream::istream (const void* p, size_type n)
+: cmemlink (p, n),
+  m_Pos (0)
+{
+}
+
+/// Attaches to the block pointed to by \p source.
+inline istream::istream (const cmemlink& source)
+: cmemlink (source),
+  m_Pos (0)
+{
+}
+
+/// Checks that \p n bytes are available in the stream, or else throws.
+inline bool istream::verify_remaining (const char* op, const char* type, size_t n)
+{
+    const size_t rem = remaining();
+    bool enough = n <= rem;
+    if (!enough) overrun (op, type, n, pos(), rem);
+    return (enough);
+}
+
 /// Sets the current read position to \p newPos
 inline void istream::seek (uoff_t newPos)
 {
@@ -227,7 +260,8 @@ inline void istream::iread (T& v)
 {
     assert (aligned (alignof (v)));
 #ifdef WANT_STREAM_BOUNDS_CHECKING
-    verify_remaining ("read", typeid(v).name(), sizeof(T));
+    if (!verify_remaining ("read", typeid(v).name(), sizeof(T)))
+	return;
 #else
     assert (remaining() >= sizeof(T));
 #endif
@@ -270,4 +304,3 @@ inline utf8istream_iterator utf8in (istream& is)
 } // namespace ustl
 
 #endif
-

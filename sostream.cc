@@ -23,6 +23,7 @@ ostringstream::ostringstream (void* p, size_t n)
   m_Base (10),
   m_Precision (2)
 {
+    exceptions (goodbit);
     link (p, n);
 }
 
@@ -35,6 +36,7 @@ ostringstream::ostringstream (const string& v)
   m_Base (10),
   m_Precision (2)
 {
+    exceptions (goodbit);
     ostream::link (m_Buffer);
 }
 
@@ -53,12 +55,13 @@ void ostringstream::iwrite (uint8_t v)
 	ostream::iwrite (v);
 }
 
-/// Writes \p buf of size \p bufSize through the internal buffer.
-void ostringstream::write_buffer (const char* buf, size_type bufSize)
+/// Writes the contents of \p buffer of \p size into the stream.
+ostringstream& ostringstream::write (const void* buffer, size_type sz)
 {
-    size_type btw = 0, written = 0;
-    while ((written += btw) < bufSize && (remaining() || overflow(bufSize - written)))
-	write (buf + written, btw = min (remaining(), bufSize - written));
+    const char* buf = (const char*) buffer;
+    for (size_type bw = 0; (bw = min(sz, remaining() ? remaining() : overflow(sz))); buf += bw, sz -= bw)
+	ostream::write (buf, bw);
+    return (*this);
 }
 
 /// Simple decimal encoding of \p n into \p fmt.
@@ -101,14 +104,14 @@ void ostringstream::iwrite (wchar_t v)
 {
     char buffer [8];
     *utf8out(buffer) = v;
-    write_buffer (buffer, Utf8Bytes(v));
+    write (buffer, Utf8Bytes(v));
 }
 
 /// Writes value \p v into the stream as text.
 void ostringstream::iwrite (bool v)
 {
     static const char tf[2][8] = { "false", "true" };
-    write_buffer (tf[v], 5 - v);
+    write (tf[v], 5 - v);
 }
 
 /// Equivalent to a vsprintf on the string.
@@ -151,14 +154,6 @@ void ostringstream::link (void* p, size_t n)
     m_Buffer.link (p, n);
 }
 
-/// Writes the contents of \p buffer of \p size into the stream.
-ostringstream& ostringstream::write (const void* buffer, size_type sz)
-{
-    if (remaining() >= sz || overflow(sz) >= sz)
-	ostream::write (buffer, sz);
-    return (*this);
-}
-
 /// Attempts to create more output space. Returns remaining().
 ostringstream::size_type ostringstream::overflow (size_type n)
 {
@@ -174,5 +169,3 @@ ostringstream::size_type ostringstream::overflow (size_type n)
 }
 
 } // namespace ustl
-
-

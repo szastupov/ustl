@@ -17,29 +17,14 @@ namespace ustl {
 
 //--------------------------------------------------------------------
 
-/// \brief Constructs a stream attached to nothing.
-/// A stream attached to nothing is not usable. Call Link() functions
-/// inherited from cmemlink to attach to some memory block.
-///
-istream::istream (void)
-: cmemlink (),
-  m_Pos (0)
+/// Checks that \p n bytes are available in the stream, or else throws.
+void ios_base::overrun (const char* op, const char* type, uint32_t n, uint32_t pos, uint32_t rem)
 {
+    if (set_and_throw (rem ? failbit : (failbit | eofbit)))
+	throw stream_bounds_exception (op, type, pos, n, rem);
 }
 
-/// Attaches the stream to a block at \p p of size \p n.
-istream::istream (const void* p, size_type n)
-: cmemlink (p, n),
-  m_Pos (0)
-{
-}
-
-/// Attaches to the block pointed to by \p source.
-istream::istream (const cmemlink& source)
-: cmemlink (source),
-  m_Pos (0)
-{
-}
+//--------------------------------------------------------------------
 
 /// Attaches to the block pointed to by source of size source.pos()
 istream::istream (const ostream& source)
@@ -55,18 +40,12 @@ void istream::swap (istream& is)
     ::ustl::swap (m_Pos, is.m_Pos);
 }
 
-/// Checks that \p n bytes are available in the stream, or else throws.
-void istream::verify_remaining (const char* op, const char* type, size_t n) const
-{
-    if (remaining() < n)
-	throw stream_bounds_exception (op, type, pos(), n, remaining());
-}
-
 /// Reads \p n bytes into \p buffer.
 void istream::read (void* buffer, size_type n)
 {
 #ifdef WANT_STREAM_BOUNDS_CHECKING
-    verify_remaining ("read", "binary data", n);
+    if (!verify_remaining ("read", "binary data", n))
+	return;
 #else
     assert (remaining() >= n && "Reading past end of buffer. Make sure you are reading the right format.");
 #endif
@@ -117,30 +96,6 @@ void istream::unlink (void) throw()
 
 //--------------------------------------------------------------------
 
-/// \brief Constructs a stream attached to nothing.
-/// A stream attached to nothing is not usable. Call Link() functions
-/// inherited from memlink to attach to some memory block.
-///
-ostream::ostream (void)
-: memlink (),
-  m_Pos (0)
-{
-}
-
-/// Attaches the stream to a block at \p p of size \p n.
-ostream::ostream (void* p, size_type n)
-: memlink (p, n),
-  m_Pos (0)
-{
-}
-
-/// Attaches to the block pointed to by \p source.
-ostream::ostream (const memlink& source)
-: memlink (source),
-  m_Pos (0)
-{
-}
-
 /// Links to \p p of size \p n
 void ostream::unlink (void) throw()
 {
@@ -148,25 +103,19 @@ void ostream::unlink (void) throw()
     m_Pos = 0;
 }
 
-/// Checks that \p n bytes are available in the stream, or else throws.
-void ostream::verify_remaining (const char* op, const char* type, size_t n) const
-{
-    if (remaining() < n)
-	throw stream_bounds_exception (op, type, pos(), n, remaining());
-}
-
 /// Aligns the write pointer on \p grain. The skipped bytes are zeroed.
 void ostream::align (size_type grain)
 {
     const size_t r = pos() % grain;
     size_t nb = grain - r;
-    if (!r) nb = 0;
-#ifdef WANT_STREAM_BOUNDS_CHECKING
-    verify_remaining ("align", "padding", nb);
+#if WANT_STREAM_BOUNDS_CHECKING
+    if (!r || !verify_remaining ("align", "padding", nb))
+	return;
 #else
+    if (!r) nb = 0;
     assert (remaining() >= nb && "Buffer overrun. Check your stream size calculations.");
 #endif
-    fill_n (ipos(), nb, '\x0');
+    memset (ipos(), '\x0', nb);
     m_Pos += nb;
 }
 
@@ -174,7 +123,8 @@ void ostream::align (size_type grain)
 void ostream::write (const void* buffer, size_type n)
 {
 #ifdef WANT_STREAM_BOUNDS_CHECKING
-    verify_remaining ("write", "binary data", n);
+    if (!verify_remaining ("write", "binary data", n))
+	return;
 #else
     assert (remaining() >= n && "Buffer overrun. Check your stream size calculations.");
 #endif
@@ -226,4 +176,3 @@ void ostream::swap (ostream& os)
 //--------------------------------------------------------------------
 
 } // namespace ustl
-

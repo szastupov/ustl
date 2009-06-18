@@ -12,37 +12,34 @@
 
 namespace ustl {
 
-const char ios_base::c_DefaultDelimiters [istringstream::c_MaxDelimiters] = " \t\n\r;:,.?";
+#define DEFAULT_DELIMITERS	" \t\n\r;:,.?"
+const char ios_base::c_DefaultDelimiters [istringstream::c_MaxDelimiters] = DEFAULT_DELIMITERS;
 
 /// Default constructor.
 istringstream::istringstream (void)
 : istream (),
   m_Base (0)
 {
-    set_delimiters (c_DefaultDelimiters);
+    exceptions (goodbit);
+    set_delimiters (DEFAULT_DELIMITERS);
 }
 
 istringstream::istringstream (const void* p, size_type n)
 : istream (),
   m_Base (0)
 {
-    link (p, n);
-    set_delimiters (c_DefaultDelimiters);
+    exceptions (goodbit);
+    relink (p, n);
+    set_delimiters (DEFAULT_DELIMITERS);
 }
 
 istringstream::istringstream (const cmemlink& source)
 : istream (),
   m_Base (0)
 {
-    link (source);
-    set_delimiters (c_DefaultDelimiters);
-}
-
-/// Sets delimiters to the contents of \p delimiters.
-void istringstream::set_delimiters (const char* delimiters)
-{
-    fill (VectorRange (m_Delimiters), '\0');
-    strncpy (m_Delimiters, delimiters, VectorSize(m_Delimiters)-1);
+    exceptions (goodbit);
+    relink (source);
+    set_delimiters (DEFAULT_DELIMITERS);
 }
 
 inline bool istringstream::is_delimiter (char c) const
@@ -53,14 +50,14 @@ inline bool istringstream::is_delimiter (char c) const
 char istringstream::skip_delimiters (void)
 {
     char c = m_Delimiters[0];
-    while (is_delimiter(c) && (remaining() || underflow()))
+    while (is_delimiter(c)) {
+	if (!remaining() && !underflow()) {
+	    verify_remaining ("read", "", 1);
+	    return (0);
+	}
 	istream::iread (c);
+    }
     return (c);
-}
-
-void istringstream::iread (int8_t& v)
-{
-    v = skip_delimiters();
 }
 
 typedef istringstream::iterator issiter_t;
@@ -78,7 +75,7 @@ template <typename T>
 inline void istringstream::read_number (T& v)
 {
     v = 0;
-    if (skip_delimiters() == m_Delimiters[0])
+    if (!skip_delimiters())
 	return;
     ungetc();
     iterator ilast;
@@ -99,13 +96,15 @@ void istringstream::iread (long long& v)	{ read_number (v); }
 
 void istringstream::iread (wchar_t& v)
 {
-    if ((v = skip_delimiters()) == wchar_t(m_Delimiters[0]))
+    if (!(v = skip_delimiters()))
 	return;
-    size_t cs = Utf8SequenceBytes (v) - 1;
-    if (remaining() >= cs || underflow(cs) >= cs) {
-	ungetc();
+    ungetc();
+    size_t cs = Utf8SequenceBytes (v);
+    if (remaining() < cs && underflow(cs) < cs)
+	verify_remaining ("read", "wchar_t", cs);
+    else {
 	v = *utf8in (ipos());
-	skip (cs + 1);
+	skip (cs);
     }
 }
 
@@ -125,6 +124,8 @@ void istringstream::iread (string& v)
 {
     v.clear();
     char prevc, quoteChar = 0, c = skip_delimiters();
+    if (!c)
+	return;
     if (c == '\"' || c == '\'')
 	quoteChar = c;
     else
@@ -157,34 +158,10 @@ void istringstream::iread (string& v)
 istringstream& istringstream::read (void* buffer, size_type sz)
 {
     if (remaining() < sz && underflow(sz) < sz)
-#ifdef WANT_STREAM_BOUNDS_CHECKING
 	verify_remaining ("read", "", sz);
-#else
-	assert (remaining() >= size());
-#endif
-    istream::read (buffer, sz);
+    else
+	istream::read (buffer, sz);
     return (*this);
-}
-
-istringstream& istringstream::read (memlink& buf)
-{
-    if (remaining() < buf.size() && underflow(buf.size()) < buf.size())
-#ifdef WANT_STREAM_BOUNDS_CHECKING
-	verify_remaining ("read", "", buf.size());
-#else
-	assert (remaining() >= buf.size());
-#endif
-    istream::read (buf);
-    return (*this);
-}
-
-/// Reads one character from the stream.
-int istringstream::get (void)
-{
-    int8_t v = 0;
-    if (remaining() || underflow())
-	istream::iread (v);
-    return (v);
 }
 
 /// Reads characters into \p s until \p delim is found (but not stored or extracted)

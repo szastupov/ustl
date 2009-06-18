@@ -188,7 +188,8 @@ void memblock::read (istream& is)
 {
     written_size_type n;
     is >> n;
-    is.verify_remaining ("read", "ustl::memblock", n);
+    if (!is.verify_remaining ("read", "ustl::memblock", n))
+	return;
     resize (n);
     is.read (data(), writable_size());
     is.align (alignof (n));

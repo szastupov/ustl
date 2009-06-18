@@ -83,7 +83,7 @@ public:
 
     static const char c_DefaultDelimiters [16];	///< Default word delimiters for stringstreams.
 public:
-    inline		ios_base (void)			: m_State (goodbit), m_Exceptions (goodbit) {}
+    inline		ios_base (void)			: m_State (goodbit), m_Exceptions (allbadbits) {}
     inline iostate	rdstate (void) const		{ return (m_State); }
     inline bool		bad (void) const		{ return (rdstate() & badbit); }
     inline bool		good (void) const		{ return (rdstate() == goodbit); }
@@ -97,6 +97,7 @@ public:
     inline iostate	exceptions (iostate v)		{ return (m_Exceptions = v); }
 protected:
     inline bool		set_and_throw (iostate v)	{ setstate(v); return (exceptions() & v); }
+    void		overrun (const char* op, const char* type, uint32_t n, uint32_t p, uint32_t rem);
 private:
     uint16_t		m_State;	///< Open state, using ios::iostate_bits.
     uint16_t		m_Exceptions;	///< Exception flags, using ios::iostate_bits.

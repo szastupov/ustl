@@ -26,7 +26,7 @@ public:
     				istringstream (void);
 				istringstream (const void* p, size_type n);
     explicit			istringstream (const cmemlink& source);
-    void			iread (int8_t& v);
+    void			iread (int8_t& v)	{ v = skip_delimiters(); }
     void			iread (int32_t& v);
     void			iread (double& v);
     void			iread (bool& v);
@@ -40,8 +40,8 @@ public:
 #endif
     inline string		str (void) const	{ string s; s.link (*this); return (s); }
     inline istringstream&	str (const string& s)	{ link (s); return (*this); }
-    int				get (void);
-    inline istringstream&	get (char& c)	{ c = get(); return (*this); }
+    inline istringstream&	get (char& c)	{ return (read (&c, sizeof(c))); }
+    inline int			get (void)	{ char c; get(c); return (c); }
     istringstream&		get (char* p, size_type n, char delim = '\n');
     istringstream&		get (string& s, char delim = '\n');
     istringstream&		getline (char* p, size_type n, char delim = '\n');
@@ -50,12 +50,12 @@ public:
     inline char			peek (void)	{ int8_t v; iread (v); ungetc(); return (v); }
     inline istringstream&	putback (char)	{ ungetc(); return (*this); }
     inline istringstream&	unget (void)	{ ungetc(); return (*this); }
-    void			set_delimiters (const char* delimiters);
+    inline void			set_delimiters (const char* delimiters);
     inline void			set_base (short base);
     inline void			set_decimal_separator (char)	{ }
     inline void			set_thousand_separator (char)	{ }
     istringstream&		read (void* buffer, size_type size);
-    istringstream&		read (memlink& buf);
+    inline istringstream&	read (memlink& buf)		{ return (read (buf.begin(), buf.size())); }
     inline istringstream&	seekg (off_t p, seekdir d =beg)	{ istream::seekg(p,d); return (*this); }
     inline int			sync (void)			{ skip (remaining()); return (0); }
 protected:
@@ -69,10 +69,24 @@ private:
     uint8_t			m_Base;
 };
 
+//----------------------------------------------------------------------
+
 /// Sets the numeric base used to read numbers.
 inline void istringstream::set_base (short base)
 {
     m_Base = base;
+}
+
+/// Sets delimiters to the contents of \p delimiters.
+inline void istringstream::set_delimiters (const char* delimiters)
+{
+#if (__i386__ || __x86_64__) && CPU_HAS_SSE && HAVE_VECTOR_EXTENSIONS
+    typedef uint32_t v16ud_t __attribute__((vector_size(16)));
+    asm("xorps\t%%xmm0, %%xmm0\n\tmovups\t%%xmm0, %0":"=m"(*(v16ud_t*)m_Delimiters)::"xmm0");
+#else
+    memset (m_Delimiters, 0, sizeof(m_Delimiters));
+#endif
+    memcpy (m_Delimiters, delimiters, min (strlen(delimiters),sizeof(m_Delimiters)-1));
 }
 
 /// Reads one type as another.

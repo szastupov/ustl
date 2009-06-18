@@ -377,10 +377,10 @@ void string::read (istream& is)
     char szbuf [8];
     is >> szbuf[0];
     size_t szsz (Utf8SequenceBytes (szbuf[0]) - 1), n = 0;
-    is.verify_remaining ("read", "ustl::string", szsz);
+    if (!is.verify_remaining ("read", "ustl::string", szsz)) return;
     is.read (szbuf + 1, szsz);
     n = *utf8in(szbuf);
-    is.verify_remaining ("read", "ustl::string", n);
+    if (!is.verify_remaining ("read", "ustl::string", n)) return;
     resize (n);
     is.read (data(), size());
 }
@@ -396,7 +396,7 @@ void string::write (ostream& os) const
     *szout = sz;
     size_t szsz = distance (szbuf, szout.base());
 
-    os.verify_remaining ("write", "ustl::string", szsz + sz);
+    if (!os.verify_remaining ("write", "ustl::string", szsz + sz)) return;
     os.write (szbuf, szsz);
     os.write (cdata(), sz);
 }
