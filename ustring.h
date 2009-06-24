@@ -61,7 +61,7 @@ public:
     static const size_type size_Terminator = sizeof(c_Terminator);	///< Most systems terminate strings with '\\0'
     static const char empty_string [size_Terminator];			///< An empty string.
 public:
-				string (void);
+    inline			string (void)		: memblock () { relink ("",0); }
 				string (const string& s);
     inline			string (const string& s, uoff_t o, size_type n);
     inline explicit		string (const cmemlink& l);

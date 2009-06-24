@@ -61,7 +61,7 @@ public:
     inline virtual void	unlink (void) throw()		{ m_Data = NULL; m_Size = 0; }
     inline rcself_t	operator= (const cmemlink& l)	{ link (l); return (*this); }
     bool		operator== (const cmemlink& l) const;
-    void		swap (cmemlink& l);
+    inline void		swap (cmemlink& l);
     inline size_type	size (void) const		{ return (m_Size); }
     inline size_type	max_size (void) const		{ return (size()); }
     inline size_type	readable_size (void) const	{ return (size()); }
@@ -81,12 +81,32 @@ private:
     size_type		m_Size;		///< size of the data block
 };
 
+//----------------------------------------------------------------------
+
 /// A fast alternative to link which can be used when relinking to the same block (i.e. when it is resized)
 inline void cmemlink::relink (const void* p, size_type n)
 {
     m_Data = reinterpret_cast<const_pointer>(p);
     m_Size = n;
 }
+
+/// swaps the contents with \p l
+inline void cmemlink::swap (cmemlink& l)
+{
+#if CPU_HAS_MMX && SIZE_OF_POINTER == 4
+    asm("movq\t%0, %%mm0\n\t"
+	"movq\t%2, %%mm1\n\t"
+	"movq\t%%mm0, %2\n\t"
+	"movq\t%%mm1, %0"
+	:"+m"(m_Data),"+m"(m_Size),"+m"(l.m_Data),"+m"(l.m_Size)::"mm0","mm1","st","st(1)");
+    simd::reset_mmx();
+#else
+    ::ustl::swap (m_Data, l.m_Data);
+    ::ustl::swap (m_Size, l.m_Size);
+#endif
+}
+
+//----------------------------------------------------------------------
 
 /// Use with cmemlink-derived classes to link to a static array
 #define static_link(v)	link (VectorBlock(v))

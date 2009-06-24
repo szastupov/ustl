@@ -310,7 +310,7 @@ inline T1 DivRU (T1 n1, T2 n2)
 }
 
 #if __GNUC__ >= 3
-inline bool TestAndSet (int* pm) __attribute__((always_inline));
+inline bool TestAndSet (int* pm) INLINE;
 #endif
 /// Sets the contents of \p pm to 1 and returns true if the previous value was 0.
 inline bool TestAndSet (int* pm)
@@ -369,19 +369,16 @@ inline DEST noalias_cast (SRC s)
 
 namespace simd {
     /// Call after you are done using SIMD algorithms for 64 bit tuples.
-#if CPU_HAS_MMX
-    inline void reset_mmx (void) __attribute__((always_inline));
+    inline void reset_mmx (void) INLINE;
     #define ALL_MMX_REGS_CHANGELIST "mm0","mm1","mm2","mm3","mm4","mm5","mm6","mm7","st","st(1)","st(2)","st(3)","st(4)","st(5)","st(6)","st(7)"
-    #if CPU_HAS_3DNOW
-	inline void reset_mmx (void) { asm ("femms":::ALL_MMX_REGS_CHANGELIST); }
-    #else
-	inline void reset_mmx (void) { asm ("emms":::ALL_MMX_REGS_CHANGELIST); }
-    #endif
+#if CPU_HAS_3DNOW
+    inline void reset_mmx (void) { asm ("femms":::ALL_MMX_REGS_CHANGELIST); }
+#elif CPU_HAS_MMX
+    inline void reset_mmx (void) { asm ("emms":::ALL_MMX_REGS_CHANGELIST); }
 #else
     inline void reset_mmx (void) {}
 #endif
 } // namespace simd
-
 } // namespace ustl
 
 #endif

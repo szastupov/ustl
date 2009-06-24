@@ -22,10 +22,10 @@ template <typename T> static inline void stosv (T*& p, size_t n, T v)
 //----------------------------------------------------------------------
 
 #if __GNUC__ >= 3
-static inline void movsb_dir_up (void) __attribute__((always_inline));
-static inline void movsb_dir_down (void) __attribute__((always_inline));
-static inline void movsb (const void*& src, size_t nBytes, void*& dest) __attribute__((always_inline));
-static inline void movsd (const void*& src, size_t nWords, void*& dest) __attribute__((always_inline));
+static inline void movsb_dir_up (void) INLINE;
+static inline void movsb_dir_down (void) INLINE;
+static inline void movsb (const void*& src, size_t nBytes, void*& dest) INLINE;
+static inline void movsd (const void*& src, size_t nWords, void*& dest) INLINE;
 #endif
 
 static inline void movsb_dir_up (void) { asm volatile ("cld"); }
@@ -58,9 +58,9 @@ template <> inline void stosv (uint32_t*& p, size_t n, uint32_t v)
 #define MMX_ALIGN	16U	// Data must be aligned on this grain
 #define MMX_BS		32U	// Assembly routines copy data this many bytes at a time.
 
-static inline void simd_block_copy (const void* src, void* dest) __attribute__((always_inline));
-static inline void simd_block_store (uint8_t* dest) __attribute__((always_inline));
-static inline void simd_block_cleanup (void) __attribute__((always_inline));
+static inline void simd_block_copy (const void* src, void* dest) INLINE;
+static inline void simd_block_store (uint8_t* dest) INLINE;
+static inline void simd_block_cleanup (void) INLINE;
 
 static inline void simd_block_copy (const void* src, void* dest)
 {

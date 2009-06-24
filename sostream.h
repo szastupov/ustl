@@ -20,7 +20,7 @@ class string;
 ///
 class ostringstream : public ostream {
 public:
-				ostringstream (const string& v = string::empty_string);
+				ostringstream (const string& v = "");
 				ostringstream (void* p, size_t n);
     void			iwrite (uint8_t v);
     void			iwrite (wchar_t v);

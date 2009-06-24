@@ -59,6 +59,6 @@ typedef size_t		uoff_t;		///< A type for storing offsets into blocks measured by
 typedef uint32_t	hashvalue_t;	///< Value type returned by the hash functions.
 
 #if !defined(UINTPTR_MAX) || !defined(UINT32_C)
-    #error "If you include stdint.h before ustl.h, ensure you define __STDC_LIMIT_MACROS and __STDC_CONSTANT_MACROS before doing it"
+    #error "If you include stdint.h before ustl.h, define __STDC_LIMIT_MACROS and __STDC_CONSTANT_MACROS first"
 #endif
 #endif

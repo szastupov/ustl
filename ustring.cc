@@ -20,13 +20,6 @@ const char string::empty_string[string::size_Terminator] = "";
 
 //----------------------------------------------------------------------
 
-/// Creates an empty string.
-string::string (void)
-: memblock ()
-{
-    relink (VectorBlock(empty_string)-1);
-}
-
 /// Assigns itself the value of string \p s
 string::string (const string& s)
 : memblock ((s.size() + size_Terminator) & (s.is_linked()-1))	// Allocate with terminator if not linked (can't call virtuals from base ctor)
@@ -43,8 +36,7 @@ string::string (const string& s)
 string::string (const_pointer s)
 : memblock ()
 {
-    if (!s)
-	s = empty_string;
+    if (!s) s = "";
     relink (s, strlen(s));
 }
 
@@ -61,7 +53,7 @@ string::string (size_type n, value_type c)
 void string::resize (size_type n)
 {
     if (!(n | memblock::capacity()))
-	return (relink (VectorBlock(empty_string)-1));
+	return (relink ("",0));
     memblock::resize (n);
     at(n) = c_Terminator;
 }
@@ -69,8 +61,7 @@ void string::resize (size_type n)
 /// Assigns itself the value of string \p s
 void string::assign (const_pointer s)
 {
-    if (!s)
-	s = empty_string;
+    if (!s) s = "";
     assign (s, strlen (s));
 }
 
@@ -86,8 +77,7 @@ void string::assign (const_pointer s, size_type len)
 /// Appends to itself the value of string \p s of length \p len.
 void string::append (const_pointer s)
 {
-    if (!s)
-	s = empty_string;
+    if (!s) s = "";
     append (s, strlen (s));
 }
 
@@ -137,8 +127,7 @@ string::size_type string::copyto (pointer p, size_type n, const_iterator start) 
 /// Returns true if this string is equal to string \p s.
 bool string::operator== (const_pointer s) const
 {
-    if (!s)
-	s = empty_string;
+    if (!s) s = "";
     return (size() == strlen(s) && 0 == memcmp (c_str(), s, size()));
 }
 
@@ -192,8 +181,7 @@ string::iterator string::insert (iterator start, const_reference c, size_type n)
 /// Inserts \p count instances of string \p s at offset \p start.
 string::iterator string::insert (iterator start, const_pointer s, size_type n)
 {
-    if (!s)
-	s = empty_string;
+    if (!s) s = "";
     return (insert (start, s, s + strlen(s), n));
 }
 
@@ -226,8 +214,7 @@ void string::erase (uoff_t epo, size_type n)
 /// Replaces range [\p start, \p start + \p len] with string \p s.
 void string::replace (iterator first, iterator last, const_pointer s)
 {
-    if (!s)
-	s = empty_string;
+    if (!s) s = "";
     replace (first, last, s, s + strlen(s));
 }
 

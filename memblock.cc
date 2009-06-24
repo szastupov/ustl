@@ -12,64 +12,6 @@
 
 namespace ustl {
 
-/// Allocates 0 bytes for the internal block.
-memblock::memblock (void)
-: memlink (),
-  m_Capacity (0)
-{
-}
-
-/// Allocates \p n bytes for the internal block.
-memblock::memblock (size_type n)
-: memlink (),
-  m_Capacity (0)
-{
-    resize (n);
-}
-
-/// links to \p p, \p n. Data can not be modified and will not be freed.
-memblock::memblock (const void* p, size_type n)
-: memlink (),
-  m_Capacity (0)
-{
-    assign (p, n);
-}
-
-/// Links to what \p b is linked to.
-memblock::memblock (const cmemlink& b)
-: memlink (),
-  m_Capacity (0)
-{
-    assign (b);
-}
-
-/// Links to what \p b is linked to.
-memblock::memblock (const memlink& b)
-: memlink (),
-  m_Capacity (0)
-{
-    assign (b);
-}
-
-/// Links to what \p b is linked to.
-memblock::memblock (const memblock& b)
-: memlink (),
-  m_Capacity (0)
-{
-    assign (b);
-}
-
-/// Frees internal data, if appropriate
-/// Only if the block was allocated using resize, or linked to using Manage,
-/// will it be freed. Also, Derived classes should call DestructBlock from
-/// their destructor, because upstream virtual functions are unavailable at
-/// this point and will not be called automatically.
-///
-memblock::~memblock (void) throw()
-{
-    deallocate();
-}
-
 /// resizes the block to \p newSize bytes, reallocating if necessary.
 void memblock::resize (size_type newSize, bool bExact)
 {
@@ -144,13 +86,6 @@ void memblock::reserve (size_type newSize, bool bExact)
     m_Capacity = newSize;
 }
 
-/// Swaps the contents with \p l
-void memblock::swap (memblock& l)
-{
-    memlink::swap (l);
-    ::ustl::swap (m_Capacity, l.m_Capacity);
-}
-
 /// Shifts the data in the linked block from \p start to \p start + \p n.
 memblock::iterator memblock::insert (iterator start, size_type n)
 {
@@ -169,13 +104,6 @@ memblock::iterator memblock::erase (iterator start, size_type n)
     memlink::erase (start, n);
     memlink::resize (size() - n);
     return (iat (ep));
-}
-
-/// Unlinks object.
-void memblock::unlink (void) throw()
-{
-    memlink::unlink();
-    m_Capacity = 0;
 }
 
 /// Reads the object from stream \p s

@@ -7,11 +7,12 @@
 #define UNEW_H_11D237512B324C9C05A55DAF1BF086F1
 
 #include "uexception.h"
+#include <stdlib.h>
 
 /// Just like malloc, but throws on failure.
-void* throwing_malloc (size_t n) throw (ustl::bad_alloc);
+void* tmalloc (size_t n) throw (ustl::bad_alloc) __attribute__((malloc));
 /// Just like free, but doesn't crash when given a NULL.
-void free_nullok (void* p) throw();
+inline void nfree (void* p) throw() { if (p) free (p); }
 
 #ifdef WITHOUT_LIBSTDCPP
 
@@ -26,10 +27,10 @@ void free_nullok (void* p) throw();
 //  Placement new and delete signatures (take a memory address argument,
 //  does nothing) may not be replaced by a user's program.
 //
-inline void* operator new (size_t n) throw (ustl::bad_alloc)	{ return (throwing_malloc (n)); }
-inline void* operator new[] (size_t n) throw (ustl::bad_alloc)	{ return (throwing_malloc (n)); }
-inline void  operator delete (void* p) throw()			{ free_nullok (p); }
-inline void  operator delete[] (void* p) throw()		{ free_nullok (p); }
+inline void* operator new (size_t n) throw (ustl::bad_alloc)	{ return (tmalloc (n)); }
+inline void* operator new[] (size_t n) throw (ustl::bad_alloc)	{ return (tmalloc (n)); }
+inline void  operator delete (void* p) throw()			{ nfree (p); }
+inline void  operator delete[] (void* p) throw()		{ nfree (p); }
 
 // Default placement versions of operator new.
 inline void* operator new (size_t, void* p) throw() { return (p); }

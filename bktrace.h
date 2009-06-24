@@ -7,6 +7,7 @@
 #define BKTRACE_H_63ABB1E4388CEDD975DBE58B57DE474F
 
 #include "ulimits.h"
+#include <stdlib.h>
 
 namespace ustl {
 
@@ -29,7 +30,7 @@ class CBacktrace {
 public:
 			CBacktrace (void) throw();
 			CBacktrace (const CBacktrace& v) throw();
-		       ~CBacktrace (void) throw();
+    inline		~CBacktrace (void) throw()	{ if (m_Symbols) free (m_Symbols); }
     const CBacktrace&	operator= (const CBacktrace& v) throw();
     void		text_write (ostringstream& os) const;
     void		read (istream& is);

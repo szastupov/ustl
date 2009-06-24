@@ -88,12 +88,6 @@ void CBacktrace::GetSymbols (void) throw()
     free (symbols);
 }
 
-/// Default destructor.
-CBacktrace::~CBacktrace (void) throw()
-{
-    free_nullok (m_Symbols);
-}
-
 #if SIZE_OF_LONG == 8
     #define ADDRESS_FMT	"%16p  "
 #else
@@ -117,7 +111,7 @@ void CBacktrace::read (istream& is)
 {
     assert (is.aligned (alignof (m_Addresses[0])) && "Backtrace object contains pointers and must be void* aligned");
     is >> m_nFrames >> m_SymbolsSize;
-    free_nullok (m_Symbols);
+    nfree (m_Symbols);
     m_Symbols = (char*) malloc (m_SymbolsSize + 1);
     is.read (m_Symbols, m_SymbolsSize);
     m_Symbols [m_SymbolsSize] = 0;

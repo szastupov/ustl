@@ -25,10 +25,10 @@ class fstream : public ios_base {
 public:
 			fstream (void);
     explicit		fstream (const char* filename, openmode mode = in | out);
-    explicit		fstream (int nfd, const char* filename = string::empty_string);
+    explicit		fstream (int nfd, const char* filename = "");
 		       ~fstream (void) throw();
     void		open (const char* filename, openmode mode, mode_t perms = 0644);
-    void		attach (int nfd, const char* filename = string::empty_string);
+    void		attach (int nfd, const char* filename = "");
     void		detach (void);
     void		close (void);
     void		sync (void);

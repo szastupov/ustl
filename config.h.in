@@ -50,9 +50,11 @@
 #if defined(__GNUC__) && __GNUC__ >= 4
     #define DLL_EXPORT		__attribute__((visibility("default")))
     #define DLL_LOCAL		__attribute__((visibility("hidden")))
+    #define INLINE		__attribute__((always_inline))
 #else
     #define DLL_EXPORT
     #define DLL_LOCAL
+    #define INLINE
 #endif
 #if defined(__GNUC__) && __GNUC__ >= 3 && (__i386__ || __x86_64__)
     /// GCC 3+ supports the prefetch directive, which some CPUs use to improve caching
