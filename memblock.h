@@ -36,8 +36,8 @@ public:
     inline const memblock&	operator= (const cmemlink& l)	{ assign (l); return (*this); }
     inline const memblock&	operator= (const memlink& l)	{ assign (l); return (*this); }
     inline const memblock&	operator= (const memblock& l)	{ assign (l); return (*this); }
+    inline void			swap (memblock& l)		{ memlink::swap (l); ::ustl::swap (m_Capacity, l.m_Capacity); }
     void			assign (const void* p, size_type n);
-    inline void			swap (memblock& l);
     void			reserve (size_type newSize, bool bExact = true);
     void			resize (size_type newSize, bool bExact = true);
     iterator			insert (iterator start, size_type size);
@@ -57,25 +57,6 @@ protected:
 private:
     size_type			m_Capacity;	///< Number of bytes allocated by Resize.
 };
-
-//----------------------------------------------------------------------
-
-/// Swaps the contents with \p l
-inline void memblock::swap (memblock& l)
-{
-#if CPU_HAS_SSE && SIZE_OF_POINTER == 8
-    asm("movups\t%0, %%xmm0\n\t"
-	"movups\t%1, %%xmm1\n\t"
-	"movups\t%%xmm0, %1\n\t"
-	"movups\t%%xmm1, %0"
-	:"+m"(*this),"+m"(l)::"memory","xmm0","xmm1");
-#else
-    memlink::swap (l);
-    ::ustl::swap (m_Capacity, l.m_Capacity);
-#endif
-}
-
-//----------------------------------------------------------------------
 
 } // namespace ustl
 
