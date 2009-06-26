@@ -67,7 +67,7 @@ public:
     bool		verify_remaining (const char* op, const char* type, size_t n);
     inline streamsize	align_size (streamsize grain = c_DefaultAlignment) const;
     void		align (streamsize grain = c_DefaultAlignment);
-    void		write (const void* buffer, streamsize size);
+    inline void		write (const void* buffer, streamsize size);
     inline void		write (const cmemlink& buf);
     void		write_strz (const char* str);
     void		read (istream& is);
@@ -76,11 +76,11 @@ public:
     inline size_t	stream_size (void) const	{ return (pos()); }
     void		insert (iterator start, streamsize size);
     void		erase (iterator start, streamsize size);
-    void		swap (ostream& os);
+    inline void		swap (ostream& os);
     template <typename T>
     inline void		iwrite (const T& v);
     inline virtual streamsize	overflow (streamsize = 1){ return (remaining()); }
-    virtual void	unlink (void) throw();
+    inline virtual void	unlink (void) throw()		{ memlink::unlink(); m_Pos = 0; }
     inline void		link (void* p, streamsize n)	{ memlink::link (p, n); }
     inline void		link (memlink& l)		{ memlink::link (l.data(), l.writable_size()); }
     inline void		link (void* f, void* l)		{ memlink::link (f, l); }
@@ -229,6 +229,19 @@ inline streamsize ostream::align_size (streamsize grain) const
     return (Align (pos(), grain) - pos());
 }
 
+/// Writes \p n bytes from \p buffer.
+inline void ostream::write (const void* buffer, size_type n)
+{
+#ifdef WANT_STREAM_BOUNDS_CHECKING
+    if (!verify_remaining ("write", "binary data", n))
+	return;
+#else
+    assert (remaining() >= n && "Buffer overrun. Check your stream size calculations.");
+#endif
+    memcpy (ipos(), const_iterator(buffer), n);
+    m_Pos += n;
+}
+
 /// Writes the contents of \p buf into the stream as a raw dump.
 inline void ostream::write (const cmemlink& buf)
 {
@@ -248,6 +261,13 @@ inline void ostream::iwrite (const T& v)
 #endif
     *reinterpret_cast<T*>(ipos()) = v;
     SetPos (pos() + sizeof(T));
+}
+
+/// Swaps with \p os
+inline void ostream::swap (ostream& os)
+{
+    memlink::swap (os);
+    ::ustl::swap (m_Pos, os.m_Pos);
 }
 
 //----------------------------------------------------------------------

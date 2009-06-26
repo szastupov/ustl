@@ -86,9 +86,8 @@ const size_t c_DefaultAlignment = __alignof__(void*);
 template <typename T>
 inline T Align (T n, size_t grain = c_DefaultAlignment)
 {
-    T r = n % grain;
-    T a = n + (grain - r);
-    return (r ? a : n);
+    n += grain - 1;
+    return (n - n % grain);
 }
 
 /// Returns a NULL pointer cast to T.

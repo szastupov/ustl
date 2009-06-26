@@ -74,7 +74,7 @@ public:
     inline void		link (const void* f, const void* l)	{ cmemlink::link (f, l); }
     inline void		relink (const void* p, streamsize n)	{ cmemlink::relink (p, n); m_Pos = 0; }
     inline void		relink (const cmemlink& l)		{ relink (l.cdata(), l.readable_size()); }
-    virtual void	unlink (void) throw();
+    inline virtual void	unlink (void) throw()			{ cmemlink::unlink(); m_Pos = 0; }
     inline virtual streamsize	underflow (streamsize = 1)	{ return (remaining()); }
     inline uoff_t	pos (void) const	{ return (m_Pos); }
     inline const_iterator ipos (void) const	{ return (begin() + pos()); }
@@ -86,8 +86,8 @@ public:
     inline bool		verify_remaining (const char* op, const char* type, streamsize n);
     inline streamsize	align_size (streamsize grain = c_DefaultAlignment) const;
     inline void		align (streamsize grain = c_DefaultAlignment);
-    void		swap (istream& is);
-    void		read (void* buffer, streamsize size);
+    inline void		swap (istream& is);
+    inline void		read (void* buffer, streamsize size);
     inline void		read (memlink& buf)	{ read (buf.begin(), buf.writable_size()); }
     void		read_strz (string& str);
     streamsize		readsome (void* s, streamsize n);
@@ -265,6 +265,26 @@ inline void istream::iread (T& v)
 #endif
     v = *reinterpret_cast<const T*>(ipos());
     m_Pos += sizeof(T);
+}
+
+/// Swaps contents with \p is
+inline void istream::swap (istream& is)
+{
+    cmemlink::swap (is);
+    ::ustl::swap (m_Pos, is.m_Pos);
+}
+
+/// Reads \p n bytes into \p buffer.
+inline void istream::read (void* buffer, size_type n)
+{
+#ifdef WANT_STREAM_BOUNDS_CHECKING
+    if (!verify_remaining ("read", "binary data", n))
+	return;
+#else
+    assert (remaining() >= n && "Reading past end of buffer. Make sure you are reading the right format.");
+#endif
+    memcpy (reinterpret_cast<value_type*>(buffer), ipos(), n);
+    m_Pos += n;
 }
 
 //----------------------------------------------------------------------
