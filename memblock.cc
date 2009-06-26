@@ -12,6 +12,12 @@
 
 namespace ustl {
 
+void memblock::unlink (void) throw()
+{
+    m_Capacity = 0;
+    memlink::unlink();
+}
+
 /// resizes the block to \p newSize bytes, reallocating if necessary.
 void memblock::resize (size_type newSize, bool bExact)
 {
@@ -129,6 +135,11 @@ void memblock::read_file (const char* filename)
     f.read (data(), fsize);
     f.close();
     resize (fsize);
+}
+
+memblock::size_type memblock::minimumFreeCapacity (void) const throw()
+{
+    return (0);
 }
 
 } // namespace ustl

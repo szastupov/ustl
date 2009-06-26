@@ -23,6 +23,11 @@ void cmemlink::link (const void* p, size_type n)
     relink (p, n);
 }
 
+void cmemlink::unlink (void) throw()
+{
+    m_Data = NULL; m_Size = 0;
+}
+
 /// Writes the object to stream \p os
 void cmemlink::write (ostream& os) const
 {

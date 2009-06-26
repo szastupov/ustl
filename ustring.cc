@@ -393,4 +393,9 @@ void string::write (ostream& os) const
     return (h);
 }
 
+string::size_type string::minimumFreeCapacity (void) const throw()
+{
+    return (size_Terminator);
+}
+
 } // namespace ustl

@@ -178,7 +178,7 @@ public:
     size_t			stream_size (void) const;
     static hashvalue_t		hash (const char* f1, const char* l1);
 protected:
-    inline virtual size_type	minimumFreeCapacity (void) const { return (size_Terminator); }
+    virtual size_type		minimumFreeCapacity (void) const throw() __attribute__((const));
 };
 
 //----------------------------------------------------------------------

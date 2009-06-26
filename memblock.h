@@ -31,7 +31,7 @@ public:
     inline explicit		memblock (const memlink& b)	: memlink (), m_Capacity (0) { assign (b); }
     inline			memblock (const memblock& b)	: memlink (), m_Capacity (0) { assign (b); }
     inline virtual		~memblock (void) throw()	{ if (m_Capacity) free(data()); }
-    inline virtual void		unlink (void) throw()		{ memlink::unlink(); m_Capacity = 0; }
+    virtual void		unlink (void) throw();
     inline void			assign (const cmemlink& l)	{ assign (l.cdata(), l.readable_size()); }
     inline const memblock&	operator= (const cmemlink& l)	{ assign (l); return (*this); }
     inline const memblock&	operator= (const memlink& l)	{ assign (l); return (*this); }
@@ -53,7 +53,7 @@ public:
     void			read (istream& is);
     void			read_file (const char* filename);
 protected:
-    inline virtual size_type	minimumFreeCapacity (void) const { return (0); }
+    virtual size_type		minimumFreeCapacity (void) const throw() __attribute__((const));
 private:
     size_type			m_Capacity;	///< Number of bytes allocated by Resize.
 };
