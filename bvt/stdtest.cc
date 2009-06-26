@@ -6,10 +6,15 @@
 #define _GNU_SOURCE 1
 #include "stdtest.h"
 #include <signal.h>
+#include <unistd.h>
 
 /// Called when a signal is received.
 static void OnSignal (int sig)
 {
+    static int doubleSignal = false;
+    if (!TestAndSet (&doubleSignal))
+	abort();
+    alarm (1);
     cout.flush();
     #if HAVE_STRSIGNAL
 	cerr.format ("Fatal error: %s received.\n", strsignal(sig));
