@@ -13,19 +13,16 @@
 
 namespace ustl {
 
-typedef size_t streamsize;
-typedef uoff_t streamoff;
-
 /// For partial specialization of stream_size_of for objects
 template <typename T> struct object_stream_size {
-    inline size_t operator()(const T& v) const { return (v.stream_size()); }
+    inline streamsize operator()(const T& v) const { return (v.stream_size()); }
 };
 template <typename T> struct integral_object_stream_size {
-    inline size_t operator()(const T& v) const { return (sizeof(v)); }
+    inline streamsize operator()(const T& v) const { return (sizeof(v)); }
 };
 /// Returns the size of the given object. Overloads for standard types are available.
 template <typename T>
-inline size_t stream_size_of (const T& v) {
+inline streamsize stream_size_of (const T& v) {
     typedef typename tm::Select <numeric_limits<T>::is_integral,
 	integral_object_stream_size<T>, object_stream_size<T> >::Result stream_sizer_t;
     return (stream_sizer_t()(v));
@@ -48,7 +45,7 @@ inline size_t stream_size_of (const T& v) {
 	inline istream& operator>> (istream& is, T& v)		{ is.iread(v);  return (is); }	\
 	inline ostream& operator<< (ostream& os, const T& v)	{ os.iwrite(v); return (os); }	\
 	inline ostream& operator<< (ostream& os, T& v)		{ os.iwrite(v); return (os); }	\
-	template <> inline size_t stream_size_of (const T& v)	{ return (sizeof(v)); }		\
+	template <> inline streamsize stream_size_of (const T& v)	{ return (sizeof(v)); }		\
     }
 
 /// Declares that T contains read, write, and stream_size methods. This is no longer needed and is deprecated.
@@ -62,7 +59,7 @@ inline size_t stream_size_of (const T& v) {
     namespace ustl {		\
 	inline istream& operator>> (istream& is, T& v)		{ TSUB sv; is >> sv; v = (T)(sv); return (is); }	\
 	inline ostream& operator<< (ostream& os, const T& v)	{ os << TSUB(v); return (os); }				\
-	template <> inline size_t stream_size_of (const T& v)	{ return (stream_size_of (TSUB(v))); }			\
+	template <> inline streamsize stream_size_of (const T& v)	{ return (stream_size_of (TSUB(v))); }			\
     }
 
 /// Placed into a class it declares the methods required by STD_STREAMABLE. Syntactic sugar.
@@ -70,7 +67,7 @@ inline size_t stream_size_of (const T& v) {
     public:					\
 	void	read (istream& is);		\
 	void	write (ostream& os) const;	\
-	size_t	stream_size (void) const
+	streamsize	stream_size (void) const
 
 /// Specifies that \p T is printed by using it as an index into \p Names string array.
 #define LOOKUP_TEXT_STREAMABLE(T,Names,nNames)	\

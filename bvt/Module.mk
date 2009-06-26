@@ -49,4 +49,4 @@ bvt/check:	check
 
 ${bvt/OBJS} $Obvt/stdtest.o $Obvt/bench.o: Makefile bvt/Module.mk Config.mk ${NAME}/config.h
 
--include ${bvt/OBJS:.o=.d}
+-include ${bvt/OBJS:.o=.d} $Obvt/stdtest.d

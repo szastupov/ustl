@@ -57,6 +57,9 @@
 
 typedef size_t		uoff_t;		///< A type for storing offsets into blocks measured by size_t.
 typedef uint32_t	hashvalue_t;	///< Value type returned by the hash functions.
+typedef size_t		streamsize;	///< Size of stream data
+typedef uoff_t		streamoff;	///< Offset into a stream
+
 
 #if !defined(UINTPTR_MAX) || !defined(UINT32_C)
     #error "If you include stdint.h before ustl.h, define __STDC_LIMIT_MACROS and __STDC_CONSTANT_MACROS first"

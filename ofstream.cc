@@ -100,7 +100,7 @@ ifstream::ifstream (int Fd)
   m_Buffer (255),
   m_File (Fd)
 {
-    link (m_Buffer.data(), size_t(0));
+    link (m_Buffer.data(), streamsize(0));
 }
 
 /// Constructs a stream to read from \p filename.
@@ -110,7 +110,7 @@ ifstream::ifstream (const char* filename, openmode mode)
   m_File (filename, mode)
 {
     clear (m_File.rdstate());
-    link (m_Buffer.data(), size_t(0));
+    link (m_Buffer.data(), streamsize(0));
 }
 
 /// Reads at least \p n more bytes and returns available bytes.
@@ -122,14 +122,14 @@ ifstream::size_type ifstream::underflow (size_type n)
     const ssize_t freeSpace = m_Buffer.size() - pos();
     const ssize_t neededFreeSpace = max (n, m_Buffer.size() / 2);
     const size_t oughtToErase = Align (max (0, neededFreeSpace - freeSpace));
-    const size_t nToErase = min (pos(), oughtToErase);
+    const size_type nToErase = min (pos(), oughtToErase);
     m_Buffer.memlink::erase (m_Buffer.begin(), nToErase);
     const uoff_t oldPos (pos() - nToErase);
 
     size_type br = oldPos;
     if (m_Buffer.size() - br < n) {
 	m_Buffer.resize (br + neededFreeSpace);
-	link (m_Buffer.data(), size_t(0));
+	link (m_Buffer.data(), streamsize(0));
     }
     cout.flush();
 

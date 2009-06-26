@@ -144,7 +144,7 @@ int ostringstream::format (const char* fmt, ...)
 }
 
 /// Links to string \p l as resizable.
-void ostringstream::link (void* p, size_t n)
+void ostringstream::link (void* p, size_type n)
 {
     assert ((p || !n) && "The output string buffer must not be read-only");
     ostream::link (p, n);

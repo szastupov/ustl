@@ -50,7 +50,7 @@ void TestObjectVector (void)
     v.assign (cache.begin(), cache.end());
     v.erase (v.begin() + 5, 2);
     v.erase (v.end() - 1, 1);
-    v.erase (v.end(), size_t(0));
+    v.erase (v.end(), streamsize(0));
     cout.format ("---\nvector of %zu elements backwards:\n---\n", v.size());
     for_each (v.rbegin(), v.rend(), &PrintBlock);
     cout << "---\n";
