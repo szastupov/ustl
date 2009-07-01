@@ -405,12 +405,12 @@ inline typename Container::iterator upper_bound (Container& ctr, const LessThanC
 /// \ingroup SearchingAlgorithms
 ///
 template <typename Container>
-inline typename Container::const_iterator binary_search (const Container& ctr, const typename Container::value_type& value)
+inline bool binary_search (const Container& ctr, const typename Container::value_type& value)
 {
     return (binary_search (ctr.begin(), ctr.end(), value));
 }
 template <typename Container>
-inline typename Container::iterator binary_search (Container& ctr, const typename Container::value_type& value)
+inline bool binary_search (Container& ctr, const typename Container::value_type& value)
 {
     return (binary_search (ctr.begin(), ctr.end(), value));
 }

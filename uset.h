@@ -46,7 +46,7 @@ public:
     inline const_iterator	end (void) const	{ return (base_class::end()); }
     inline void			assign (const_iterator i1, const_iterator i2)	{ clear(); insert (i1, i2); }
     inline void			push_back (const_reference v)	{ insert (v); }
-    inline const_iterator	find (const_reference v) const	{ return (binary_search (begin(), end(), v)); }
+    inline const_iterator	find (const_reference v) const	{ const_iterator i = lower_bound (begin(), end(), v); return ((i != end() && *i == v) ? i : end()); }
     inline iterator		find (const_reference v)	{ return (const_cast<iterator>(const_cast<rcself_t>(*this).find (v))); }
     insertrv_t			insert (const_reference v);
     inline void			insert (const_iterator i1, const_iterator i2);

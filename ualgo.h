@@ -385,10 +385,10 @@ ForwardIterator lower_bound (ForwardIterator first, ForwardIterator last, const 
 /// \ingroup SearchingAlgorithms
 ///
 template <typename ForwardIterator, typename LessThanComparable>
-inline ForwardIterator binary_search (ForwardIterator first, ForwardIterator last, const LessThanComparable& value)
+inline bool binary_search (ForwardIterator first, ForwardIterator last, const LessThanComparable& value)
 {
     ForwardIterator found = lower_bound (first, last, value);
-    return ((found == last || value < *found) ? last : found);
+    return (found != last && !(value < *found));
 }
 
 /// Returns the furthermost iterator i in [first,last) such that for

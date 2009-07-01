@@ -221,10 +221,10 @@ ForwardIterator lower_bound (ForwardIterator first, ForwardIterator last, const 
 /// \ingroup PredicateAlgorithms
 ///
 template <typename ForwardIterator, typename T, typename StrictWeakOrdering>
-inline ForwardIterator binary_search (ForwardIterator first, ForwardIterator last, const T& value, StrictWeakOrdering comp)
+inline bool binary_search (ForwardIterator first, ForwardIterator last, const T& value, StrictWeakOrdering comp)
 {
     ForwardIterator found = lower_bound (first, last, value, comp);
-    return ((found == last || comp(value, *found)) ? last : found);
+    return (found != last && !comp(*found, value));
 }
 
 /// Returns the furthermost iterator i in [first,last) such that for
