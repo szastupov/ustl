@@ -30,7 +30,7 @@ public:
     inline explicit		memblock (const cmemlink& b)	: memlink (), m_Capacity (0) { assign (b); }
     inline explicit		memblock (const memlink& b)	: memlink (), m_Capacity (0) { assign (b); }
     inline			memblock (const memblock& b)	: memlink (), m_Capacity (0) { assign (b); }
-    inline virtual		~memblock (void) throw()	{ if (m_Capacity) free(data()); }
+    inline virtual		~memblock (void) throw()	{ deallocate(); }
     virtual void		unlink (void) throw();
     inline void			assign (const cmemlink& l)	{ assign (l.cdata(), l.readable_size()); }
     inline const memblock&	operator= (const cmemlink& l)	{ assign (l); return (*this); }
