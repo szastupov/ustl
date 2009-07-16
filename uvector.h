@@ -108,27 +108,26 @@ private:
 template <typename T>
 inline void vector<T>::reserve (size_type n, bool bExact)
 {
-    const size_type oldCapacity = capacity();
+    const size_type oldCapacity = m_Data.capacity() - m_Data.capacity() % sizeof(T);
     m_Data.reserve (n * sizeof(T), bExact);
-    if (capacity() > oldCapacity)
-	construct (begin() + oldCapacity, begin() + capacity());
+    construct (iterator (m_Data.begin() + oldCapacity), iterator (m_Data.begin() + m_Data.capacity()));
 }
 
 /// Resizes the vector to contain \p n elements.
 template <typename T>
 inline void vector<T>::resize (size_type n, bool bExact)
 {
-    if (m_Data.capacity() < n * sizeof(T))
+    const size_type nb = n * sizeof(T);
+    if (m_Data.capacity() < nb)
 	reserve (n, bExact);
-    m_Data.memlink::resize (n * sizeof(T));
+    m_Data.memlink::resize (nb);
 }
 
 /// Calls element destructors and frees storage.
 template <typename T>
 inline void vector<T>::deallocate (void) throw()
 {
-    if (!is_linked())
-	destroy (begin(), begin() + capacity());
+    destroy (begin(), iterator (m_Data.begin() + m_Data.capacity()));
     m_Data.deallocate();
 }
 
@@ -178,8 +177,7 @@ vector<T>::vector (const_iterator i1, const_iterator i2)
 template <typename T>
 inline vector<T>::~vector (void) throw()
 {
-    if (!is_linked())
-	destroy (begin(), begin() + capacity());
+    destroy (begin(), iterator (m_Data.begin() + m_Data.capacity()));
 }
 
 /// Copies the range [\p i1, \p i2]

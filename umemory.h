@@ -75,12 +75,9 @@ template <typename ForwardIterator>
 inline void construct (ForwardIterator first, ForwardIterator last)
 {
     typedef typename iterator_traits<ForwardIterator>::value_type value_type;
-    if (!numeric_limits<value_type>::is_integral) {
-	while (first < last) {
+    if (!numeric_limits<value_type>::is_integral && first)
+	for (--last; first <= last; ++first)
 	    construct (&*first);
-	    ++ first;
-	}
-    }
 }
 
 /// Calls the placement new on \p p.
@@ -104,7 +101,7 @@ inline void destroy (T* p) throw()
 // Helper templates to not instantiate anything for integral types.
 template <typename T>
 void dtors (T first, T last) throw()
-    { for (; first < last; ++ first) destroy (&*first); }
+    { for (--last; first <= last; ++first) destroy (&*first); }
 template <typename T, bool bIntegral>
 struct Sdtorsr {
     inline void operator()(T first, T last) throw() { dtors (first, last); }
@@ -154,11 +151,8 @@ inline pair<T*, ptrdiff_t> make_temporary_buffer (void* p, size_t n, const T* pt
 template <typename InputIterator, typename ForwardIterator>
 ForwardIterator uninitialized_copy (InputIterator first, InputIterator last, ForwardIterator result)
 {
-    while (first < last) {
+    for (; first < last; ++result, ++first)
 	construct (&*result, *first);
-	++ result;
-	++ first;
-    }
     return (result);
 }
 
@@ -168,11 +162,8 @@ ForwardIterator uninitialized_copy (InputIterator first, InputIterator last, For
 template <typename InputIterator, typename ForwardIterator>
 ForwardIterator uninitialized_copy_n (InputIterator first, size_t n, ForwardIterator result)
 {
-    while (n--) {
+    for (++n; --n; ++result, ++first)
 	construct (&*result, *first);
-	++ result;
-	++ first;
-    }
     return (result);
 }
 
@@ -182,10 +173,8 @@ ForwardIterator uninitialized_copy_n (InputIterator first, size_t n, ForwardIter
 template <typename ForwardIterator, typename T>
 void uninitialized_fill (ForwardIterator first, ForwardIterator last, const T& v)
 {
-    while (first < last) {
+    for (; first < last; ++first)
 	construct (&*first, v);
-	++ first;
-    }
 }
 
 /// Calls construct on all elements in [first, first + n) with value \p v.
@@ -194,10 +183,8 @@ void uninitialized_fill (ForwardIterator first, ForwardIterator last, const T& v
 template <typename ForwardIterator, typename T>
 ForwardIterator uninitialized_fill_n (ForwardIterator first, size_t n, const T& v)
 {
-    while (n--) {
+    for (++n; --n; ++first)
 	construct (&*first, v);
-	++ first;
-    }
     return (first);
 }
     
