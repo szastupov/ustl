@@ -138,7 +138,7 @@ ifstream::size_type ifstream::underflow (size_type n)
 	brn = m_File.readsome (m_Buffer.begin() + br, m_Buffer.size() - br);
     clear (m_File.rdstate());
 
-    m_Buffer[br] = string::c_Terminator;
+    m_Buffer[br] = 0;
     link (m_Buffer.data(), br);
     seek (oldPos);
     return (remaining());

@@ -46,7 +46,7 @@ void istream::text_write (ostringstream& os) const
 /// Reads a null-terminated string into \p str.
 void istream::read_strz (string& str)
 {
-    const_iterator zp = find (ipos(), end(), string::c_Terminator);
+    const_iterator zp = find (ipos(), end(), '\0');
     if (zp == end())
 	zp = ipos();
     const size_type strl = distance (ipos(), zp);
@@ -86,8 +86,7 @@ void ostream::align (size_type grain)
 /// Writes \p str as a null-terminated string.
 void ostream::write_strz (const char* str)
 {
-    write (str, strlen(str));
-    iwrite (string::c_Terminator);
+    write (str, strlen(str)+1);
 }
 
 /// Writes all available data from \p is.

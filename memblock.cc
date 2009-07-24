@@ -80,7 +80,7 @@ void memblock::reserve (size_type newSize, bool bExact)
     if ((newSize += minimumFreeCapacity()) <= m_Capacity)
 	return;
     pointer oldBlock (is_linked() ? NULL : data());
-    const size_t alignedSize (Align (newSize, c_PageSize));
+    const size_t alignedSize (Align (newSize, 64));
     if (!bExact)
 	newSize = alignedSize;
     pointer newBlock = (pointer) realloc (oldBlock, newSize);
@@ -137,9 +137,6 @@ void memblock::read_file (const char* filename)
     resize (fsize);
 }
 
-memblock::size_type memblock::minimumFreeCapacity (void) const throw()
-{
-    return (0);
-}
+memblock::size_type memblock::minimumFreeCapacity (void) const throw() { return (0); }
 
 } // namespace ustl

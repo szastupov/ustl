@@ -14,21 +14,18 @@ namespace ustl {
 //----------------------------------------------------------------------
 
 const uoff_t string::npos;
-const string::size_type string::size_Terminator;
-const string::value_type string::c_Terminator;
-const char string::empty_string[string::size_Terminator] = "";
 
 //----------------------------------------------------------------------
 
 /// Assigns itself the value of string \p s
 string::string (const string& s)
-: memblock ((s.size() + size_Terminator) & (s.is_linked()-1))	// Allocate with terminator if not linked (can't call virtuals from base ctor)
+: memblock ((s.size()+1) & (s.is_linked()-1))	// Allocate with terminator if not linked (can't call virtuals from base ctor)
 {
     if (s.is_linked())
 	relink (s.c_str(), s.size());
     else {
 	copy_n (s.begin(), size(), begin());
-	relink (begin(), size() - size_Terminator);	// --m_Size
+	relink (begin(), size()-1);	// --m_Size
     }
 }
 
@@ -42,11 +39,11 @@ string::string (const_pointer s)
 
 /// Creates a string of length \p n filled with character \p c.
 string::string (size_type n, value_type c)
-: memblock (n + size_Terminator)	// because base ctor can't call virtuals of this class
+: memblock (n+1)	// because base ctor can't call virtuals of this class
 {
-    relink (begin(), size() - size_Terminator);	// --m_Size
+    relink (begin(), size()-1);	// --m_Size
     fill_n (begin(), n, c);
-    at(n) = c_Terminator;
+    at(n) = 0;
 }
 
 /// Resize the string to \p n characters. New space contents is undefined.
@@ -55,7 +52,7 @@ void string::resize (size_type n)
     if (!(n | memblock::capacity()))
 	return (relink ("",0));
     memblock::resize (n);
-    at(n) = c_Terminator;
+    at(n) = 0;
 }
 
 /// Assigns itself the value of string \p s
@@ -68,7 +65,7 @@ void string::assign (const_pointer s)
 /// Assigns itself the value of string \p s of length \p len.
 void string::assign (const_pointer s, size_type len)
 {
-    while (len && s[len - 1] == c_Terminator)
+    while (len && s[len - 1] == 0)
 	-- len;
     resize (len);
     copy (s, len);
@@ -84,7 +81,7 @@ void string::append (const_pointer s)
 /// Appends to itself the value of string \p s of length \p len.
 void string::append (const_pointer s, size_type len)
 {
-    while (len && s[len - 1] == c_Terminator)
+    while (len && s[len - 1] == 0)
 	-- len;
     resize (size() + len);
     copy_n (s, len, end() - len);
@@ -103,10 +100,10 @@ string::size_type string::copyto (pointer p, size_type n, const_iterator start) 
     assert (p && n);
     if (!start)
 	start = begin();
-    const size_type btc = min(n - size_Terminator, size());
+    const size_type btc = min(n-1, size());
     copy_n (start, btc, p);
-    p[btc] = c_Terminator;
-    return (btc + size_Terminator);
+    p[btc] = 0;
+    return (btc+1);
 }
 
 /// Returns comparison value regarding string \p s.
@@ -151,7 +148,7 @@ void string::insert (const uoff_t ipo, wchar_t c, size_type n)
     iterator ip (iat(ipo));
     ip = iterator (memblock::insert (memblock::iterator(ip), n * Utf8Bytes(c)));
     fill_n (utf8out (ip), n, c);
-    *end() = c_Terminator;
+    *end() = 0;
 }
 
 /// Inserts sequence of wide characters at \p ipo (byte position from a find call)
@@ -166,7 +163,7 @@ void string::insert (const uoff_t ipo, const wchar_t* first, const wchar_t* last
     for (uoff_t j = 0; j < n; ++ j)
 	for (uoff_t k = 0; k < nti; ++ k, ++ uout)
 	    *uout = first[k];
-    *end() = c_Terminator;
+    *end() = 0;
 }
 
 /// Inserts character \p c into this string at \p start.
@@ -174,7 +171,7 @@ string::iterator string::insert (iterator start, const_reference c, size_type n)
 {
     start = iterator (memblock::insert (memblock::iterator(start), n));
     fill_n (start, n, c);
-    *end() = c_Terminator;
+    *end() = 0;
     return (start);
 }
 
@@ -193,7 +190,7 @@ string::iterator string::insert (iterator start, const_pointer first, const_poin
     assert ((first < begin() || first >= end() || size() + abs_distance(first,last) < capacity()) && "Insertion of self with autoresize is not supported");
     start = iterator (memblock::insert (memblock::iterator(start), distance(first, last) * n));
     fill (memblock::iterator(start), first, distance(first, last), n);
-    *end() = c_Terminator;
+    *end() = 0;
     return (start);
 }
 
@@ -201,7 +198,7 @@ string::iterator string::insert (iterator start, const_pointer first, const_poin
 string::iterator string::erase (iterator ep, size_type n)
 {
     string::iterator rv = memblock::erase (memblock::iterator(ep), n);
-    *end() = c_Terminator;
+    *end() = 0;
     return (rv);
 }
 
@@ -231,7 +228,7 @@ void string::replace (iterator first, iterator last, const_pointer i1, const_poi
     else if (bte < bti)
 	first = iterator (memblock::insert (memblock::iterator(first), bti - bte));
     fill (memblock::iterator(first), i1, distance(i1, i2), n);
-    *end() = c_Terminator;
+    *end() = 0;
 }
 
 /// Returns the offset of the first occurence of \p c after \p pos.
@@ -393,9 +390,6 @@ void string::write (ostream& os) const
     return (h);
 }
 
-string::size_type string::minimumFreeCapacity (void) const throw()
-{
-    return (size_Terminator);
-}
+string::size_type string::minimumFreeCapacity (void) const throw() { return (1); }
 
 } // namespace ustl

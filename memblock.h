@@ -22,8 +22,6 @@ namespace ustl {
 ///
 class memblock : public memlink {
 public:
-    static const size_type	c_PageSize = 64;	///< The default minimum allocation unit.
-public:
     inline			memblock (void)			: memlink (), m_Capacity (0) { }
     inline			memblock (const void* p, size_type n) : memlink (), m_Capacity (0) { assign (p, n); }
     inline explicit		memblock (size_type n)		: memlink (), m_Capacity (0) { resize (n); }

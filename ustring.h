@@ -55,11 +55,7 @@ public:
     typedef ::ustl::reverse_iterator<iterator>		reverse_iterator;
     typedef ::ustl::reverse_iterator<const_iterator>	const_reverse_iterator;
     typedef utf8in_iterator<const_iterator>		utf8_iterator;
-public:
-    static const uoff_t npos = static_cast<uoff_t>(-1);			///< Value that means the end of string.
-    static const value_type c_Terminator = 0;				///< String terminator
-    static const size_type size_Terminator = sizeof(c_Terminator);	///< Most systems terminate strings with '\\0'
-    static const char empty_string [size_Terminator];			///< An empty string.
+    static const uoff_t npos = static_cast<uoff_t>(-1);	///< Value that means the end of string.
 public:
     inline			string (void)		: memblock () { relink ("",0); }
 				string (const string& s);
@@ -68,7 +64,7 @@ public:
 				string (const_pointer s);
     inline			string (const_pointer s, size_type len);
     inline			string (const_pointer s1, const_pointer s2);
-    explicit			string (size_type n, value_type c = c_Terminator);
+    explicit			string (size_type n, value_type c = 0);
     inline pointer		data (void)		{ return (string::pointer (memblock::data())); }
     inline const_pointer	c_str (void) const	{ return (string::const_pointer (memblock::cdata())); }
     inline size_type		max_size (void) const	{ size_type s (memblock::max_size()); return (s - !!s); }
@@ -215,14 +211,14 @@ inline string::string (const_pointer s1, const_pointer s2)
 /// Returns the pointer to the first character.
 inline string::operator const string::value_type* (void) const
 {
-    assert ((!end() || *end() == c_Terminator) && "This string is linked to data that is not 0-terminated. This may cause serious security problems. Please assign the data instead of linking.");
+    assert ((!end() || !*end()) && "This string is linked to data that is not 0-terminated. This may cause serious security problems. Please assign the data instead of linking.");
     return (begin());
 }
 
 /// Returns the pointer to the first character.
 inline string::operator string::value_type* (void)
 {
-    assert ((end() && *end() == c_Terminator) && "This string is linked to data that is not 0-terminated. This may cause serious security problems. Please assign the data instead of linking.");
+    assert ((end() && !*end()) && "This string is linked to data that is not 0-terminated. This may cause serious security problems. Please assign the data instead of linking.");
     return (begin());
 }
 
