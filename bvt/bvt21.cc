@@ -82,7 +82,7 @@ void TestUtility (void)
     cout << endl;
     TestBswap (uint16_t (0x1234));
     TestBswap (uint32_t (0x12345678));
-    #ifdef HAVE_INT64_T
+    #if HAVE_INT64_T
 	TestBswap (uint64_t (UINT64_C(0x123456789ABCDEF0)));
     #else
 	cout << "No 64bit types available on this platform" << endl;

@@ -73,7 +73,7 @@ _NUMERIC_LIMITS (wchar_t,	0,		WCHAR_MAX,	false,	true,	true);
 _NUMERIC_LIMITS (float,		FLT_MIN,	FLT_MAX,	true,	false,	true);
 _NUMERIC_LIMITS (double,	DBL_MIN,	DBL_MAX,	true,	false,	true);
 _NUMERIC_LIMITS (long double,	LDBL_MIN,	LDBL_MAX,	true,	false,	true);
-#ifdef HAVE_LONG_LONG
+#if HAVE_LONG_LONG
 _NUMERIC_LIMITS (long long,	LLONG_MIN,	LLONG_MAX,	true,	true,	true);
 _NUMERIC_LIMITS (unsigned long long,	0,	ULLONG_MAX,	false,	true,	true);
 #endif

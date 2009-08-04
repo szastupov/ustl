@@ -13,7 +13,7 @@
 #endif
 #include "bktrace.h"
 
-#ifdef WITHOUT_LIBSTDCPP
+#if WITHOUT_LIBSTDCPP
 namespace std {
 /// If you write a replacement terminate handler, it must be of this type.
 typedef void (*terminate_handler) (void);
@@ -53,7 +53,7 @@ enum {
 ///
 /// \brief Base class for exceptions, equivalent to std::exception.
 ///
-#ifdef WITHOUT_LIBSTDCPP
+#if WITHOUT_LIBSTDCPP
 class exception {
 #else
 class exception : public std::exception {
@@ -99,7 +99,7 @@ public:
 ///
 /// \brief Exception thrown on memory allocation failure by memblock::reserve.
 ///
-#ifdef WITHOUT_LIBSTDCPP
+#if WITHOUT_LIBSTDCPP
 class bad_alloc : public exception {
 #else
 class bad_alloc : public std::bad_alloc, public exception {

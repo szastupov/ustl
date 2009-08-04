@@ -231,7 +231,7 @@ void fill_n32_fast (uint32_t* dest, size_t count, uint32_t v) throw() { stosv (d
 /// Exchanges ranges [first, middle) and [middle, last)
 void rotate_fast (void* first, void* middle, void* last) throw()
 {
-#ifdef HAVE_ALLOCA_H
+#if HAVE_ALLOCA_H
     const size_t half1 (distance (first, middle)), half2 (distance (middle, last));
     const size_t hmin (min (half1, half2));
     if (!hmin)

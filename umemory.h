@@ -7,7 +7,7 @@
 #define UMEMORY_H_4AB5B0DB5BF09140541409CC47BCD17A
 
 #include "unew.h"
-#ifdef HAVE_ALLOCA_H
+#if HAVE_ALLOCA_H
     #include <alloca.h>
 #else
     #include <stdlib.h>
@@ -135,7 +135,7 @@ inline pair<T*, ptrdiff_t> make_temporary_buffer (void* p, size_t n, const T* pt
     return (make_pair (cast_to_type(p,ptype), ptrdiff_t(p ? n : 0)));
 }
 
-#ifdef HAVE_ALLOCA_H
+#if HAVE_ALLOCA_H
     /// \brief Allocates a temporary buffer, if possible.
     /// \ingroup RawStorageAlgorithms
     #define get_temporary_buffer(size, ptype)	make_temporary_buffer (alloca(size_of_elements(size, ptype)), size, ptype)

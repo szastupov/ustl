@@ -15,7 +15,7 @@
 #endif
 #define __STDC_LIMIT_MACROS	// For WCHAR_MIN and WCHAR_MAX in stdint.
 #define __STDC_CONSTANT_MACROS	// For UINT??_C macros to avoid using L and UL suffixes on constants.
-#ifdef HAVE_STDINT_H
+#if HAVE_STDINT_H
     #include <stdint.h>
 #elif HAVE_INTTYPES_H
     #include <inttypes.h>
@@ -25,7 +25,7 @@
 #include <stddef.h>		// For ptrdiff_t, size_t
 #include <limits.h>
 #include <float.h>
-#ifdef HAVE_SYS_TYPES_H
+#if HAVE_SYS_TYPES_H
     #include <sys/types.h>
 #endif
 #ifndef SIZE_MAX
@@ -42,7 +42,7 @@
 	#define WCHAR_MAX	CHAR_MAX
     #endif
 #endif
-#ifdef HAVE_LONG_LONG
+#if HAVE_LONG_LONG
     #ifndef LLONG_MAX
 	#define ULLONG_MAX	UINT64_C(0xFFFFFFFFFFFFFFFF)
 	#define LLONG_MAX	INT64_C(0x7FFFFFFFFFFFFFFF)

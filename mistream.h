@@ -11,7 +11,7 @@
 #include "strmsize.h"
 #include "utf8.h"
 #include "uios.h"
-#ifdef WANT_STREAM_BOUNDS_CHECKING
+#if WANT_STREAM_BOUNDS_CHECKING
     #include <typeinfo>
 #endif
 
@@ -202,7 +202,7 @@ inline bool istream::verify_remaining (const char* op, const char* type, streams
 /// Sets the current read position to \p newPos
 inline void istream::seek (uoff_t newPos)
 {
-#ifdef WANT_STREAM_BOUNDS_CHECKING
+#if WANT_STREAM_BOUNDS_CHECKING
     if (newPos > size())
 	throw stream_bounds_exception ("seekg", "byte", pos(), newPos - pos(), size());
 #else
@@ -257,7 +257,7 @@ template <typename T>
 inline void istream::iread (T& v)
 {
     assert (aligned (alignof (v)));
-#ifdef WANT_STREAM_BOUNDS_CHECKING
+#if WANT_STREAM_BOUNDS_CHECKING
     if (!verify_remaining ("read", typeid(v).name(), sizeof(T)))
 	return;
 #else
@@ -277,7 +277,7 @@ inline void istream::swap (istream& is)
 /// Reads \p n bytes into \p buffer.
 inline void istream::read (void* buffer, size_type n)
 {
-#ifdef WANT_STREAM_BOUNDS_CHECKING
+#if WANT_STREAM_BOUNDS_CHECKING
     if (!verify_remaining ("read", "binary data", n))
 	return;
 #else

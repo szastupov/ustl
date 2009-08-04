@@ -14,7 +14,7 @@ void* tmalloc (size_t n) throw (ustl::bad_alloc) __attribute__((malloc));
 /// Just like free, but doesn't crash when given a NULL.
 inline void nfree (void* p) throw() { if (p) free (p); }
 
-#ifdef WITHOUT_LIBSTDCPP
+#if WITHOUT_LIBSTDCPP
 
 //
 // These are replaceable signatures:

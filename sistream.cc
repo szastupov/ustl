@@ -63,7 +63,7 @@ inline void str_to_num (issiter_t i, issiter_t* iend, uint8_t base, T& v)
     { v = strtol (i, const_cast<char**>(iend), base); }
 template <> inline void str_to_num (issiter_t i, issiter_t* iend, uint8_t, double& v)
     { v = strtod (i, const_cast<char**>(iend)); }
-#ifdef HAVE_LONG_LONG
+#if HAVE_LONG_LONG
 template <> inline void str_to_num (issiter_t i, issiter_t* iend, uint8_t base, long long& v)
     { v = strtoll (i, const_cast<char**>(iend), base); }
 #endif
