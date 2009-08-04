@@ -36,7 +36,7 @@ void exception::info (string& msgbuf, const char*) const throw()
 void exception::read (istream& is)
 {
     uint32_t stmSize;
-    xfmt_t fmt;
+    xfmt_t fmt = xfmt_Exception;
     is >> fmt >> stmSize >> m_Backtrace;
     assert (fmt == m_Format && "The saved exception is of a different type.");
     assert ((stmSize + 8) - exception::stream_size() <= is.remaining() && "The saved exception data is corrupt.");

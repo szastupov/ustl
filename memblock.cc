@@ -123,7 +123,7 @@ memblock::iterator memblock::erase (iterator start, size_type n)
 /// Reads the object from stream \p s
 void memblock::read (istream& is)
 {
-    written_size_type n;
+    written_size_type n = 0;
     is >> n;
     if (!is.verify_remaining ("read", "ustl::memblock", n))
 	return;

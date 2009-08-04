@@ -114,7 +114,7 @@ istream& container_read (istream& is, Container& v)
     typedef typename Container::value_type value_type;
     typedef typename Container::iterator iterator;
     typedef typename Container::written_size_type written_size_type;
-    written_size_type n;
+    written_size_type n = 0;
     is >> n;
     const size_t expectedSize = n * stream_size_of(value_type());
     if (!is.verify_remaining ("read", typeid(v).name(), expectedSize))
