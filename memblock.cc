@@ -12,6 +12,14 @@
 
 namespace ustl {
 
+memblock::memblock (void)			: memlink (), m_Capacity (0) { }
+memblock::memblock (const void* p, size_type n) : memlink (), m_Capacity (0) { assign (p, n); }
+memblock::memblock (size_type n)		: memlink (), m_Capacity (0) { resize (n); }
+memblock::memblock (const cmemlink& b)		: memlink (), m_Capacity (0) { assign (b); }
+memblock::memblock (const memlink& b)		: memlink (), m_Capacity (0) { assign (b); }
+memblock::memblock (const memblock& b)		: memlink (), m_Capacity (0) { assign (b); }
+memblock::~memblock (void) throw()		{ deallocate(); }
+
 void memblock::unlink (void) throw()
 {
     m_Capacity = 0;

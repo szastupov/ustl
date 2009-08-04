@@ -22,13 +22,13 @@ namespace ustl {
 ///
 class memblock : public memlink {
 public:
-    inline			memblock (void)			: memlink (), m_Capacity (0) { }
-    inline			memblock (const void* p, size_type n) : memlink (), m_Capacity (0) { assign (p, n); }
-    inline explicit		memblock (size_type n)		: memlink (), m_Capacity (0) { resize (n); }
-    inline explicit		memblock (const cmemlink& b)	: memlink (), m_Capacity (0) { assign (b); }
-    inline explicit		memblock (const memlink& b)	: memlink (), m_Capacity (0) { assign (b); }
-    inline			memblock (const memblock& b)	: memlink (), m_Capacity (0) { assign (b); }
-    inline virtual		~memblock (void) throw()	{ deallocate(); }
+				memblock (void);
+				memblock (const void* p, size_type n);
+    explicit			memblock (size_type n);
+    explicit			memblock (const cmemlink& b);
+    explicit			memblock (const memlink& b);
+				memblock (const memblock& b);
+    virtual			~memblock (void) throw();
     virtual void		unlink (void) throw();
     inline void			assign (const cmemlink& l)	{ assign (l.cdata(), l.readable_size()); }
     inline const memblock&	operator= (const cmemlink& l)	{ assign (l); return (*this); }
