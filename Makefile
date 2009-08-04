@@ -17,13 +17,17 @@ ifdef BUILD_SHARED
 SLIBL	:= $O$(call slib_lnk,${NAME})
 SLIBS	:= $O$(call slib_son,${NAME})
 SLIBT	:= $O$(call slib_tgt,${NAME})
-ALLTGTS	+= ${SLIBT} ${SLIBS} ${SLIBL}
+SLINKS	:= ${SLIBL}
+ifneq (${SLIBS},${SLIBT})
+SLINKS	+= ${SLIBS}
+endif
+ALLTGTS	+= ${SLIBT} ${SLINKS}
 
-all:	${SLIBT} ${SLIBS} ${SLIBL}
+all:	${SLIBT} ${SLINKS}
 ${SLIBT}:	${OBJS}
 	@echo "Linking $(notdir $@) ..."
 	@${LD} -fPIC ${LDFLAGS} $(call slib_flags,$(subst $O,,${SLIBS})) -o $@ $^ ${LIBS}
-${SLIBS} ${SLIBL}:	${SLIBT}
+${SLINKS}:	${SLIBT}
 	@(cd $(dir $@); rm -f $(notdir $@); ln -s $(notdir $<) $(notdir $@))
 
 endif
@@ -80,13 +84,12 @@ endif
 ifdef LIBDIR
 ifdef BUILD_SHARED
 LIBTI	:= ${LIBDIR}/$(notdir ${SLIBT})
-LIBLI	:= ${LIBDIR}/$(notdir ${SLIBS})
-LIBSI	:= ${LIBDIR}/$(notdir ${SLIBL})
-install:	${LIBTI} ${LIBLI} ${LIBSI}
+LIBLI	:= $(addprefix ${LIBDIR}/,$(notdir ${SLINKS}))
+install:	${LIBTI} ${LIBLI}
 ${LIBTI}:	${SLIBT}
 	@echo "Installing $@ ..."
 	@${INSTALLLIB} $< $@
-${LIBLI} ${LIBSI}: ${LIBTI}
+${LIBLI}: ${LIBTI}
 	@(cd ${LIBDIR}; rm -f $@; ln -s $(notdir $<) $(notdir $@))
 endif
 ifdef BUILD_STATIC
