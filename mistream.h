@@ -53,13 +53,13 @@ class string;
 /// 
 /// Example code:
 /// \code
-///	memblock b;
-///	b.read_file ("test.file");
-///	ostream is (b);
-///	is >> boolVar >> ios::talign<int>();
-///	is >> intVar >> floatVar;
-///	is.read (binaryData, binaryDataSize);
-///	is.align();
+///     memblock b;
+///     b.read_file ("test.file");
+///     ostream is (b);
+///     is >> boolVar >> ios::talign<int>();
+///     is >> intVar >> floatVar;
+///     is.read (binaryData, binaryDataSize);
+///     is.align();
 /// \endcode
 ///
 class istream : public cmemlink, public ios_base {

@@ -14,6 +14,7 @@ struct stat;
 namespace ustl {
 
 /// \class fstream fstream.h ustl.h
+/// \ingroup DeviceStreams
 ///
 /// \brief Implements file operations.
 ///

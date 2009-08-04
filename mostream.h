@@ -46,7 +46,7 @@ class string;
 ///     os.write (binaryData, binaryDataSize);
 ///     os.align();
 ///     b.resize (os.pos());
-///	b.write_file ("test.file");
+///     b.write_file ("test.file");
 /// \endcode
 ///
 class ostream : public memlink, public ios_base {
