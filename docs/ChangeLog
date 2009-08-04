@@ -1,3 +1,25 @@
+2009-08-04 Release 1.3
+	* Some API changes to comply with the current C++ standard
+	    binary_search algo returns true, not the found iterator
+	    stack and queue are now type templates, not container adaptors.
+	    Correctly set eof and fail flags in all stream functions
+		This allows the use of the non-exception path in streams
+		verify_remaining will no longer throw unless exceptions are on in the stream
+		verify_remaining will return false if space is insufficient and set flags
+		exceptions are on by default in istream and ostream and off elsewhere
+	    Updated return values of stream functions to match the standard
+	    what() on message exceptions returns the text passed to the ctor
+	    set insert also returns an iterator/bool pair
+	    map insert now returns an iterator,bool pair
+	* streamsize and streamoff types defined
+	* Added string resize with a value arg
+	* Added standalone getline
+	* Added numeric_limits digits and digits10
+	* Name demangling is now an option, off by default, removing ~20k
+	* A new and improved nonrecursive make system
+	* Numerous small size and speed optimizations
+	* A few minor bugfixes
+
 2008-02-17 Release 1.2
 	* Fixed ifstream readsome to work correctly on nonblocking fds.
 	* Yet another try at fixing noalias rearrangments.
