@@ -9,7 +9,7 @@
     <meta name="Description" content="API and usage description for uSTL, a size-optimized STL implementation" />
     <meta name="Keywords" content="C++, STL, template, bloat, optimization" />
     <meta name="author" content="Mike Sharov" />
-    <meta name="date" content="2009-03-04" />
+    <meta name="date" content="2009-08-04" />
 </head>
 <body>
 
@@ -66,16 +66,16 @@ turned off with an older version. C++ support is vastly improved in
 the recent compiler versions, and I strongly recommend gcc 4 for best
 possible code.
 </p><p>
-The latest version of uSTL can always be downloaded from its SourceForge <a
-href="https://sourceforge.net/project/showfiles.php?group_id=76798">project
-files page</a>. If you like living dangerously, you can pull the working branch
-directly from <a href="http://www.assembla.com/spaces/ustl">git://git.assembla.com/ustl.git</a>.
+The latest version of uSTL can always be downloaded from its SourceForge
+<a href="https://sourceforge.net/project/showfiles.php?group_id=76798">project files page</a>.
+If you like living dangerously, you can pull the working branch directly from
+<a href="http://ustl.git.sourceforge.net/git/gitweb.cgi?p=ustl">git://ustl.git.sourceforge.net/gitroot/ustl</a>.
 The mainline source should build on any unix-based system, including Linux,
-BSD, MacOS, SunOS, and Solaris. A separate port for Symbian OS is maintained by <a
-href="http://www.penrillian.com/index.php?option=com_content&amp;task=view&amp;id=82&amp;Itemid=73">Penrillian</a>.
-Windows-based systems are not, and will not be supported by the
-mainline. However, if you make a port, I'll be happy to mention it here.
-After unpacking:
+BSD, MacOS, SunOS, and Solaris. A separate port for Symbian OS is maintained by
+<a href="http://www.penrillian.com/index.php?option=com_content&amp;task=view&amp;id=82&amp;Itemid=73">Penrillian</a>.
+Windows-based systems and weird embedded platforms, are not, and will
+not be supported by the mainline. However, if you make a port, I'll be
+happy to mention it here. After unpacking:
 </p><pre>
 ./configure
 make install
@@ -623,103 +623,109 @@ int main (void)
     return (EXIT_SUCCESS);
 }
 </pre><p>
-Feel free to compile it and see for yourself. I'm compiling on an Athlon
-64 with gcc 4.2.1 and <kbd>-O3 -march=athlon64 -DNDEBUG=1</kbd>. The
-libstdc++ version is linked implicitly with it, and uSTL version is linked
-with gcc (instead of g++) and <kbd>-lustl</kbd>. Both executables are stripped.
+Feel free to compile it and see for yourself. I'm compiling on a Core
+i7 with gcc 4.4.1 and <kbd>-Os -DNDEBUG=1</kbd>. The libstdc++ version
+is linked implicitly with it, and uSTL version is linked with gcc
+(instead of g++) and <kbd>-lustl</kbd>. Both executables are stripped.
 The libstdc++ version looks like this:
 </p><pre>
 % ls -l std/tes
-6856 tes*
+7040 tes*
 % size std/tes
 text    data     bss     dec     hex filename
-3154     608       8    3770     eba tes
+3311	 632	  16    3959     f77 tes
 % size -A std/tes.o
+
 std/tes.o  :
 section                                                                                 size   addr
-_ZNSt6vectorIiSaIiEE13_M_insert_auxEN9__gnu_cxx17__normal_iteratorIPiS1_EERKi              8      0
-_ZNSt6vectorIiSaIiEE14_M_fill_insertEN9__gnu_cxx17__normal_iteratorIPiS1_EEmRKi            8      0
-.text                                                                                    328      0
+.group                                                                                     8      0
+.group                                                                                     8      0
+.group                                                                                     8      0
+.group                                                                                     8      0
+.group                                                                                     8      0
+.group                                                                                     8      0
+.text                                                                                    285      0
 .data                                                                                      0      0
 .bss                                                                                       0      0
+.text._ZSt13copy_backwardIPiS0_ET0_T_S2_S1_                                               33      0
+.text._ZSt13__copy_move_aILb0EPiS0_ET1_T0_S2_S1_                                          42      0
+.text._ZNKSt6vectorIiSaIiEE12_M_check_lenEmPKc                                            82      0
+.text._ZNSt12_Vector_baseIiSaIiEE11_M_allocateEm                                          47      0
 .rodata.str1.1                                                                            45      0
-.text._ZNSt6vectorIiSaIiEE13_M_insert_auxEN9__gnu_cxx17__normal_iteratorIPiS1_EERKi      351      0
-.text._ZNSt6vectorIiSaIiEE14_M_fill_insertEN9__gnu_cxx17__normal_iteratorIPiS1_EEmRKi    546      0
-.gcc_except_table                                                                         15      0
-.eh_frame                                                                                144      0
+.text._ZNSt6vectorIiSaIiEE14_M_fill_insertEN9__gnu_cxx17__normal_iteratorIPiS1_EEmRKi    366      0
+.text._ZNSt6vectorIiSaIiEE13_M_insert_auxEN9__gnu_cxx17__normal_iteratorIPiS1_EERKi      204      0
+.gcc_except_table                                                                         20      0
 .comment                                                                                  18      0
 .note.GNU-stack                                                                            0      0
-Total                                                                                   1463
+.eh_frame                                                                                304      0
+Total                                                                                   1494
 </pre><p>
 The uSTL version looks like this:
 </p><pre>
 % ls -l ustl/tes
-5672 tes*
+5760 tes*
 % size ustl/tes
 text    data     bss     dec     hex filename
-2380     600       8    2988     bac tes
+2302     616      16    2934     b76 tes
 % size -A ustl/tes.o
 ustl/tes.o  :
 section             size   addr
-.text                258      0
+.text                217      0
 .data                  0      0
 .bss                   0      0
-.gcc_except_table     45      0
-.eh_frame             72      0
+.gcc_except_table     19      0
 .comment              18      0
 .note.GNU-stack        0      0
-Total                393
+.eh_frame             64      0
+Total                318
 </pre><p>
 Let's see what's going on here. The .text size in the std version is
-27% larger, indicating more inlined functionality. This version of gcc
-libstdc++ instantiates two vector functions, _insert_aux (used by insert
-and push_back) of 351 bytes and _fill_insert of 546 bytes. (Previous
-earlier gcc versions (4.0.2) also instantiated extra erase functions of 74
-and 80 bytes, which now appear to be inlined) That's 967 bytes total for
-just one vector type. These functions will become larger for containers
-with objects, but about 1k in savings is a good measure.  The uSTL version
-inlines everything and calls memblock functions instead.
+31% larger, indicating more inlined functionality. This version of gcc
+libstdc++ instantiates four vector functions and two copy functions,
+totalling That's 774 bytes total for just one vector type. These
+functions will become larger for containers with objects, but about
+1k in savings that you see as the difference in execuable size is a
+good measure. The uSTL version inlines everything and calls memblock
+functions instead.
 </p><p>
-1k doesn't seem like much, but consider that you get it for <em>every type
-of container you instantiate</em>! An int vector here, a float vector
-here, a bunch of object containers there, and before you know it you
-are using half your executable just for container overhead.
+1k doesn't seem like much, but consider that you get it for <em>every
+type of container you instantiate</em>! An int vector here, a float
+vector here, a bunch of object containers there, and before you know it
+you are using half your executable just for container overhead.
 </p><p>
 But wait, there is more! Let's look at the total memory footprint:
 </p><pre>
 % ldd std/tes
 libstdc++.so.6 =&gt; /usr/lib/libstdc++.so.6
-libm.so.6 =&gt; /lib/tls/libm.so.6
+libm.so.6 =&gt; /lib/libm.so.6
 libgcc_s.so.1 =&gt; /usr/lib/libgcc_s.so.1
-libc.so.6 =&gt; /lib/tls/libc.so.6
+libc.so.6 =&gt; /lib/libc.so.6
 /lib64/ld-linux-x86-64.so.2
 
 % ldd ustl/tes
 libustl.so.1 =&gt; /usr/local/lib/libustl.so.1
-libc.so.6 =&gt; /lib64/tls/libc.so.6
-libgcc_s.so.1 =&gt; /usr/lib64/libgcc_s.so.1
+libc.so.6 =&gt; /lib/libc.so.6
+libgcc_s.so.1 =&gt; /usr/lib/libgcc_s.so.1
 /lib64/ld-linux-x86-64.so.2
 
 % size of each lib
-   text    data     bss     dec     hex filename
-1248112   19928   18536 1286576  13a1b0 /lib/libc-2.3.6.so
- 543701     960      72  544733   84fdd /lib/libm-2.3.6.so
-  45598     840     536   46974    b77e /usr/lib/libgcc_s.so.1
- 773236   33232   76360  882828   d788c /usr/lib/libstdc++.so.6.0.9
- 121898    7576   66032  195506   2fbb2 libustl.so.1.1.0
+   text   data    bss      dec  filename
+1346264  17960  19136  1383360  libc.so.6
+ 980584  33880  84664  1099128  libstdc++.so.6
+ 524718    720     72   525510  libm.so.6
+ 123386   7752  73248   204386  libustl.so.1
+  86645    936    632    88213  libgcc_s.so.1
 </pre><p>
-After adding up the numbers (from the dec column) std/tes loads 2761111
-bytes of shared libraries and ustl/tes loads 1529056 bytes, saving
-1232055 bytes or 45%! (It should be noted that libm quadrupled in size
-between 2.3.5 and 2.3.6, contributing quite a bit to this) If you don't
-count libc, measuring only the C++-specific overhead, libstdc++ loads
-1474535 while libustl only 242480, <em>six times less</em>! Finally,
-much of uSTL's size comes from gcc's support libraries; if you compile
-uSTL without the <kbd>NOLIBSTDCPP</kbd> option in Config.mk, then you'll
-see that it only takes up 80697 bytes, of which only 25632 are used
-by .text, meaning that only about a third of the library size is my
-fault. gcc developers will have to reduce the size of libsupc++ and
-libgcc_eh before any further size reduction would be practical.
+After adding up the numbers (from the dec column) std/tes loads
+3100170 bytes of shared libraries and ustl/tes loads 1678893 bytes,
+saving 1421277 bytes or 45%! If you don't count libc, measuring only the
+C++-specific overhead, libstdc++ loads 1716810 while libustl only 295533,
+<em>six times less</em>! Finally, much of uSTL's size comes from gcc's
+support libraries; if you compile uSTL configured <kbd>--with-libstdc++<kbd>
+option, then you'll see that it only takes up 73592 bytes, of which only
+23014 are used by .text, meaning that only about a third of the library
+size is my fault. gcc developers will have to reduce the size of libsupc++
+before any further size reduction would be practical.
 </p>
 <h2><a name="Contact">Bug reporting</a></h2>
 <p>
@@ -740,4 +746,3 @@ standard bugtracker.
 </div>
 </body>
 </html>
-
