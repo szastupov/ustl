@@ -339,6 +339,16 @@ inline bool TestAndSet (int* pm)
 #endif
 }
 
+inline uint32_t NextPow2 (uint32_t v)
+{
+    asm("dec\t%1\n\t"
+	"mov\t$1,%0\n\t"
+	"bsr\t%1,%1\n\t"
+	"inc\t%1\n\t"
+	"rol\t%b1,%0":"=&r"(v):"c"(v));
+    return (v);
+}
+
 /// \brief This template is to be used for dereferencing a type-punned pointer without a warning.
 ///
 /// When casting a local variable to an unrelated type through a pointer (for
