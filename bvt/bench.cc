@@ -14,21 +14,20 @@ using namespace ustl;
 #if __i386__ || __x86_64__
 extern "C" void movsb_copy (const char* src, size_t nBytes, char* dest)
 {
-    asm volatile (
-	"rep\tmovsb"
-	: "=&S"(src), "=&D"(dest)
-	: "0"(src), "1"(dest), "c"(nBytes)
-	: "memory");
+    asm volatile ("rep\tmovsb":"+S"(src),"+D"(dest):"c"(nBytes):"memory");
 }
 
 extern "C" void movsd_copy (const char* src, size_t nBytes, char* dest)
 {
-    asm volatile (
-	"rep\tmovsl"
-	: "=&S"(src), "=&D"(dest)
-	: "0"(src), "1"(dest), "c"(nBytes / 4)
-	: "memory");
+    asm volatile ("rep\tmovsl":"+S"(src),"+D"(dest):"c"(nBytes/4):"memory");
 }
+
+#if __x86_64__
+extern "C" void movsq_copy (const char* src, size_t nBytes, char* dest)
+{
+    asm volatile ("rep\tmovsq":"+S"(src),"+D"(dest):"c"(nBytes/8):"memory");
+}
+#endif
 
 extern "C" void risc_copy (const char* src, size_t nBytes, char* dest)
 {
@@ -299,6 +298,9 @@ int main (void)
 #endif
     TestCopyFunction ("movsb_copy\t", &movsb_copy);
     TestCopyFunction ("movsd_copy\t", &movsd_copy);
+#if __x86_64__
+    TestCopyFunction ("movsq_copy\t", &movsq_copy);
+#endif
     TestCopyFunction ("risc_copy\t", &risc_copy);
     TestCopyFunction ("unroll_copy\t", &unroll_copy);
 #endif
