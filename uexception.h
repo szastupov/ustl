@@ -88,8 +88,14 @@ private:
 ///
 class bad_cast : public exception {
 public:
-    inline explicit		bad_cast (void) throw() : exception() {}
-    inline virtual const char*	what (void) const throw() { return ("bad cast"); }
+    inline 			bad_cast (void) throw()		: exception() {}
+    inline virtual const char*	what (void) const throw()	{ return ("bad cast"); }
+};
+
+class bad_typeid : public exception {
+public:
+    inline			bad_typeid (void) throw()	{ }
+    inline virtual const char*	what (void) const throw()	{ return ("bad typeid"); }
 };
 
 //----------------------------------------------------------------------

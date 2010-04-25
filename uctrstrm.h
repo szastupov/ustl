@@ -16,7 +16,7 @@
 #include "mistream.h"
 #include "sostream.h"
 #include "uiosfunc.h"
-#include <typeinfo>
+#include "typeinfo.h"
 
 namespace ustl {
 

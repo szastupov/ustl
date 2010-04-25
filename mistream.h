@@ -12,7 +12,7 @@
 #include "utf8.h"
 #include "uios.h"
 #if WANT_STREAM_BOUNDS_CHECKING
-    #include <typeinfo>
+    #include "typeinfo.h"
 #endif
 
 namespace ustl {
