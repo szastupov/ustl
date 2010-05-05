@@ -456,6 +456,10 @@ done
 for i in $PROGS; do
     pname=`expr "$i" : '\([^=]*\)=[^=]*'`
     pcall=`expr "$i" : '[^=]*=\([^=]*\)'`
+    esciv="`eval echo \$\{$pname\}`"
+    # First check if an environment variable is set
+    [ ! -z "$esciv" ] && echo "s/@$pname@/$esciv/g" >>config.sed
+    # Check if the program exists
     [ -x `which $pcall` ] && echo "s/@$pname@/$pcall/g" >>config.sed
 done
 # If nothing found in first loop, set the first pair anyway.
