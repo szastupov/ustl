@@ -38,7 +38,8 @@ struct IsSameType<T,T> { enum { value = true }; };
 /// Conversion<T,U>::exists2Way is true if U is also convertible to T
 /// Conversion<T,U>::sameType is true if U is T
 template <typename T, typename U>
-class Conversion {
+struct Conversion {
+private:
     typedef char UT;
     typedef short TT;
     static UT Test (U);

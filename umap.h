@@ -141,7 +141,7 @@ template <typename K, typename V>
 void map<K,V>::insert (const_iterator i1, const_iterator i2)
 {
     assert (i1 <= i2);
-    reserve (size() + distance (i1, i2));
+    base_class::reserve (size() + distance (i1, i2));
     for (; i1 != i2; ++i1)
 	insert (*i1);
 }

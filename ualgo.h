@@ -9,7 +9,6 @@
 #include "upair.h"
 #include "ualgobase.h"
 #include "ufunction.h"
-#include "upredalgo.h"
 #include "umemory.h"
 #include <stdlib.h>	// for rand()
 

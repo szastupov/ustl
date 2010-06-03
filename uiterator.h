@@ -125,7 +125,7 @@ public:
     				    { m_ip = m_rCtr.insert (m_ip, v); return (*this); }
     inline insert_iterator&	operator* (void)  { return (*this); }
     inline insert_iterator&	operator++ (void) { ++ m_ip; return (*this); }
-    inline insert_iterator	operator++ (int)  { insert_iterator prev (*this); ++ m_ip; return (*this); }
+    inline insert_iterator	operator++ (int)  { insert_iterator prev (*this); ++m_ip; return (prev); }
 protected:
     Container&			m_rCtr;
     iterator			m_ip;

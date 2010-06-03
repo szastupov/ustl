@@ -13,6 +13,7 @@
 #include "ubitset.h"
 #include "ulaalgo.h"
 #include "uctralgo.h"
+#include "upredalgo.h"
 #include "ufunction.h"
 #include "uctrstrm.h"
 #include "sistream.h"

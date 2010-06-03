@@ -54,7 +54,7 @@ inline void packop (const Ctr& op1, const Ctr& op2, Ctr& result, BinaryOperation
 {
     assert (op1.size() <= op2.size() && op1.size() <= result.size());
     passign (op1, result);
-    packop (op2, result);
+    op (op2, result);
 }
 
 /// Copies \p op1 into \p result.

@@ -72,8 +72,8 @@ void TestStringStreams (void)
     cout.format ("u_long:  %ld\n", uli);
     cout.format ("float:   %.2f\n", f);
     cout.format ("double:  %.2f\n", d);
-    cout.format ("short:   %hd\n", static_cast<int>(si));
-    cout.format ("u_short: %hd\n", static_cast<int>(usi));
+    cout.format ("short:   %d\n", static_cast<int>(si));
+    cout.format ("u_short: %d\n", static_cast<int>(usi));
     cout << endl;
 
     cout << "Dump:" << endl;
