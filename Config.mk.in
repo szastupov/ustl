@@ -24,11 +24,8 @@ LIBDIR		:= @libdir@
 
 ################ Compiler options ####################################
 
-WARNOPTS	:= -Wall -Wextra -Wpointer-arith -Wcast-qual -Wsynth \
-		-Wwrite-strings -Wno-cast-align -Wno-strict-aliasing \
-		-Woverloaded-virtual -Wredundant-decls -Wno-overflow \
-		-Wsign-promo -Wshadow @SYSWARNS@
-TGTOPTS		:= @PROCESSOR_OPTS@
+WARNOPTS	:= -Wall -Wextra -Woverloaded-virtual -Wpointer-arith\
+		-Wshadow -Wredundant-decls -Wcast-qual @SYSWARNS@
 INLINEOPTS	:= @INLINE_OPTS@
 
 CXXFLAGS	:= ${WARNOPTS} ${TGTOPTS} @CUSTOMINCDIR@
