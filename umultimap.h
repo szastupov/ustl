@@ -16,20 +16,20 @@ namespace ustl {
 ///
 /// \brief A sorted associative container that may container multiple entries for each key.
 ///
-template <typename K, typename V>
+template <typename K, typename V, typename Comp = less<K> >
 class multimap : public vector<pair<K,V> > {
 public:
     typedef K						key_type;
     typedef V						data_type;
     typedef const K&					const_key_ref;
     typedef const V&					const_data_ref;
-    typedef const multimap<K,V>&			rcself_t;
+    typedef const multimap<K,V,Comp>&			rcself_t;
     typedef vector<pair<K,V> >				base_class;
-    typedef typename base_class::value_type	value_type;
-    typedef typename base_class::size_type	size_type;
-    typedef typename base_class::pointer	pointer;
-    typedef typename base_class::const_pointer	const_pointer;
-    typedef typename base_class::reference	reference;
+    typedef typename base_class::value_type		value_type;
+    typedef typename base_class::size_type		size_type;
+    typedef typename base_class::pointer		pointer;
+    typedef typename base_class::const_pointer		const_pointer;
+    typedef typename base_class::reference		reference;
     typedef typename base_class::const_reference	const_reference;
     typedef typename base_class::const_iterator		const_iterator;
     typedef typename base_class::iterator		iterator;
@@ -38,10 +38,10 @@ public:
     typedef pair<const_iterator,const_iterator>		const_range_t;
     typedef pair<iterator,iterator>			range_t;
 public:
-    inline			multimap (void)		: vector<pair<K,V> > () {} 
-    explicit inline		multimap (size_type n)	: vector<pair<K,V> > (n) {} 
-    inline			multimap (rcself_t v)	: vector<pair<K,V> > (v) {} 
-    inline			multimap (const_iterator i1, const_iterator i2)	: vector<pair<K,V> > () { insert (i1, i2); } 
+    inline			multimap (void)		: base_class() {}
+    explicit inline		multimap (size_type n)	: base_class (n) {}
+    inline			multimap (rcself_t v)	: base_class (v) {}
+    inline			multimap (const_iterator i1, const_iterator i2)	: base_class() { insert (i1, i2); }
     inline rcself_t		operator= (rcself_t v)	{ base_class::operator= (v); return (*this); }
     inline size_type		size (void) const	{ return (base_class::size()); }
     inline iterator		begin (void)		{ return (base_class::begin()); }
@@ -59,7 +59,7 @@ public:
     inline iterator		lower_bound (const_key_ref k)		{ return (const_cast<iterator> (const_cast<rcself_t>(*this).lower_bound (k))); }
     const_iterator		upper_bound (const_key_ref k) const;
     inline iterator		upper_bound (const_key_ref k)		{ return (const_cast<iterator> (const_cast<rcself_t>(*this).upper_bound (k))); }
-    inline iterator		insert (const_reference v);
+    inline iterator		insert (const_reference v)		{ return (base_class::insert (upper_bound (v.first), v)); }
     void			insert (const_iterator i1, const_iterator i2);
     inline void			erase (const_key_ref k)			{ erase (const_cast<iterator>(lower_bound(k)), const_cast<iterator>(upper_bound(k))); }
     inline iterator		erase (iterator ep)			{ return (base_class::erase (ep)); } 
@@ -68,13 +68,13 @@ public:
 };
 
 /// Returns an iterator to the first element with key value \p k.
-template <typename K, typename V>
-typename multimap<K,V>::const_iterator multimap<K,V>::lower_bound (const_key_ref k) const
+template <typename K, typename V, typename Comp>
+typename multimap<K,V,Comp>::const_iterator multimap<K,V,Comp>::lower_bound (const_key_ref k) const
 {
     const_iterator first (begin()), last (end());
     while (first != last) {
 	const_iterator mid = advance (first, distance (first,last) / 2);
-	if (mid->first < k)
+	if (Comp()(mid->first, k))
 	    first = advance (mid, 1);
 	else
 	    last = mid;
@@ -83,13 +83,13 @@ typename multimap<K,V>::const_iterator multimap<K,V>::lower_bound (const_key_ref
 }
 
 /// Returns an iterator to the first element with key value \p k.
-template <typename K, typename V>
-typename multimap<K,V>::const_iterator multimap<K,V>::upper_bound (const_key_ref k) const
+template <typename K, typename V, typename Comp>
+typename multimap<K,V,Comp>::const_iterator multimap<K,V,Comp>::upper_bound (const_key_ref k) const
 {
     const_iterator first (begin()), last (end());
     while (first != last) {
 	const_iterator mid = advance (first, distance (first,last) / 2);
-	if (k < mid->first)
+	if (Comp()(k, mid->first))
 	    last = mid;
 	else
 	    first = advance (mid, 1);
@@ -98,24 +98,16 @@ typename multimap<K,V>::const_iterator multimap<K,V>::upper_bound (const_key_ref
 }
 
 /// Returns the pair<K,V> where K = \p k.
-template <typename K, typename V>
-inline typename multimap<K,V>::const_iterator multimap<K,V>::find (const_key_ref k) const
+template <typename K, typename V, typename Comp>
+inline typename multimap<K,V,Comp>::const_iterator multimap<K,V,Comp>::find (const_key_ref k) const
 {
     const_iterator i = lower_bound (k);
-    return ((i < end() && k < i->first) ? end() : i);
-}
-
-/// Inserts the pair into the container.
-template <typename K, typename V>
-inline typename multimap<K,V>::iterator multimap<K,V>::insert (const_reference v)
-{
-    iterator ip = const_cast<iterator> (upper_bound (v.first));
-    return (base_class::insert (ip, v));
+    return ((i < end() && Comp()(k, i->first)) ? end() : i);
 }
 
 /// Inserts elements from range [i1,i2) into the container.
-template <typename K, typename V>
-void multimap<K,V>::insert (const_iterator i1, const_iterator i2)
+template <typename K, typename V, typename Comp>
+void multimap<K,V,Comp>::insert (const_iterator i1, const_iterator i2)
 {
     assert (i1 <= i2);
     base_class::reserve (size() + distance (i1, i2));
