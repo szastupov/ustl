@@ -58,6 +58,7 @@ public:
     inline const_iterator	find_data (const_data_ref v, const_iterator first = NULL, const_iterator last = NULL) const;
     inline iterator		find_data (const_data_ref v, iterator first = NULL, iterator last = NULL);
     insertrv_t			insert (const_reference v);
+    inline iterator		insert (iterator, const_reference v)	{ return (insert(v).first); }
     void			insert (const_iterator i1, const_iterator i2);
     inline void			erase (const_key_ref k);
     inline iterator		erase (iterator ep)	{ return (base_class::erase (ep)); }

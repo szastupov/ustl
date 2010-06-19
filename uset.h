@@ -49,11 +49,12 @@ public:
     inline const_iterator	find (const_reference v) const	{ const_iterator i = lower_bound (begin(), end(), v); return ((i != end() && *i == v) ? i : end()); }
     inline iterator		find (const_reference v)	{ return (const_cast<iterator>(const_cast<rcself_t>(*this).find (v))); }
     insertrv_t			insert (const_reference v);
+    inline iterator		insert (iterator, const_reference v)	{ return (insert(v).first); }
     inline void			insert (const_iterator i1, const_iterator i2);
-    inline void			erase (const_reference v);
-    inline iterator		erase (iterator ep)	{ return (base_class::erase (ep)); }
+    inline void			erase (const_reference v)	{ iterator ip = find (v); if (ip != end()) erase (ip); }
+    inline iterator		erase (iterator ep)		{ return (base_class::erase (ep)); }
     inline iterator		erase (iterator ep1, iterator ep2) { return (base_class::erase (ep1, ep2)); }
-    inline void			clear (void)		{ base_class::clear(); }
+    inline void			clear (void)			{ base_class::clear(); }
 };
 
 /// Inserts \p v into the container, maintaining the sort order.
@@ -75,15 +76,6 @@ void set<T>::insert (const_iterator i1, const_iterator i2)
     base_class::reserve (size() + distance (i1, i2));
     for (; i1 < i2; ++i1)
 	push_back (*i1);
-}
-
-/// Erases the element with value \p v.
-template <typename T>
-inline void set<T>::erase (const_reference v)
-{
-    iterator ip = find (v);
-    if (ip != end())
-	erase (ip);
 }
 
 } // namespace ustl

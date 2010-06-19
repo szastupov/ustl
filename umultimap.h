@@ -51,10 +51,14 @@ public:
     inline void			assign (const_iterator i1, const_iterator i2) { clear(); insert (i1, i2); }
     inline size_type		count (const_key_ref k) const		{ return (upper_bound(k) - lower_bound(k)); }
     inline void			push_back (const_reference v)		{ insert (v); }
+    inline const_iterator	find (const_key_ref k) const;
+    inline iterator		find (const_key_ref k)			{ return (const_cast<iterator> (const_cast<rcself_t>(*this).find (k))); }
     inline const_range_t	equal_range (const_key_ref k) const	{ return (make_pair (lower_bound(k), upper_bound(k))); }
     inline range_t		equal_range (const_key_ref k)		{ return (make_pair (const_cast<iterator>(lower_bound(k)), const_cast<iterator>(upper_bound(k)))); }
     const_iterator		lower_bound (const_key_ref k) const;
+    inline iterator		lower_bound (const_key_ref k)		{ return (const_cast<iterator> (const_cast<rcself_t>(*this).lower_bound (k))); }
     const_iterator		upper_bound (const_key_ref k) const;
+    inline iterator		upper_bound (const_key_ref k)		{ return (const_cast<iterator> (const_cast<rcself_t>(*this).upper_bound (k))); }
     inline iterator		insert (const_reference v);
     void			insert (const_iterator i1, const_iterator i2);
     inline void			erase (const_key_ref k)			{ erase (const_cast<iterator>(lower_bound(k)), const_cast<iterator>(upper_bound(k))); }
@@ -91,6 +95,14 @@ typename multimap<K,V>::const_iterator multimap<K,V>::upper_bound (const_key_ref
 	    first = advance (mid, 1);
     }
     return (last);
+}
+
+/// Returns the pair<K,V> where K = \p k.
+template <typename K, typename V>
+inline typename multimap<K,V>::const_iterator multimap<K,V>::find (const_key_ref k) const
+{
+    const_iterator i = lower_bound (k);
+    return ((i < end() && k < i->first) ? end() : i);
 }
 
 /// Inserts the pair into the container.
