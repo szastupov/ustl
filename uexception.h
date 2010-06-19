@@ -23,7 +23,7 @@ typedef void (*unexpected_handler) (void);
 terminate_handler set_terminate (terminate_handler pHandler) throw();
 /// The runtime will call this function if exception handling must be
 /// abandoned for any reason.  It can also be called by the user.
-void terminate (void) __attribute__ ((__noreturn__));
+void terminate (void) throw() __attribute__ ((__noreturn__));
 /// Takes a new handler function as an argument, returns the old function.
 unexpected_handler set_unexpected (unexpected_handler pHandler) throw();
 /// The runtime will call this function if an exception is thrown which
