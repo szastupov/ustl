@@ -64,9 +64,12 @@ public:
     inline iterator		erase (iterator ep)	{ return (base_class::erase (ep)); }
     inline iterator		erase (iterator ep1, iterator ep2) { return (base_class::erase (ep1, ep2)); }
     inline void			clear (void)		{ base_class::clear(); }
-private:
     const_iterator		lower_bound (const_key_ref k) const;
     inline iterator		lower_bound (const_key_ref k) { return (const_cast<iterator>(const_cast<rcself_t>(*this).lower_bound (k))); }
+    const_iterator		upper_bound (const_key_ref k) const;
+    inline iterator		upper_bound (const_key_ref k) { return (const_cast<iterator>(const_cast<rcself_t>(*this).upper_bound (k))); }
+    const_range_t		equal_range (const_key_ref k) const;
+    inline range_t		equal_range (const_key_ref k) { return (const_cast<const_range_t>(const_cast<rcself_t>(*this).equal_range (k))); }
 };
 
 template <typename K, typename V, typename Comp>
@@ -81,6 +84,30 @@ typename map<K,V,Comp>::const_iterator map<K,V,Comp>::lower_bound (const_key_ref
 	    last = mid;
     }
     return (first);
+}
+
+template <typename K, typename V, typename Comp>
+typename map<K,V,Comp>::const_iterator map<K,V,Comp>::upper_bound (const_key_ref k) const
+{
+    const_iterator first (begin()), last (end());
+    while (first != last) {
+	const_iterator mid = advance (first, distance (first,last) / 2);
+	if (Comp()(k, mid->first))
+	    last = mid;
+	else
+	    first = mid + 1;
+    }
+    return (last);
+}
+
+template <typename K, typename V, typename Comp>
+typename map<K,V,Comp>::const_range_t map<K,V,Comp>::equal_range (const_key_ref k) const
+{
+    const_range_t rv;
+    rv.second = rv.first = lower_bound (k);
+    while (rv.second != end() && !Comp()(k, rv.second->first))
+	++rv.second;
+    return (rv);
 }
 
 /// Returns the pair<K,V> where K = \p k.
