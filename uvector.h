@@ -8,6 +8,7 @@
 
 #include "memblock.h"
 #include "umemory.h"
+#include "upredalgo.h"
 
 namespace ustl {
 
