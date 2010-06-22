@@ -22,16 +22,6 @@ void memlink::read (istream& is)
     is.align (alignof (n));
 }
 
-/// Copies data from \p p, \p n to the linked block starting at \p start.
-void memlink::copy (iterator start, const void* p, size_type n)
-{
-    assert (data() || !n);
-    assert (p || !n);
-    assert (start >= begin() && start + n <= end());
-    if (p)
-	copy_n (const_iterator(p), n, start);
-}
-
 /// Fills the linked block with the given pattern.
 /// \arg start   Offset at which to start filling the linked block
 /// \arg p       Pointer to the pattern.

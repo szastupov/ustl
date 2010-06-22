@@ -64,9 +64,6 @@ public:
     inline void		link (void* first, void* last)		{ link (first, distance (first, last)); }
     inline void		relink (const void* p, size_type n)	{ cmemlink::relink (p, n); }
     inline void		relink (void* p, size_type n)		{ cmemlink::relink (p, n); }
-    inline void		copy (const cmemlink& l)		{ copy (begin(), l.cdata(), l.size()); }
-    inline void		copy (const void* p, size_type n)	{ copy (begin(), p, n); }
-    void		copy (iterator offset, const void* p, size_type n);
     inline void		swap (memlink& l)			{ cmemlink::swap (l); }
     void		fill (iterator start, const void* p, size_type elsize, size_type elCount = 1);
     inline void		insert (iterator start, size_type size);

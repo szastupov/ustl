@@ -49,8 +49,7 @@ void TestMB (void)
     if (a.begin() == b.begin())
 	cout << "Assignment does not copy a link\n";
     a.deallocate();
-    a.resize (strTestLen);
-    a.copy (strTest, strTestLen);
+    a.assign (strTest, strTestLen);
     WriteCML (a);
     a.insert (a.begin() + 5, 9);
     a.fill (a.begin() + 5, "-", 1, 9);

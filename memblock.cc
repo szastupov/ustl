@@ -70,7 +70,7 @@ void memblock::assign (const void* p, size_type n)
 {
     assert ((p != (const void*) cdata() || size() == n) && "Self-assignment can not resize");
     resize (n);
-    copy (p, n);
+    copy_n (pointer(p), n, begin());
 }
 
 /// \brief Reallocates internal block to hold at least \p newSize bytes.

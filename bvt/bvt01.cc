@@ -53,7 +53,7 @@ void TestML (void)
     WriteCML (a);
     a.fill (a.begin() + 5, "TEST", 4, 3); 
     WriteCML (a);
-    a.copy (cstr, VectorSize(str) - 1);
+    copy_n (cstr, VectorSize(str) - 1, a.begin());
     WriteCML (a);
 }
 

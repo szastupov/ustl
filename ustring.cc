@@ -68,7 +68,7 @@ void string::assign (const_pointer s, size_type len)
     while (len && s[len - 1] == 0)
 	-- len;
     resize (len);
-    copy (s, len);
+    copy_n (s, len, begin());
 }
 
 /// Appends to itself the value of string \p s of length \p len.
