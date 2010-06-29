@@ -341,13 +341,66 @@ inline bool TestAndSet (int* pm)
 #endif
 }
 
+/// Returns the index of the first set bit in \p v or \p nbv if none.
+inline uoff_t FirstBit (uint32_t v, uoff_t nbv)
+{
+    uoff_t n = nbv;
+#if __i386__ || __x86_64__
+    if (!__builtin_constant_p(v)) asm ("bsr\t%1, %k0":"+r,r"(n):"r,m"(v)); else
+#endif
+#if __GNUC__
+    if (v) n = 31 - __builtin_clz(v);
+#else
+    if (v) for (uint32_t m = uint32_t(1)<<(n=31); !(v & m); m >>= 1) --n;
+#endif
+    return (n);
+}
+/// Returns the index of the first set bit in \p v or \p nbv if none.
+inline uoff_t FirstBit (uint64_t v, uoff_t nbv)
+{
+    uoff_t n = nbv;
+#if __x86_64__
+    if (!__builtin_constant_p(v)) asm ("bsr\t%1, %0":"+r,r"(n):"r,m"(v)); else
+#endif
+#if __GNUC__
+    if (v) n = 63 - __builtin_clzl(v);
+#else
+    if (v) for (uint64_t m = uint64_t(1)<<(n=63); !(v & m); m >>= 1) --n;
+#endif
+    return (n);
+}
+
+/// Returns the next power of 2 >= \p v.
+/// Values larger than UINT32_MAX/2 will return 2^0
 inline uint32_t NextPow2 (uint32_t v)
 {
-    asm("dec\t%1\n\t"
-	"mov\t$1,%0\n\t"
-	"bsr\t%1,%1\n\t"
-	"inc\t%1\n\t"
-	"rol\t%b1,%0":"=&r"(v):"c"(v));
+    uint32_t r = v-1;
+#if __i386__ || __x86_64__
+    if (!__builtin_constant_p(r)) asm("bsr\t%0, %0":"+r"(r)); else
+#endif
+    { r = FirstBit(r,r); if (r >= BitsInType(r)-1) r = uint32_t(-1); }
+    return (1<<(1+r));
+}
+
+/// Bitwise rotate value left
+template <typename T>
+inline T Rol (T v, size_t n)
+{
+#if __i386__ || __x86_64__
+    if (!(__builtin_constant_p(v) && __builtin_constant_p(n))) asm("rol\t%b1, %0":"+r,r"(v):"i,c"(n)); else
+#endif
+    v = (v << n) | (v >> (BitsInType(T)-n));
+    return (v);
+}
+
+/// Bitwise rotate value right
+template <typename T>
+inline T Ror (T v, size_t n)
+{
+#if __i386__ || __x86_64__
+    if (!(__builtin_constant_p(v) && __builtin_constant_p(n))) asm("ror\t%b1, %0":"+r,r"(v):"i,c"(n)); else
+#endif
+    v = (v >> n) | (v << (BitsInType(T)-n));
     return (v);
 }
 
