@@ -18,7 +18,7 @@ namespace ustl {
 error_message::error_message (const char* arg) throw()
 : m_Arg ()
 {
-    try { m_Arg = arg; } catch (...) {}
+    USTL_TRY { m_Arg = arg; } USTL_CATCH_ALL;
     set_format (xfmt_ErrorMessage);
 }
 
@@ -31,7 +31,7 @@ error_message::~error_message (void) throw()
 void error_message::info (string& msgbuf, const char* fmt) const throw()
 {
     if (!fmt) fmt = "%s: %s";
-    try { msgbuf.format (fmt, name(), m_Arg.cdata()); } catch (...) {}
+    USTL_TRY { msgbuf.format (fmt, name(), m_Arg.cdata()); } USTL_CATCH_ALL;
 }
 
 /// Reads the object from stream \p is.

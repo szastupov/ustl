@@ -57,7 +57,7 @@ fstream::~fstream (void) throw()
 void fstream::set_and_throw (iostate s, const char* op)
 {
     if (ios_base::set_and_throw (s))
-	throw file_exception (op, name());
+	USTL_THROW (file_exception (op, name()));
 }
 
 /// Attaches to the given \p nfd.
@@ -157,7 +157,7 @@ off_t fstream::readsome (void* p, off_t n)
     else if ((brn < 0) & (errno != EAGAIN))
 	set_and_throw (failbit, "read");
     else if (!brn && ios_base::set_and_throw (eofbit | failbit))
-	throw stream_bounds_exception ("read", name(), pos(), n, 0);
+	USTL_THROW (stream_bounds_exception ("read", name(), pos(), n, 0));
     return (0);
 }
 
@@ -172,7 +172,7 @@ off_t fstream::write (const void* p, off_t n)
 	    btw -= bwn;
 	else if (!bwn) {
 	    if (ios_base::set_and_throw (eofbit | failbit))
-		throw stream_bounds_exception ("write", name(), pos() - bw, n, bw);
+		USTL_THROW (stream_bounds_exception ("write", name(), pos() - bw, n, bw));
 	    break;
 	} else if (errno != EINTR) {
 	    if (errno != EAGAIN)
@@ -203,7 +203,7 @@ void fstream::sync (void)
 void fstream::stat (struct stat& rs) const
 {
     if (fstat (m_fd, &rs))
-	throw file_exception ("stat", name());
+	USTL_THROW (file_exception ("stat", name()));
 }
 
 /// Calls the given ioctl. Use IOCTLID macro to pass in both \p name and \p request.

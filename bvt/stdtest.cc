@@ -54,6 +54,23 @@ static void InstallCleanupHandlers (void)
     std::set_unexpected (OnUnexpected);
 }
 
+#ifdef WITHOUT_EXCEPTIONS
+void ustl::throw_exception(exception const &e)
+{
+    cout.flush();
+    cerr << "Error: " << e << endl;
+    abort();
+}
+
+int StdTestHarness (stdtestfunc_t testFunction)
+{
+    InstallCleanupHandlers();
+    int rv = EXIT_FAILURE;
+    (*testFunction)();
+    rv = EXIT_SUCCESS;
+    return (rv);
+}
+#else
 int StdTestHarness (stdtestfunc_t testFunction)
 {
     InstallCleanupHandlers();
@@ -70,3 +87,4 @@ int StdTestHarness (stdtestfunc_t testFunction)
     }
     return (rv);
 }
+#endif

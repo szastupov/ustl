@@ -93,7 +93,7 @@ void memblock::reserve (size_type newSize, bool bExact)
 	newSize = alignedSize;
     pointer newBlock = (pointer) realloc (oldBlock, newSize);
     if (!newBlock)
-	throw bad_alloc (newSize);
+	USTL_THROW (bad_alloc (newSize));
     if (!oldBlock & (cdata() != NULL))
 	copy_n (cdata(), min (size() + 1, newSize), newBlock);
     link (newBlock, size());

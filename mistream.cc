@@ -16,7 +16,7 @@ namespace ustl {
 void ios_base::overrun (const char* op, const char* type, uint32_t n, uint32_t pos, uint32_t rem)
 {
     if (set_and_throw (rem ? failbit : (failbit | eofbit)))
-	throw stream_bounds_exception (op, type, pos, n, rem);
+	USTL_THROW (stream_bounds_exception (op, type, pos, n, rem));
 }
 
 //--------------------------------------------------------------------

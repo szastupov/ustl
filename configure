@@ -48,6 +48,10 @@ name=[with-libstdc++]
 desc=[Link with libstdc++]
 seds=[s/#define \(WITHOUT_LIBSTDCPP\) 1/#undef \1/\n
 s/^#\(NOLIBSTDCPP\)/\1/]
+}{
+name=[without-exceptions]
+desc=[  Disable exceptions support]
+seds=[s/#undef \(WITHOUT_EXCEPTIONS\)/#define \1 1/]
 }';
 
 # Header files

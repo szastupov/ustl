@@ -16,7 +16,7 @@ void memlink::read (istream& is)
     if (!is.verify_remaining ("read", "ustl::memlink", n))
 	return;
     if (n > size())
-	throw length_error ("memlink can not increase the size of the linked storage for reading");
+	USTL_THROW (length_error ("memlink can not increase the size of the linked storage for reading"));
     resize (n);
     is.read (data(), n);
     is.align (alignof (n));

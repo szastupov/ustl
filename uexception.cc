@@ -30,7 +30,7 @@ namespace ustl {
 ///
 void exception::info (string& msgbuf, const char*) const throw()
 {
-    try { msgbuf.format ("%s", what()); } catch (...) { /* Ignore all exceptions */ }
+    USTL_TRY { msgbuf.format ("%s", what()); } USTL_CATCH_ALL;
 }
 
 /// Reads the exception from stream \p is.
@@ -53,11 +53,11 @@ void exception::write (ostream& os) const
 /// Writes the exception as text into stream \p os.
 void exception::text_write (ostringstream& os) const
 {
-    try {
+    USTL_TRY {
 	string buf;
 	info (buf);
 	os << buf;
-    } catch (...) {}
+    } USTL_CATCH_ALL;
 }
 
 //----------------------------------------------------------------------
@@ -74,7 +74,7 @@ bad_alloc::bad_alloc (size_t nBytes) throw()
 void bad_alloc::info (string& msgbuf, const char* fmt) const throw()
 {
     if (!fmt) fmt = "failed to allocate %d bytes";
-    try { msgbuf.format (fmt, m_nBytesRequested); } catch (...) {}
+    USTL_TRY { msgbuf.format (fmt, m_nBytesRequested); } USTL_CATCH_ALL;
 }
 
 /// Reads the exception from stream \p is.
@@ -128,7 +128,7 @@ const libc_exception& libc_exception::operator= (const libc_exception& v)
 void libc_exception::info (string& msgbuf, const char* fmt) const throw()
 {
     if (!fmt) fmt = "%s: %m";
-    try { msgbuf.format (fmt, m_Operation, m_Errno, m_Errno); } catch (...) {}
+    USTL_TRY { msgbuf.format (fmt, m_Operation, m_Errno, m_Errno); } USTL_CATCH_ALL;
 }
 
 /// Reads the exception from stream \p is.
@@ -171,7 +171,7 @@ file_exception::file_exception (const char* operation, const char* filename) thr
 void file_exception::info (string& msgbuf, const char* fmt) const throw()
 {
     if (!fmt) fmt = "%s %s: %m";
-    try { msgbuf.format (fmt, m_Operation, m_Filename, m_Errno, m_Errno); } catch (...) {}
+    USTL_TRY { msgbuf.format (fmt, m_Operation, m_Filename, m_Errno, m_Errno); } USTL_CATCH_ALL;
 }
 
 /// Reads the exception from stream \p is.
@@ -247,7 +247,7 @@ void stream_bounds_exception::info (string& msgbuf, const char* fmt) const throw
     strncpy (typeName, m_TypeName, VectorSize(typeName));
     typeName[VectorSize(typeName)-1] = 0;
     if (!fmt) fmt = "%s stream %s: @0x%X: need %u bytes, have %u";
-    try { msgbuf.format (fmt, demangle_type_name (VectorBlock(typeName)), m_Operation, m_Offset, m_Expected, m_Remaining); } catch (...) {}
+    USTL_TRY { msgbuf.format (fmt, demangle_type_name (VectorBlock(typeName)), m_Operation, m_Offset, m_Expected, m_Remaining); } USTL_CATCH_ALL;
 }
 
 /// Reads the exception from stream \p is.

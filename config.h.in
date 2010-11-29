@@ -37,6 +37,8 @@
 /// Define to 1 if you want to build without libstdc++
 #define WITHOUT_LIBSTDCPP 1
 
+#undef WITHOUT_EXCEPTIONS
+
 /// Define GNU extensions if unavailable.
 #ifndef __GNUC__
     /// GCC (and some other compilers) define '__attribute__'; ustl is using this

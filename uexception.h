@@ -187,6 +187,17 @@ protected:
 
 const char* demangle_type_name (char* buf, size_t bufSize, size_t* pdmSize = NULL);
 
+#ifdef WITHOUT_EXCEPTIONS
+void throw_exception(exception const &e);
+#define USTL_THROW(e) throw_exception(e)
+#define USTL_TRY
+#define USTL_CATCH_ALL
+#else
+#define USTL_THROW(e) throw (e)
+#define USTL_TRY try
+#define USTL_CATCH_ALL catch (...) {}
+#endif
+
 } // namespace ustl
 
 #endif

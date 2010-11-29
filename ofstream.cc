@@ -49,7 +49,7 @@ ofstream::ofstream (const char* filename, openmode mode)
 /// Default destructor.
 ofstream::~ofstream (void) throw()
 {
-    try { flush(); } catch (...) {}
+    USTL_TRY { flush(); } USTL_CATCH_ALL;
 }
 
 /// Flushes the buffer and closes the file.
